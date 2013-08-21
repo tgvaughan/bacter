@@ -31,4 +31,17 @@ public class RecombinationGraph extends Tree {
      */
     protected List<Recombination> recombs;
     
+    /**
+     * List of marginal trees.
+     */
+    protected List<Tree> marginalTreeList;
+    
+    /**
+     * Retrieve list of marginal trees.
+     * @return 
+     */
+    public List<Tree> getMarginalTreeList() {
+
+    }
+    
 }
