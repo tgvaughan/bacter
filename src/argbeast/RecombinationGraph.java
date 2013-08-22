@@ -25,23 +25,27 @@ import java.util.List;
  */
 @Description("Recombination graph based around the clonal frame.")
 public class RecombinationGraph extends Tree {
-
+    
     /**
-     * Recombinations on graph.
+     * List of recombinations on graph.
      */
     protected List<Recombination> recombs;
     
     /**
-     * List of marginal trees.
+     * Add recombination to graph.
+     * @param recomb 
      */
-    protected List<Tree> marginalTreeList;
+    public void addRecombination(Recombination recomb) {
+        recombs.add(recomb);
+    }
     
     /**
-     * Retrieve list of marginal trees.
-     * @return 
+     * Update list of marginal trees.
      */
-    public List<Tree> getMarginalTreeList() {
-
+    public void updateMarginalTreeList() {
+        for (Recombination recomb : recombs) {
+            
+        }
     }
     
 }
