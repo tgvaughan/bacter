@@ -18,6 +18,8 @@ package argbeast;
 
 import beast.core.Description;
 import beast.evolution.likelihood.TreeLikelihood;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -25,18 +27,43 @@ import beast.evolution.likelihood.TreeLikelihood;
 @Description("Probability of sequence data given recombination graph.")
 public class RecombinationGraphLikelihood extends TreeLikelihood {
 
+    List<int[]> patternWeights = new ArrayList<int[]>();
+    
+    int[] regionIndex;
+    
+    RecombinationGraph arg;
+    
     @Override
     public void initAndValidate() throws Exception {
         if (!(m_tree.get() instanceof RecombinationGraph))
             throw new IllegalArgumentException("RecombinationGraphLikelihood "
                     + "can only be applied to RecombinationGraphs.");
         
+        arg = (RecombinationGraph)m_tree.get();
+        
+        regionIndex = new int[m_data.get().getSiteCount()];
+        for (int i=0; i<regionIndex.length; i++)
+            regionIndex[i] = -1;
+        
         super.initAndValidate();
     }
     
-//    @Override
-//    public double calculateLogP() {
-//        
-//    }
-    
+    @Override
+    public double calculateLogP() {
+        
+        // Loop over sites
+        
+        return 0.0;
+    }
+
+    /**
+     * Calculate number of times each pattern coincides with each of
+     * the potentially distinct genealogies.
+     */
+    private void calculatePatternWeights() {
+        patternWeights.clear();
+        for (Recombination recomb : arg.getRecombinations()) {
+            m_data.get().getSiteCount();
+        }
+    }
 }
