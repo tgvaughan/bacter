@@ -28,7 +28,6 @@ import java.util.List;
 public class RecombinationGraphLikelihood extends TreeLikelihood {
 
     List<int[]> patternWeights = new ArrayList<int[]>();
-    
     int[] regionIndex;
     
     RecombinationGraph arg;
@@ -40,10 +39,9 @@ public class RecombinationGraphLikelihood extends TreeLikelihood {
                     + "can only be applied to RecombinationGraphs.");
         
         arg = (RecombinationGraph)m_tree.get();
-        
         regionIndex = new int[m_data.get().getSiteCount()];
-        for (int i=0; i<regionIndex.length; i++)
-            regionIndex[i] = -1;
+        
+        calculatePatternWeights();
         
         super.initAndValidate();
     }
@@ -55,12 +53,34 @@ public class RecombinationGraphLikelihood extends TreeLikelihood {
         
         return 0.0;
     }
+    
+    /**
+     * Map each sight onto a region index. Sites marked with -1 belong to
+     * the clonal frame.
+     */
+    private void calculateRegionMap() {
+        
+        int j=0;
+        for (int ridx=0; ridx<arg.getRecombinations().size(); ridx++) {
+            Recombination recomb = arg.getRecombinations().get(ridx);
+            
+            while (j < recomb.startLocus) {
+                regionIndex[j] = -1;
+                j += 1;
+            }
+            
+            while (j <= recomb.endLocus) {
+                regionIndex[j] = ridx;
+            }
+        }
+    }
 
     /**
      * Calculate number of times each pattern coincides with each of
      * the potentially distinct genealogies.
      */
     private void calculatePatternWeights() {
+        
         patternWeights.clear();
         for (Recombination recomb : arg.getRecombinations()) {
             m_data.get().getSiteCount();

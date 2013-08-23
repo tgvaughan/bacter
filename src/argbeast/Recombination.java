@@ -32,11 +32,11 @@ public class Recombination extends Plugin {
     /**
      * Heights on branches at which recombinant edge connects.
      */
-    private double height1, height2;
+    protected double height1, height2;
     
     /**
      * Range of nucleotides affected by homologous gene conversion.
      */
-    private int startLocus, endLocus;
+    protected int startLocus, endLocus;
     
 }
