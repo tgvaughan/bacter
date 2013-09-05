@@ -21,6 +21,7 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.substitutionmodel.JukesCantor;
 import beast.util.ClusterTree;
 import beast.util.TreeParser;
 import java.util.ArrayList;
@@ -51,13 +52,13 @@ public class RecombinationGraphLikelihood extends TreeLikelihood {
         super.initAndValidate();
     }
     
-    @Override
-    public double calculateLogP() {
-        
-        // Loop over sites
-        
-        return 0.0;
-    }
+//    @Override
+//    public double calculateLogP() {
+//        
+//        // Loop over sites
+//        
+//        return 0.0;
+//    }
     
     /**
      * Map each sight onto a region index. Sites marked with -1 belong to
@@ -128,20 +129,23 @@ public class RecombinationGraphLikelihood extends TreeLikelihood {
                 "taxa", alignment);
         
         arg.assignFrom(tree);
-        arg.initAndValidate();
         
         // Site model:
+        JukesCantor jc = new JukesCantor();
+        jc.initByName();
         SiteModel siteModel = new SiteModel();
         siteModel.initByName(
-                "mutationRate", 1.0,
-                "");
+                "substModel", jc);
         
         // Likelihood
         
         RecombinationGraphLikelihood argLikelihood = new RecombinationGraphLikelihood();
         argLikelihood.initByName(
                 "data", alignment,
-                "tree", arg);
+                "tree", arg,
+                "siteModel", siteModel);
         
+        arg.setEverythingDirty(true);
+        System.out.println(argLikelihood.calculateLogP());
     }
 }
