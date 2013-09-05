@@ -19,6 +19,7 @@ package argbeast;
 import beast.core.Description;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,10 +33,12 @@ public class RecombinationGraph extends Tree {
      */
     protected List<Recombination> recombs;
     
-    /**
-     * 
-     */
-    protected Node[] nodesBackup;
+    @Override
+    public void initAndValidate() throws Exception {
+        super.initAndValidate();
+        
+        recombs = new ArrayList<Recombination>();
+    }
     
     /**
      * Add recombination to graph.
