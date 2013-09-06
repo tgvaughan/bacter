@@ -19,11 +19,10 @@ package argbeast;
 import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
+import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.util.ClusterTree;
-import beast.util.TreeParser;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Probability of sequence data given recombination graph.")
-public class RecombinationGraphLikelihood extends TreeLikelihood {
+public class RecombinationGraphLikelihood extends GenericTreeLikelihood {
 
     List<int[]> patternWeights = new ArrayList<int[]>();
     int[] regionIndex;
@@ -52,13 +51,13 @@ public class RecombinationGraphLikelihood extends TreeLikelihood {
         super.initAndValidate();
     }
     
-//    @Override
-//    public double calculateLogP() {
-//        
-//        // Loop over sites
-//        
-//        return 0.0;
-//    }
+    @Override
+    public double calculateLogP() {
+        
+        // Loop over sites
+        
+        return 0.0;
+    }
     
     /**
      * Map each sight onto a region index. Sites marked with -1 belong to
