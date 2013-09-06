@@ -17,20 +17,36 @@
 package argbeast;
 
 import beast.core.Description;
+import beast.core.Distribution;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.substitutionmodel.JukesCantor;
-import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.util.ClusterTree;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Probability of sequence data given recombination graph.")
-public class RecombinationGraphLikelihood extends GenericTreeLikelihood {
+public class RecombinationGraphLikelihood extends Distribution {
+    
+    public Input<RecombinationGraph> argInput = new Input<RecombinationGraph>(
+            "arg", "Recombination graph.", Validate.REQUIRED);
+    
+    public Input<Alignment> alignmentInput = new Input<Alignment>(
+            "data", "Sequence data to evaluate probability of.",
+            Validate.REQUIRED);
+    
+    public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>(
+            "siteModel", "Site model for evolution of alignment.",
+            Validate.REQUIRED);
 
     List<int[]> patternWeights = new ArrayList<int[]>();
     int[] regionIndex;
@@ -39,16 +55,12 @@ public class RecombinationGraphLikelihood extends GenericTreeLikelihood {
     
     @Override
     public void initAndValidate() throws Exception {
-        if (!(m_tree.get() instanceof RecombinationGraph))
-            throw new IllegalArgumentException("RecombinationGraphLikelihood "
-                    + "can only be applied to RecombinationGraphs.");
         
-        arg = (RecombinationGraph)m_tree.get();
-        regionIndex = new int[m_data.get().getSiteCount()];
+        arg = argInput.get();
+        regionIndex = new int[alignmentInput.get().getSiteCount()];
         
         calculatePatternWeights();
         
-        super.initAndValidate();
     }
     
     @Override
@@ -80,7 +92,7 @@ public class RecombinationGraphLikelihood extends GenericTreeLikelihood {
             }
         }
         
-        while (j<m_data.get().getSiteCount()) {
+        while (j<alignmentInput.get().getSiteCount()) {
             regionIndex[j] = -1;
             j += 1;
         }
@@ -93,7 +105,22 @@ public class RecombinationGraphLikelihood extends GenericTreeLikelihood {
     private void calculatePatternWeights() {
         
         patternWeights.clear();
-        m_data.get().getSiteCount();
+        alignmentInput.get().getSiteCount();
+    }
+    
+    @Override
+    public List<String> getArguments() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<String> getConditions() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void sample(State state, Random random) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     /**
@@ -147,4 +174,5 @@ public class RecombinationGraphLikelihood extends GenericTreeLikelihood {
         arg.setEverythingDirty(true);
         System.out.println(argLikelihood.calculateLogP());
     }
+
 }
