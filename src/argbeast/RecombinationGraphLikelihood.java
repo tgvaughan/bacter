@@ -23,9 +23,11 @@ import beast.core.Input.Validate;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.likelihood.LikelihoodCore;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.substitutionmodel.JukesCantor;
+import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.util.ClusterTree;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,18 +50,53 @@ public class RecombinationGraphLikelihood extends Distribution {
             "siteModel", "Site model for evolution of alignment.",
             Validate.REQUIRED);
 
-    List<int[]> patternWeights = new ArrayList<int[]>();
-    int[] regionIndex;
     
     RecombinationGraph arg;
+    SiteModel.Base siteModel;
+    SubstitutionModel.Base substitutionModel;
+    Alignment alignment;
+    
+    List<LikelihoodCore> likelihoodCores;
+    List<List<int[]>> patterns;
+    List<List<Integer>> patternWeights;
+    int[] regionIndex;
+    int[] patternIndex;
     
     @Override
     public void initAndValidate() throws Exception {
         
         arg = argInput.get();
         regionIndex = new int[alignmentInput.get().getSiteCount()];
+        alignment = alignmentInput.get();
+        
+        patterns = new ArrayList<List<int[]>>();
+        
+        // Initialise cores
+        initCores();
         
         calculatePatternWeights();
+        
+    }
+    
+    /**
+     * Ensure pattern counts are up to date.
+     */
+    private void updatePatterns() {
+        patterns.clear();
+        for (int r=0; r<=arg.getNRecombs(); r++)
+            patterns.add(new ArrayList<int[]>());
+        
+        for (int i=0; i<regionIndex.length; i++) {
+            
+        }
+    }
+    
+    /**
+     * Initialise likelihood cores.
+     */
+    private void initCores() {
+        likelihoodCores = new ArrayList<LikelihoodCore>();
+        
         
     }
     

@@ -50,9 +50,20 @@ public class RecombinationGraph extends Tree {
     
     /**
      * Retrieve list of recombinations.
+     * 
+     * @return List of recombinations.
      */
     public List<Recombination> getRecombinations() {
         return recombs;
+    }
+
+    /**
+     * Obtain number of recombination events.
+     * 
+     * @return Number of recombinations.
+     */
+    public int getNRecombs() {
+        return recombs.size();
     }
     
     /**
