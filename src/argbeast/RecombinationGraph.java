@@ -19,6 +19,7 @@ package argbeast;
 import beast.core.Description;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,14 +66,63 @@ public class RecombinationGraph extends Tree {
     public int getNRecombs() {
         return recombs.size();
     }
-    
+
     /**
-     * Update list of marginal trees.
+     * Retrieve root for marginal tree defined by recomb.
+     * 
+     * @param recomb
+     * @return root node
      */
-    public void updateMarginalTreeList() {
-        for (Recombination recomb : recombs) {
-            
-        }
+    public Node getMarginalRoot(Recombination recomb) {
+        
+        if (recomb.node2.isRoot())
+            return recomb.node1.getParent();
+        else
+            return getRoot();
+
     }
     
+    /**
+     * Retrieve parent of node in marginal tree defined by recomb.
+     * 
+     * @param node
+     * @param recomb
+     * @return node parent
+     */
+    public Node getMarginalParent(Node node, Recombination recomb) {
+        
+        if (node == recomb.node2) {
+            return recomb.node1.getParent();
+        }
+        
+        if (node.getParent() == recomb.node1.getParent())
+            return node.getParent().getParent();
+        
+        return node.getParent();
+    }
+    
+    /**
+     * Retrieve children of node in marginal tree defined by recomb.
+     * 
+     * @param node
+     * @param recomb
+     * @return node children
+     */
+    public List<Node> getMarginalChildren(Node node, Recombination recomb) {
+        List<Node> children = Lists.newArrayList();
+        if (node == recomb.node1.getParent()) {
+            children.add(recomb.node1);
+            children.add(recomb.node2);
+            return children;
+        }
+        
+        for (Node child : node.getChildren()) {
+            if (child == recomb.node2)
+                children.add(recomb.node1.getParent());
+            else
+                children.add(child);
+        }
+
+        return children;
+    }
 }

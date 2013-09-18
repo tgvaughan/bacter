@@ -23,14 +23,19 @@ import beast.core.Input.Validate;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.likelihood.BeerLikelihoodCore;
+import beast.evolution.likelihood.BeerLikelihoodCore4;
 import beast.evolution.likelihood.LikelihoodCore;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.util.ClusterTree;
+import com.google.common.collect.Maps;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -56,11 +61,16 @@ public class RecombinationGraphLikelihood extends Distribution {
     SubstitutionModel.Base substitutionModel;
     Alignment alignment;
     
-    List<LikelihoodCore> likelihoodCores;
-    List<List<int[]>> patterns;
+    LikelihoodCore cfLikelihoodCore;
+    Map<Recombination,LikelihoodCore> recombLikelihoodCores;
+    
+    List<int[]> cfPatterns;
+    Map<Recombination, List<int[]>> recombPatterns;
     List<List<Integer>> patternWeights;
     int[] regionIndex;
     int[] patternIndex;
+    
+    int nStates;
     
     @Override
     public void initAndValidate() throws Exception {
@@ -69,12 +79,14 @@ public class RecombinationGraphLikelihood extends Distribution {
         regionIndex = new int[alignmentInput.get().getSiteCount()];
         alignment = alignmentInput.get();
         
-        patterns = new ArrayList<List<int[]>>();
+        recombPatterns = Maps.newHashMap();
+        
+        nStates = alignment.getMaxStateCount();
         
         // Initialise cores
         initCores();
         
-        calculatePatternWeights();
+        //calculatePatternWeights();
         
     }
     
@@ -82,22 +94,26 @@ public class RecombinationGraphLikelihood extends Distribution {
      * Ensure pattern counts are up to date.
      */
     private void updatePatterns() {
-        patterns.clear();
-        for (int r=0; r<=arg.getNRecombs(); r++)
-            patterns.add(new ArrayList<int[]>());
         
-        for (int i=0; i<regionIndex.length; i++) {
-            
-        }
     }
     
     /**
      * Initialise likelihood cores.
      */
     private void initCores() {
-        likelihoodCores = new ArrayList<LikelihoodCore>();
-        
-        
+
+        if (nStates==4)
+            cfLikelihoodCore = new BeerLikelihoodCore4();
+        else
+            cfLikelihoodCore = new BeerLikelihoodCore(nStates);
+
+        recombLikelihoodCores = Maps.newHashMap();
+        for (Recombination recomb : arg.getRecombinations()) {
+            if (nStates==4)
+                recombLikelihoodCores.put(recomb, new BeerLikelihoodCore4());
+            else
+                recombLikelihoodCores.put(recomb, new BeerLikelihoodCore(nStates));
+        }
     }
     
     @Override
@@ -192,6 +208,7 @@ public class RecombinationGraphLikelihood extends Distribution {
                 "taxa", alignment);
         
         arg.assignFrom(tree);
+        arg.initAndValidate();
         
         // Site model:
         JukesCantor jc = new JukesCantor();
@@ -205,7 +222,7 @@ public class RecombinationGraphLikelihood extends Distribution {
         RecombinationGraphLikelihood argLikelihood = new RecombinationGraphLikelihood();
         argLikelihood.initByName(
                 "data", alignment,
-                "tree", arg,
+                "arg", arg,
                 "siteModel", siteModel);
         
         arg.setEverythingDirty(true);

@@ -16,13 +16,15 @@
  */
 package argbeast;
 
-import beast.core.Plugin;
 import beast.evolution.tree.Node;
 
 /**
+ * A class representing recombination events that are one-edge
+ * modifications to the clonal frame.
+ * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class Recombination extends Plugin {
+public class Recombination  {
 
     /**
      * Nodes below branches to which recombinant edge connects.
