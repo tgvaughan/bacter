@@ -90,6 +90,8 @@ public class RecombinationGraph extends Tree {
      * @return root node
      */
     public Node getMarginalRoot(Recombination recomb) {
+        if (recomb==null)
+            return root;
         
         if (recomb.node2.isRoot())
             return recomb.node1.getParent();
@@ -106,6 +108,8 @@ public class RecombinationGraph extends Tree {
      * @return node parent
      */
     public Node getMarginalParent(Node node, Recombination recomb) {
+        if (recomb==null)
+            return node.getParent();
         
         if (node == recomb.node2) {
             return recomb.node1.getParent();
@@ -125,6 +129,9 @@ public class RecombinationGraph extends Tree {
      * @return node children
      */
     public List<Node> getMarginalChildren(Node node, Recombination recomb) {
+        if (recomb==null)
+            return node.getChildren();
+        
         List<Node> children = Lists.newArrayList();
         if (node == recomb.node1.getParent()) {
             children.add(recomb.node1);
@@ -140,5 +147,69 @@ public class RecombinationGraph extends Tree {
         }
 
         return children;
+    }
+
+    /**
+     * Height of node in marginal tree defined by recomb.
+     * 
+     * @param node
+     * @param recomb
+     * @return node height
+     */
+    public double getMarginalNodeHeight(Node node, Recombination recomb) {
+        if (recomb==null)
+            return node.getHeight();
+
+        if (node == recomb.node1.getParent())
+            return recomb.height2;
+        else
+            return node.getHeight();
+    }
+    
+    /**
+     * Length of edge between node and parent in marginal tree defined
+     * by recomb.
+     * 
+     * @param node
+     * @param recomb
+     * @return edge length (zero if node is root of marginal tree)
+     */
+    public double getMarginalBranchLength(Node node, Recombination recomb) {
+        if (recomb==null)
+            return node.getLength();
+        
+        Node parent = getMarginalParent(node, recomb);
+        if (parent == null)
+            return 0.0;
+        else
+            return getMarginalNodeHeight(parent, recomb)
+                    -getMarginalNodeHeight(node, recomb);
+    }
+    
+    /**
+     * Determine whether node is root of marginal tree defined by recomb.
+     * 
+     * @param node
+     * @param recomb
+     * @return true if node is marginal root, false otherwise.
+     */
+    public boolean isNodeMarginalRoot(Node node, Recombination recomb) {
+        if (recomb==null)
+            return node.isRoot();
+        
+        return (getMarginalParent(node, recomb) == null);
+    }
+
+    /**
+     * Determine whether node is leaf in marginal tree defined by recomb.
+     * Just here for aesthetic completeness - all marginal trees share the
+     * same leaves.
+     * 
+     * @param node
+     * @param recomb
+     * @return true if node is leaf, false otherwise.
+     */
+    boolean isNodeMarginalLeaf(Node node, Recombination recomb) {
+        return node.isLeaf();
     }
 }

@@ -74,6 +74,11 @@ public class RecombinationGraphLikelihood extends Distribution {
     
     int nStates;
     
+    /*
+     * Memory for transition probabilities.
+     */
+    double [] probabilities;
+    
     @Override
     public void initAndValidate() throws Exception {
         
@@ -95,6 +100,8 @@ public class RecombinationGraphLikelihood extends Distribution {
         recombPatterns = Maps.newHashMap();
         updatePatterns();
         
+        // Allocate transition probability memory:
+        probabilities = new double[(nStates+1)*(nStates+1)];
     }
     
     /**
@@ -211,7 +218,31 @@ public class RecombinationGraphLikelihood extends Distribution {
      * @param recomb Recombination object.  Null selects the clonal frame.
      */
     void traverse(Node node, Recombination recomb) {
-        // TODO!
+
+        LikelihoodCore lhc;
+        if (recomb == null)
+            lhc = cfLikelihoodCore;
+        else
+            lhc = recombLikelihoodCores.get(recomb);
+        
+        double branchTime = arg.getMarginalBranchLength(node, recomb);
+        
+        if (!arg.isNodeMarginalRoot(node, recomb)) {
+            lhc.setNodeMatrixForUpdate(node.getNr());
+            for (int i=0; i<siteModel.getCategoryCount(); i++) {
+                double jointBranchRate = siteModel.getRateForCategory(i, node);
+                double parentHeight = arg.getMarginalNodeHeight(
+                        arg.getMarginalParent(node, recomb), recomb);
+                double nodeHeight = arg.getMarginalNodeHeight(node, recomb);
+                substitutionModel.getTransitionProbabilities(node,
+                        parentHeight, nodeHeight, jointBranchRate,
+                        probabilities);
+            }
+        }
+        
+        if (!arg.isNodeMarginalLeaf(node, recomb)) {
+            
+        }
     }
     
     
