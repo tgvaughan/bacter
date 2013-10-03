@@ -234,14 +234,30 @@ public class RecombinationGraphLikelihood extends Distribution {
                 double parentHeight = arg.getMarginalNodeHeight(
                         arg.getMarginalParent(node, recomb), recomb);
                 double nodeHeight = arg.getMarginalNodeHeight(node, recomb);
-                substitutionModel.getTransitionProbabilities(node,
-                        parentHeight, nodeHeight, jointBranchRate,
+                substitutionModel.getTransitionProbabilities(
+                        node,
+                        parentHeight,
+                        nodeHeight,
+                        jointBranchRate,
                         probabilities);
             }
         }
         
         if (!arg.isNodeMarginalLeaf(node, recomb)) {
             
+            // LikelihoodCore only supports binary trees.
+            List<Node> children = arg.getMarginalChildren(node, recomb);
+            traverse(children.get(0), recomb);
+            traverse(children.get(1), recomb);
+            
+            lhc.setNodePartialsForUpdate(node.getNr());
+            lhc.setNodeStatesForUpdate(node.getNr());
+            lhc.calculatePartials(children.get(0).getNr(),
+                    children.get(1).getNr(), node.getNr());
+            
+            if (arg.isNodeMarginalRoot(node, recomb)) {
+                
+            }
         }
     }
     
