@@ -32,16 +32,14 @@ import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.util.ClusterTree;
+import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Multiset;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -69,8 +67,10 @@ public class RecombinationGraphLikelihood extends Distribution {
     LikelihoodCore cfLikelihoodCore;
     Map<Recombination,LikelihoodCore> recombLikelihoodCores;
     
-    Map<int[], Integer> cfPatterns;
-    Map<Recombination, Map<int[], Integer>> recombPatterns;
+    Multiset<int[]> cfPatterns;
+    double[] cfPatternLogLikelikelihoods;
+    Map<Recombination, Multiset<int[]>> recombPatterns;
+    Map<Recombination, double[]> recombPatternLogLikelihoods;
     
     int nStates;
     
@@ -91,7 +91,8 @@ public class RecombinationGraphLikelihood extends Distribution {
         updateCores();
 
         // Initialize patterns
-        recombPatterns = Maps.newLinkedHashMap();
+        cfPatterns = LinkedHashMultiset.create();
+        recombPatterns = Maps.newHashMap();
         updatePatterns();
         
     }
@@ -109,38 +110,32 @@ public class RecombinationGraphLikelihood extends Distribution {
             Recombination recomb = arg.getRecombinations().get(ridx);
             
             while (j < recomb.startLocus) {
-                
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
-                Integer count = cfPatterns.get(pat);
-                cfPatterns.put(pat, count == null ? 1 : count+1);
-                
+                cfPatterns.add(pat);
                 j += 1;
             }
             
-            Map<int[], Integer> recombPatMap = Maps.newHashMap();
+            Multiset<int[]> recombPatSet = LinkedHashMultiset.create();
             
-            while (j <= recomb.endLocus) {
-                
+            while (j <= recomb.endLocus) {                
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
-                Integer count = cfPatterns.get(pat);
-                recombPatMap.put(pat, count == null ? 1 : count+1);
-                
+                recombPatSet.add(pat);
                 j += 1;
             }
             
-            recombPatterns.put(recomb, recombPatMap);
+            recombPatterns.put(recomb, recombPatSet);
+            recombPatternLogLikelihoods.put(recomb,
+                    new double[recombPatSet.elementSet().size()]);
         }
         
         while (j<alignmentInput.get().getSiteCount()) {
             
             int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
-            Integer count = cfPatterns.get(pat);
-            cfPatterns.put(pat, count == null ? 1 : count+1);
-            
+            cfPatterns.add(pat);
             j += 1;
         }
 
-        
+        cfPatternLogLikelikelihoods = new double[cfPatterns.elementSet().size()];
     }
     
     /**
@@ -182,13 +177,13 @@ public class RecombinationGraphLikelihood extends Distribution {
      * @param lhc
      * @param patterns 
      */
-    void setStates(LikelihoodCore lhc, Map<int[], Integer> patterns) {
+    void setStates(LikelihoodCore lhc, Multiset<int[]> patterns) {
         
         for (Node node : arg.getExternalNodes()) {
             int[] states = new int[patterns.size()];
             int taxon = alignment.getTaxonIndex(node.getID());
             int i=0;
-            for (int [] pattern : patterns.keySet()) {
+            for (int [] pattern : patterns.elementSet()) {
                 int code = pattern[taxon];
                 int[] statesForCode = alignment.getDataType().getStatesForCode(code);
                 if (statesForCode.length==1)
@@ -205,20 +200,20 @@ public class RecombinationGraphLikelihood extends Distribution {
     @Override
     public double calculateLogP() {
         
-        // Loop over sites
         
         return 0.0;
     }
     
-
     /**
-     * Calculate number of times each pattern coincides with each of
-     * the potentially distinct genealogies.
+     * Traverse a marginal tree, computing partial likelihoods on the way.
+     * 
+     * @param node Tree node
+     * @param recomb Recombination object.  Null selects the clonal frame.
      */
-    private void calculatePatterns() {
-        
-        alignmentInput.get().getSiteCount();
+    void traverse(Node node, Recombination recomb) {
+        // TODO!
     }
+    
     
     @Override
     public List<String> getArguments() {
