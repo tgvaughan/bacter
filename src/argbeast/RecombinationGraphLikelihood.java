@@ -30,13 +30,18 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.substitutionmodel.SubstitutionModel;
+import beast.evolution.tree.Node;
 import beast.util.ClusterTree;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -64,11 +69,8 @@ public class RecombinationGraphLikelihood extends Distribution {
     LikelihoodCore cfLikelihoodCore;
     Map<Recombination,LikelihoodCore> recombLikelihoodCores;
     
-    List<int[]> cfPatterns;
-    Map<Recombination, List<int[]>> recombPatterns;
-    List<List<Integer>> patternWeights;
-    int[] regionIndex;
-    int[] patternIndex;
+    Map<int[], Integer> cfPatterns;
+    Map<Recombination, Map<int[], Integer>> recombPatterns;
     
     int nStates;
     
@@ -76,17 +78,21 @@ public class RecombinationGraphLikelihood extends Distribution {
     public void initAndValidate() throws Exception {
         
         arg = argInput.get();
-        regionIndex = new int[alignmentInput.get().getSiteCount()];
         alignment = alignmentInput.get();
-        
-        recombPatterns = Maps.newHashMap();
         
         nStates = alignment.getMaxStateCount();
         
-        // Initialise cores
-        initCores();
-        
-        //calculatePatternWeights();
+        // Initialise cores        
+        if (nStates==4)
+            cfLikelihoodCore = new BeerLikelihoodCore4();
+        else
+            cfLikelihoodCore = new BeerLikelihoodCore(nStates);
+        recombLikelihoodCores = Maps.newHashMap();
+        updateCores();
+
+        // Initialize patterns
+        recombPatterns = Maps.newLinkedHashMap();
+        updatePatterns();
         
     }
     
@@ -94,25 +100,88 @@ public class RecombinationGraphLikelihood extends Distribution {
      * Ensure pattern counts are up to date.
      */
     private void updatePatterns() {
+
+        cfPatterns.clear();
+        recombPatterns.clear();
+
+        int j=0;
+        for (int ridx=0; ridx<arg.getRecombinations().size(); ridx++) {
+            Recombination recomb = arg.getRecombinations().get(ridx);
+            
+            while (j < recomb.startLocus) {
+                
+                int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
+                Integer count = cfPatterns.get(pat);
+                cfPatterns.put(pat, count == null ? 1 : count+1);
+                
+                j += 1;
+            }
+            
+            Map<int[], Integer> recombPatMap = Maps.newHashMap();
+            
+            while (j <= recomb.endLocus) {
+                
+                int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
+                Integer count = cfPatterns.get(pat);
+                recombPatMap.put(pat, count == null ? 1 : count+1);
+                
+                j += 1;
+            }
+            
+            recombPatterns.put(recomb, recombPatMap);
+        }
+        
+        while (j<alignmentInput.get().getSiteCount()) {
+            
+            int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
+            Integer count = cfPatterns.get(pat);
+            cfPatterns.put(pat, count == null ? 1 : count+1);
+            
+            j += 1;
+        }
+
         
     }
     
     /**
      * Initialise likelihood cores.
      */
-    private void initCores() {
+    private void updateCores() {
+        
+        setStates(cfLikelihoodCore, cfPatterns);
 
-        if (nStates==4)
-            cfLikelihoodCore = new BeerLikelihoodCore4();
-        else
-            cfLikelihoodCore = new BeerLikelihoodCore(nStates);
-
-        recombLikelihoodCores = Maps.newHashMap();
+        recombLikelihoodCores.clear();        
         for (Recombination recomb : arg.getRecombinations()) {
             if (nStates==4)
                 recombLikelihoodCores.put(recomb, new BeerLikelihoodCore4());
             else
                 recombLikelihoodCores.put(recomb, new BeerLikelihoodCore(nStates));
+            
+            setStates(recombLikelihoodCores.get(recomb), recombPatterns.get(recomb));
+        }
+        
+    }
+    
+    /**
+     * set leaf states in likelihood core *
+     */
+    void setStates(LikelihoodCore lhc, Map<int[], Integer> patterns) {
+        
+        for (Node node : arg.getExternalNodes()) {
+            int[] states = new int[patterns.size()];
+            int taxon = alignment.getTaxonIndex(node.getID());
+            int i=0;
+            for (int [] pattern : patterns.keySet()) {
+                int code = pattern[taxon];
+                int[] statesForCode = alignment.getDataType().getStatesForCode(code);
+                if (statesForCode.length==1)
+                    states[i] = statesForCode[0];
+                else
+                    states[i] = code; // Causes ambiguous states to be ignored.
+                
+                i += 1;
+            }
+            lhc.setNodeStates(node.getNr(), states);
         }
     }
     
@@ -124,40 +193,13 @@ public class RecombinationGraphLikelihood extends Distribution {
         return 0.0;
     }
     
-    /**
-     * Map each sight onto a region index. Sites marked with -1 belong to
-     * the clonal frame.
-     */
-    private void calculateRegionMap() {
-        
-        int j=0;
-        for (int ridx=0; ridx<arg.getRecombinations().size(); ridx++) {
-            Recombination recomb = arg.getRecombinations().get(ridx);
-            
-            while (j < recomb.startLocus) {
-                regionIndex[j] = -1;
-                j += 1;
-            }
-            
-            while (j <= recomb.endLocus) {
-                regionIndex[j] = ridx;
-                j += 1;
-            }
-        }
-        
-        while (j<alignmentInput.get().getSiteCount()) {
-            regionIndex[j] = -1;
-            j += 1;
-        }
-    }
 
     /**
      * Calculate number of times each pattern coincides with each of
      * the potentially distinct genealogies.
      */
-    private void calculatePatternWeights() {
+    private void calculatePatterns() {
         
-        patternWeights.clear();
         alignmentInput.get().getSiteCount();
     }
     

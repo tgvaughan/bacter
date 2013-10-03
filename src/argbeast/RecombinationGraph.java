@@ -42,11 +42,27 @@ public class RecombinationGraph extends Tree {
     }
     
     /**
-     * Add recombination to graph.
+     * Add recombination to graph, ensuring recombination list
+     * remains sorted.
+     * 
      * @param recomb 
      */
     public void addRecombination(Recombination recomb) {
-        recombs.add(recomb);
+        int i;
+        for (i=0; i<recombs.size(); i++)
+            if (recomb.startLocus>recombs.get(i).startLocus)
+                break;
+        
+        recombs.add(i, recomb);
+    }
+    
+    /**
+     * Remove recombination from graph.
+     * 
+     * @param recomb 
+     */
+    public void deleteRecombination(Recombination recomb) {
+        recombs.remove(recomb);
     }
     
     /**
