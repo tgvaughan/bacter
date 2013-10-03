@@ -256,7 +256,9 @@ public class RecombinationGraphLikelihood extends Distribution {
                     children.get(1).getNr(), node.getNr());
             
             if (arg.isNodeMarginalRoot(node, recomb)) {
-                
+                double [] frequencies = substitutionModel.getFrequencies();
+                double [] proportions = siteModel.getCategoryProportions(node);
+                //lhc.integratePartials(node.getNr(), proportions, );
             }
         }
     }
