@@ -148,22 +148,39 @@ public class RecombinationGraphLikelihood extends Distribution {
      */
     private void updateCores() {
         
+        cfLikelihoodCore.initialize(
+                arg.getNodeCount(),
+                cfPatterns.size(),
+                siteModel.getCategoryCount(),
+                true, false);
         setStates(cfLikelihoodCore, cfPatterns);
 
         recombLikelihoodCores.clear();        
         for (Recombination recomb : arg.getRecombinations()) {
-            if (nStates==4)
-                recombLikelihoodCores.put(recomb, new BeerLikelihoodCore4());
-            else
-                recombLikelihoodCores.put(recomb, new BeerLikelihoodCore(nStates));
             
-            setStates(recombLikelihoodCores.get(recomb), recombPatterns.get(recomb));
+            LikelihoodCore newLikelihoodCore;
+            if (nStates==4)
+                newLikelihoodCore = new BeerLikelihoodCore4();
+            else
+                newLikelihoodCore = new BeerLikelihoodCore(nStates);
+            
+            newLikelihoodCore.initialize(
+                arg.getNodeCount(),
+                recombPatterns.get(recomb).size(),
+                siteModel.getCategoryCount(),
+                true, false);
+            setStates(newLikelihoodCore, recombPatterns.get(recomb));
+            
+            recombLikelihoodCores.put(recomb, newLikelihoodCore);
         }
         
     }
     
     /**
-     * set leaf states in likelihood core *
+     * Set leaf states in a likelihood core.
+     * 
+     * @param lhc
+     * @param patterns 
      */
     void setStates(LikelihoodCore lhc, Map<int[], Integer> patterns) {
         
