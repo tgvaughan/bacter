@@ -39,6 +39,7 @@ public class RecombinationGraph extends Tree {
         super.initAndValidate();
         
         recombs = new ArrayList<Recombination>();
+        recombs.add(null); // Represents the clonal frame.
     }
     
     /**

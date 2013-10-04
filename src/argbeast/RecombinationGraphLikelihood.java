@@ -58,19 +58,16 @@ public class RecombinationGraphLikelihood extends Distribution {
             "siteModel", "Site model for evolution of alignment.",
             Validate.REQUIRED);
 
-    
     RecombinationGraph arg;
     SiteModel.Base siteModel;
     SubstitutionModel.Base substitutionModel;
     Alignment alignment;
     
-    LikelihoodCore cfLikelihoodCore;
-    Map<Recombination,LikelihoodCore> recombLikelihoodCores;
+    Map<Recombination,LikelihoodCore> likelihoodCores;
     
-    Multiset<int[]> cfPatterns;
-    double[] cfPatternLogLikelikelihoods;
-    Map<Recombination, Multiset<int[]>> recombPatterns;
-    Map<Recombination, double[]> recombPatternLogLikelihoods;
+    Map<Recombination, Multiset<int[]>> patterns;
+    Map<Recombination, double[]> patternLogLikelihoods;
+    Map<Recombination, double[]> rootPartials;
     
     int nStates;
     
@@ -86,39 +83,36 @@ public class RecombinationGraphLikelihood extends Distribution {
         alignment = alignmentInput.get();
         
         nStates = alignment.getMaxStateCount();
-        
-        // Initialise cores        
-        if (nStates==4)
-            cfLikelihoodCore = new BeerLikelihoodCore4();
-        else
-            cfLikelihoodCore = new BeerLikelihoodCore(nStates);
-        recombLikelihoodCores = Maps.newHashMap();
-        updateCores();
 
         // Initialize patterns
-        cfPatterns = LinkedHashMultiset.create();
-        recombPatterns = Maps.newHashMap();
+        patterns = Maps.newHashMap();
         updatePatterns();
+        
+        // Initialise cores        
+        likelihoodCores = Maps.newHashMap();
+        updateCores();
         
         // Allocate transition probability memory:
         probabilities = new double[(nStates+1)*(nStates+1)];
     }
+    
     
     /**
      * Ensure pattern counts are up to date.
      */
     private void updatePatterns() {
 
-        cfPatterns.clear();
-        recombPatterns.clear();
+        patterns.clear();
+        Multiset<int[]> cfPatSet = LinkedHashMultiset.create();
 
         int j=0;
-        for (int ridx=0; ridx<arg.getRecombinations().size(); ridx++) {
-            Recombination recomb = arg.getRecombinations().get(ridx);
+        for (Recombination recomb : arg.getRecombinations()) {
+            if (recomb == null)
+                continue; // Skip clonal frame
             
             while (j < recomb.startLocus) {
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
-                cfPatterns.add(pat);
+                cfPatSet.add(pat);
                 j += 1;
             }
             
@@ -130,53 +124,58 @@ public class RecombinationGraphLikelihood extends Distribution {
                 j += 1;
             }
             
-            recombPatterns.put(recomb, recombPatSet);
-            recombPatternLogLikelihoods.put(recomb,
+            patterns.put(recomb, recombPatSet);
+            patternLogLikelihoods.put(recomb,
                     new double[recombPatSet.elementSet().size()]);
+            rootPartials.put(recomb,
+                    new double[recombPatSet.elementSet().size()*nStates]);
         }
         
         while (j<alignmentInput.get().getSiteCount()) {
             
             int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
-            cfPatterns.add(pat);
+            cfPatSet.add(pat);
             j += 1;
         }
 
-        cfPatternLogLikelikelihoods = new double[cfPatterns.elementSet().size()];
+        patterns.put(null, cfPatSet);
+        patternLogLikelihoods.put(null,
+                new double[cfPatSet.elementSet().size()]);
+        rootPartials.put(null,
+                    new double[cfPatSet.elementSet().size()*nStates]);
+        
     }
+    
     
     /**
      * Initialise likelihood cores.
      */
     private void updateCores() {
         
-        cfLikelihoodCore.initialize(
-                arg.getNodeCount(),
-                cfPatterns.size(),
-                siteModel.getCategoryCount(),
-                true, false);
-        setStates(cfLikelihoodCore, cfPatterns);
-
-        recombLikelihoodCores.clear();        
+        likelihoodCores.keySet().retainAll(arg.recombs);
+        
         for (Recombination recomb : arg.getRecombinations()) {
             
-            LikelihoodCore newLikelihoodCore;
-            if (nStates==4)
-                newLikelihoodCore = new BeerLikelihoodCore4();
-            else
-                newLikelihoodCore = new BeerLikelihoodCore(nStates);
+            LikelihoodCore likelihoodCore;
+            if (!likelihoodCores.keySet().contains(recomb)) {
+                if (nStates==4)
+                    likelihoodCore = new BeerLikelihoodCore4();
+                else
+                    likelihoodCore = new BeerLikelihoodCore(nStates);
+                
+                likelihoodCores.put(recomb, likelihoodCore);
+            } else
+                likelihoodCore = likelihoodCores.get(recomb);
             
-            newLikelihoodCore.initialize(
+            likelihoodCore.initialize(
                 arg.getNodeCount(),
-                recombPatterns.get(recomb).size(),
+                patterns.get(recomb).size(),
                 siteModel.getCategoryCount(),
                 true, false);
-            setStates(newLikelihoodCore, recombPatterns.get(recomb));
-            
-            recombLikelihoodCores.put(recomb, newLikelihoodCore);
+            setStates(likelihoodCore, patterns.get(recomb));
         }
-        
     }
+    
     
     /**
      * Set leaf states in a likelihood core.
@@ -211,6 +210,7 @@ public class RecombinationGraphLikelihood extends Distribution {
         return 0.0;
     }
     
+    
     /**
      * Traverse a marginal tree, computing partial likelihoods on the way.
      * 
@@ -219,11 +219,7 @@ public class RecombinationGraphLikelihood extends Distribution {
      */
     void traverse(Node node, Recombination recomb) {
 
-        LikelihoodCore lhc;
-        if (recomb == null)
-            lhc = cfLikelihoodCore;
-        else
-            lhc = recombLikelihoodCores.get(recomb);
+        LikelihoodCore lhc = likelihoodCores.get(recomb);
         
         double branchTime = arg.getMarginalBranchLength(node, recomb);
         
@@ -258,7 +254,9 @@ public class RecombinationGraphLikelihood extends Distribution {
             if (arg.isNodeMarginalRoot(node, recomb)) {
                 double [] frequencies = substitutionModel.getFrequencies();
                 double [] proportions = siteModel.getCategoryProportions(node);
-                //lhc.integratePartials(node.getNr(), proportions, );
+                lhc.integratePartials(node.getNr(), proportions,
+                        rootPartials.get(recomb));
+                
             }
         }
     }
@@ -278,6 +276,7 @@ public class RecombinationGraphLikelihood extends Distribution {
     public void sample(State state, Random random) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
     
     /**
      * Main method for testing.
