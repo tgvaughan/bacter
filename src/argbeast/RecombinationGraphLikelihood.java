@@ -120,7 +120,7 @@ public class RecombinationGraphLikelihood extends Distribution {
             traverse(arg.getMarginalRoot(recomb), recomb);
             
             int i=0;
-            for (int[] pattern : patterns.get(recomb)) {
+            for (int[] pattern : patterns.get(recomb).elementSet()) {
                 logP += patternLogLikelihoods.get(recomb)[i]
                         *patterns.get(recomb).count(pattern);
                 i += 1;
@@ -232,6 +232,10 @@ public class RecombinationGraphLikelihood extends Distribution {
                 siteModel.getCategoryCount(),
                 true, false);
             setStates(likelihoodCore, patterns.get(recomb));
+            
+            int intNodeCount = arg.getNodeCount()/2;
+            for (int i=0; i<intNodeCount; i++)
+                likelihoodCore.createNodePartials(intNodeCount+1+i);
         }
     }
     
