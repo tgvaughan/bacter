@@ -233,8 +233,23 @@ public class RecombinationGraphLikelihood extends Distribution {
     @Override
     public double calculateLogP() {
         
+        logP = 0.0;
         
-        return 0.0;
+        updatePatterns();
+        updateCores();
+        
+        for (Recombination recomb : arg.getRecombinations()) {
+            traverse(arg.getMarginalRoot(recomb), recomb);
+            
+            int i=0;
+            for (int[] pattern : patterns.get(recomb)) {
+                logP += patternLogLikelihoods.get(recomb)[i]
+                        *patterns.get(recomb).count(pattern);
+                i += 1;
+            }
+        }
+        
+        return logP;
     }
     
     
