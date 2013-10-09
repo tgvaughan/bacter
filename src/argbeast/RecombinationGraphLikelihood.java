@@ -82,11 +82,16 @@ public class RecombinationGraphLikelihood extends Distribution {
         
         arg = argInput.get();
         alignment = alignmentInput.get();
+        siteModel = (SiteModel.Base) siteModelInput.get();
+        substitutionModel = (SubstitutionModel.Base) siteModel.getSubstitutionModel();
         
         nStates = alignment.getMaxStateCount();
 
         // Initialize patterns
         patterns = Maps.newHashMap();
+        patternLogLikelihoods = Maps.newHashMap();
+        rootPartials = Maps.newHashMap();
+        constantPatterns = Maps.newHashMap();
         updatePatterns();
         
         // Initialise cores        
@@ -96,6 +101,33 @@ public class RecombinationGraphLikelihood extends Distribution {
         // Allocate transition probability memory:
         // (Only the first nStates*nStates elements are usually used.)
         probabilities = new double[(nStates+1)*(nStates+1)];
+    }
+    
+    
+    @Override
+    public double calculateLogP() {
+        
+        logP = 0.0;
+        
+        updatePatterns();
+        updateCores();
+        
+        System.out.println(patterns.get(null).elementSet().size()
+                + " unique patterns of " + patterns.get(null).size()
+                + " sites in clonal frame");
+        
+        for (Recombination recomb : arg.getRecombinations()) {
+            traverse(arg.getMarginalRoot(recomb), recomb);
+            
+            int i=0;
+            for (int[] pattern : patterns.get(recomb)) {
+                logP += patternLogLikelihoods.get(recomb)[i]
+                        *patterns.get(recomb).count(pattern);
+                i += 1;
+            }
+        }
+        
+        return logP;
     }
     
     
@@ -230,28 +262,6 @@ public class RecombinationGraphLikelihood extends Distribution {
         }
     }
     
-    @Override
-    public double calculateLogP() {
-        
-        logP = 0.0;
-        
-        updatePatterns();
-        updateCores();
-        
-        for (Recombination recomb : arg.getRecombinations()) {
-            traverse(arg.getMarginalRoot(recomb), recomb);
-            
-            int i=0;
-            for (int[] pattern : patterns.get(recomb)) {
-                logP += patternLogLikelihoods.get(recomb)[i]
-                        *patterns.get(recomb).count(pattern);
-                i += 1;
-            }
-        }
-        
-        return logP;
-    }
-    
     
     /**
      * Traverse a marginal tree, computing partial likelihoods on the way.
@@ -262,8 +272,6 @@ public class RecombinationGraphLikelihood extends Distribution {
     void traverse(Node node, Recombination recomb) {
 
         LikelihoodCore lhc = likelihoodCores.get(recomb);
-        
-        double branchTime = arg.getMarginalBranchLength(node, recomb);
         
         if (!arg.isNodeMarginalRoot(node, recomb)) {
             lhc.setNodeMatrixForUpdate(node.getNr());
