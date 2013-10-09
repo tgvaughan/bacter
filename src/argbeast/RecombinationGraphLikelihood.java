@@ -290,6 +290,7 @@ public class RecombinationGraphLikelihood extends Distribution {
                         nodeHeight,
                         jointBranchRate,
                         probabilities);
+                lhc.setNodeMatrix(node.getNr(), i, probabilities);
             }
         }
         
