@@ -33,10 +33,10 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import beast.util.ClusterTree;
 import com.google.common.collect.LinkedHashMultiset;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -68,6 +68,7 @@ public class RecombinationGraphLikelihood extends Distribution {
     Map<Recombination, Multiset<int[]>> patterns;
     Map<Recombination, double[]> patternLogLikelihoods;
     Map<Recombination, double[]> rootPartials;
+    Map<Recombination, List<Integer>> constantPatterns;
     
     int nStates;
     
@@ -93,6 +94,7 @@ public class RecombinationGraphLikelihood extends Distribution {
         updateCores();
         
         // Allocate transition probability memory:
+        // (Only the first nStates*nStates elements are usually used.)
         probabilities = new double[(nStates+1)*(nStates+1)];
     }
     
@@ -103,6 +105,9 @@ public class RecombinationGraphLikelihood extends Distribution {
     private void updatePatterns() {
 
         patterns.clear();
+        patternLogLikelihoods.clear();
+        rootPartials.clear();
+        
         Multiset<int[]> cfPatSet = LinkedHashMultiset.create();
 
         int j=0;
@@ -144,6 +149,28 @@ public class RecombinationGraphLikelihood extends Distribution {
         rootPartials.put(null,
                     new double[cfPatSet.elementSet().size()*nStates]);
         
+        // Record lists of constant patterns:
+        constantPatterns.clear();
+        for (Recombination recomb: arg.getRecombinations()) {
+            List<Integer> constantPatternList = Lists.newArrayList();
+            
+            int patternIdx = 0;
+            for (int[] pattern : patterns.get(recomb).elementSet()) {
+                boolean isConstant = true;
+                for (int i=1; i<pattern.length; i++)
+                    if (pattern[i] != pattern[0]) {
+                        isConstant = false;
+                        break;
+                    }
+                
+                if (isConstant)
+                    constantPatternList.add(patternIdx + pattern[0]);
+                
+                patternIdx += 1;
+            }
+            
+            constantPatterns.put(recomb, constantPatternList);
+        }
     }
     
     
@@ -169,7 +196,7 @@ public class RecombinationGraphLikelihood extends Distribution {
             
             likelihoodCore.initialize(
                 arg.getNodeCount(),
-                patterns.get(recomb).size(),
+                patterns.get(recomb).elementSet().size(),
                 siteModel.getCategoryCount(),
                 true, false);
             setStates(likelihoodCore, patterns.get(recomb));
@@ -257,6 +284,13 @@ public class RecombinationGraphLikelihood extends Distribution {
                 lhc.integratePartials(node.getNr(), proportions,
                         rootPartials.get(recomb));
                 
+                for (int idx : constantPatterns.get(recomb)) {
+                    rootPartials.get(recomb)[idx]
+                            += siteModel.getProportionInvariant();
+                }
+                
+                lhc.calculateLogLikelihoods(rootPartials.get(recomb),
+                        frequencies, patternLogLikelihoods.get(recomb));
             }
         }
     }
