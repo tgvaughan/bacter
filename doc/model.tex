@@ -1,0 +1,109 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[round]{natbib}
+
+\title{ClonalOrigin in BEAST 2}
+\author{Tim Vaughan}
+
+\begin{document}
+
+\maketitle{}
+
+\section{Model}
+
+The model implemented in this package is inspired by the approximation
+to the coalescent with gene conversion \citep{Wiuf2000a} used by
+\cite{Didelot2010} in their package ClonalOrigin. 
+
+The model is used to find the joint posterior probability density of the
+genealogy $G$ of the sample, the coalescent parameters $\theta$, the
+substitution model parameters $\mu$ and the recombination rate $\rho$
+conditional on the sequence alignment $A$.  This density can be
+expanded in the following way
+\begin{equation}
+f(G,\theta,\mu,\rho|A) \propto P_{\mathrm{F}}(A|G,\mu)f_{\mathrm{CO}}(G|\rho,\delta,\theta)f_{\mathrm{prior}}(\theta,\rho,\mu)
+\end{equation}
+where $P_{\mathrm{F}}$ is Felsenstein's likelihood for the marginal
+trees in $G$ under a substitution model with parameters $\mu$,
+$f_{\mathrm{CO}}$ is the density for the gene conversion genealogy
+under a modification of the ClonalOrigin model, and
+$f_{\mathrm{prior}}$ is the prior density on the continuout
+parameters.
+
+We expand the genealogy density in the following way
+\begin{equation}
+f_{\mathrm{CO}}(G|\rho,\delta,\theta)=f(R|T,M,\theta)P(M|T,\rho,\delta)f_{\mathrm{C}}(T|\theta).
+\end{equation}
+The density $f_{\mathrm{C}}(T|\theta)$ is simply the density of the
+clonal frame $T$ under the standard coalescent model, while the function
+$f(R|T,M,\theta)$ is the density of the recombinant edges in the
+graph conditional on the number of such edges (via $M$).  These edges
+depart from and rejoin $T$ backward in time.  The departure points are
+chosen uniformly over the tree, while their points of return are
+chosen from conditional coalescent---giving the dependence on
+$\theta$.
+
+As it is the probability of the converted region set, $M$, which forms
+our point of departure from the ClonalOrigin model, we describe it in
+detail here.  We can write $M=\{(x_i,y_i)|i\in[1,q]\}$ with $q$ being
+the number of recombinations affecting the sample. The elements of
+each ordered pair $(x_i,y_i)$ define the bounds of the region affected
+by event $i$. Contrary to \cite{Didelot2010}, we assume that these
+regions are non-overlapping and can thus be ordered so that $1\leq
+x_1<y_1<\ldots<x_q<y_q\leq L$ where $L$ is the length of the
+sequence.  Allowing for both a constant recombination rate $\rho$ over the
+clonal frame and a constant average conveted tract length is
+impossible under the non-overlapping assumption.  Thus, we instead
+write
+\begin{equation}
+P(M|T,\rho,\delta)= \delta^{-l}\left(\frac{\rho \lambda_T}{2}\right)^{L-l}
+\end{equation}
+where $\lambda_T$ is the sum of the length of all edges of the clonal
+frame, and $l\equiv\sum_{i=1}^q (y_i-x_i)$ is the total number of
+converted loci.
+
+\begin{table}
+\begin{tabular}{|cl|}
+  \hline
+  Parameter & Definition \\
+  \hline
+  $A$ & Sequence alignment \\
+  $G=\{T,R\}$ & Recombination graph \\
+  $T$ & Clonal frame tree \\
+  $R$ & Additional edges representing recombinations \\
+  $M$ & Set of non-overlapping converted regions of alignment \\
+  $\rho$ & Recombination rate (events per unit time) \\
+  $\delta$ & Average converted tract length \\
+  $\theta$ & Coalescent rate parameters (e.g. population size model) \\
+  $\mu$ & Substitution model parameters \\
+  \hline
+\end{tabular}
+\caption{Description of all parameters used in the model.}
+\end{table}
+
+%\bibliography{papers}
+%\bibliographystyle{plainnat}
+
+\begin{thebibliography}{2}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Didelot et~al.(2010)Didelot, Lawson, Daarling, and
+  Falush]{Didelot2010}
+Xavier Didelot, Daniel Lawson, Aaron Daarling, and Daniel Falush.
+\newblock Inference of homologous recombination in bacteria using whole-genome
+  sequences.
+\newblock \emph{Genetics}, 186:\penalty0 1435, 2010.
+
+\bibitem[Wiuf and Hein(2000)]{Wiuf2000a}
+C.~Wiuf and J.~Hein.
+\newblock The coalescent with gene conversion.
+\newblock \emph{Genetics}, 155\penalty0 (1):\penalty0 451--462, May 2000.
+
+\end{thebibliography}
+
+
+\end{document}
