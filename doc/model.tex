@@ -49,18 +49,23 @@ detail here.  We can write $M=\{(x_i,y_i)|i\in[1,q]\}$ with $q$ being
 the number of recombinations affecting the sample. The elements of
 each ordered pair $(x_i,y_i)$ define the bounds of the region affected
 by event $i$. Contrary to \cite{Didelot2010}, we assume that these
-regions are non-overlapping and can thus be ordered so that $1\leq
-x_1<y_1<\ldots<x_q<y_q\leq L$ where $L$ is the length of the
-sequence.  Allowing for both a constant recombination rate $\rho$ over the
-clonal frame and a constant average conveted tract length is
-impossible under the non-overlapping assumption.  Thus, we instead
-write
+regions are non-overlapping and can thus be ordered so that
+$x_1<y_1<\ldots<x_q<y_q$. We apply the constraints $y_1\geq1$ and
+$x_q\leq L$, although $x_1$ and $y_q$ are permitted to lie outside the
+sampled sequence.
+
+Allowing for both a constant recombination rate $\rho$ over the clonal
+frame and a constant average conveted tract length is impossible under
+the non-overlapping assumption.  Thus, we instead write
 \begin{equation}
-P(M|T,\rho,\delta)= \delta^{-l}\left(\frac{\rho \lambda_T}{2}\right)^{L-l}
+%P(M|T,\rho,\delta)= (1-\delta)^{-l}\left(1-\frac{\rho
+%\lambda_T}{2}\right)^{L-l}\left(\frac{\rho\lambda_T}{2\delta}\right)^q
+P(M|T,\rho,\delta) = p
 \end{equation}
 where $\lambda_T$ is the sum of the length of all edges of the clonal
 frame, and $l\equiv\sum_{i=1}^q (y_i-x_i)$ is the total number of
-converted loci.
+converted loci. Note that we have made the additional assumption that
+the 
 
 \begin{table}
 \begin{tabular}{|cl|}
