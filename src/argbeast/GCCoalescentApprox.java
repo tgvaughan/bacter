@@ -44,15 +44,28 @@ public class GCCoalescentApprox extends Coalescent {
         return logP;        
     }
     
+    /**
+     * Calculate probability of clonal frame under the standard coalescent.
+     * 
+     * @return log(P)
+     */
     double clonalFrameLogP() {
         return calculateLogLikelihood(treeIntervalsInput.get(),
                 popSizeInput.get());
     }
     
+    /**
+     * Compute probability of recombinant edges under conditional coalescent.
+     * @return log(P)
+     */
     double conditionalCoalescentLogP() {
         return 0.0;
     }
     
+    /**
+     * Compute probability of number and genome extent of converted segments.
+     * @return log(P)
+     */
     double convertedRegionLogP() {
         return 0.0;
     }
