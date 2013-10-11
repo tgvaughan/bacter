@@ -17,6 +17,9 @@
 package argbeast;
 
 import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.Coalescent;
 
 /**
@@ -24,6 +27,12 @@ import beast.evolution.tree.coalescent.Coalescent;
  */
 @Description("Appoximation to the coalescent with gene conversion.")
 public class GCCoalescentApprox extends Coalescent {
+    
+    public Input<RealParameter> rhoInput = new Input<RealParameter>("rho",
+            "Recombination rate parameter.", Validate.REQUIRED);
+    
+    public Input<RealParameter> deltaInput = new Input<RealParameter>("delta",
+            "Tract length parameter.", Validate.REQUIRED);
     
     RecombinationGraph arg;
     
