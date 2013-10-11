@@ -60,8 +60,8 @@ P(s_{k+1}=r|s_1)
 \end{bmatrix}
 =
 \begin{bmatrix}
-1-\frac{\rho \lambda_T}{2} & \delta^{-1} \\
-\frac{\rho \lambda_T}{2} & (1-\delta^{-1})
+1-\frac{\rho' \lambda_T}{2L} & \delta^{-1} \\
+\frac{\rho' \lambda_T}{2L} & (1-\delta^{-1})
 \end{bmatrix}
 \begin{bmatrix}
 P(s_{k}=c|s_1) \\
@@ -72,26 +72,35 @@ where $\lambda_T$ is the total length of all edges in the clonal
 frame, $k$ identifies a locus, $s_k\in\{c,r\}$ is the recombination
 state of locus $k$ with $c$ indicating sites belonging to the clonal
 frame and $r$ representing those which are affected by a
-recombination.  Note that the parameters $\rho$ and $\delta$ do not
-\emph{precisely} correspond to the recombination rate and tract
-length, although they do provide a good approximation when
-$\rho\delta$ is small.
+recombination.  Note that the parameter $\rho'$ is related to but does
+not \emph{precisely} correspond to the recombination rate $\rho$,
+although it provides a good approximation when $\rho'\delta$ is small.
 
 Under this model, the probability for a particular $M$ is written
 \begin{align}
-  P(M|T,\rho,\delta)&=P(s_1,\ldots,s_L|T,\rho,\delta)\nonumber\\
-  &=P(s_1|T,\rho,\delta)\prod_{k=1}^{L-1}P(s_{k+1}|s_k,T,\rho,\delta)
+  P(M|T,\rho',\delta)&=P(s_1,\ldots,s_L|T,\rho',\delta)\nonumber\\
+  &=P(s_1|T,\rho',\delta)\prod_{k=1}^{L-1}P(s_{k+1}|s_k,T,\rho',\delta)
 \end{align}
 The probability of the state of the first locus can be evaluated by
 assuming that the region of loci $[1,L]$ corresponding to our sequence
 data is chosen uniformly at random from a longer sequence.  The
 probability is then given by the steady state of the chain:
 \begin{equation}
-P(s_0=c|T,\rho,\delta)=\frac{1}{\frac{\rho\lambda_T\delta}{2}+1}=1-P(s_0=r|T,\rho,\delta)
+P(s_0=c|T,\rho,\delta)=\frac{1}{\frac{\rho'\lambda_T\delta}{2L}+1}=1-P(s_0=r|T,\rho,\delta)
 \end{equation}
 
+Under this model, the expected number of events along a sequence of
+length $L$ is
+\begin{align}
+N_{\mathrm{rec}}&=\frac{L}{\left(\frac{\rho'\lambda_T}{2L}\right)^{-1}
+  + \delta}\nonumber\\
+&=\left(\frac{\rho'\lambda_T}{2}\right)\left(\frac{\rho'\lambda_T\delta}{2L}
+  + 1\right)^{-1}
+\end{align}
+This approaches $\rho'\lambda_T/2$ when $\rho'\delta\lambda_T\ll 2L$,
+and thus allows us to assume $\rho'\simeq\rho$ in this same limit.
 
- % We can write $M=\{(x_i,y_i)|i\in[1,q]\}$
+% We can write $M=\{(x_i,y_i)|i\in[1,q]\}$
 % with $q$ being the number of recombinations affecting the sample. The
 % elements of each ordered pair $(x_i,y_i)$ define the bounds of the
 % region affected by event $i$. Contrary to \cite{Didelot2010}, we
@@ -123,8 +132,8 @@ P(s_0=c|T,\rho,\delta)=\frac{1}{\frac{\rho\lambda_T\delta}{2}+1}=1-P(s_0=r|T,\rh
   $T$ & Clonal frame tree \\
   $R$ & Additional edges representing recombinations \\
   $M$ & Set of non-overlapping converted regions of alignment \\
-  $\rho$ & Recombination rate (events per unit time) parameter \\
-  $\delta$ & Average converted tract length parameter \\
+  $\rho$ & Recombination rate (events per unit time) \\
+  $\delta$ & Average converted tract length \\
   $\theta$ & Coalescent rate parameters (e.g. population size model) \\
   $\mu$ & Substitution model parameters \\
   \hline

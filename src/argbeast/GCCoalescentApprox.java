@@ -41,6 +41,10 @@ public class GCCoalescentApprox extends Coalescent {
     @Override
     public double calculateLogP() throws Exception {
         
+        logP = clonalFrameLogP()
+                + conditionalCoalescentLogP()
+                + convertedRegionLogP();
+        
         return logP;        
     }
     
@@ -69,5 +73,9 @@ public class GCCoalescentApprox extends Coalescent {
     double convertedRegionLogP() {
         return 0.0;
     }
-    
+
+    @Override
+    protected boolean requiresRecalculation() {
+        return true;
+    }
 }
