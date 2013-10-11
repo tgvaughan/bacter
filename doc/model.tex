@@ -1,6 +1,7 @@
 \documentclass[a4paper,10pt]{article}
 
 \usepackage[round]{natbib}
+\usepackage{amsmath}
 
 \title{ClonalOrigin in BEAST 2}
 \author{Tim Vaughan}
@@ -43,29 +44,74 @@ chosen uniformly over the tree, while their points of return are
 chosen from conditional coalescent---giving the dependence on
 $\theta$.
 
-As it is the probability of the converted region set, $M$, which forms
-our point of departure from the ClonalOrigin model, we describe it in
-detail here.  We can write $M=\{(x_i,y_i)|i\in[1,q]\}$ with $q$ being
-the number of recombinations affecting the sample. The elements of
-each ordered pair $(x_i,y_i)$ define the bounds of the region affected
-by event $i$. Contrary to \cite{Didelot2010}, we assume that these
-regions are non-overlapping and can thus be ordered so that
-$x_1<y_1<\ldots<x_q<y_q$. We apply the constraints $y_1\geq1$ and
-$x_q\leq L$, although $x_1$ and $y_q$ are permitted to lie outside the
-sampled sequence.
+Our model governing the probability of the converted region set $M$
+differs from that used by ClonalOrigin. \cite{Didelot2010} allow for
+recombination events to affect overlapping regions of the genome.  In
+contrast, we forbid the regions from overlapping. Our motivation for
+this is that the model for the position of the recombinant edges used
+by $f(R|T,M,\theta)$ only makes sense when such overlapping regions
+are excluded.
 
-Allowing for both a constant recombination rate $\rho$ over the clonal
-frame and a constant average conveted tract length is impossible under
-the non-overlapping assumption.  Thus, we instead write
+Our model for $M$ makes use of the discrete Markov process
 \begin{equation}
-%P(M|T,\rho,\delta)= (1-\delta)^{-l}\left(1-\frac{\rho
-%\lambda_T}{2}\right)^{L-l}\left(\frac{\rho\lambda_T}{2\delta}\right)^q
-P(M|T,\rho,\delta) = p
+\begin{bmatrix}
+P(s_{k+1}=c|s_1) \\
+P(s_{k+1}=r|s_1)
+\end{bmatrix}
+=
+\begin{bmatrix}
+1-\frac{\rho \lambda_T}{2} & \delta^{-1} \\
+\frac{\rho \lambda_T}{2} & (1-\delta^{-1})
+\end{bmatrix}
+\begin{bmatrix}
+P(s_{k}=c|s_1) \\
+P(s_{k}=r|s_1)
+\end{bmatrix},
 \end{equation}
-where $\lambda_T$ is the sum of the length of all edges of the clonal
-frame, and $l\equiv\sum_{i=1}^q (y_i-x_i)$ is the total number of
-converted loci. Note that we have made the additional assumption that
-the 
+where $\lambda_T$ is the total length of all edges in the clonal
+frame, $k$ identifies a locus, $s_k\in\{c,r\}$ is the recombination
+state of locus $k$ with $c$ indicating sites belonging to the clonal
+frame and $r$ representing those which are affected by a
+recombination.  Note that the parameters $\rho$ and $\delta$ do not
+\emph{precisely} correspond to the recombination rate and tract
+length, although they do provide a good approximation when
+$\rho\delta$ is small.
+
+Under this model, the probability for a particular $M$ is written
+\begin{align}
+  P(M|T,\rho,\delta)&=P(s_1,\ldots,s_L|T,\rho,\delta)\nonumber\\
+  &=P(s_1|T,\rho,\delta)\prod_{k=1}^{L-1}P(s_{k+1}|s_k,T,\rho,\delta)
+\end{align}
+The probability of the state of the first locus can be evaluated by
+assuming that the region of loci $[1,L]$ corresponding to our sequence
+data is chosen uniformly at random from a longer sequence.  The
+probability is then given by the steady state of the chain:
+\begin{equation}
+P(s_0=c|T,\rho,\delta)=\frac{1}{\frac{\rho\lambda_T\delta}{2}+1}=1-P(s_0=r|T,\rho,\delta)
+\end{equation}
+
+
+ % We can write $M=\{(x_i,y_i)|i\in[1,q]\}$
+% with $q$ being the number of recombinations affecting the sample. The
+% elements of each ordered pair $(x_i,y_i)$ define the bounds of the
+% region affected by event $i$. Contrary to \cite{Didelot2010}, we
+% assume that these regions are non-overlapping and can thus be ordered
+% so that $x_1<y_1<\ldots<x_q<y_q$. We apply the constraints $y_1\geq1$
+% and $x_q\leq L$, although $x_1$ and $y_q$ are permitted to lie outside
+% the sampled sequence.
+
+% Allowing for both a constant recombination rate $\rho$ over the clonal
+% frame and a constant average conveted tract length is impossible under
+% the non-overlapping assumption.  Thus, we instead write
+% \begin{equation}
+% %P(M|T,\rho,\delta)= (1-\delta)^{-l}\left(1-\frac{\rho
+% %\lambda_T}{2}\right)^{L-l}\left(\frac{\rho\lambda_T}{2\delta}\right)^q
+% P(M|T,\rho,\delta) = p
+% \end{equation}
+% where $\lambda_T$ is the sum of the length of all edges of the clonal
+% frame, and $l\equiv\sum_{i=1}^q (y_i-x_i)$ is the total number of
+% converted loci. Note that we have made the additional assumption that
+% the 
 
 \begin{table}
 \begin{tabular}{|cl|}
@@ -77,8 +123,8 @@ the
   $T$ & Clonal frame tree \\
   $R$ & Additional edges representing recombinations \\
   $M$ & Set of non-overlapping converted regions of alignment \\
-  $\rho$ & Recombination rate (events per unit time) \\
-  $\delta$ & Average converted tract length \\
+  $\rho$ & Recombination rate (events per unit time) parameter \\
+  $\delta$ & Average converted tract length parameter \\
   $\theta$ & Coalescent rate parameters (e.g. population size model) \\
   $\mu$ & Substitution model parameters \\
   \hline
