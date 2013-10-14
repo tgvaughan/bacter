@@ -2,6 +2,7 @@
 
 \usepackage[round]{natbib}
 \usepackage{amsmath}
+\usepackage{graphicx}
 
 \title{ClonalOrigin in BEAST 2}
 \author{Tim Vaughan}
@@ -43,6 +44,27 @@ depart from and rejoin $T$ backward in time.  The departure points are
 chosen uniformly over the tree, while their points of return are
 chosen from conditional coalescent---giving the dependence on
 $\theta$.
+
+
+\begin{table}[t]
+\begin{tabular}{|cl|}
+  \hline
+  Parameter & Definition \\
+  \hline
+  $A$ & Sequence alignment \\
+  $G=\{T,R\}$ & Recombination graph \\
+  $T$ & Clonal frame tree \\
+  $R$ & Additional edges representing recombinations \\
+  $M$ & Set of non-overlapping converted regions of alignment \\
+  $\rho$ & Recombination rate (events per unit time) \\
+  $\delta$ & Average converted tract length \\
+  $\theta$ & Coalescent rate parameters (e.g. population size model) \\
+  $\mu$ & Substitution model parameters \\
+  \hline
+\end{tabular}
+\caption{Description of all parameters used in the model.}
+\end{table}
+
 
 Our model governing the probability of the converted region set $M$
 differs from that used by ClonalOrigin. \cite{Didelot2010} allow for
@@ -86,8 +108,18 @@ assuming that the region of loci $[1,L]$ corresponding to our sequence
 data is chosen uniformly at random from a longer sequence.  The
 probability is then given by the steady state of the chain:
 \begin{equation}
-P(s_0=c|T,\rho,\delta)=\frac{1}{\frac{\rho'\lambda_T\delta}{2L}+1}=1-P(s_0=r|T,\rho,\delta)
+P(s_0=c|T,\rho',\delta)=\frac{1}{\frac{\rho'\lambda_T\delta}{2L}+1}=1-P(s_0=r|T,\rho',\delta)
 \end{equation}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{regionCount.pdf}
+\caption{Relationship between parameter $\rho'$ and the number of
+recombinations for a $L=1.6\times 10^6$ and $\delta=10^3$ (solid
+line).  Relationship when overlapping recombination regions are
+allowed is also shown (dashed line).}
+\label{fig:recombCount}
+\end{figure}
 
 Under this model, the expected number of events along a sequence of
 length $L$ is
@@ -98,7 +130,11 @@ N_{\mathrm{rec}}&=\frac{L}{\left(\frac{\rho'\lambda_T}{2L}\right)^{-1}
   + 1\right)^{-1}
 \end{align}
 This approaches $\rho'\lambda_T/2$ when $\rho'\delta\lambda_T\ll 2L$,
-and thus allows us to assume $\rho'\simeq\rho$ in this same limit.
+and thus allows us to assume $\rho'\simeq\rho$ in this same limit. In
+general, however, the number of recombinations expected under a
+particular $\rho'$ is lower than that for the corresponding $\rho$
+when overlapping regions are allowed.  This is shown in
+figure~\ref{fig:recombCount}.
 
 % We can write $M=\{(x_i,y_i)|i\in[1,q]\}$
 % with $q$ being the number of recombinations affecting the sample. The
@@ -122,24 +158,8 @@ and thus allows us to assume $\rho'\simeq\rho$ in this same limit.
 % converted loci. Note that we have made the additional assumption that
 % the 
 
-\begin{table}
-\begin{tabular}{|cl|}
-  \hline
-  Parameter & Definition \\
-  \hline
-  $A$ & Sequence alignment \\
-  $G=\{T,R\}$ & Recombination graph \\
-  $T$ & Clonal frame tree \\
-  $R$ & Additional edges representing recombinations \\
-  $M$ & Set of non-overlapping converted regions of alignment \\
-  $\rho$ & Recombination rate (events per unit time) \\
-  $\delta$ & Average converted tract length \\
-  $\theta$ & Coalescent rate parameters (e.g. population size model) \\
-  $\mu$ & Substitution model parameters \\
-  \hline
-\end{tabular}
-\caption{Description of all parameters used in the model.}
-\end{table}
+
+
 
 %\bibliography{papers}
 %\bibliographystyle{plainnat}
