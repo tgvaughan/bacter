@@ -92,24 +92,48 @@ public class GCCoalescentApprox extends Coalescent {
         double deltaInv = 1.0/deltaInput.get().getValue();
         double cfLength = arg.getClonalFrameLength();
         
+        // Probability of recombination per site along sequence
         double alpha = 0.5*rho*cfLength/sequenceLength;
         
-        // Account for starting state
-        double pStartCF = 1.0/(alpha/deltaInv+1);        
-        if (recombs.size()>0 && recombs.get(0).startLocus>0)
-            crLogP += Math.log(pStartCF);
-        else
-            crLogP += Math.log(1.0 - pStartCF);
+        // Probability that sequence begins in the clonal frame:
+        double pStartCF = 1.0/(alpha/deltaInv + 1.0);
         
-        for (Recombination recomb : recombs) {
-            if (recomb.startLocus>0)
-                crLogP += Math.log(alpha);
+        if (recombs.isEmpty()) {
+            // Probability of no recombinations
+            crLogP += Math.log(pStartCF) 
+                    + (sequenceLength-1)*Math.log(1.0-alpha);
+        } else {
             
-            crLogP += (recomb.endLocus-recomb.startLocus)*Math.log(1-deltaInv);
+            // Contribution from start of sequence up to first recomb region
+            if (recombs.get(0).startLocus>0) {
+                crLogP += Math.log(pStartCF)
+                        + (recombs.get(0).startLocus-1)*Math.log(1-alpha);
+            }  else {
+                crLogP += Math.log(1.0-pStartCF)
+                        - Math.log(alpha);
+            }
             
-            if (recomb.endLocus<sequenceLength-1)
-                crLogP += Math.log(deltaInv);
+            // Contribution from remaining recomb regions and adjacent CF regions
+            for (int ridx=0; ridx<recombs.size(); ridx++) {
+                Recombination recomb = recombs.get(ridx);
+                
+                crLogP += Math.log(alpha)
+                        + (recomb.endLocus - recomb.startLocus)*Math.log(1.0-deltaInv);
+                
+                if (ridx<recombs.size()-1) {
+                    crLogP += Math.log(deltaInv)
+                            + (recombs.get(ridx+1).startLocus-recomb.endLocus-2)
+                            *Math.log(1.0-alpha);
+                } else {
+                    if (recomb.endLocus<sequenceLength-1) {
+                        crLogP += Math.log(deltaInv)
+                                + (sequenceLength-1-recomb.endLocus-1)
+                                *Math.log(1.0-alpha);
+                    }
+                }
+            }
         }
+        
         
         return crLogP;
     }
