@@ -71,7 +71,7 @@ public class RecombinationGraphLikelihoodTest {
                 "taxa", alignment);
         
         arg.assignFrom(tree);
-        arg.initAndValidate();
+        arg.initByName("alignment", alignment);
         
         // Site model:
         JukesCantor jc = new JukesCantor();

@@ -17,6 +17,9 @@
 package argbeast;
 
 import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import com.google.common.collect.Lists;
@@ -30,6 +33,16 @@ import java.util.List;
 public class RecombinationGraph extends Tree {
     
     /**
+     * Unlike Trees, Recombination graphs require an alignment to be specified
+     * so that the regions of the alignment affected by recombination events
+     * can be recorded.
+     */
+    public Input<Alignment> alignmentInput = new Input<Alignment>("alignment",
+            "Sequence alignment corresponding to graph.", Validate.REQUIRED);
+    
+    protected int sequenceLength;
+    
+    /**
      * List of recombinations on graph.
      */
     protected List<Recombination> recombs;
@@ -40,6 +53,17 @@ public class RecombinationGraph extends Tree {
         
         recombs = new ArrayList<Recombination>();
         recombs.add(null); // Represents the clonal frame.
+        
+        sequenceLength = alignmentInput.get().getSiteCount();
+    }
+    
+    /**
+     * Retrieve length of sequence, identifying bounds of recombination loci.
+     * 
+     * @return sequence length
+     */
+    public int getSequenceLength() {
+        return sequenceLength;
     }
     
     /**
@@ -82,6 +106,20 @@ public class RecombinationGraph extends Tree {
      */
     public int getNRecombs() {
         return recombs.size();
+    }
+    
+    /**
+     * @return Total length of all edges in clonal frame.
+     */
+    public double getClonalFrameLength() {
+        double length = 0.0;
+        for (Node node : m_nodes) {
+            if (node.isRoot())
+                continue;
+            length += node.getLength();
+        }
+        
+        return length;
     }
 
     /**

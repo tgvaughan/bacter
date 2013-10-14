@@ -21,6 +21,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.Coalescent;
+import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -35,6 +36,7 @@ public class GCCoalescentApprox extends Coalescent {
             "Tract length parameter.", Validate.REQUIRED);
     
     RecombinationGraph arg;
+    int sequenceLength;
     
     @Override
     public void initAndValidate() throws Exception {
@@ -43,6 +45,7 @@ public class GCCoalescentApprox extends Coalescent {
                     + " RecombinationGraph objects.");
         
         arg = (RecombinationGraph)treeInput.get();
+        sequenceLength = arg.getSequenceLength();
         
         super.initAndValidate();
     }
@@ -80,7 +83,35 @@ public class GCCoalescentApprox extends Coalescent {
      * @return log(P)
      */
     double convertedRegionLogP() {
-        return 0.0;
+        
+        double crLogP = 0.0;
+        
+        List<Recombination> recombs = arg.getRecombinations();
+        
+        double rho = rhoInput.get().getValue();
+        double deltaInv = 1.0/deltaInput.get().getValue();
+        double cfLength = arg.getClonalFrameLength();
+        
+        double alpha = 0.5*rho*cfLength/sequenceLength;
+        
+        // Account for starting state
+        double pStartCF = 1.0/(alpha/deltaInv+1);        
+        if (recombs.size()>0 && recombs.get(0).startLocus>0)
+            crLogP += Math.log(pStartCF);
+        else
+            crLogP += Math.log(1.0 - pStartCF);
+        
+        for (Recombination recomb : recombs) {
+            if (recomb.startLocus>0)
+                crLogP += Math.log(alpha);
+            
+            crLogP += (recomb.endLocus-recomb.startLocus)*Math.log(1-deltaInv);
+            
+            if (recomb.endLocus<sequenceLength-1)
+                crLogP += Math.log(deltaInv);
+        }
+        
+        return crLogP;
     }
 
     @Override
