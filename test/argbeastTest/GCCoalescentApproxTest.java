@@ -26,7 +26,6 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.ClusterTree;
 import java.util.ArrayList;
@@ -91,7 +90,7 @@ public class GCCoalescentApproxTest {
                 "delta", new RealParameter("10"));
         
         // Test converted region probability when no recombinations exist
-        double logP = coalescent.convertedRegionLogP();
+        double logP = coalescent.calculateConvertedRegionMapLogP();
         double logPtrue = -0.66521909670314471885;
         double relativeDiff = Math.abs(2.0*(logP-logPtrue)/(logP+logPtrue));
         assertTrue(relativeDiff<1e-15);
@@ -107,7 +106,7 @@ public class GCCoalescentApproxTest {
                 startLocus, endLocus);
         arg.addRecombination(recomb);
         
-        logP = coalescent.convertedRegionLogP();
+        logP = coalescent.calculateConvertedRegionMapLogP();
         logPtrue = -20.647146531355350163;
         relativeDiff = Math.abs(2.0*(logP-logPtrue)/(logP+logPtrue));
         assertTrue(relativeDiff<1e-15);

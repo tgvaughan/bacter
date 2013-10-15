@@ -55,9 +55,9 @@ public class GCCoalescentApprox extends Coalescent {
     @Override
     public double calculateLogP() throws Exception {
         
-        logP = clonalFrameLogP()
-                + conditionalCoalescentLogP()
-                + convertedRegionLogP();
+        logP = calculateClonalFrameLogP()
+                + calculateRecombinantLogP()
+                + calculateConvertedRegionMapLogP();
         
         return logP;        
     }
@@ -67,7 +67,7 @@ public class GCCoalescentApprox extends Coalescent {
      * 
      * @return log(P)
      */
-    public double clonalFrameLogP() {
+    public double calculateClonalFrameLogP() {
         logPcfCoal = calculateLogLikelihood(treeIntervalsInput.get(),
                 popSizeInput.get());
         
@@ -78,7 +78,7 @@ public class GCCoalescentApprox extends Coalescent {
      * Compute probability of recombinant edges under conditional coalescent.
      * @return log(P)
      */
-    public double conditionalCoalescentLogP() {
+    public double calculateRecombinantLogP() {
         logPrecombCoal = 0.0;
         return logPrecombCoal;
     }
@@ -87,7 +87,7 @@ public class GCCoalescentApprox extends Coalescent {
      * Compute probability of number and genome extent of converted segments.
      * @return log(P)
      */
-    public double convertedRegionLogP() {
+    public double calculateConvertedRegionMapLogP() {
         
         logPrecombRegion = 0.0;
         
