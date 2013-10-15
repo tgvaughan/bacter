@@ -74,7 +74,7 @@ public class RecombinationGraph extends Tree {
      */
     public void addRecombination(Recombination recomb) {
         int i;
-        for (i=0; i<recombs.size(); i++)
+        for (i=1; i<recombs.size(); i++)
             if (recomb.startLocus>recombs.get(i).startLocus)
                 break;
         
@@ -87,6 +87,8 @@ public class RecombinationGraph extends Tree {
      * @param recomb 
      */
     public void deleteRecombination(Recombination recomb) {
+        if (recomb == null)
+            throw new IllegalArgumentException("Cannot delete the clonal frame!");
         recombs.remove(recomb);
     }
     
@@ -105,7 +107,7 @@ public class RecombinationGraph extends Tree {
      * @return Number of recombinations.
      */
     public int getNRecombs() {
-        return recombs.size();
+        return recombs.size()-1;
     }
     
     /**

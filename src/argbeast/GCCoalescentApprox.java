@@ -38,6 +38,8 @@ public class GCCoalescentApprox extends Coalescent {
     RecombinationGraph arg;
     int sequenceLength;
     
+    double logPcfCoal, logPrecombCoal, logPrecombRegion;
+    
     @Override
     public void initAndValidate() throws Exception {
         if (!(treeInput.get() instanceof RecombinationGraph))
@@ -65,26 +67,29 @@ public class GCCoalescentApprox extends Coalescent {
      * 
      * @return log(P)
      */
-    double clonalFrameLogP() {
-        return calculateLogLikelihood(treeIntervalsInput.get(),
+    public double clonalFrameLogP() {
+        logPcfCoal = calculateLogLikelihood(treeIntervalsInput.get(),
                 popSizeInput.get());
+        
+        return logPcfCoal;
     }
     
     /**
      * Compute probability of recombinant edges under conditional coalescent.
      * @return log(P)
      */
-    double conditionalCoalescentLogP() {
-        return 0.0;
+    public double conditionalCoalescentLogP() {
+        logPrecombCoal = 0.0;
+        return logPrecombCoal;
     }
     
     /**
      * Compute probability of number and genome extent of converted segments.
      * @return log(P)
      */
-    double convertedRegionLogP() {
+    public double convertedRegionLogP() {
         
-        double crLogP = 0.0;
+        logPrecombRegion = 0.0;
         
         List<Recombination> recombs = arg.getRecombinations();
         
@@ -98,35 +103,35 @@ public class GCCoalescentApprox extends Coalescent {
         // Probability that sequence begins in the clonal frame:
         double pStartCF = 1.0/(alpha/deltaInv + 1.0);
         
-        if (recombs.isEmpty()) {
+        if (recombs.size()<2){
             // Probability of no recombinations
-            crLogP += Math.log(pStartCF) 
+            logPrecombRegion += Math.log(pStartCF) 
                     + (sequenceLength-1)*Math.log(1.0-alpha);
         } else {
             
             // Contribution from start of sequence up to first recomb region
-            if (recombs.get(0).startLocus>0) {
-                crLogP += Math.log(pStartCF)
-                        + (recombs.get(0).startLocus-1)*Math.log(1-alpha);
+            if (recombs.get(1).startLocus>0) {
+                logPrecombRegion += Math.log(pStartCF)
+                        + (recombs.get(1).startLocus-1)*Math.log(1-alpha);
             }  else {
-                crLogP += Math.log(1.0-pStartCF)
+                logPrecombRegion += Math.log(1.0-pStartCF)
                         - Math.log(alpha);
             }
             
             // Contribution from remaining recomb regions and adjacent CF regions
-            for (int ridx=0; ridx<recombs.size(); ridx++) {
+            for (int ridx=1; ridx<recombs.size(); ridx++) {
                 Recombination recomb = recombs.get(ridx);
                 
-                crLogP += Math.log(alpha)
+                logPrecombRegion += Math.log(alpha)
                         + (recomb.endLocus - recomb.startLocus)*Math.log(1.0-deltaInv);
                 
                 if (ridx<recombs.size()-1) {
-                    crLogP += Math.log(deltaInv)
+                    logPrecombRegion += Math.log(deltaInv)
                             + (recombs.get(ridx+1).startLocus-recomb.endLocus-2)
                             *Math.log(1.0-alpha);
                 } else {
                     if (recomb.endLocus<sequenceLength-1) {
-                        crLogP += Math.log(deltaInv)
+                        logPrecombRegion += Math.log(deltaInv)
                                 + (sequenceLength-1-recomb.endLocus-1)
                                 *Math.log(1.0-alpha);
                     }
@@ -135,7 +140,7 @@ public class GCCoalescentApprox extends Coalescent {
         }
         
         
-        return crLogP;
+        return logPrecombRegion;
     }
 
     @Override

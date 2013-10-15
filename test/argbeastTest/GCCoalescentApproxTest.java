@@ -16,12 +16,18 @@
  */
 package argbeastTest;
 
+import argbeast.GCCoalescentApprox;
+import argbeast.Recombination;
 import argbeast.RecombinationGraph;
-import argbeast.RecombinationGraphLikelihood;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.ClusterTree;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,21 +38,13 @@ import static org.junit.Assert.*;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class RecombinationGraphLikelihoodTest {
+public class GCCoalescentApproxTest {
     
-    public RecombinationGraphLikelihoodTest() {
+    public GCCoalescentApproxTest() {
     }
     
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
-    
     @Test
-    public void testClonalFrameLikelihood() throws Exception {
-                // Sequence alignment
-        
+    public void convertedRegionLogPTest() throws Exception {
         List<Sequence> sequences = new ArrayList<Sequence>();
         sequences.add(new Sequence("Tarsius_syrichta","AAGTTTCATTGGAGCCACCACTCTTATAATTGCCCATGGCCTCACCTCCTCCCTATTATTTTGCCTAGCAAATACAAACTACGAACGAGTCCACAGTCGAACAATAGCACTAGCCCGTGGCCTTCAAACCCTATTACCTCTTGCAGCAACATGATGACTCCTCGCCAGCTTAACCAACCTGGCCCTTCCCCCAACAATTAATTTAATCGGTGAACTGTCCGTAATAATAGCAGCATTTTCATGGTCACACCTAACTATTATCTTAGTAGGCCTTAACACCCTTATCACCGCCCTATATTCCCTATATATACTAATCATAACTCAACGAGGAAAATACACATATCATATCAACAATATCATGCCCCCTTTCACCCGAGAAAATACATTAATAATCATACACCTATTTCCCTTAATCCTACTATCTACCAACCCCAAAGTAATTATAGGAACCATGTACTGTAAATATAGTTTAAACAAAACATTAGATTGTGAGTCTAATAATAGAAGCCCAAAGATTTCTTATTTACCAAGAAAGTA-TGCAAGAACTGCTAACTCATGCCTCCATATATAACAATGTGGCTTTCTT-ACTTTTAAAGGATAGAAGTAATCCATCGGTCTTAGGAACCGAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATTTATTTTCATCCTCCATTTTACTATCACTTACACTCTTAATTACCCCATTTATTATTACAACAACTAAAAAATATGAAACACATGCATACCCTTACTACGTAAAAAACTCTATCGCCTGCGCATTTATAACAAGCCTAGTCCCAATGCTCATATTTCTATACACAAATCAAGAAATAATCATTTCCAACTGACATTGAATAACGATTCATACTATCAAATTATGCCTAAGCTT"));
         sequences.add(new Sequence("Lemur_catta","AAGCTTCATAGGAGCAACCATTCTAATAATCGCACATGGCCTTACATCATCCATATTATTCTGTCTAGCCAACTCTAACTACGAACGAATCCATAGCCGTACAATACTACTAGCACGAGGGATCCAAACCATTCTCCCTCTTATAGCCACCTGATGACTACTCGCCAGCCTAACTAACCTAGCCCTACCCACCTCTATCAATTTAATTGGCGAACTATTCGTCACTATAGCATCCTTCTCATGATCAAACATTACAATTATCTTAATAGGCTTAAATATGCTCATCACCGCTCTCTATTCCCTCTATATATTAACTACTACACAACGAGGAAAACTCACATATCATTCGCACAACCTAAACCCATCCTTTACACGAGAAAACACCCTTATATCCATACACATACTCCCCCTTCTCCTATTTACCTTAAACCCCAAAATTATTCTAGGACCCACGTACTGTAAATATAGTTTAAA-AAAACACTAGATTGTGAATCCAGAAATAGAAGCTCAAAC-CTTCTTATTTACCGAGAAAGTAATGTATGAACTGCTAACTCTGCACTCCGTATATAAAAATACGGCTATCTCAACTTTTAAAGGATAGAAGTAATCCATTGGCCTTAGGAGCCAAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATCTATTATCCTCTTTCACCCTTGTCACACTGATTATCCTAACTTTACCTATCATTATAAACGTTACAAACATATACAAAAACTACCCCTATGCACCATACGTAAAATCTTCTATTGCATGTGCCTTCATCACTAGCCTCATCCCAACTATATTATTTATCTCCTCAGGACAAGAAACAATCATTTCCAACTGACATTGAATAACAATCCAAACCCTAAAACTATCTATTAGCTT"));
@@ -79,20 +77,39 @@ public class RecombinationGraphLikelihoodTest {
         siteModel.initByName(
                 "substModel", jc);
         
-        // Likelihood
+        // Population size model:
+        ConstantPopulation popFunction = new ConstantPopulation();
+        popFunction.initByName("popSize", new RealParameter("1.0"));
         
-        RecombinationGraphLikelihood argLikelihood = new RecombinationGraphLikelihood();
-        argLikelihood.initByName(
-                "data", alignment,
-                "arg", arg,
-                "siteModel", siteModel);
+        // Coalescent
+        GCCoalescentApprox coalescent = new GCCoalescentApprox();
+        coalescent.initByName(
+                "tree", arg,
+                "treeIntervals", new TreeIntervals(arg),
+                "populationModel", popFunction,
+                "rho", new RealParameter("1"),
+                "delta", new RealParameter("10"));
         
-        arg.setEverythingDirty(true);
+        // Test converted region probability when no recombinations exist
+        double logP = coalescent.convertedRegionLogP();
+        double logPtrue = -0.66521909670314471885;
+        double relativeDiff = Math.abs(2.0*(logP-logPtrue)/(logP+logPtrue));
+        assertTrue(relativeDiff<1e-15);
         
-        double logP = argLikelihood.calculateLogP();
-        double logPtrue = -6444.862402765536;
-        double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+        // Test converted region probability when one recombination exists
+        Node node1 = arg.getExternalNodes().get(0);
+        Node node2 = arg.getRoot();
+        double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        double height2 = node2.getHeight() + 1.0;
+        int startLocus = 100;
+        int endLocus = 200;
+        Recombination recomb = new Recombination(node1, height1, node2, height2,
+                startLocus, endLocus);
+        arg.addRecombination(recomb);
         
-        assertTrue(relativeDiff<1e-14);
+        logP = coalescent.convertedRegionLogP();
+        logPtrue = -20.647146531355350163;
+        relativeDiff = Math.abs(2.0*(logP-logPtrue)/(logP+logPtrue));
+        assertTrue(relativeDiff<1e-15);
     }
 }
