@@ -101,13 +101,28 @@ public class GCCoalescentApprox extends Coalescent {
             
             double timeA = Math.max(t, recomb.height1);
             
+            double timeB;
+            int k;
+            if (i<intervals.getIntervalCount()) {
+                timeB = Math.min(recomb.height2, t+intervals.getInterval(i));
+                k = intervals.getLineageCount(i);
+                
+                if (t < oldCoalescenceTime)
+                    k -=1;
+            } else {
+                timeB = recomb.height2;
+                k = 1;
+            }
             
-            int k = intervals.getLineageCount(i);
-            if (t<oldCoalescenceTime)
-                k -= 1;
+            double intervalArea = popSize.getIntegral(timeA, timeB);
+            thisLogP += -k*intervalArea;
             
-
+            t = timeB;
+            i += 1;
         }
+        
+        // Probability of single coalescence event
+        thisLogP += -Math.log(popSize.getPopSize(recomb.height2));
         
         return thisLogP;
     }
