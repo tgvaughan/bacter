@@ -34,6 +34,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * Tests the evaluation of the ARG probability density under the approximate
+ * coalescent with gene conversion model used by GCCCoalescentApprox.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */

@@ -29,6 +29,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
+ * Tests the calculation of the ARG likelihood given the sequence data.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */

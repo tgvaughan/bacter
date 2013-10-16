@@ -22,9 +22,12 @@ import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
+import beast.util.TreeParser;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -252,5 +255,68 @@ public class RecombinationGraph extends Tree {
      */
     boolean isNodeMarginalLeaf(Node node, Recombination recomb) {
         return node.isLeaf();
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        for (Recombination recomb : getRecombinations()) {
+            if (recomb == null)
+                continue;
+            sb.append(String.format("[&%d,%d,%g,%d,%d,%g] ",
+                    recomb.node1.getNr(),
+                    recomb.startLocus,
+                    recomb.node1.getHeight(),
+                    recomb.node2.getNr(),
+                    recomb.endLocus,
+                    recomb.node2.getHeight()));
+        }
+        sb.append(super.toString());
+        
+        return sb.toString();
+    }
+    
+    @Override
+    public void fromXML(final org.w3c.dom.Node node) {
+        String str = node.getTextContent();
+        
+        Pattern pattern = Pattern.compile(" *(\\[&([^]*)] *)*([^]].*)$");
+        Matcher matcher = pattern.matcher(str);
+        
+        String sNewick = matcher.group(matcher.groupCount());        
+        TreeParser parser = new TreeParser();
+        try {
+            parser.thresholdInput.setValue(1e-10, parser);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        try {
+            parser.offsetInput.setValue(0, parser);
+            setRoot(parser.parseNewick(sNewick));
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        initArrays();
+        
+        for (int i=1; i<matcher.groupCount()-1; i++) {
+            String [] elements = matcher.group(i).split(",");
+            
+            Node node1 = getNode(Integer.parseInt(elements[0]));
+            int startLocus = Integer.parseInt(elements[1]);
+            double height1 = Double.parseDouble(elements[2]);
+            
+            Node node2 = getNode(Integer.parseInt(elements[3]));
+            int endLocus = Integer.parseInt(elements[4]);
+            double height2 = Double.parseDouble(elements[5]);
+
+            Recombination recomb = new Recombination(
+                    node1, height1,
+                    node2, height2,
+                    startLocus, endLocus);
+            
+            addRecombination(recomb);
+        }
     }
 }
