@@ -267,10 +267,10 @@ public class RecombinationGraph extends Tree {
             sb.append(String.format("[&%d,%d,%g,%d,%d,%g] ",
                     recomb.node1.getNr(),
                     recomb.startLocus,
-                    recomb.node1.getHeight(),
+                    recomb.height1,
                     recomb.node2.getNr(),
                     recomb.endLocus,
-                    recomb.node2.getHeight()));
+                    recomb.height2));
         }
         sb.append(super.toString());
         
