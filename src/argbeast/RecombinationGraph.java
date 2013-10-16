@@ -274,16 +274,24 @@ public class RecombinationGraph extends Tree {
         }
         sb.append(super.toString());
         
-        return sb.toString();
+        // Unfortunately, we must behave differently if we're being
+        // called by toXML().
+        StackTraceElement[] ste = Thread.currentThread().getStackTrace();
+        if (ste[2].getMethodName().equals("toXML"))
+            return sb.toString().replaceAll("&", "&amp;");
+        else
+            return sb.toString();
     }
     
     @Override
     public void fromXML(final org.w3c.dom.Node node) {
         String str = node.getTextContent();
         
+        // Extract clonal frame and recombination components of string
         Pattern pattern = Pattern.compile(" *(\\[&([^]*)] *)*([^]].*)$");
         Matcher matcher = pattern.matcher(str);
         
+        // Process clonal frame
         String sNewick = matcher.group(matcher.groupCount());        
         TreeParser parser = new TreeParser();
         try {
@@ -300,6 +308,7 @@ public class RecombinationGraph extends Tree {
         }
         initArrays();
         
+        // Process recombinations
         for (int i=1; i<matcher.groupCount()-1; i++) {
             String [] elements = matcher.group(i).split(",");
             

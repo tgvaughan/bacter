@@ -16,20 +16,20 @@
  */
 package argbeastTest;
 
-import argbeast.GCCoalescentApprox;
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.ClusterTree;
+import com.sun.xml.internal.ws.addressing.W3CAddressingConstants;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * Tests the toString() and fromXML() methods of RecombinationGraph.
@@ -80,6 +80,18 @@ public class ChainResumptionTest {
                 startLocus, endLocus);
         arg.addRecombination(newRecomb);
         
-        System.out.println(arg.toXML());
+        String xmlStr = arg.toXML();
+        System.out.println(xmlStr);
+        
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xmlStr.getBytes()));
+        doc.normalize();
+        NodeList nodes = doc.getElementsByTagName("*");
+        org.w3c.dom.Node docNode = nodes.item(0);
+        System.out.println(docNode.getTextContent());
+        
+        RecombinationGraph argNew = new RecombinationGraph();
+        argNew.fromXML(docNode);
+        
     }
 }
