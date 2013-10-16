@@ -87,7 +87,7 @@ public class GCCoalescentApprox extends Coalescent {
         // Identify interval containing the start of the recombinant edge
         int startInterval = 0;
         double t = 0.0;
-        while (t<recomb.height1+intervals.getInterval(startInterval)) {
+        while (t+intervals.getInterval(startInterval)<recomb.height1) {
             t += intervals.getInterval(startInterval);
             startInterval += 1;
         }

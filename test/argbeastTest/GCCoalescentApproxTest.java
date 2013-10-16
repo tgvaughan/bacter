@@ -42,8 +42,20 @@ public class GCCoalescentApproxTest {
     public GCCoalescentApproxTest() {
     }
     
+    /**
+     * Calculate absolute difference between two real numbers relative to
+     * the mean of the two numbers.
+     * 
+     * @param a
+     * @param b
+     * @return relative difference
+     */
+    public double relativeDiff(double a, double b) {
+        return 2.0*Math.abs(a-b)/(a+b);
+    }
+    
     @Test
-    public void convertedRegionLogPTest() throws Exception {
+    public void test() throws Exception {
         List<Sequence> sequences = new ArrayList<Sequence>();
         sequences.add(new Sequence("Tarsius_syrichta","AAGTTTCATTGGAGCCACCACTCTTATAATTGCCCATGGCCTCACCTCCTCCCTATTATTTTGCCTAGCAAATACAAACTACGAACGAGTCCACAGTCGAACAATAGCACTAGCCCGTGGCCTTCAAACCCTATTACCTCTTGCAGCAACATGATGACTCCTCGCCAGCTTAACCAACCTGGCCCTTCCCCCAACAATTAATTTAATCGGTGAACTGTCCGTAATAATAGCAGCATTTTCATGGTCACACCTAACTATTATCTTAGTAGGCCTTAACACCCTTATCACCGCCCTATATTCCCTATATATACTAATCATAACTCAACGAGGAAAATACACATATCATATCAACAATATCATGCCCCCTTTCACCCGAGAAAATACATTAATAATCATACACCTATTTCCCTTAATCCTACTATCTACCAACCCCAAAGTAATTATAGGAACCATGTACTGTAAATATAGTTTAAACAAAACATTAGATTGTGAGTCTAATAATAGAAGCCCAAAGATTTCTTATTTACCAAGAAAGTA-TGCAAGAACTGCTAACTCATGCCTCCATATATAACAATGTGGCTTTCTT-ACTTTTAAAGGATAGAAGTAATCCATCGGTCTTAGGAACCGAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATTTATTTTCATCCTCCATTTTACTATCACTTACACTCTTAATTACCCCATTTATTATTACAACAACTAAAAAATATGAAACACATGCATACCCTTACTACGTAAAAAACTCTATCGCCTGCGCATTTATAACAAGCCTAGTCCCAATGCTCATATTTCTATACACAAATCAAGAAATAATCATTTCCAACTGACATTGAATAACGATTCATACTATCAAATTATGCCTAAGCTT"));
         sequences.add(new Sequence("Lemur_catta","AAGCTTCATAGGAGCAACCATTCTAATAATCGCACATGGCCTTACATCATCCATATTATTCTGTCTAGCCAACTCTAACTACGAACGAATCCATAGCCGTACAATACTACTAGCACGAGGGATCCAAACCATTCTCCCTCTTATAGCCACCTGATGACTACTCGCCAGCCTAACTAACCTAGCCCTACCCACCTCTATCAATTTAATTGGCGAACTATTCGTCACTATAGCATCCTTCTCATGATCAAACATTACAATTATCTTAATAGGCTTAAATATGCTCATCACCGCTCTCTATTCCCTCTATATATTAACTACTACACAACGAGGAAAACTCACATATCATTCGCACAACCTAAACCCATCCTTTACACGAGAAAACACCCTTATATCCATACACATACTCCCCCTTCTCCTATTTACCTTAAACCCCAAAATTATTCTAGGACCCACGTACTGTAAATATAGTTTAAA-AAAACACTAGATTGTGAATCCAGAAATAGAAGCTCAAAC-CTTCTTATTTACCGAGAAAGTAATGTATGAACTGCTAACTCTGCACTCCGTATATAAAAATACGGCTATCTCAACTTTTAAAGGATAGAAGTAATCCATTGGCCTTAGGAGCCAAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATCTATTATCCTCTTTCACCCTTGTCACACTGATTATCCTAACTTTACCTATCATTATAAACGTTACAAACATATACAAAAACTACCCCTATGCACCATACGTAAAATCTTCTATTGCATGTGCCTTCATCACTAGCCTCATCCCAACTATATTATTTATCTCCTCAGGACAAGAAACAATCATTTCCAACTGACATTGAATAACAATCCAAACCCTAAAACTATCTATTAGCTT"));
@@ -92,23 +104,34 @@ public class GCCoalescentApproxTest {
         // Test converted region probability when no recombinations exist
         double logP = coalescent.calculateConvertedRegionMapLogP();
         double logPtrue = -0.66521909670314471885;
-        double relativeDiff = Math.abs(2.0*(logP-logPtrue)/(logP+logPtrue));
-        assertTrue(relativeDiff<1e-15);
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         
-        // Test converted region probability when one recombination exists
+        // Coalescent probability when no recombinations exist
+        logP = coalescent.calculateRecombinantLogP(null);
+        logPtrue = -4.733611657513131;
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        
+        //Add a single recombination event
         Node node1 = arg.getExternalNodes().get(0);
-        Node node2 = arg.getRoot();
+        //Node node2 = arg.getRoot();
+        Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
-        double height2 = node2.getHeight() + 1.0;
+        //double height2 = node2.getHeight() + 1.0;
+        double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination recomb = new Recombination(node1, height1, node2, height2,
+        Recombination newRecomb = new Recombination(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb);
-        
+        arg.addRecombination(newRecomb);
+
+        // Test converted region probability when one recombination exists
         logP = coalescent.calculateConvertedRegionMapLogP();
         logPtrue = -20.647146531355350163;
-        relativeDiff = Math.abs(2.0*(logP-logPtrue)/(logP+logPtrue));
-        assertTrue(relativeDiff<1e-15);
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        
+        // Test coalescent probability when one recombination exists
+        logP = coalescent.calculateRecombinantLogP(newRecomb);
+        logPtrue = -0.68980134962441774782;
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
     }
 }
