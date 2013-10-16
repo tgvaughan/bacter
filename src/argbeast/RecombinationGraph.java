@@ -264,13 +264,13 @@ public class RecombinationGraph extends Tree {
         for (Recombination recomb : getRecombinations()) {
             if (recomb == null)
                 continue;
-            sb.append(String.format("[&%d,%d,%g,%d,%d,%g] ",
+            sb.append(String.format("[&%d,%d,%s,%d,%d,%s] ",
                     recomb.node1.getNr(),
                     recomb.startLocus,
-                    recomb.height1,
+                    String.valueOf(recomb.height1),
                     recomb.node2.getNr(),
                     recomb.endLocus,
-                    recomb.height2));
+                    String.valueOf(recomb.height2)));
         }
         sb.append(super.toString());
         
@@ -288,11 +288,14 @@ public class RecombinationGraph extends Tree {
         String str = node.getTextContent();
         
         // Extract clonal frame and recombination components of string
-        Pattern pattern = Pattern.compile(" *(\\[&([^]*)] *)*([^]].*)$");
+        Pattern pattern = Pattern.compile(" *(\\[&([^]]*)\\] *)*([^]].*)$");
         Matcher matcher = pattern.matcher(str);
         
+        if (!matcher.find())
+            throw new RuntimeException("Error parsing ARG state string.");
+        
         // Process clonal frame
-        String sNewick = matcher.group(matcher.groupCount());        
+        String sNewick = matcher.group(matcher.groupCount());
         TreeParser parser = new TreeParser();
         try {
             parser.thresholdInput.setValue(1e-10, parser);
@@ -309,8 +312,9 @@ public class RecombinationGraph extends Tree {
         initArrays();
         
         // Process recombinations
-        for (int i=1; i<matcher.groupCount()-1; i++) {
-            String [] elements = matcher.group(i).split(",");
+        int nRecombs = (matcher.groupCount()-1)/2;
+        for (int i=0; i<nRecombs; i++) {
+            String [] elements = matcher.group(2*(i+1)).split(",");
             
             Node node1 = getNode(Integer.parseInt(elements[0]));
             int startLocus = Integer.parseInt(elements[1]);

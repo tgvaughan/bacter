@@ -22,12 +22,12 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
 import beast.util.ClusterTree;
-import com.sun.xml.internal.ws.addressing.W3CAddressingConstants;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -69,29 +69,41 @@ public class ChainResumptionTest {
         
         //Add a single recombination event
         Node node1 = arg.getExternalNodes().get(0);
-        //Node node2 = arg.getRoot();
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
-        //double height2 = node2.getHeight() + 1.0;
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination newRecomb = new Recombination(node1, height1, node2, height2,
+        Recombination recomb = new Recombination(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(newRecomb);
+        arg.addRecombination(recomb);
         
+        // Write ARG out to XML string
         String xmlStr = arg.toXML();
-        System.out.println(xmlStr);
         
+        // Build DOM from XML string
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xmlStr.getBytes()));
         doc.normalize();
         NodeList nodes = doc.getElementsByTagName("*");
         org.w3c.dom.Node docNode = nodes.item(0);
-        System.out.println(docNode.getTextContent());
         
+        // Read ARG back in from DOM
         RecombinationGraph argNew = new RecombinationGraph();
+        argNew.assignFrom(tree);
+        argNew.initByName("alignment", alignment);
         argNew.fromXML(docNode);
         
+        // Check that new ARG matches old
+        Recombination newRecomb = argNew.getRecombinations().get(1);
+        assertEquals(newRecomb.getNode1().getNr(),recomb.getNode1().getNr());
+        assertEquals(newRecomb.getNode2().getNr(),recomb.getNode2().getNr());
+        assertEquals(newRecomb.getHeight1(),recomb.getHeight1(), 1e-15);
+        assertEquals(newRecomb.getHeight2(),recomb.getHeight2(), 1e-15);
+        assertEquals(newRecomb.getStartLocus(), recomb.getStartLocus());
+        assertEquals(newRecomb.getEndLocus(), recomb.getEndLocus());
+        
+        // Note that there are minor differences in the tree due to
+        // rounding errors.  Is this normal!?
     }
 }

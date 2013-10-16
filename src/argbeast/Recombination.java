@@ -62,4 +62,58 @@ public class Recombination  {
      */
     int startLocus, endLocus;
     
+    /**
+     * Obtain node below most recent point at which recombinant edge
+     * attaches to clonal frame.
+     * 
+     * @return node
+     */
+    public Node getNode1() {
+        return node1;
+    }
+
+    /**
+     * Obtain node below oldest point at which recombinant edge attaches
+     * to clonal frame.
+     * 
+     * @return node
+     */
+    public Node getNode2() {
+        return node2;
+    }
+    
+    /**
+     * Return height at most recent attachment of recombinant edge to
+     * clonal frame.
+     * 
+     * @return height
+     */
+    public double getHeight1() {
+        return height1;
+    }
+    
+    /**
+     * Return height at oldest attachment of recombinant edge to clonal
+     * frame.
+     * @return height
+     */
+    public double getHeight2() {
+        return height2;
+    }
+    
+    /**
+     * Return locus of start of alignment region affected by recombination.
+     * @return locus
+     */
+    public int getStartLocus() {
+        return startLocus;
+    }
+    
+    /**
+     * Return locus of end of alignment region affected by recombination.
+     * @return locus
+     */
+    public int getEndLocus() {
+        return endLocus;
+    }
 }
