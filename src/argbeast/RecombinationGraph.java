@@ -152,7 +152,7 @@ public class RecombinationGraph extends Tree {
      * @return node parent
      */
     public Node getMarginalParent(Node node, Recombination recomb) {
-        if (recomb==null)
+        if (recomb==null || recomb.node1==recomb.node2)
             return node.getParent();
         
         if (node == recomb.node2) {
@@ -173,7 +173,7 @@ public class RecombinationGraph extends Tree {
      * @return node children
      */
     public List<Node> getMarginalChildren(Node node, Recombination recomb) {
-        if (recomb==null)
+        if (recomb==null || recomb.node1==recomb.node2)
             return node.getChildren();
         
         List<Node> children = Lists.newArrayList();
@@ -201,7 +201,7 @@ public class RecombinationGraph extends Tree {
      * @return node height
      */
     public double getMarginalNodeHeight(Node node, Recombination recomb) {
-        if (recomb==null)
+        if (recomb==null || recomb.node1==recomb.node2)
             return node.getHeight();
 
         if (node == recomb.node1.getParent())
@@ -219,7 +219,7 @@ public class RecombinationGraph extends Tree {
      * @return edge length (zero if node is root of marginal tree)
      */
     public double getMarginalBranchLength(Node node, Recombination recomb) {
-        if (recomb==null)
+        if (recomb==null || recomb.node1==recomb.node2)
             return node.getLength();
         
         Node parent = getMarginalParent(node, recomb);
@@ -331,5 +331,17 @@ public class RecombinationGraph extends Tree {
             
             addRecombination(recomb);
         }
+    }
+    
+    /**
+     * Obtain extended Newick representation of ARG.
+     * @return Extended Newick string.
+     */
+    public String getExtendedNewick() {
+        StringBuilder sb = new StringBuilder();
+        
+        
+        
+        return sb.toString();
     }
 }
