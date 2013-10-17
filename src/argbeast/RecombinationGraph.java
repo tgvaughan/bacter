@@ -177,17 +177,30 @@ public class RecombinationGraph extends Tree {
             return node.getChildren();
         
         List<Node> children = Lists.newArrayList();
+        
+        // Assemble preliminary list of children
         if (node == recomb.node1.getParent()) {
             children.add(recomb.node1);
             children.add(recomb.node2);
-            return children;
+        } else {
+            for (Node child : node.getChildren()) {
+                if (child==recomb.node2)
+                    children.add(recomb.node1.getParent());
+                else
+                    children.add(child);
+            }
         }
         
-        for (Node child : node.getChildren()) {
-            if (child == recomb.node2)
-                children.add(recomb.node1.getParent());
-            else
-                children.add(child);
+        // Traverse through CF location of recomb.node1.getParent()
+        for (int i=0; i<2; i++) {
+            Node child = children.get(i);
+            
+            if (child == recomb.node1.getParent()) {
+                if (child.getChild(0)==recomb.node1)
+                    children.set(i, child.getChild(1));
+                else
+                    children.set(i, child.getChild(0));
+            }
         }
 
         return children;
@@ -340,7 +353,45 @@ public class RecombinationGraph extends Tree {
     public String getExtendedNewick() {
         StringBuilder sb = new StringBuilder();
         
+        return sb.toString();
+    }
+    
+    
+    /**
+     * Obtain Newick representation of marginal genealogy corresponding to
+     * given recombination.
+     * 
+     * @param recomb Recombination object (null represents clonal frame)
+     * @return Newick string
+     */
+    public String getMarginalNewick(Recombination recomb) {
+        StringBuilder sb = new StringBuilder();
         
+        sb.append(marginalNewickTraverse(getMarginalRoot(recomb), recomb));
+        sb.append(";");
+
+        return sb.toString();
+    }
+    
+    private String marginalNewickTraverse(Node node, Recombination recomb) {
+        StringBuilder sb = new StringBuilder();
+        
+        if (!isNodeMarginalLeaf(node, recomb)) {
+            sb.append("(");
+            List<Node> children = getMarginalChildren(node, recomb);
+            sb.append(marginalNewickTraverse(children.get(0), recomb));
+            sb.append(",");
+            sb.append(marginalNewickTraverse(children.get(1), recomb));
+            sb.append(")");
+        }
+        
+        sb.append(node.getNr());
+        
+        sb.append(":");
+        if (isNodeMarginalRoot(node, recomb))
+            sb.append("0.0");
+        else
+            sb.append(getMarginalBranchLength(node, recomb));
         
         return sb.toString();
     }

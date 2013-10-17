@@ -16,12 +16,14 @@
  */
 package argbeastTest;
 
+import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import argbeast.RecombinationGraphLikelihood;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
+import beast.evolution.tree.Node;
 import beast.util.ClusterTree;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,5 +97,23 @@ public class RecombinationGraphLikelihoodTest {
         double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
+        
+        //Add a single recombination event
+        Node node1 = arg.getExternalNodes().get(0);
+        //Node node2 = arg.getRoot();
+        Node node2 = node1.getParent();
+        double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        //double height2 = node2.getHeight() + 1.0;
+        double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
+        int startLocus = 100;
+        int endLocus = 200;
+        Recombination newRecomb = new Recombination(node1, height1, node2, height2,
+                startLocus, endLocus);
+        arg.addRecombination(newRecomb);
+        
+        System.out.println(arg.getMarginalNewick(null));
+        System.out.println(arg.getMarginalNewick(newRecomb));
+        
+        logP = argLikelihood.calculateLogP();
     }
 }

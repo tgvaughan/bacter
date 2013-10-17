@@ -20,7 +20,9 @@ import beast.evolution.tree.Node;
 
 /**
  * A class representing recombination events that are one-edge
- * modifications to the clonal frame.
+ * modifications to the clonal frame.  A recombinant edge may leave and
+ * connect with the same edge on the clonal frame, but no recombinant edges
+ * may leave the root edge of the clonal frame.
  * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
