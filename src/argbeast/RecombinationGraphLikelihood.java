@@ -202,8 +202,8 @@ public class RecombinationGraphLikelihood extends Distribution {
         
         // Debugging
         for (Recombination recomb : arg.getRecombinations()) {
-            System.out.print(patterns.get(null).elementSet().size()
-                    + " unique patterns of " + patterns.get(null).size()
+            System.out.print(patterns.get(recomb).elementSet().size()
+                    + " unique patterns of " + patterns.get(recomb).size()
                     + " sites");
             if (recomb == null)
                 System.out.println(" in clonal frame");
