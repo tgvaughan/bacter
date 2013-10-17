@@ -100,19 +100,34 @@ public class RecombinationGraphLikelihoodTest {
         
         //Add a single recombination event
         Node node1 = arg.getExternalNodes().get(0);
-        //Node node2 = arg.getRoot();
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
-        //double height2 = node2.getHeight() + 1.0;
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination newRecomb = new Recombination(node1, height1, node2, height2,
+        Recombination recomb1 = new Recombination(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(newRecomb);
+        arg.addRecombination(recomb1);
         
         System.out.println(arg.getMarginalNewick(null));
-        System.out.println(arg.getMarginalNewick(newRecomb));
+        System.out.println(arg.getMarginalNewick(recomb1));
+        
+        logP = argLikelihood.calculateLogP();
+        
+        // Add another recombination event
+        node1 = arg.getExternalNodes().get(0);
+        node2 = arg.getNode(20);
+        height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
+        startLocus = 250;
+        endLocus = 300;
+        Recombination recomb2 = new Recombination(node1, height1, node2, height2,
+                startLocus, endLocus);
+        arg.addRecombination(recomb2);
+        
+        System.out.println(arg.getMarginalNewick(null));
+        System.out.println(arg.getMarginalNewick(recomb1));
+        System.out.println(arg.getMarginalNewick(recomb2));
         
         logP = argLikelihood.calculateLogP();
     }
