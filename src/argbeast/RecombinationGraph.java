@@ -152,20 +152,16 @@ public class RecombinationGraph extends Tree {
      * @return node parent
      */
     public Node getMarginalParent(Node node, Recombination recomb) {
-        if (recomb==null || recomb.node1==recomb.node2)
+        if (recomb==null
+                || recomb.node1==recomb.node2
+                || recomb.node1.getParent()==recomb.node2)
             return node.getParent();
         
-        if (node == recomb.node2)
-            return recomb.node1.getParent();
-        
-        if (node == recomb.node1)
+        if (node == recomb.node1 || node == recomb.node2)
             return recomb.node1.getParent();
         
         if (node == recomb.node1.getParent())
             return recomb.node2.getParent();
-        
-        if (node.getParent() == recomb.node1.getParent())
-            return node.getParent().getParent();
         
         return node.getParent();
     }
@@ -178,42 +174,27 @@ public class RecombinationGraph extends Tree {
      * @return node children
      */
     public List<Node> getMarginalChildren(Node node, Recombination recomb) {
-        if (recomb==null || recomb.node1==recomb.node2)
+        if (recomb==null
+                || recomb.node1==recomb.node2
+                || recomb.node1.getParent() == recomb.node2)
             return node.getChildren();
         
         List<Node> children = Lists.newArrayList();
-        boolean filter = true;
-        
-        // Assemble preliminary list of children
-        if (node == recomb.node1.getParent()) {
-            children.add(recomb.node1);
-            children.add(recomb.node2);
-        } else {
-            for (Node child : node.getChildren()) {
-                if (child==recomb.node2) {
-                    children.add(recomb.node1.getParent());
-                    
-                    // node1.parent has been explicitly added - don't bypass
-                    filter = false;
+
+        for (Node child : node.getChildren()) {
+            if (child==recomb.node2)
+                children.add(recomb.node1.getParent());
+            else {
+                if (child == recomb.node1.getParent()) {
+                    if (child.getChild(0)==recomb.node1)
+                        children.add(child.getChild(1));
+                    else
+                        children.add(child.getChild(0));
                 } else
                     children.add(child);
             }
         }
         
-        // Bypass node1.parent
-        if (filter) {
-            for (int i=0; i<2; i++) {
-                Node child = children.get(i);
-                
-                if (child == recomb.node1.getParent()) {
-                    if (child.getChild(0)==recomb.node1)
-                        children.set(i, child.getChild(1));
-                    else
-                        children.set(i, child.getChild(0));
-                }
-            }
-        }
-
         return children;
     }
 
