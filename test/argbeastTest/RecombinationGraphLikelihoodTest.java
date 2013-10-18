@@ -109,10 +109,11 @@ public class RecombinationGraphLikelihoodTest {
                 startLocus, endLocus);
         arg.addRecombination(recomb1);
         
-        System.out.println(arg.getMarginalNewick(null));
-        System.out.println(arg.getMarginalNewick(recomb1));
-        
         logP = argLikelihood.calculateLogP();
+        logPtrue = -6445.810702954902;
+        relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+        
+        assertTrue(relativeDiff<1e-14);
         
         // Add another recombination event
         node1 = arg.getExternalNodes().get(0);
@@ -125,10 +126,10 @@ public class RecombinationGraphLikelihoodTest {
                 startLocus, endLocus);
         arg.addRecombination(recomb2);
         
-        System.out.println(arg.getMarginalNewick(null));
-        System.out.println(arg.getMarginalNewick(recomb1));
-        System.out.println(arg.getMarginalNewick(recomb2));
-        
         logP = argLikelihood.calculateLogP();
+        logPtrue = -6452.466389537251;
+        relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+        
+        assertTrue(relativeDiff<1e-14);
     }
 }
