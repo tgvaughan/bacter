@@ -25,6 +25,8 @@ import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -349,10 +351,80 @@ public class RecombinationGraph extends Tree {
     
     /**
      * Obtain extended Newick representation of ARG.
+     * 
      * @return Extended Newick string.
      */
     public String getExtendedNewick() {
         StringBuilder sb = new StringBuilder();
+        
+        sb.append(extendedNewickTraverse(root));
+        sb.append(";");
+        
+        return sb.toString();
+    }
+    
+    private String extendedNewickTraverse(Node node) {
+        StringBuilder sb = new StringBuilder();
+        
+        // Determine sequence of events along this node.
+        class Event {
+            boolean isArrival;
+            double time;
+            Recombination recomb;
+            
+            public Event(boolean isArrival, double time, Recombination recomb) {
+                this.isArrival = isArrival;
+                this.time = time;
+                this.recomb = recomb;
+            }
+        }
+        List<Event> events = new ArrayList<Event>();
+        for (Recombination recomb : recombs) {
+            if (recomb.node1 == node)
+                events.add(new Event(false, recomb.getHeight1(), recomb));
+            if (recomb.node2 == node)
+                events.add(new Event(true, recomb.getHeight2(), recomb));
+        }
+        
+        // Sort events from oldest to youngest.
+        Collections.sort(events, new Comparator<Event>() {
+            @Override
+            public int compare(Event e1, Event e2) {
+                if (e1.time>e2.time)
+                    return -1;
+                else
+                    return 1;
+            }
+        });
+
+        int cursor = 0;
+        
+        double lastTime;
+        // TODO
+        
+        // Process events.
+        for (Event event : events) {
+            
+            double thisLength;
+            if (events.indexOf(event)==0) {
+                if (node.isRoot())
+                    thisLength = 0.0;
+                else
+                    thisLength = node.getParent().getHeight()-event.time;
+            } else
+                thisLength = events.get(events.indexOf(event)-1).time-event.time;
+            
+            if (!event.isArrival) {
+                sb.insert(cursor, "(,#" + recombs.indexOf(event.recomb)
+                        + ":" + (event.recomb.height2-event.recomb.height1)
+                        + "):" + thisLength);
+                cursor += 1;
+            } else {
+                sb.insert(cursor, "()#" + recombs.indexOf(event.recomb)
+                        + ":" + thisLength);
+                cursor += 1;
+            }
+        }
         
         return sb.toString();
     }
