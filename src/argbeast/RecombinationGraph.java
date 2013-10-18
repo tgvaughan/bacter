@@ -26,6 +26,8 @@ import beast.util.TreeParser;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -163,6 +165,9 @@ public class RecombinationGraph extends Tree {
         if (node == recomb.node1.getParent())
             return recomb.node2.getParent();
         
+        if (node.getParent()==recomb.node1.getParent())
+            return node.getParent().getParent();
+        
         return node.getParent();
     }
     
@@ -179,8 +184,16 @@ public class RecombinationGraph extends Tree {
                 || recomb.node1.getParent() == recomb.node2)
             return node.getChildren();
         
-        List<Node> children = Lists.newArrayList();
-
+        List<Node> children = Lists.newArrayList();        
+        
+        // Recombination-shifted node
+        if (node==recomb.node1.getParent()) {
+            children.add(recomb.node1);
+            children.add(recomb.node2);
+            return children;
+        }
+        
+        // Any other node:
         for (Node child : node.getChildren()) {
             if (child==recomb.node2)
                 children.add(recomb.node1.getParent());
@@ -301,19 +314,15 @@ public class RecombinationGraph extends Tree {
         
         // Process clonal frame
         String sNewick = matcher.group(matcher.groupCount());
-        TreeParser parser = new TreeParser();
         try {
+            TreeParser parser = new TreeParser();
             parser.thresholdInput.setValue(1e-10, parser);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-        try {
             parser.offsetInput.setValue(0, parser);
             setRoot(parser.parseNewick(sNewick));
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception ex) {
+            Logger.getLogger(RecombinationGraph.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         initArrays();
         
         // Process recombinations
@@ -365,6 +374,14 @@ public class RecombinationGraph extends Tree {
         return sb.toString();
     }
     
+    /**
+     * Generate Newick representation of marginal subtree below node
+     * corresponding to given recombination.  Used only by getMarginalNewick().
+     * 
+     * @param node Node determining subtree
+     * @param recomb Recombination resulting in marginal tree
+     * @return Newick string
+     */
     private String marginalNewickTraverse(Node node, Recombination recomb) {
         StringBuilder sb = new StringBuilder();
         
