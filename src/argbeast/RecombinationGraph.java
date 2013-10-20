@@ -308,14 +308,14 @@ public class RecombinationGraph extends Tree {
         String str = node.getTextContent();
         
         // Extract clonal frame and recombination components of string
-        Pattern pattern = Pattern.compile(" *(\\[&([^]]*)\\] *)*([^]].*)$");
-        Matcher matcher = pattern.matcher(str);
+        Pattern cfPattern = Pattern.compile("^[^\\(]*(\\(.*)$");
+        Matcher cfMatcher = cfPattern.matcher(str);
         
-        if (!matcher.find())
+        if (!cfMatcher.find())
             throw new RuntimeException("Error parsing ARG state string.");
         
         // Process clonal frame
-        String sNewick = matcher.group(matcher.groupCount());
+        String sNewick = cfMatcher.group(cfMatcher.groupCount());
         try {
             TreeParser parser = new TreeParser();
             parser.thresholdInput.setValue(1e-10, parser);
@@ -327,10 +327,13 @@ public class RecombinationGraph extends Tree {
 
         initArrays();
         
+        Pattern recombPattern = Pattern.compile("\\[&([^]]*)]");
+        Matcher recombMatcher = recombPattern.matcher(str);
+        
         // Process recombinations
-        int nRecombs = (matcher.groupCount()-1)/2;
-        for (int i=0; i<nRecombs; i++) {
-            String [] elements = matcher.group(2*(i+1)).split(",");
+        
+        while(recombMatcher.find()) {
+            String [] elements = recombMatcher.group(1).split(",");
             
             Node node1 = getNode(Integer.parseInt(elements[0]));
             int startLocus = Integer.parseInt(elements[1]);

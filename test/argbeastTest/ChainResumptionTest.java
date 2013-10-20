@@ -67,16 +67,27 @@ public class ChainResumptionTest {
         arg.assignFrom(tree);
         arg.initByName("alignment", alignment);
         
-        //Add a single recombination event
+        //Add recombination event 1
         Node node1 = arg.getExternalNodes().get(0);
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination recomb = new Recombination(node1, height1, node2, height2,
+        Recombination recomb1 = new Recombination(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb);
+        arg.addRecombination(recomb1);
+        
+        //Add recombination event 2
+        node1 = arg.getExternalNodes().get(0);
+        node2 = arg.getRoot();
+        height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        height2 = node2.getHeight() + 1.0;
+        startLocus = 300;
+        endLocus = 400;
+        Recombination recomb2 = new Recombination(node1, height1, node2, height2,
+                startLocus, endLocus);
+        arg.addRecombination(recomb2);
         
         // Write ARG out to XML string
         String xmlStr = arg.toXML();
@@ -95,13 +106,21 @@ public class ChainResumptionTest {
         argNew.fromXML(docNode);
         
         // Check that new ARG matches old
-        Recombination newRecomb = argNew.getRecombinations().get(1);
-        assertEquals(newRecomb.getNode1().getNr(),recomb.getNode1().getNr());
-        assertEquals(newRecomb.getNode2().getNr(),recomb.getNode2().getNr());
-        assertEquals(newRecomb.getHeight1(),recomb.getHeight1(), 1e-15);
-        assertEquals(newRecomb.getHeight2(),recomb.getHeight2(), 1e-15);
-        assertEquals(newRecomb.getStartLocus(), recomb.getStartLocus());
-        assertEquals(newRecomb.getEndLocus(), recomb.getEndLocus());
+        Recombination newRecomb1 = argNew.getRecombinations().get(1);
+        assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
+        assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
+        assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
+        assertEquals(newRecomb1.getHeight2(),recomb1.getHeight2(), 1e-15);
+        assertEquals(newRecomb1.getStartLocus(), recomb1.getStartLocus());
+        assertEquals(newRecomb1.getEndLocus(), recomb1.getEndLocus());
+        
+        Recombination newRecomb2 = argNew.getRecombinations().get(2);
+        assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
+        assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
+        assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
+        assertEquals(newRecomb2.getHeight2(),recomb2.getHeight2(), 1e-15);
+        assertEquals(newRecomb2.getStartLocus(), recomb2.getStartLocus());
+        assertEquals(newRecomb2.getEndLocus(), recomb2.getEndLocus());
         
         // Note that there are minor differences in the tree due to
         // rounding errors.  Is this normal!?
