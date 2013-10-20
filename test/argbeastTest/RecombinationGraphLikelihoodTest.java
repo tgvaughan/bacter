@@ -131,10 +131,5 @@ public class RecombinationGraphLikelihoodTest {
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
-        
-        System.out.println(arg.getExtendedNewick());
-        
-        for (Recombination r : arg.getRecombinations())
-            System.out.println(arg.getMarginalNewick(r));
     }
 }
