@@ -118,7 +118,7 @@ public class RecombinationGraphLikelihoodTest {
         // Add another recombination event
         node1 = arg.getExternalNodes().get(0);
         node2 = arg.getNode(20);
-        height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        height1 = 0.75*(node1.getHeight() + node1.getParent().getHeight());
         height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         startLocus = 250;
         endLocus = 300;
@@ -131,5 +131,10 @@ public class RecombinationGraphLikelihoodTest {
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
+        
+        System.out.println(arg.getExtendedNewick());
+        
+        for (Recombination r : arg.getRecombinations())
+            System.out.println(arg.getMarginalNewick(r));
     }
 }

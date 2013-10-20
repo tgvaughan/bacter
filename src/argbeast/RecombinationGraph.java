@@ -383,6 +383,9 @@ public class RecombinationGraph extends Tree {
         }
         List<Event> events = new ArrayList<Event>();
         for (Recombination recomb : recombs) {
+            if (recomb == null)
+                continue;
+            
             if (recomb.node1 == node)
                 events.add(new Event(false, recomb.getHeight1(), recomb));
             if (recomb.node2 == node)
@@ -400,24 +403,25 @@ public class RecombinationGraph extends Tree {
             }
         });
 
+        // Process events.
+        
         int cursor = 0;
         
         double lastTime;
-        // TODO
-        
-        // Process events.
+        if (node.isRoot())
+            lastTime = Double.POSITIVE_INFINITY;
+        else
+            lastTime = node.getParent().getHeight();
+
         for (Event event : events) {
-            
+
             double thisLength;
-            if (events.indexOf(event)==0) {
-                if (node.isRoot())
-                    thisLength = 0.0;
-                else
-                    thisLength = node.getParent().getHeight()-event.time;
-            } else
-                thisLength = events.get(events.indexOf(event)-1).time-event.time;
+            if (Double.isInfinite(lastTime))
+                thisLength = 0.0;
+            else
+                thisLength = lastTime - event.time;
             
-            if (!event.isArrival) {
+            if (event.isArrival) {
                 sb.insert(cursor, "(,#" + recombs.indexOf(event.recomb)
                         + ":" + (event.recomb.height2-event.recomb.height1)
                         + "):" + thisLength);
@@ -427,7 +431,25 @@ public class RecombinationGraph extends Tree {
                         + ":" + thisLength);
                 cursor += 1;
             }
+            
+            lastTime = event.time;
         }
+        
+        // Process this node and its children.
+
+        if (!node.isLeaf()) {
+            String subtree1 = extendedNewickTraverse(node.getChild(0));
+            String subtree2 = extendedNewickTraverse(node.getChild(1));
+            sb.insert(cursor, "(" + subtree1 + "," + subtree2 + ")");
+            cursor += subtree1.length() + subtree2.length() + 3;
+        }
+        
+        double thisLength;
+        if (Double.isInfinite(lastTime))
+            thisLength = 0.0;
+        else
+            thisLength = lastTime - node.getHeight();
+        sb.insert(cursor, node.getNr() + ":" + thisLength);
         
         return sb.toString();
     }
