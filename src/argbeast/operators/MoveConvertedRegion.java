@@ -1,12 +1,3 @@
-package argbeast;
-
-
-import argbeast.RecombinationGraphOperator;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-
 /*
  * Copyright (C) 2013 Tim Vaughan <tgvaughan@gmail.com>
  *
@@ -24,22 +15,16 @@ import beast.core.parameter.RealParameter;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package argbeast.operators;
+
+import beast.core.Description;
+
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Operator which adds and removes recombinations to/from an ARG.")
-public class AddRemoveRecombination extends RecombinationGraphOperator {
-    
-    public Input<RealParameter> rhoInput = new Input<RealParameter>("rho",
-            "Recombination rate parameter.", Validate.REQUIRED);
-    
-    public Input<RealParameter> deltaInput = new Input<RealParameter>("delta",
-            "Tract length parameter.", Validate.REQUIRED);
-    
-    public AddRemoveRecombination() { };
-    
-    @Override
-    public void initAndValidate() { };
+@Description("Operator which moves alignment region affected by a given "
+        + "conversion event.")
+public class MoveConvertedRegion extends RecombinationGraphOperator {
 
     @Override
     public double proposal() {

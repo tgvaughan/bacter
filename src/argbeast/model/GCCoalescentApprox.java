@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package argbeast;
+package argbeast.model;
 
+import argbeast.Recombination;
+import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -87,30 +89,30 @@ public class GCCoalescentApprox extends Coalescent {
         // Identify interval containing the start of the recombinant edge
         int startInterval = 0;
         double t = 0.0;
-        while (t+intervals.getInterval(startInterval)<recomb.height1) {
+        while (t+intervals.getInterval(startInterval)<recomb.getHeight1()) {
             t += intervals.getInterval(startInterval);
             startInterval += 1;
         }
         
         // Lineages with which recombinant lineage can coalesce before
         // this time = k(t)-1, while after this time = k(t).
-        double oldCoalescenceTime = recomb.node1.getParent().getHeight();
+        double oldCoalescenceTime = recomb.getNode1().getParent().getHeight();
         
         int i=startInterval;
-        while (t<recomb.height2) {
+        while (t<recomb.getHeight2()) {
             
-            double timeA = Math.max(t, recomb.height1);
+            double timeA = Math.max(t, recomb.getHeight1());
             
             double timeB;
             int k;
             if (i<intervals.getIntervalCount()) {
-                timeB = Math.min(recomb.height2, t+intervals.getInterval(i));
+                timeB = Math.min(recomb.getHeight2(), t+intervals.getInterval(i));
                 k = intervals.getLineageCount(i);
                 
                 if (t < oldCoalescenceTime)
                     k -=1;
             } else {
-                timeB = recomb.height2;
+                timeB = recomb.getHeight2();
                 k = 1;
             }
             
@@ -122,7 +124,7 @@ public class GCCoalescentApprox extends Coalescent {
         }
         
         // Probability of single coalescence event
-        thisLogP += -Math.log(popSize.getPopSize(recomb.height2));
+        thisLogP += -Math.log(popSize.getPopSize(recomb.getHeight2()));
         
         return thisLogP;
     }
@@ -154,9 +156,9 @@ public class GCCoalescentApprox extends Coalescent {
         } else {
             
             // Contribution from start of sequence up to first recomb region
-            if (recombs.get(1).startLocus>0) {
+            if (recombs.get(1).getStartLocus()>0) {
                 thisLogP += Math.log(pStartCF)
-                        + (recombs.get(1).startLocus-1)*Math.log(1-alpha);
+                        + (recombs.get(1).getStartLocus()-1)*Math.log(1-alpha);
             }  else {
                 thisLogP += Math.log(1.0-pStartCF)
                         - Math.log(alpha);
@@ -167,16 +169,16 @@ public class GCCoalescentApprox extends Coalescent {
                 Recombination recomb = recombs.get(ridx);
                 
                 thisLogP += Math.log(alpha)
-                        + (recomb.endLocus - recomb.startLocus)*Math.log(1.0-deltaInv);
+                        + (recomb.getEndLocus() - recomb.getStartLocus())*Math.log(1.0-deltaInv);
                 
                 if (ridx<recombs.size()-1) {
                     thisLogP += Math.log(deltaInv)
-                            + (recombs.get(ridx+1).startLocus-recomb.endLocus-2)
+                            + (recombs.get(ridx+1).getStartLocus()-recomb.getEndLocus()-2)
                             *Math.log(1.0-alpha);
                 } else {
-                    if (recomb.endLocus<sequenceLength-1) {
+                    if (recomb.getEndLocus()<sequenceLength-1) {
                         thisLogP += Math.log(deltaInv)
-                                + (sequenceLength-1-recomb.endLocus-1)
+                                + (sequenceLength-1-recomb.getEndLocus()-1)
                                 *Math.log(1.0-alpha);
                     }
                 }

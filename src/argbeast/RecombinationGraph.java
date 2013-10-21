@@ -273,7 +273,7 @@ public class RecombinationGraph extends Tree {
      * @param recomb
      * @return true if node is leaf, false otherwise.
      */
-    boolean isNodeMarginalLeaf(Node node, Recombination recomb) {
+    public boolean isNodeMarginalLeaf(Node node, Recombination recomb) {
         return node.isLeaf();
     }
     

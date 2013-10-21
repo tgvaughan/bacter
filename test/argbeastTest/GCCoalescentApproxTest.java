@@ -16,7 +16,7 @@
  */
 package argbeastTest;
 
-import argbeast.GCCoalescentApprox;
+import argbeast.model.GCCoalescentApprox;
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import beast.core.parameter.RealParameter;

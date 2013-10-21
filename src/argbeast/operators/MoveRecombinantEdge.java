@@ -15,20 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package argbeast;
+package argbeast.operators;
 
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.Operator;
+import beast.core.Description;
 
 /**
- * Abstract class of operators which act on the RecombinationGraph state.
- * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public abstract class RecombinationGraphOperator extends Operator {
-    
-    public Input<RecombinationGraph> argInput = new Input<RecombinationGraph>(
-            "arg", "Ancestral recombination graph.", Validate.REQUIRED);
+@Description("Operator which moves connection points of recombinant edges "
+        + "about on clonal frame.")
+public class MoveRecombinantEdge extends RecombinationGraphOperator {
+
+    @Override
+    public double proposal() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package argbeast;
+package argbeast.model;
 
+import argbeast.Recombination;
+import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -143,7 +145,7 @@ public class RecombinationGraphLikelihood extends Distribution {
             if (recomb == null)
                 continue; // Skip clonal frame
             
-            while (j < recomb.startLocus) {
+            while (j < recomb.getStartLocus()) {
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
                 cfPatSet.add(pat);
                 j += 1;
@@ -151,7 +153,7 @@ public class RecombinationGraphLikelihood extends Distribution {
             
             Multiset<int[]> recombPatSet = LinkedHashMultiset.create();
             
-            while (j <= recomb.endLocus) {                
+            while (j <= recomb.getEndLocus()) {                
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
                 recombPatSet.add(pat);
                 j += 1;
@@ -214,11 +216,11 @@ public class RecombinationGraphLikelihood extends Distribution {
     
     
     /**
-     * Initialise likelihood cores.
+     * Initialize likelihood cores.
      */
     private void updateCores() {
         
-        likelihoodCores.keySet().retainAll(arg.recombs);
+        likelihoodCores.keySet().retainAll(arg.getRecombinations());
         
         for (Recombination recomb : arg.getRecombinations()) {
             
