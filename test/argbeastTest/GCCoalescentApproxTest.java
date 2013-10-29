@@ -53,7 +53,7 @@ public class GCCoalescentApproxTest {
      * @return relative difference
      */
     public double relativeDiff(double a, double b) {
-        return 2.0*Math.abs(a-b)/(a+b);
+        return 2.0*Math.abs((a-b)/(a+b));
     }
     
     @Test
@@ -101,7 +101,8 @@ public class GCCoalescentApproxTest {
                 "treeIntervals", new TreeIntervals(arg),
                 "populationModel", popFunction,
                 "rho", new RealParameter("1"),
-                "delta", new RealParameter("10"));
+                "delta", new RealParameter("10"),
+                "allowSameEdgeCoalescence", true);
         
         // Test converted region probability when no recombinations exist
         double logP = coalescent.calculateConvertedRegionMapLogP();
@@ -133,7 +134,8 @@ public class GCCoalescentApproxTest {
         
         // Test coalescent probability when one recombination exists
         logP = coalescent.calculateRecombinantLogP(newRecomb);
-        logPtrue = -0.68980134962441774782;
+        //logPtrue = -0.68980134962441774782; // Same edge coalescence not allowed
+        logPtrue = -0.7677147135425042;
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
     }
 }

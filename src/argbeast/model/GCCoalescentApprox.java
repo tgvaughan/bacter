@@ -39,10 +39,16 @@ public class GCCoalescentApprox extends Coalescent {
     public Input<RealParameter> deltaInput = new Input<RealParameter>("delta",
             "Tract length parameter.", Validate.REQUIRED);
     
+    public Input<Boolean> allowSECInput = new Input<Boolean>("allowSameEdgeCoalescence",
+    "Allow recombinant edges to attach to the edge they depart from.", true);
+
+    
     RecombinationGraph arg;
     TreeIntervals intervals;
     PopulationFunction popSize;
     int sequenceLength;
+    
+    boolean allowSEC;
     
     //double logPcfCoal, logPrecombCoal, logPrecombRegion;
     
@@ -56,6 +62,8 @@ public class GCCoalescentApprox extends Coalescent {
         sequenceLength = arg.getSequenceLength();
         intervals = treeIntervalsInput.get();
         popSize = popSizeInput.get();
+        
+        allowSEC = allowSECInput.get();
         
         super.initAndValidate();
     }
@@ -76,6 +84,7 @@ public class GCCoalescentApprox extends Coalescent {
     
     /**
      * Compute probability of recombinant edges under conditional coalescent.
+     * @param recomb
      * @return log(P)
      */
     public double calculateRecombinantLogP(Recombination recomb) {
@@ -109,7 +118,7 @@ public class GCCoalescentApprox extends Coalescent {
                 timeB = Math.min(recomb.getHeight2(), t+intervals.getInterval(i));
                 k = intervals.getLineageCount(i);
                 
-                if (t < oldCoalescenceTime)
+                if (!allowSEC && t < oldCoalescenceTime)
                     k -=1;
             } else {
                 timeB = recomb.getHeight2();
