@@ -118,4 +118,32 @@ public class Recombination  {
     public int getEndLocus() {
         return endLocus;
     }
+    
+    /**
+     * Check validity of recombination specification: whether specified heights
+     * belong to edges above specified nodes.
+     * 
+     * @return true if specification is valid
+     */
+    public boolean isValid() {
+        if (height1>height2)
+            return false;
+        
+        if (node1.getHeight()>height1)
+            return false;
+        
+        if (node1.getParent().getHeight()<height2)
+            return false;
+        
+        if (node2.getHeight()>height2)
+            return false;
+        
+        if (!node2.isRoot() && node2.getParent().getHeight()<height2)
+            return false;
+        
+        if (startLocus>endLocus)
+            return false;
+        
+        return true;
+    }
 }

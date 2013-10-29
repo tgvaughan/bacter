@@ -277,6 +277,25 @@ public class RecombinationGraph extends Tree {
         return node.isLeaf();
     }
     
+    /**
+     * Check validity of recombinations.  Useful for probability densities
+     * over the ARG to decide whether to return 0 based on an unphysical
+     * state.
+     * 
+     * @return true if all recombinations are valid w.r.t. clonal frame.
+     */
+    public boolean isValid() {
+        for (Recombination recomb : recombs) {
+            if (recomb == null)
+                continue;
+            
+            if (!recomb.isValid())
+                return false;
+        }
+        
+        return true;
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
