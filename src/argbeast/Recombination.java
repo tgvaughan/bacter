@@ -118,6 +118,63 @@ public class Recombination  {
     public int getEndLocus() {
         return endLocus;
     }
+
+    /**
+     * Set node below most recent point at which recombinant edge attaches
+     * to clonal frame.
+     * 
+     * @param node1 
+     */
+    public void setNode1(Node node1) {
+        this.node1 = node1;
+    }
+
+    /**
+     * Set node below oldest point at which recombinant edge attaches to
+     * clonal frame.
+     * 
+     * @param node2 
+     */
+    public void setNode2(Node node2) {
+        this.node2 = node2;
+    }
+
+    /**
+     * Set height at most recent attachment of recombinant edge to clonal
+     * frame.
+     * 
+     * @param height1 
+     */
+    public void setHeight1(double height1) {
+        this.height1 = height1;
+    }
+
+    /**
+     * Set height at oldest attachment of recombinant edge to clonal frame.
+     * 
+     * @param height2 
+     */
+    public void setHeight2(double height2) {
+        this.height2 = height2;
+    }
+
+    /**
+     * Set locus of start of alignment region affected by conversion event.
+     * 
+     * @param startLocus 
+     */
+    public void setStartLocus(int startLocus) {
+        this.startLocus = startLocus;
+    }
+
+    /**
+     * Set locus of end of alignment region affected by conversion event.
+     * 
+     * @param endLocus 
+     */
+    public void setEndLocus(int endLocus) {
+        this.endLocus = endLocus;
+    }
     
     /**
      * Check validity of recombination specification: whether specified heights

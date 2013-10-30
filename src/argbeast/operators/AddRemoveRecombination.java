@@ -11,9 +11,11 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /*
  * Copyright (C) 2013 Tim Vaughan <tgvaughan@gmail.com>
@@ -50,18 +52,27 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     private RecombinationGraph arg;
     private PopulationFunction popFunc;
 
-    enum Type { COALESCENCE, SAMPLE };
+    private enum Type { COALESCENCE, SAMPLE };
     private class Event {
         Type type;
         double realTime;
         double dimensionlessTime = -1.0;
         int lineages = -1;
+        Node node;
         
-        public Event(Type type, double realTime) {
-            this.type = type;
-            this.realTime = realTime;
+        public Event(Node node) {
+            this.node = node;
+            if (node.isLeaf())
+                this.type = Type.SAMPLE;
+            else
+                this.type = Type.COALESCENCE;
+            
+            this.realTime = node.getHeight();
         }
     }
+    
+    private List<Event> eventList;
+    private Map<Node, Event> eventMap;
     
     public AddRemoveRecombination() { };
     
@@ -69,12 +80,17 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     public void initAndValidate() {
         arg = argInput.get();
         popFunc = popFuncInput.get();
+        
+        eventList = Lists.newArrayList();
+        eventMap = Maps.newHashMap();
     };
 
     @Override
     public double proposal() {
         double logHGF = 0;
 
+        updateEvents();
+        
         if (Randomizer.nextDouble()<0.5) {
             
             // Add
@@ -109,7 +125,31 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     private double drawNewRecomb() {
         double logP = 0;
         
+        Recombination recomb = new Recombination();
         
+        // Select starting point on clonal frame
+        double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
+        
+        for (Node node : arg.getNodesAsArray()) {
+            u -= node.getLength();
+            
+            if (u<0) {
+                recomb.setNode1(node);
+                recomb.setHeight1(u+node.getParent().getHeight());
+            }
+        }
+        
+        // Find event corresponding to node below starting point
+        Event event1 = eventMap.get(recomb.getNode1());
+        
+        // Transform starting time to dimensionless time
+        double tau1 = event1.dimensionlessTime
+                + popFunc.getIntegral(event1.realTime, recomb.getHeight1());
+        
+        // Draw coalescent time with clonal frame
+        
+        
+        // Draw location of converted region
         
         return logP;
     }
@@ -128,19 +168,18 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     }
     
     /**
-     * Generate sorted list of events on clonal frame.
-     * 
-     * @return List of event objects
+     * Assemble sorted list of events on clonal frame and a map from nodes
+     * to these events.
      */
-    private List<Event> getEvents() {
-        List<Event> eventList = Lists.newArrayList();
+    private void updateEvents() {
+        eventList.clear();
+        eventMap.clear();
         
         // Create event list
         for (Node node : arg.getNodesAsArray()) {
-            if (node.isLeaf())
-                eventList.add(new Event(Type.SAMPLE, node.getHeight()));
-            else
-                eventList.add(new Event(Type.COALESCENCE, node.getHeight()));
+            Event event = new Event(node);
+            eventList.add(event);
+            eventMap.put(node, event);
         }
         
         // Sort events in increasing order of their times
@@ -180,7 +219,5 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 tau += popFunc.getIntegral(event.realTime, nextEvent.realTime);
             }
         }
-        
-        return eventList;
     }
 }
