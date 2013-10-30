@@ -147,7 +147,13 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 + popFunc.getIntegral(event1.realTime, recomb.getHeight1());
         
         // Draw coalescent time with clonal frame
+        int event1idx = eventList.indexOf(event1);
         
+        for (int eidx=event1idx; eidx<eventList.size(); eidx++) {
+            
+            
+            
+        }
         
         // Draw location of converted region
         
