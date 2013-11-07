@@ -1,22 +1,3 @@
-package argbeast.operators;
-
-
-import argbeast.Recombination;
-import argbeast.RecombinationGraph;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.coalescent.PopulationFunction;
-import beast.util.Randomizer;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
 /*
  * Copyright (C) 2013 Tim Vaughan <tgvaughan@gmail.com>
  *
@@ -33,6 +14,23 @@ import java.util.Map;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package argbeast.operators;
+
+import argbeast.Recombination;
+import argbeast.RecombinationGraph;
+import beast.core.Description;
+import beast.core.Input;
+import beast.core.Input.Validate;
+import beast.core.parameter.RealParameter;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.util.Randomizer;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -147,11 +145,10 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 + popFunc.getIntegral(event1.realTime, recomb.getHeight1());
         
         // Draw coalescent time with clonal frame
+        u = Randomizer.nextExponential(0.5);
         int event1idx = eventList.indexOf(event1);
         
         for (int eidx=event1idx; eidx<eventList.size(); eidx++) {
-            
-            
             
         }
         
