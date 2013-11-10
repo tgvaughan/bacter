@@ -145,12 +145,30 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 + popFunc.getIntegral(event1.realTime, recomb.getHeight1());
         
         // Draw coalescent time with clonal frame
-        u = Randomizer.nextExponential(0.5);
+        u = Randomizer.nextExponential(1.0);
         int event1idx = eventList.indexOf(event1);
         
-        for (int eidx=event1idx; eidx<eventList.size(); eidx++) {
-            
+        double tau2 = 0;
+        int event2idx;
+        for (event2idx=event1idx; event2idx<eventList.size(); event2idx++) {
+            Event thisEvent = eventList.get(event2idx);
+            if (event2idx < eventList.size()-1) {
+                Event nextEvent = eventList.get(event2idx+1);
+                
+                if ((nextEvent.dimensionlessTime-thisEvent.dimensionlessTime)*thisEvent.lineages>u) {
+                   tau2 = thisEvent.dimensionlessTime + u/thisEvent.lineages;
+                   break;
+                } else
+                    u -= (nextEvent.dimensionlessTime-thisEvent.dimensionlessTime)*thisEvent.lineages;
+                
+            } else
+                tau2 = thisEvent.dimensionlessTime + u;
         }
+        
+        Event event2 = eventList.get(event2idx);
+        recomb.setNode2(event2.node);
+        recomb.setHeight2(event2.realTime +
+                popFunc.getInverseIntensity(tau2)-popFunc.getInverseIntensity(event2.realTime));
         
         // Draw location of converted region
         
