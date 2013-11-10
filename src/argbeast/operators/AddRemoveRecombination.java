@@ -136,6 +136,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 recomb.setHeight1(u+node.getParent().getHeight());
             }
         }
+        logP += -Math.log(arg.getClonalFrameLength());
         
         // Find event corresponding to node below starting point
         Event event1 = eventMap.get(recomb.getNode1());
@@ -152,23 +153,27 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         int event2idx;
         for (event2idx=event1idx; event2idx<eventList.size(); event2idx++) {
             Event thisEvent = eventList.get(event2idx);
+            double lastTau = Math.max(tau1, thisEvent.dimensionlessTime);
             if (event2idx < eventList.size()-1) {
                 Event nextEvent = eventList.get(event2idx+1);
                 
-                if ((nextEvent.dimensionlessTime-thisEvent.dimensionlessTime)*thisEvent.lineages>u) {
-                   tau2 = thisEvent.dimensionlessTime + u/thisEvent.lineages;
+                if ((nextEvent.dimensionlessTime-lastTau)*thisEvent.lineages>u) {
+                   tau2 = lastTau + u/thisEvent.lineages;
                    break;
-                } else
-                    u -= (nextEvent.dimensionlessTime-thisEvent.dimensionlessTime)*thisEvent.lineages;
-                
+                } else {
+                    u -= (nextEvent.dimensionlessTime-lastTau)*thisEvent.lineages;
+                    logP += -popFunc.getIntegral(thisEvent.realTime, nextEvent.realTime);
+                }
             } else
-                tau2 = thisEvent.dimensionlessTime + u;
+                tau2 = lastTau + u;
         }
         
         Event event2 = eventList.get(event2idx);
         recomb.setNode2(event2.node);
         recomb.setHeight2(event2.realTime +
                 popFunc.getInverseIntensity(tau2)-popFunc.getInverseIntensity(event2.realTime));
+
+        logP += -popFunc.getIntegral(event2.realTime, recomb.getHeight2());
         
         // Draw location of converted region
         
