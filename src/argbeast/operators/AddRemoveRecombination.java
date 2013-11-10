@@ -123,7 +123,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     private double drawNewRecomb() {
         double logP = 0;
         
-        Recombination recomb = new Recombination();
+        Recombination newRecomb = new Recombination();
         
         // Select starting point on clonal frame
         double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
@@ -132,18 +132,18 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             u -= node.getLength();
             
             if (u<0) {
-                recomb.setNode1(node);
-                recomb.setHeight1(u+node.getParent().getHeight());
+                newRecomb.setNode1(node);
+                newRecomb.setHeight1(u+node.getParent().getHeight());
             }
         }
         logP += -Math.log(arg.getClonalFrameLength());
         
         // Find event corresponding to node below starting point
-        Event event1 = eventMap.get(recomb.getNode1());
+        Event event1 = eventMap.get(newRecomb.getNode1());
         
         // Transform starting time to dimensionless time
         double tau1 = event1.dimensionlessTime
-                + popFunc.getIntegral(event1.realTime, recomb.getHeight1());
+                + popFunc.getIntegral(event1.realTime, newRecomb.getHeight1());
         
         // Draw coalescent time with clonal frame
         u = Randomizer.nextExponential(1.0);
@@ -169,14 +169,40 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         }
         
         Event event2 = eventList.get(event2idx);
-        recomb.setNode2(event2.node);
-        recomb.setHeight2(event2.realTime +
-                popFunc.getInverseIntensity(tau2)-popFunc.getInverseIntensity(event2.realTime));
+        newRecomb.setNode2(event2.node);
+        newRecomb.setHeight2(event2.realTime
+                + popFunc.getInverseIntensity(tau2)
+                -popFunc.getInverseIntensity(event2.realTime));
 
-        logP += -popFunc.getIntegral(event2.realTime, recomb.getHeight2());
+        logP += -popFunc.getIntegral(event2.realTime, newRecomb.getHeight2());
         
-        // Draw location of converted region
+        // Draw location of converted region.  Currently draws start locus 
+        // uniformly from among available unconverted loci and draws the tract
+        // length from an exponential distribution.  If the end of the tract
+        // exceeds the start of the next region, the proposal is rejected.
+        int convertedLength = 0;
+        for (Recombination recomb : arg.getRecombinations())
+            convertedLength += recomb.getHeight2()-recomb.getHeight1()+1;
         
+        int convertableLength = arg.getSequenceLength()
+                - convertedLength - arg.getNRecombs()*2;
+        
+        int start = Randomizer.nextInt(convertableLength);
+        for (int r=0; r<arg.getNRecombs(); r++) {
+            Recombination recomb = arg.getRecombinations().get(r);
+
+            if (r==0 && recomb.getStartLocus()>2) {
+                if (recomb.getStartLocus()-1>start) {
+                    newRecomb.setStartLocus(start);
+                    break;
+                }
+            }
+
+            if (r==arg.getNRecombs()-1 && recomb.getEndLocus()<arg.getSequenceLength()-3) {
+                // TODO
+            }
+        }
+        newRecomb.setEndLocus((int)Randomizer.nextExponential(1.0/deltaInput.get().getValue()));
         return logP;
     }
     
