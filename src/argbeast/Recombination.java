@@ -26,7 +26,7 @@ import beast.evolution.tree.Node;
  * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class Recombination  {
+public class Recombination {
     
     public Recombination() { }
     

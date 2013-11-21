@@ -33,7 +33,8 @@ import java.util.List;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Simulates an ARG - can be used for chain initialization.")
+@Description("Simulates an ARG - can be used for chain initialization or for "
+        + "sampler validation.")
 public class RecombinationGraphSimulator extends RecombinationGraph implements StateNodeInitialiser {
 
     public Input<Double> rhoInput = new Input<Double>("rho",
@@ -58,6 +59,9 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         rho = rhoInput.get();
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
+        
+        simulateClonalFrame();
+        generateRecombinations();
     }
 
     /**
@@ -80,11 +84,11 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         List<Node> inactiveNodes = Lists.newArrayList(leafNodes);
         Collections.sort(inactiveNodes, new Comparator<Node>() {
             @Override
-            public int compare(Node o1, Node o2) {
-                if (o1.getHeight()<o2.getHeight())
+            public int compare(Node n1, Node n2) {
+                if (n1.getHeight()<n2.getHeight())
                     return -1;
                 
-                if (o2.getHeight()>o1.getHeight())
+                if (n2.getHeight()>n1.getHeight())
                     return 1;
                 
                 return 0;
@@ -94,18 +98,48 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         List<Node> activeNodes = Lists.newArrayList();
         
         double tau = 0.0;
+        int nextNr = leafNodes.size();
         while (true) {
             
             // Calculate coalescence propensity
             int k = activeNodes.size();
             double chi = 0.5*k*(k-1);
-            tau += Randomizer.nextExponential(chi);
             
+            // Draw scaled coalescent time
+            if (chi>0.0)
+                tau += Randomizer.nextExponential(chi);
+            else
+                tau = Double.POSITIVE_INFINITY;
+            
+            // Convert to real time
             double t = popFunc.getInverseIntensity(tau);
+            
+            // If new time takes us past next sample time, insert that sample
+            if (!inactiveNodes.isEmpty() && t>inactiveNodes.get(0).getHeight()) {
+                Node nextActive = inactiveNodes.remove(0);
+                activeNodes.add(nextActive);
+                tau = popFunc.getIntensity(nextActive.getHeight());
+                continue;
+            }
+            
+            // Coalesce random pair of active nodes.
+            Node node1 = activeNodes.remove(Randomizer.nextInt(k));
+            Node node2 = activeNodes.remove(Randomizer.nextInt(k-1));
+            
+            Node parent = new Node();
+            parent.addChild(node1);
+            parent.addChild(node2);
+            parent.setHeight(t);
+            parent.setNr(nextNr++);
+            
+            activeNodes.add(parent);
             
             if (inactiveNodes.isEmpty() && activeNodes.size()<2)
                 break;
         }
+        
+        // Remaining active node is root
+        setRoot(activeNodes.get(0));
     }
     
     /**
