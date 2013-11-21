@@ -290,6 +290,26 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         }
 
         // Calculate probability of converted region.
+        int convertableLength = 0;
+        for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
+            Recombination thisRecomb = arg.getRecombinations().get(ridx);
+            
+            if (ridx==0) {
+                convertableLength += Math.max(0, thisRecomb.getStartLocus()-1);
+            } else {
+                Recombination prevRecomb = arg.getRecombinations().get(ridx-1);
+                convertableLength += Math.max(0,
+                        thisRecomb.getStartLocus()-prevRecomb.getEndLocus()-3);
+            }
+            
+            if (ridx==arg.getNRecombs()-1) {
+                int finalLocus = arg.getSequenceLength()-1;
+                convertableLength += Math.max(0, finalLocus-thisRecomb.getEndLocus()-1);
+            }
+        }
+        
+        logP += Math.log(1.0/convertableLength)
+                + -(recomb.getEndLocus()-recomb.getStartLocus())*deltaInput.get().getValue();
         
         return logP;
     }
