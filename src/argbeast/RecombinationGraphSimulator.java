@@ -23,6 +23,8 @@ import beast.core.Input.Validate;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.util.Randomizer;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,8 +41,12 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
     
     public Input<Double> deltaInput = new Input<Double>("delta",
             "Tract length parameter.", Validate.REQUIRED);
+    
+    public Input<PopulationFunction> popFuncInput = new Input<PopulationFunction>(
+            "populationFunction", "Demographic model to use.", Validate.REQUIRED);
 
     private double rho, delta;
+    private PopulationFunction popFunc;
     
     public RecombinationGraphSimulator() { };
     
@@ -51,7 +57,7 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         
         rho = rhoInput.get();
         delta = deltaInput.get();
-        
+        popFunc = popFuncInput.get();
     }
 
     /**
@@ -87,12 +93,15 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         
         List<Node> activeNodes = Lists.newArrayList();
         
-        double t = 0.0;
+        double tau = 0.0;
         while (true) {
             
             // Calculate coalescence propensity
             int k = activeNodes.size();
+            double chi = 0.5*k*(k-1);
+            tau += Randomizer.nextExponential(chi);
             
+            double t = popFunc.getInverseIntensity(tau);
             
             if (inactiveNodes.isEmpty() && activeNodes.size()<2)
                 break;
