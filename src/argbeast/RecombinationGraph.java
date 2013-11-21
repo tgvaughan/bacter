@@ -285,12 +285,22 @@ public class RecombinationGraph extends Tree {
      * @return true if all recombinations are valid w.r.t. clonal frame.
      */
     public boolean isValid() {
-        for (Recombination recomb : recombs) {
-            if (recomb == null)
-                continue;
+        for (int ridx=1; ridx<recombs.size(); ridx++) {
             
-            if (!recomb.isValid())
+            if (!recombs.get(ridx).isValid())
                 return false;
+            
+            if (ridx>1) {
+                if (recombs.get(ridx-1).getEndLocus()>recombs.get(ridx).getStartLocus()-2)
+                    return false;
+            } else {
+                if (recombs.get(ridx).startLocus<0)
+                    return false;
+            }
+            
+            if (ridx==recombs.size()-1)
+                if (recombs.get(ridx).getEndLocus()>getSequenceLength()-1)
+                    return false;
         }
         
         return true;
