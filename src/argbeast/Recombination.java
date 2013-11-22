@@ -62,7 +62,7 @@ public class Recombination {
     /**
      * Range of nucleotides affected by homologous gene conversion.
      */
-    int startLocus, endLocus;
+    long startLocus, endLocus;
     
     /**
      * Obtain node below most recent point at which recombinant edge
@@ -107,7 +107,7 @@ public class Recombination {
      * Return locus of start of alignment region affected by recombination.
      * @return locus
      */
-    public int getStartLocus() {
+    public long getStartLocus() {
         return startLocus;
     }
     
@@ -115,7 +115,7 @@ public class Recombination {
      * Return locus of end of alignment region affected by recombination.
      * @return locus
      */
-    public int getEndLocus() {
+    public long getEndLocus() {
         return endLocus;
     }
 
@@ -163,7 +163,7 @@ public class Recombination {
      * 
      * @param startLocus 
      */
-    public void setStartLocus(int startLocus) {
+    public void setStartLocus(long startLocus) {
         this.startLocus = startLocus;
     }
 
@@ -172,7 +172,7 @@ public class Recombination {
      * 
      * @param endLocus 
      */
-    public void setEndLocus(int endLocus) {
+    public void setEndLocus(long endLocus) {
         this.endLocus = endLocus;
     }
     

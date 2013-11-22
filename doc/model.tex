@@ -71,9 +71,10 @@ Our model governing the probability of the converted region set $M$
 differs from that used by ClonalOrigin. \cite{Didelot2010} allow for
 recombination events to affect overlapping regions of the genome.  In
 contrast, we forbid the regions from overlapping. Our motivation for
-this is that the model for the position of the recombinant edges used
+this is twofold: (1) the model for the position of the recombinant edges used
 by $f(R|T,M,\theta)$ only makes sense when such overlapping regions
-are excluded.
+are excluded, and (2) excluding such overlaps leads to simpler and
+more efficient code.
 
 Our model for $M$ makes use of the discrete Markov process
 \begin{equation}

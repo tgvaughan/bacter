@@ -148,8 +148,37 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
      */
     private void generateRecombinations() {
         
-        // Choose the starting state:
+        double pRec = 0.5*rho*getClonalFrameLength()/getSequenceLength();
+        double pTractEnd = 1.0/delta;
+        double p0cf = 1.0/(1.0 + pRec*delta);
+
+        long l = 0;
+        while (true) {
+            long dl;
+            
+            if (l==0 && Randomizer.nextDouble()<p0cf)
+                dl = 0;
+            else
+                dl = Randomizer.nextGeometric(pRec)+1;
+
+            if (dl>=getSequenceLength())
+                break;
+            
+            Recombination recomb = new Recombination();
+            recomb.setStartLocus(dl);
+            
+            dl += Randomizer.nextGeometric(pTractEnd);
+            recomb.setEndLocus(Math.min(dl,getSequenceLength()-1));
+            
+            addRecombination(recomb);
+        }
     }
+    
+    /**
+     * Associates recombinations with the clonal frame, selecting points of
+     * departure and coalescence.
+     */
+    private void associateRecombinationsWithCF() { }
     
     @Override
     public void initStateNodes() throws Exception { }
