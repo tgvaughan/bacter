@@ -154,21 +154,21 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
 
         long l = 0;
         while (true) {
-            long dl;
+            long locus;
             
             if (l==0 && Randomizer.nextDouble()<p0cf)
-                dl = 0;
+                locus = 0;
             else
-                dl = Randomizer.nextGeometric(pRec)+1;
+                locus = Randomizer.nextGeometric(pRec)+1;
 
-            if (dl>=getSequenceLength())
+            if (locus>=getSequenceLength())
                 break;
             
             Recombination recomb = new Recombination();
-            recomb.setStartLocus(dl);
+            recomb.setStartLocus(locus);
             
-            dl += Randomizer.nextGeometric(pTractEnd);
-            recomb.setEndLocus(Math.min(dl,getSequenceLength()-1));
+            locus += Randomizer.nextGeometric(pTractEnd);
+            recomb.setEndLocus(Math.min(locus,getSequenceLength()-1));
             
             addRecombination(recomb);
         }
@@ -178,7 +178,28 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
      * Associates recombinations with the clonal frame, selecting points of
      * departure and coalescence.
      */
-    private void associateRecombinationsWithCF() { }
+    private void associateRecombinationsWithCF() {
+    
+        for (Recombination recomb : getRecombinations()) {
+            
+            // Select departure point            
+            double u = Randomizer.nextDouble()*getClonalFrameLength();
+            for (Node node : getNodesAsArray()) {
+                if (node.isRoot())
+                    continue;
+                
+                if (u<node.getLength()) {
+                    recomb.setNode1(node);
+                    recomb.setHeight1(node.getHeight()+u);
+                    break;
+                } else
+                    u -= node.getLength();
+            }
+            
+            
+        }
+        
+    }
     
     @Override
     public void initStateNodes() throws Exception { }
