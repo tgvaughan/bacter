@@ -238,8 +238,13 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         
         // Choose coalescence point
         
+        /*
+        * TODO: This is BROKEN. Strategy involving event list needs to
+        * be rethought.  Same is true of add/remove operator!!!
+        */
+        
         u = Randomizer.nextExponential(1.0);
-        double tau = recomb.getHeight1();
+        double tau = popFunc.getIntensity(recomb.getHeight1());
         boolean started = false;
         int eidx;
         for (eidx=0; eidx<eventList.size(); eidx++) {
