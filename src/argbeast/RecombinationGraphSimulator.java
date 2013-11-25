@@ -70,8 +70,6 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
     @Override
     public void initAndValidate() throws Exception {
 
-        super.initAndValidate();
-        
         rho = rhoInput.get();
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
@@ -79,7 +77,12 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         eventList = Lists.newArrayList();
         
         simulateClonalFrame();
+        
+        initArrays();
+        super.initAndValidate();
+        
         generateRecombinations();
+
     }
 
     /**
@@ -176,24 +179,35 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         double pRec = 0.5*rho*getClonalFrameLength()/getSequenceLength();
         double pTractEnd = 1.0/delta;
         double p0cf = 1.0/(1.0 + pRec*delta);
-
-        long l = 0;
-        while (true) {
-            long locus;
+        
+        long l; // next available convertible locus
+        if (Randomizer.nextDouble()>p0cf) {
+            Recombination recomb = new Recombination();
+            recomb.setStartLocus(0);
+            long tractLength = Randomizer.nextGeometric(pTractEnd);
+            recomb.setEndLocus(Math.min(tractLength, getSequenceLength()-1));
             
-            if (l==0 && Randomizer.nextDouble()<p0cf)
-                locus = 0;
-            else
-                locus = Randomizer.nextGeometric(pRec)+1;
+            l = tractLength+1;
+        } else
+            l = 1;
+        
+        if (l>=getSequenceLength())
+            return;
 
-            if (locus>=getSequenceLength())
+        while (true) {
+            l += Randomizer.nextGeometric(pRec);
+
+            if (l>=getSequenceLength())
                 break;
             
             Recombination recomb = new Recombination();
-            recomb.setStartLocus(locus);
+            recomb.setStartLocus(l);
             
-            locus += Randomizer.nextGeometric(pTractEnd);
-            recomb.setEndLocus(Math.min(locus,getSequenceLength()-1));
+            l += Randomizer.nextGeometric(pTractEnd);
+            recomb.setEndLocus(Math.min(l,getSequenceLength()-1));
+            
+            if (l>=getSequenceLength())
+                break;
             
             associateRecombinationWithCF(recomb);
             addRecombination(recomb);

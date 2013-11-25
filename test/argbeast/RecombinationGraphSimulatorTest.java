@@ -52,7 +52,7 @@ public class RecombinationGraphSimulatorTest {
     @Test
     public void test() throws Exception {
         
-        Randomizer.setSeed(42);
+        Randomizer.setSeed(1234);
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
@@ -75,9 +75,14 @@ public class RecombinationGraphSimulatorTest {
         
         RecombinationGraphSimulator rgs = new RecombinationGraphSimulator();
         rgs.initByName(
-                "rho", 1e-2,
+                "rho", 1.0,
                 "delta", 100.0,
                 "populationFunction", popFunc,
                 "alignment", alignment);
+        
+        for (Recombination recomb : rgs.getRecombinations())
+            System.out.println(rgs.getMarginalNewick(recomb));
+        
+        System.out.println(rgs.getExtendedNewick());
     }
 }
