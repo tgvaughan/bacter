@@ -49,6 +49,22 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
     private double rho, delta;
     private PopulationFunction popFunc;
     
+    private enum EventType {COALESCENCE, SAMPLE};
+    private class Event {
+        EventType type;
+        double tau;
+        Node node;
+        int lineages;
+        
+        Event (EventType type, double tau, Node node, int lineages) {
+            this.type = type;
+            this.tau = tau;
+            this.node = node;
+            this.lineages = lineages;
+        }
+    }
+    private List<Event> eventList;
+    
     public RecombinationGraphSimulator() { };
     
     @Override
@@ -59,6 +75,8 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         rho = rhoInput.get();
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
+        
+        eventList = Lists.newArrayList();
         
         simulateClonalFrame();
         generateRecombinations();
@@ -73,11 +91,13 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         List<Node> leafNodes = Lists.newArrayList();
         for (int i=0; i<alignmentInput.get().getNrTaxa(); i++) {
             Node leaf = new Node();
-            leaf.setNr(index);
+            leaf.setNr(i);
             if (timeTraitSet != null)
                 leaf.setHeight(timeTraitSet.getValue(i));
             else
                 leaf.setHeight(0.0);
+            
+            leafNodes.add(leaf);
         }
         
         // Create and sort list of inactive nodes
@@ -96,6 +116,7 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         });
         
         List<Node> activeNodes = Lists.newArrayList();
+        eventList.clear();
         
         double tau = 0.0;
         int nextNr = leafNodes.size();
@@ -119,6 +140,8 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
                 Node nextActive = inactiveNodes.remove(0);
                 activeNodes.add(nextActive);
                 tau = popFunc.getIntensity(nextActive.getHeight());
+                eventList.add(new Event(EventType.SAMPLE, tau, nextActive,
+                        activeNodes.size()));
                 continue;
             }
             
@@ -133,6 +156,8 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
             parent.setNr(nextNr++);
             
             activeNodes.add(parent);
+            eventList.add(new Event(EventType.COALESCENCE, tau, parent,
+                    activeNodes.size()));
             
             if (inactiveNodes.isEmpty() && activeNodes.size()<2)
                 break;
@@ -170,35 +195,67 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
             locus += Randomizer.nextGeometric(pTractEnd);
             recomb.setEndLocus(Math.min(locus,getSequenceLength()-1));
             
+            associateRecombinationWithCF(recomb);
             addRecombination(recomb);
         }
     }
     
     /**
-     * Associates recombinations with the clonal frame, selecting points of
+     * Associates recombination with the clonal frame, selecting points of
      * departure and coalescence.
+     * 
+     * @param recomb recombination to associate
      */
-    private void associateRecombinationsWithCF() {
+    private void associateRecombinationWithCF(Recombination recomb) {
     
-        for (Recombination recomb : getRecombinations()) {
+        // Select departure point            
+        double u = Randomizer.nextDouble()*getClonalFrameLength();
+        for (Node node : getNodesAsArray()) {
+            if (node.isRoot())
+                continue;
             
-            // Select departure point            
-            double u = Randomizer.nextDouble()*getClonalFrameLength();
-            for (Node node : getNodesAsArray()) {
-                if (node.isRoot())
-                    continue;
-                
-                if (u<node.getLength()) {
-                    recomb.setNode1(node);
-                    recomb.setHeight1(node.getHeight()+u);
-                    break;
-                } else
-                    u -= node.getLength();
-            }
-            
-            
+            if (u<node.getLength()) {
+                recomb.setNode1(node);
+                recomb.setHeight1(node.getHeight()+u);
+                break;
+            } else
+                u -= node.getLength();
         }
         
+        // Choose coalescence point
+        
+        u = Randomizer.nextExponential(1.0);
+        double tau = recomb.getHeight1();
+        boolean started = false;
+        int eidx;
+        for (eidx=0; eidx<eventList.size(); eidx++) {
+            Event event = eventList.get(eidx);
+            
+            if (!started) {
+                if (eventList.get(eidx).node.equals(recomb.getNode1()))
+                    started = true;
+                else
+                    continue;
+            }
+            
+            if (eidx<eventList.size()-1) {
+                Event nextEvent = eventList.get(eidx+1);
+                if ((nextEvent.tau-event.tau)*event.lineages>u) {
+                    tau += u/event.lineages;
+                    recomb.setNode2(event.node);
+                    recomb.setHeight2(popFunc.getInverseIntensity(tau));
+                    break;
+                } else {
+                    tau = nextEvent.tau;
+                    u -= (nextEvent.tau-event.tau)*event.lineages;
+                }
+            } else {
+                tau = event.tau + u;
+                recomb.setNode2(event.node);
+                recomb.setHeight2(popFunc.getInverseIntensity(tau));
+                break;
+            }
+        }
     }
     
     @Override

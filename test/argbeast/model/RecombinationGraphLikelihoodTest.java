@@ -14,19 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package argbeastTest;
+package argbeast.model;
 
-import argbeast.model.GCCoalescentApprox;
+import argbeast.Recombination;
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
-import beast.core.parameter.RealParameter;
+import argbeast.RecombinationGraph;
+import argbeast.model.RecombinationGraphLikelihood;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.ClusterTree;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,30 +33,25 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Tests the evaluation of the ARG probability density under the approximate
- * coalescent with gene conversion model used by GCCCoalescentApprox.
+ * Tests the calculation of the ARG likelihood given the sequence data.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class GCCoalescentApproxTest {
+public class RecombinationGraphLikelihoodTest {
     
-    public GCCoalescentApproxTest() {
+    public RecombinationGraphLikelihoodTest() {
     }
     
-    /**
-     * Calculate absolute difference between two real numbers relative to
-     * the mean of the two numbers.
-     * 
-     * @param a
-     * @param b
-     * @return relative difference
-     */
-    public double relativeDiff(double a, double b) {
-        return 2.0*Math.abs((a-b)/(a+b));
-    }
+    // TODO add test methods here.
+    // The methods must be annotated with annotation @Test. For example:
+    //
+    // @Test
+    // public void hello() {}
     
     @Test
-    public void test() throws Exception {
+    public void testClonalFrameLikelihood() throws Exception {
+                // Sequence alignment
+        
         List<Sequence> sequences = new ArrayList<Sequence>();
         sequences.add(new Sequence("Tarsius_syrichta","AAGTTTCATTGGAGCCACCACTCTTATAATTGCCCATGGCCTCACCTCCTCCCTATTATTTTGCCTAGCAAATACAAACTACGAACGAGTCCACAGTCGAACAATAGCACTAGCCCGTGGCCTTCAAACCCTATTACCTCTTGCAGCAACATGATGACTCCTCGCCAGCTTAACCAACCTGGCCCTTCCCCCAACAATTAATTTAATCGGTGAACTGTCCGTAATAATAGCAGCATTTTCATGGTCACACCTAACTATTATCTTAGTAGGCCTTAACACCCTTATCACCGCCCTATATTCCCTATATATACTAATCATAACTCAACGAGGAAAATACACATATCATATCAACAATATCATGCCCCCTTTCACCCGAGAAAATACATTAATAATCATACACCTATTTCCCTTAATCCTACTATCTACCAACCCCAAAGTAATTATAGGAACCATGTACTGTAAATATAGTTTAAACAAAACATTAGATTGTGAGTCTAATAATAGAAGCCCAAAGATTTCTTATTTACCAAGAAAGTA-TGCAAGAACTGCTAACTCATGCCTCCATATATAACAATGTGGCTTTCTT-ACTTTTAAAGGATAGAAGTAATCCATCGGTCTTAGGAACCGAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATTTATTTTCATCCTCCATTTTACTATCACTTACACTCTTAATTACCCCATTTATTATTACAACAACTAAAAAATATGAAACACATGCATACCCTTACTACGTAAAAAACTCTATCGCCTGCGCATTTATAACAAGCCTAGTCCCAATGCTCATATTTCTATACACAAATCAAGAAATAATCATTTCCAACTGACATTGAATAACGATTCATACTATCAAATTATGCCTAAGCTT"));
         sequences.add(new Sequence("Lemur_catta","AAGCTTCATAGGAGCAACCATTCTAATAATCGCACATGGCCTTACATCATCCATATTATTCTGTCTAGCCAACTCTAACTACGAACGAATCCATAGCCGTACAATACTACTAGCACGAGGGATCCAAACCATTCTCCCTCTTATAGCCACCTGATGACTACTCGCCAGCCTAACTAACCTAGCCCTACCCACCTCTATCAATTTAATTGGCGAACTATTCGTCACTATAGCATCCTTCTCATGATCAAACATTACAATTATCTTAATAGGCTTAAATATGCTCATCACCGCTCTCTATTCCCTCTATATATTAACTACTACACAACGAGGAAAACTCACATATCATTCGCACAACCTAAACCCATCCTTTACACGAGAAAACACCCTTATATCCATACACATACTCCCCCTTCTCCTATTTACCTTAAACCCCAAAATTATTCTAGGACCCACGTACTGTAAATATAGTTTAAA-AAAACACTAGATTGTGAATCCAGAAATAGAAGCTCAAAC-CTTCTTATTTACCGAGAAAGTAATGTATGAACTGCTAACTCTGCACTCCGTATATAAAAATACGGCTATCTCAACTTTTAAAGGATAGAAGTAATCCATTGGCCTTAGGAGCCAAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATCTATTATCCTCTTTCACCCTTGTCACACTGATTATCCTAACTTTACCTATCATTATAAACGTTACAAACATATACAAAAACTACCCCTATGCACCATACGTAAAATCTTCTATTGCATGTGCCTTCATCACTAGCCTCATCCCAACTATATTATTTATCTCCTCAGGACAAGAAACAATCATTTCCAACTGACATTGAATAACAATCCAAACCCTAAAACTATCTATTAGCTT"));
@@ -90,52 +84,54 @@ public class GCCoalescentApproxTest {
         siteModel.initByName(
                 "substModel", jc);
         
-        // Population size model:
-        ConstantPopulation popFunction = new ConstantPopulation();
-        popFunction.initByName("popSize", new RealParameter("1.0"));
+        // Likelihood
         
-        // Coalescent
-        GCCoalescentApprox coalescent = new GCCoalescentApprox();
-        coalescent.initByName(
-                "tree", arg,
-                "treeIntervals", new TreeIntervals(arg),
-                "populationModel", popFunction,
-                "rho", new RealParameter("1"),
-                "delta", new RealParameter("10"),
-                "allowSameEdgeCoalescence", true);
+        RecombinationGraphLikelihood argLikelihood = new RecombinationGraphLikelihood();
+        argLikelihood.initByName(
+                "data", alignment,
+                "arg", arg,
+                "siteModel", siteModel);
         
-        // Test converted region probability when no recombinations exist
-        double logP = coalescent.calculateConvertedRegionMapLogP();
-        double logPtrue = -0.66521909670314471885;
-        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        arg.setEverythingDirty(true);
         
-        // Coalescent probability when no recombinations exist
-        logP = coalescent.calculateRecombinantLogP(null);
-        logPtrue = -4.733611657513131;
-        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        double logP = argLikelihood.calculateLogP();
+        double logPtrue = -6444.862402765536;
+        double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+        
+        assertTrue(relativeDiff<1e-14);
         
         //Add a single recombination event
         Node node1 = arg.getExternalNodes().get(0);
-        //Node node2 = arg.getRoot();
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
-        //double height2 = node2.getHeight() + 1.0;
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination newRecomb = new Recombination(node1, height1, node2, height2,
+        Recombination recomb1 = new Recombination(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(newRecomb);
-
-        // Test converted region probability when one recombination exists
-        logP = coalescent.calculateConvertedRegionMapLogP();
-        logPtrue = -20.647146531355350163;
-        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        arg.addRecombination(recomb1);
         
-        // Test coalescent probability when one recombination exists
-        logP = coalescent.calculateRecombinantLogP(newRecomb);
-        //logPtrue = -0.68980134962441774782; // Same edge coalescence not allowed
-        logPtrue = -0.7677147135425042;
-        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        logP = argLikelihood.calculateLogP();
+        logPtrue = -6445.810702954902;
+        relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+        
+        assertTrue(relativeDiff<1e-14);
+        
+        // Add another recombination event
+        node1 = arg.getExternalNodes().get(0);
+        node2 = arg.getNode(20);
+        height1 = 0.75*(node1.getHeight() + node1.getParent().getHeight());
+        height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
+        startLocus = 250;
+        endLocus = 300;
+        Recombination recomb2 = new Recombination(node1, height1, node2, height2,
+                startLocus, endLocus);
+        arg.addRecombination(recomb2);
+        
+        logP = argLikelihood.calculateLogP();
+        logPtrue = -6452.466389537251;
+        relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+        
+        assertTrue(relativeDiff<1e-14);
     }
 }

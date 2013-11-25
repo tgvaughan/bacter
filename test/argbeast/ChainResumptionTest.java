@@ -14,42 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package argbeastTest;
+package argbeast;
 
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
-import argbeast.model.RecombinationGraphLikelihood;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
 import beast.util.ClusterTree;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
- * Tests the calculation of the ARG likelihood given the sequence data.
+ * Tests the toString() and fromXML() methods of RecombinationGraph.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class RecombinationGraphLikelihoodTest {
+public class ChainResumptionTest {
     
-    public RecombinationGraphLikelihoodTest() {
-    }
-    
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+    public ChainResumptionTest() { }
     
     @Test
-    public void testClonalFrameLikelihood() throws Exception {
-                // Sequence alignment
-        
+    public void test() throws Exception {
         List<Sequence> sequences = new ArrayList<Sequence>();
         sequences.add(new Sequence("Tarsius_syrichta","AAGTTTCATTGGAGCCACCACTCTTATAATTGCCCATGGCCTCACCTCCTCCCTATTATTTTGCCTAGCAAATACAAACTACGAACGAGTCCACAGTCGAACAATAGCACTAGCCCGTGGCCTTCAAACCCTATTACCTCTTGCAGCAACATGATGACTCCTCGCCAGCTTAACCAACCTGGCCCTTCCCCCAACAATTAATTTAATCGGTGAACTGTCCGTAATAATAGCAGCATTTTCATGGTCACACCTAACTATTATCTTAGTAGGCCTTAACACCCTTATCACCGCCCTATATTCCCTATATATACTAATCATAACTCAACGAGGAAAATACACATATCATATCAACAATATCATGCCCCCTTTCACCCGAGAAAATACATTAATAATCATACACCTATTTCCCTTAATCCTACTATCTACCAACCCCAAAGTAATTATAGGAACCATGTACTGTAAATATAGTTTAAACAAAACATTAGATTGTGAGTCTAATAATAGAAGCCCAAAGATTTCTTATTTACCAAGAAAGTA-TGCAAGAACTGCTAACTCATGCCTCCATATATAACAATGTGGCTTTCTT-ACTTTTAAAGGATAGAAGTAATCCATCGGTCTTAGGAACCGAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATTTATTTTCATCCTCCATTTTACTATCACTTACACTCTTAATTACCCCATTTATTATTACAACAACTAAAAAATATGAAACACATGCATACCCTTACTACGTAAAAAACTCTATCGCCTGCGCATTTATAACAAGCCTAGTCCCAATGCTCATATTTCTATACACAAATCAAGAAATAATCATTTCCAACTGACATTGAATAACGATTCATACTATCAAATTATGCCTAAGCTT"));
         sequences.add(new Sequence("Lemur_catta","AAGCTTCATAGGAGCAACCATTCTAATAATCGCACATGGCCTTACATCATCCATATTATTCTGTCTAGCCAACTCTAACTACGAACGAATCCATAGCCGTACAATACTACTAGCACGAGGGATCCAAACCATTCTCCCTCTTATAGCCACCTGATGACTACTCGCCAGCCTAACTAACCTAGCCCTACCCACCTCTATCAATTTAATTGGCGAACTATTCGTCACTATAGCATCCTTCTCATGATCAAACATTACAATTATCTTAATAGGCTTAAATATGCTCATCACCGCTCTCTATTCCCTCTATATATTAACTACTACACAACGAGGAAAACTCACATATCATTCGCACAACCTAAACCCATCCTTTACACGAGAAAACACCCTTATATCCATACACATACTCCCCCTTCTCCTATTTACCTTAAACCCCAAAATTATTCTAGGACCCACGTACTGTAAATATAGTTTAAA-AAAACACTAGATTGTGAATCCAGAAATAGAAGCTCAAAC-CTTCTTATTTACCGAGAAAGTAATGTATGAACTGCTAACTCTGCACTCCGTATATAAAAATACGGCTATCTCAACTTTTAAAGGATAGAAGTAATCCATTGGCCTTAGGAGCCAAAAA-ATTGGTGCAACTCCAAATAAAAGTAATAAATCTATTATCCTCTTTCACCCTTGTCACACTGATTATCCTAACTTTACCTATCATTATAAACGTTACAAACATATACAAAAACTACCCCTATGCACCATACGTAAAATCTTCTATTGCATGTGCCTTCATCACTAGCCTCATCCCAACTATATTATTTATCTCCTCAGGACAAGAAACAATCATTTCCAACTGACATTGAATAACAATCCAAACCCTAAAACTATCTATTAGCTT"));
@@ -75,30 +67,7 @@ public class RecombinationGraphLikelihoodTest {
         arg.assignFrom(tree);
         arg.initByName("alignment", alignment);
         
-        // Site model:
-        JukesCantor jc = new JukesCantor();
-        jc.initByName();
-        SiteModel siteModel = new SiteModel();
-        siteModel.initByName(
-                "substModel", jc);
-        
-        // Likelihood
-        
-        RecombinationGraphLikelihood argLikelihood = new RecombinationGraphLikelihood();
-        argLikelihood.initByName(
-                "data", alignment,
-                "arg", arg,
-                "siteModel", siteModel);
-        
-        arg.setEverythingDirty(true);
-        
-        double logP = argLikelihood.calculateLogP();
-        double logPtrue = -6444.862402765536;
-        double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
-        
-        assertTrue(relativeDiff<1e-14);
-        
-        //Add a single recombination event
+        //Add recombination event 1
         Node node1 = arg.getExternalNodes().get(0);
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
@@ -109,27 +78,51 @@ public class RecombinationGraphLikelihoodTest {
                 startLocus, endLocus);
         arg.addRecombination(recomb1);
         
-        logP = argLikelihood.calculateLogP();
-        logPtrue = -6445.810702954902;
-        relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
-        
-        assertTrue(relativeDiff<1e-14);
-        
-        // Add another recombination event
+        //Add recombination event 2
         node1 = arg.getExternalNodes().get(0);
-        node2 = arg.getNode(20);
-        height1 = 0.75*(node1.getHeight() + node1.getParent().getHeight());
-        height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
-        startLocus = 250;
-        endLocus = 300;
+        node2 = arg.getRoot();
+        height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        height2 = node2.getHeight() + 1.0;
+        startLocus = 300;
+        endLocus = 400;
         Recombination recomb2 = new Recombination(node1, height1, node2, height2,
                 startLocus, endLocus);
         arg.addRecombination(recomb2);
         
-        logP = argLikelihood.calculateLogP();
-        logPtrue = -6452.466389537251;
-        relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+        // Write ARG out to XML string
+        String xmlStr = arg.toXML();
         
-        assertTrue(relativeDiff<1e-14);
+        // Build DOM from XML string
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xmlStr.getBytes()));
+        doc.normalize();
+        NodeList nodes = doc.getElementsByTagName("*");
+        org.w3c.dom.Node docNode = nodes.item(0);
+        
+        // Read ARG back in from DOM
+        RecombinationGraph argNew = new RecombinationGraph();
+        argNew.assignFrom(tree);
+        argNew.initByName("alignment", alignment);
+        argNew.fromXML(docNode);
+        
+        // Check that new ARG matches old
+        Recombination newRecomb1 = argNew.getRecombinations().get(1);
+        assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
+        assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
+        assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
+        assertEquals(newRecomb1.getHeight2(),recomb1.getHeight2(), 1e-15);
+        assertEquals(newRecomb1.getStartLocus(), recomb1.getStartLocus());
+        assertEquals(newRecomb1.getEndLocus(), recomb1.getEndLocus());
+        
+        Recombination newRecomb2 = argNew.getRecombinations().get(2);
+        assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
+        assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
+        assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
+        assertEquals(newRecomb2.getHeight2(),recomb2.getHeight2(), 1e-15);
+        assertEquals(newRecomb2.getStartLocus(), recomb2.getStartLocus());
+        assertEquals(newRecomb2.getEndLocus(), recomb2.getEndLocus());
+        
+        // Note that there are minor differences in the tree due to
+        // rounding errors.  Is this normal!?
     }
 }

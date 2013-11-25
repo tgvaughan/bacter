@@ -14,31 +14,49 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package argbeastTest;
+package argbeast.model;
 
+import argbeast.model.GCCoalescentApprox;
+import argbeast.Recombination;
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
+import argbeast.RecombinationGraph;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.ClusterTree;
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 /**
- * Tests the toString() and fromXML() methods of RecombinationGraph.
+ * Tests the evaluation of the ARG probability density under the approximate
+ * coalescent with gene conversion model used by GCCCoalescentApprox.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ChainResumptionTest {
+public class GCCoalescentApproxTest {
     
-    public ChainResumptionTest() { }
+    public GCCoalescentApproxTest() {
+    }
+    
+    /**
+     * Calculate absolute difference between two real numbers relative to
+     * the mean of the two numbers.
+     * 
+     * @param a
+     * @param b
+     * @return relative difference
+     */
+    public double relativeDiff(double a, double b) {
+        return 2.0*Math.abs((a-b)/(a+b));
+    }
     
     @Test
     public void test() throws Exception {
@@ -67,62 +85,59 @@ public class ChainResumptionTest {
         arg.assignFrom(tree);
         arg.initByName("alignment", alignment);
         
-        //Add recombination event 1
+        // Site model:
+        JukesCantor jc = new JukesCantor();
+        jc.initByName();
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName(
+                "substModel", jc);
+        
+        // Population size model:
+        ConstantPopulation popFunction = new ConstantPopulation();
+        popFunction.initByName("popSize", new RealParameter("1.0"));
+        
+        // Coalescent
+        GCCoalescentApprox coalescent = new GCCoalescentApprox();
+        coalescent.initByName(
+                "tree", arg,
+                "treeIntervals", new TreeIntervals(arg),
+                "populationModel", popFunction,
+                "rho", new RealParameter("1"),
+                "delta", new RealParameter("10"),
+                "allowSameEdgeCoalescence", true);
+        
+        // Test converted region probability when no recombinations exist
+        double logP = coalescent.calculateConvertedRegionMapLogP();
+        double logPtrue = -0.66521909670314471885;
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        
+        // Coalescent probability when no recombinations exist
+        logP = coalescent.calculateRecombinantLogP(null);
+        logPtrue = -4.733611657513131;
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        
+        //Add a single recombination event
         Node node1 = arg.getExternalNodes().get(0);
+        //Node node2 = arg.getRoot();
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        //double height2 = node2.getHeight() + 1.0;
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination recomb1 = new Recombination(node1, height1, node2, height2,
+        Recombination newRecomb = new Recombination(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb1);
+        arg.addRecombination(newRecomb);
+
+        // Test converted region probability when one recombination exists
+        logP = coalescent.calculateConvertedRegionMapLogP();
+        logPtrue = -20.647146531355350163;
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         
-        //Add recombination event 2
-        node1 = arg.getExternalNodes().get(0);
-        node2 = arg.getRoot();
-        height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
-        height2 = node2.getHeight() + 1.0;
-        startLocus = 300;
-        endLocus = 400;
-        Recombination recomb2 = new Recombination(node1, height1, node2, height2,
-                startLocus, endLocus);
-        arg.addRecombination(recomb2);
-        
-        // Write ARG out to XML string
-        String xmlStr = arg.toXML();
-        
-        // Build DOM from XML string
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(xmlStr.getBytes()));
-        doc.normalize();
-        NodeList nodes = doc.getElementsByTagName("*");
-        org.w3c.dom.Node docNode = nodes.item(0);
-        
-        // Read ARG back in from DOM
-        RecombinationGraph argNew = new RecombinationGraph();
-        argNew.assignFrom(tree);
-        argNew.initByName("alignment", alignment);
-        argNew.fromXML(docNode);
-        
-        // Check that new ARG matches old
-        Recombination newRecomb1 = argNew.getRecombinations().get(1);
-        assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
-        assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
-        assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
-        assertEquals(newRecomb1.getHeight2(),recomb1.getHeight2(), 1e-15);
-        assertEquals(newRecomb1.getStartLocus(), recomb1.getStartLocus());
-        assertEquals(newRecomb1.getEndLocus(), recomb1.getEndLocus());
-        
-        Recombination newRecomb2 = argNew.getRecombinations().get(2);
-        assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
-        assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
-        assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
-        assertEquals(newRecomb2.getHeight2(),recomb2.getHeight2(), 1e-15);
-        assertEquals(newRecomb2.getStartLocus(), recomb2.getStartLocus());
-        assertEquals(newRecomb2.getEndLocus(), recomb2.getEndLocus());
-        
-        // Note that there are minor differences in the tree due to
-        // rounding errors.  Is this normal!?
+        // Test coalescent probability when one recombination exists
+        logP = coalescent.calculateRecombinantLogP(newRecomb);
+        //logPtrue = -0.68980134962441774782; // Same edge coalescence not allowed
+        logPtrue = -0.7677147135425042;
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
     }
 }
