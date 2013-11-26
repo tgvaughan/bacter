@@ -84,7 +84,7 @@ public class RecombinationGraphSimulatorTest {
             rgs.initByName(
                     "rho", 1.0,
                     "delta", 50.0,
-                    "populationFunction", popFunc,
+                    "populationModel", popFunc,
                     //"sequenceLength", 10000,
                     //"nTaxa", 10);
                     "alignment", alignment);

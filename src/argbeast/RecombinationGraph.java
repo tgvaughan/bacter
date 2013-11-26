@@ -16,6 +16,7 @@
  */
 package argbeast;
 
+import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -37,6 +38,9 @@ import java.util.regex.Pattern;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Recombination graph based around the clonal frame.")
+@Citation("Tim Vaughan, Alexei Drummod and Nigel French, "
+        + "'Phylogenetic inference for bacteria in BEAST 2'. "
+        + "In preparation.")
 public class RecombinationGraph extends Tree {
     
     /**

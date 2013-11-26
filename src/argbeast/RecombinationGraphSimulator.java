@@ -46,7 +46,7 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
             "Tract length parameter.", Validate.REQUIRED);
     
     public Input<PopulationFunction> popFuncInput = new Input<PopulationFunction>(
-            "populationFunction", "Demographic model to use.", Validate.REQUIRED);
+            "populationModel", "Demographic model to use.", Validate.REQUIRED);
     
     public Input<Integer> sequenceLengthInput = new Input<Integer>(
             "sequenceLength", "Length of sequence to use in simulation."

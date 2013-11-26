@@ -1,34 +1,39 @@
 <beast version='2.0'
-       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter'>
-
-
-
-  <input spec='TreeLikelihood' id="treeLikelihood">
-    <data idref="alignment"/>
-    <tree idref="tree"/>
-    <siteModel spec='SiteModel'>
-      <mutationRate spec='RealParameter' value="1.0"/>
-      <substModel spec='JukesCantor'/>
-    </siteModel>
-  </input>
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:argbeast:argbeast.model:argbeast.operators'>
   
-  <input spec='argbeast.RecombinationGraphSimulator' id='arg'
-  rho=">
+  <input spec='RecombinationGraphSimulator' id='arg'
+         rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="10">
+      <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
+  </input>
+
+  <input spec='GCCoalescentApprox' id="argPrior">
+      <rho spec='RealParameter' value="1.0" id="rho" estimate="false"/>
+      <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+      <treeIntervals spec='TreeIntervals' tree="@arg"/>
+      <populationModel idref="popFunc"/>
   </input>
 
   <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
     <input name='taxa' idref='alignment'/>
   </input>
   
-  <run spec="MCMC" id="mcmc" chainLength="0">
+  <run spec="MCMC" id="mcmc" chainLength="10">
     <state>
-      <input name='stateNode' idref='arg'/>
+      <stateNode idref='arg'/>
     </state>
     
     <distribution spec="CompoundDistribution" id="posterior">
-      <distribution id='likelihood' idref="treeLikelihood"/>
+      <distribution idref="argPrior"/>
     </distribution>
 
+    <operator id="addRemove" spec="AddRemoveRecombination" weight="1.0">
+        <arg idref="arg"/>
+        <rho idref="rho"/>
+        <delta idref="delta"/>
+        <populationModel idref="popFunc"/>
+    </operator>
+    
+    <!--
     <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
       <tree idref="tree"/>
     </operator>
@@ -47,8 +52,9 @@
     <operator spec='WilsonBalding' weight="1">
       <tree idref="tree"/>
     </operator>
+    -->
 
-    <logger logEvery="10000">
+    <logger logEvery="1">
       <model idref='posterior'/>
       <log idref="posterior"/>
     </logger>

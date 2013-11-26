@@ -16,10 +16,7 @@
  */
 package argbeast.model;
 
-import argbeast.model.GCCoalescentApprox;
 import argbeast.Recombination;
-import argbeast.Recombination;
-import argbeast.RecombinationGraph;
 import argbeast.RecombinationGraph;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -99,7 +96,7 @@ public class GCCoalescentApproxTest {
         // Coalescent
         GCCoalescentApprox coalescent = new GCCoalescentApprox();
         coalescent.initByName(
-                "tree", arg,
+//                "tree", arg,
                 "treeIntervals", new TreeIntervals(arg),
                 "populationModel", popFunction,
                 "rho", new RealParameter("1"),
