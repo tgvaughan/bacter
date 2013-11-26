@@ -52,13 +52,13 @@ public class RecombinationGraphSimulatorTest {
     @Test
     public void test() throws Exception {
         
-        Randomizer.setSeed(1234);
+        Randomizer.setSeed(17);
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
         Alignment alignment = new Alignment();
-        int length = 1000;
+        int length = 10000;
         alignment.initByName(
                 "sequence", new Sequence("taxon1", getSeq(length)),
                 "sequence", new Sequence("taxon2", getSeq(length)),

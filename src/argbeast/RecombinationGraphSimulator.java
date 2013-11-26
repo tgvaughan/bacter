@@ -49,17 +49,13 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
     private double rho, delta;
     private PopulationFunction popFunc;
     
-    private enum EventType {COALESCENCE, SAMPLE};
     private class Event {
-        EventType type;
-        double tau;
-        Node node;
+        double tau, t;
         int lineages;
         
-        Event (EventType type, double tau, Node node, int lineages) {
-            this.type = type;
+        Event (double t, double tau, int lineages) {
+            this.t = t;
             this.tau = tau;
-            this.node = node;
             this.lineages = lineages;
         }
     }
@@ -143,8 +139,8 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
                 Node nextActive = inactiveNodes.remove(0);
                 activeNodes.add(nextActive);
                 tau = popFunc.getIntensity(nextActive.getHeight());
-                eventList.add(new Event(EventType.SAMPLE, tau, nextActive,
-                        activeNodes.size()));
+                eventList.add(new Event(nextActive.getHeight(),
+                        tau, activeNodes.size()));
                 continue;
             }
             
@@ -159,8 +155,7 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
             parent.setNr(nextNr++);
             
             activeNodes.add(parent);
-            eventList.add(new Event(EventType.COALESCENCE, tau, parent,
-                    activeNodes.size()));
+            eventList.add(new Event(t, tau, activeNodes.size()));
             
             if (inactiveNodes.isEmpty() && activeNodes.size()<2)
                 break;
@@ -186,6 +181,8 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
             recomb.setStartLocus(0);
             long tractLength = Randomizer.nextGeometric(pTractEnd);
             recomb.setEndLocus(Math.min(tractLength, getSequenceLength()-1));
+            associateRecombinationWithCF(recomb);
+            addRecombination(recomb);
             
             l = tractLength+1;
         } else
@@ -201,16 +198,16 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
                 break;
             
             Recombination recomb = new Recombination();
+
             recomb.setStartLocus(l);
-            
             l += Randomizer.nextGeometric(pTractEnd);
             recomb.setEndLocus(Math.min(l,getSequenceLength()-1));
+
+            associateRecombinationWithCF(recomb);
+            addRecombination(recomb);
             
             if (l>=getSequenceLength())
                 break;
-            
-            associateRecombinationWithCF(recomb);
-            addRecombination(recomb);
         }
     }
     
@@ -224,57 +221,65 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
     
         // Select departure point            
         double u = Randomizer.nextDouble()*getClonalFrameLength();
-        for (Node node : getNodesAsArray()) {
-            if (node.isRoot())
-                continue;
-            
-            if (u<node.getLength()) {
-                recomb.setNode1(node);
-                recomb.setHeight1(node.getHeight()+u);
-                break;
-            } else
-                u -= node.getLength();
-        }
+        double tauStart = 0.0;
         
-        // Choose coalescence point
-        
-        /*
-        * TODO: This is BROKEN. Strategy involving event list needs to
-        * be rethought.  Same is true of add/remove operator!!!
-        */
-        
-        u = Randomizer.nextExponential(1.0);
-        double tau = popFunc.getIntensity(recomb.getHeight1());
         boolean started = false;
-        int eidx;
-        for (eidx=0; eidx<eventList.size(); eidx++) {
+        for (int eidx=0; eidx<eventList.size(); eidx++) {
             Event event = eventList.get(eidx);
-            
+
             if (!started) {
-                if (eventList.get(eidx).node.equals(recomb.getNode1()))
-                    started = true;
+                
+                double interval;
+                if (eidx<eventList.size()-1)
+                    interval = eventList.get(eidx+1).t - event.t;
                 else
-                    continue;
+                    interval = Double.POSITIVE_INFINITY;
+                
+                if (u<interval*event.lineages) {
+                    for (Node node : getNodesAsArray()) {
+                        if (!node.isRoot()
+                                && node.getHeight()<=event.t
+                                && node.getParent().getHeight()>=event.t) {
+                            
+                            if (u<interval) {
+                                recomb.setNode1(node);
+                                recomb.setHeight1(event.t + u);
+                                tauStart = popFunc.getIntensity(event.t + u);
+                            } else
+                                u -= interval;
+                            
+                        }
+                    }
+                    started = true;
+                    u = Randomizer.nextExponential(1.0);
+                }
             }
             
-            if (eidx<eventList.size()-1) {
-                Event nextEvent = eventList.get(eidx+1);
-                if ((nextEvent.tau-event.tau)*event.lineages>u) {
-                    tau += u/event.lineages;
-                    recomb.setNode2(event.node);
-                    recomb.setHeight2(popFunc.getInverseIntensity(tau));
+            if (started) {
+                double intervalArea;
+                if (eidx<eventList.size()-1)
+                    intervalArea = (eventList.get(eidx+1).tau - Math.max(event.tau, tauStart));
+                else
+                    intervalArea = Double.POSITIVE_INFINITY;
+                
+                if (u<intervalArea*event.lineages) {
+                    for (Node node : getNodesAsArray()) {
+                        if (node.getHeight()<=event.t
+                                && (node.isRoot() || node.getParent().getHeight()>=event.t)) {
+                            
+                            if (u<intervalArea) {
+                                recomb.setNode2(node);
+                                double tauEnd = Math.max(event.tau, tauStart) + u;
+                                recomb.setHeight2(popFunc.getInverseIntensity(tauEnd));
+                            } else
+                                u -= intervalArea;
+                        }
+                    }
                     break;
-                } else {
-                    tau = nextEvent.tau;
-                    u -= (nextEvent.tau-event.tau)*event.lineages;
                 }
-            } else {
-                tau = event.tau + u;
-                recomb.setNode2(event.node);
-                recomb.setHeight2(popFunc.getInverseIntensity(tau));
-                break;
             }
         }
+
     }
     
     @Override
