@@ -245,6 +245,7 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
                                 recomb.setNode1(node);
                                 recomb.setHeight1(event.t + u);
                                 tauStart = popFunc.getIntensity(event.t + u);
+                                break;
                             } else
                                 u -= interval;
                             
@@ -272,6 +273,7 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
                                 recomb.setNode2(node);
                                 double tauEnd = Math.max(event.tau, tauStart) + u;
                                 recomb.setHeight2(popFunc.getInverseIntensity(tauEnd));
+                                break;
                             } else
                                 u -= intervalArea;
                         }
