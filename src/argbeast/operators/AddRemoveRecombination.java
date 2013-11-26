@@ -181,15 +181,20 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                             if (u<interval) {
                                 newRecomb.setNode2(node);
                                 double tauEnd = Math.max(event.tau, tauStart) + u;
-                                newRecomb.setHeight2(popFunc.getInverseIntensity(tauEnd));
+                                double tEnd = popFunc.getInverseIntensity(tauEnd);
+                                newRecomb.setHeight2(tEnd);
+                                logP += -u*event.lineages
+                                        + Math.log(1.0/popFunc.getPopSize(tEnd));
                                 break;
                             } else
                                 u -= interval;
                         }
                     }
                     break;
-                } else
+                } else {
                     u -= interval*event.lineages;
+                    logP += -interval*event.lineages;
+                }
                 
             }
         }
