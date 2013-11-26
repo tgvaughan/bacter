@@ -205,7 +205,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         // exceeds the start of the next region, the proposal is rejected.
         
         int convertableLength = 0;
-        for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
+        for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx);
             
             if (ridx==0) {
@@ -225,7 +225,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);
         
-        for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
+        for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx);
             
             if (ridx==0) {
