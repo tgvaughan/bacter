@@ -208,7 +208,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx);
             
-            if (ridx==0) {
+            if (ridx==1) {
                 convertableLength += Math.max(0, recomb.getStartLocus()-1);
             } else {
                 Recombination prevRecomb = arg.getRecombinations().get(ridx-1);
@@ -228,7 +228,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx);
             
-            if (ridx==0) {
+            if (ridx==1) {
                 z -= Math.max(0, recomb.getStartLocus()-1);
                 
                 if (z<0) {
@@ -313,10 +313,10 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
 
         // Calculate probability of converted region.
         int convertableLength = 0;
-        for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
+        for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
             Recombination thisRecomb = arg.getRecombinations().get(ridx);
             
-            if (ridx==0) {
+            if (ridx==1) {
                 convertableLength += Math.max(0, thisRecomb.getStartLocus()-1);
             } else {
                 Recombination prevRecomb = arg.getRecombinations().get(ridx-1);
