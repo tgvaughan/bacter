@@ -306,8 +306,10 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 tauB = Math.min(eventList.get(eidx+1).tau, tau2);
             } else
                 tauB = tau2;
-            logP += (tauB-tauA)*eventList.get(eidx).lineages;
+            logP += -(tauB-tauA)*eventList.get(eidx).lineages;
         }
+        
+        logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
 
         // Calculate probability of converted region.
         int convertableLength = 0;
