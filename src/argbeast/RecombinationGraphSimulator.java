@@ -252,7 +252,8 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
                     }
                     started = true;
                     u = Randomizer.nextExponential(1.0);
-                }
+                } else
+                    u -= interval*event.lineages;
             }
             
             if (started) {
@@ -276,7 +277,8 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
                         }
                     }
                     break;
-                }
+                } else
+                    u -= intervalArea*event.lineages;
             }
         }
 

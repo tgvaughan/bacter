@@ -52,7 +52,7 @@ public class RecombinationGraphSimulatorTest {
     @Test
     public void test() throws Exception {
         
-        Randomizer.setSeed(17);
+        //Randomizer.setSeed(17);
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
