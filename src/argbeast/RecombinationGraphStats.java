@@ -40,7 +40,13 @@ public class RecombinationGraphStats extends CalculationNode implements Loggable
         arg = argInput.get();
     }
     
-    private double getMeanTractLength() {
+    /**
+     * Obtain mean length of converted regions described by ARG.
+     * 
+     * @param arg
+     * @return mean length, or NaN if ARG has no recombinant edges.
+     */
+    public static double getMeanTractLength(RecombinationGraph arg) {
         
         if (arg.getNRecombs()<1)
             return Double.NaN;
@@ -57,7 +63,14 @@ public class RecombinationGraphStats extends CalculationNode implements Loggable
         return mean;
     }
     
-    private double getMeanInterTractLength() {
+    /**
+     * Obtain mean number of loci between converted regions described
+     * by ARG.
+     * 
+     * @param arg
+     * @return mean count, or NaN if ARG has less than 2 conversions
+     */
+    public static double getMeanInterTractLength(RecombinationGraph arg) {
         
         if (arg.getNRecombs()<2)
             return Double.NaN;
@@ -72,7 +85,13 @@ public class RecombinationGraphStats extends CalculationNode implements Loggable
         return mean;
     }
     
-    private double getMeanEdgeLength() {
+    /**
+     * Obtain mean length of recombinant edges in ARG.
+     * 
+     * @param arg
+     * @return mean length, or NaN if ARG has no recombinant edges
+     */
+    public static double getMeanEdgeLength(RecombinationGraph arg) {
         
         if (arg.getNRecombs()<1)
             return Double.NaN;
@@ -89,7 +108,14 @@ public class RecombinationGraphStats extends CalculationNode implements Loggable
         return mean;
     }
     
-    private double getMeanDepartureHeight() {
+    /**
+     * Obtain mean height of point of departure of recombinant edges
+     * in ARG.
+     * 
+     * @param arg
+     * @return mean height, or NaN if ARG has no recombinant edges
+     */
+    public static double getMeanDepartureHeight(RecombinationGraph arg) {
         if (arg.getNRecombs()<1)
             return Double.NaN;
         
@@ -112,6 +138,7 @@ public class RecombinationGraphStats extends CalculationNode implements Loggable
             id = arg.getID();
 
         out.print(id + ".CFheight\t"
+                + id + ".CFlength\t"
                 + id + ".nRecomb\t"
                 + id + ".meanTractLength\t"
                 + id + ".meanInterTractLength\t"
@@ -122,11 +149,12 @@ public class RecombinationGraphStats extends CalculationNode implements Loggable
     @Override
     public void log(int nSample, PrintStream out) {
         out.print(arg.getRoot().getHeight() + "\t"
+                + arg.getClonalFrameLength() + "\t"
                 + arg.getNRecombs() + "\t"
-                + getMeanTractLength() + "\t"
-                + getMeanInterTractLength() + "\t"
-                + getMeanEdgeLength() + "\t"
-                + getMeanDepartureHeight() + "\t");
+                + RecombinationGraphStats.getMeanTractLength(arg) + "\t"
+                + RecombinationGraphStats.getMeanInterTractLength(arg) + "\t"
+                + RecombinationGraphStats.getMeanEdgeLength(arg) + "\t"
+                + RecombinationGraphStats.getMeanDepartureHeight(arg) + "\t");
     }
 
     @Override

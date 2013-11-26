@@ -75,14 +75,20 @@ public class RecombinationGraphSimulatorTest {
         
         RecombinationGraphSimulator rgs = new RecombinationGraphSimulator();
         
-        for (int i=0; i<10; i++) {
+        RecombinationGraphStats stats = new RecombinationGraphStats();
+        stats.initByName("arg", rgs);
+        stats.init(System.out);
+        System.out.println();
+        
+        for (int i=0; i<100; i++) {
             rgs.initByName(
                     "rho", 1.0,
                     "delta", 50.0,
                     "populationFunction", popFunc,
                     "alignment", alignment);
-        
-            System.out.println(rgs.getExtendedNewick());
+            
+            stats.log(-1, System.out);
+            System.out.println();
         }
     }
 }
