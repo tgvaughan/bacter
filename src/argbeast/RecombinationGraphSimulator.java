@@ -22,6 +22,8 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
@@ -45,6 +47,14 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
     
     public Input<PopulationFunction> popFuncInput = new Input<PopulationFunction>(
             "populationFunction", "Demographic model to use.", Validate.REQUIRED);
+    
+    public Input<Integer> sequenceLengthInput = new Input<Integer>(
+            "sequenceLength", "Length of sequence to use in simulation."
+                    + " (Only use when alignment is not available.)");
+    
+    public Input<Integer> nTaxaInput = new Input<Integer>(
+            "nTaxa", "Number of taxa to use in simulation. "
+                    + "(Only use when alignment is unavailable.)");
 
     private double rho, delta;
     private PopulationFunction popFunc;
@@ -61,7 +71,10 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
     }
     private List<Event> eventList;
     
-    public RecombinationGraphSimulator() { };
+    public RecombinationGraphSimulator() {
+
+        alignmentInput.setRule(Validate.OPTIONAL);
+    };
     
     @Override
     public void initAndValidate() throws Exception {
@@ -70,8 +83,22 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
         
-        eventList = Lists.newArrayList();
+        if (sequenceLengthInput.get() != null && nTaxaInput.get() != null) {
+
+            // Generate random alignment of specified length
+            List<Sequence> seqList = Lists.newArrayList();
+            for (int i=0; i<nTaxaInput.get(); i++)
+                seqList.add(new Sequence("taxon" + i, getSeq(sequenceLengthInput.get())));
+
+            alignmentInput.setValue(new Alignment(seqList, 4, "nucleotide"), this);
+        }
+        else {
+            if (alignmentInput.get() == null)
+                throw new IllegalArgumentException("Need to specify either "
+                        + "alignment or both sequenceLength and nTaxa.");
+        }
         
+        eventList = Lists.newArrayList();
         simulateClonalFrame();
         
         initArrays();
@@ -79,6 +106,21 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         
         generateRecombinations();
 
+    }
+    
+    /**
+     * Generate a random nucleotide sequence of specified length.
+     * 
+     * @param length
+     * @return String representation of DNA sequence
+     */
+    private String getSeq(int length) {
+        StringBuilder seq = new StringBuilder();
+        String alphabet = "GTCA";
+        for (int i=0; i<length; i++)
+            seq.append(alphabet.charAt((Randomizer.nextInt(4))));
+        
+        return seq.toString();
     }
 
     /**

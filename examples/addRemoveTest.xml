@@ -1,0 +1,57 @@
+<beast version='2.0'
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter'>
+
+
+
+  <input spec='TreeLikelihood' id="treeLikelihood">
+    <data idref="alignment"/>
+    <tree idref="tree"/>
+    <siteModel spec='SiteModel'>
+      <mutationRate spec='RealParameter' value="1.0"/>
+      <substModel spec='JukesCantor'/>
+    </siteModel>
+  </input>
+  
+  <input spec='argbeast.RecombinationGraphSimulator' id='arg'
+  rho=">
+  </input>
+
+  <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+    <input name='taxa' idref='alignment'/>
+  </input>
+  
+  <run spec="MCMC" id="mcmc" chainLength="0">
+    <state>
+      <input name='stateNode' idref='arg'/>
+    </state>
+    
+    <distribution spec="CompoundDistribution" id="posterior">
+      <distribution id='likelihood' idref="treeLikelihood"/>
+    </distribution>
+
+    <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
+      <tree idref="tree"/>
+    </operator>
+    <operator spec='Uniform' weight="10">
+      <tree idref="tree"/>
+    </operator>
+    <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
+      <tree idref="tree"/>
+    </operator>
+    <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
+      <tree idref="tree"/>
+    </operator>
+    <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
+      <tree idref="tree"/>
+    </operator>
+    <operator spec='WilsonBalding' weight="1">
+      <tree idref="tree"/>
+    </operator>
+
+    <logger logEvery="10000">
+      <model idref='posterior'/>
+      <log idref="posterior"/>
+    </logger>
+  </run>
+
+</beast>

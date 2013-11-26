@@ -85,6 +85,8 @@ public class RecombinationGraphSimulatorTest {
                     "rho", 1.0,
                     "delta", 50.0,
                     "populationFunction", popFunc,
+                    //"sequenceLength", 10000,
+                    //"nTaxa", 10);
                     "alignment", alignment);
             
             stats.log(-1, System.out);

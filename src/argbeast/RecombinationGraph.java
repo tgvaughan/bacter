@@ -61,7 +61,8 @@ public class RecombinationGraph extends Tree {
         recombs = new ArrayList<Recombination>();
         recombs.add(null); // Represents the clonal frame.
         
-        sequenceLength = alignmentInput.get().getSiteCount();
+        if (alignmentInput.get() != null)
+            sequenceLength = alignmentInput.get().getSiteCount();
     }
     
     /**
