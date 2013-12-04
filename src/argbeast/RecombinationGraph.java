@@ -57,6 +57,7 @@ public class RecombinationGraph extends Tree {
      * List of recombinations on graph.
      */
     protected List<Recombination> recombs;
+    protected List<Recombination> storedRecombs;
     
     @Override
     public void initAndValidate() throws Exception {
@@ -534,5 +535,39 @@ public class RecombinationGraph extends Tree {
             sb.append(getMarginalBranchLength(node, recomb));
         
         return sb.toString();
+    }
+    
+    @Override
+    protected void store () {
+        super.store();
+        
+        storedRecombs.clear();
+
+        for (Recombination recomb : recombs) {
+            if (recomb == null)
+                storedRecombs.add(null);
+            else {
+                Recombination recombCopy = new Recombination();
+                
+                recombCopy.setStartLocus(recomb.getStartLocus());
+                recombCopy.setEndLocus(recomb.getEndLocus());
+                recombCopy.setHeight1(recomb.getHeight1());
+                recombCopy.setHeight2(recomb.getHeight2());
+                
+                recombCopy.setNode1(m_storedNodes[recomb.getNode1().getNr()]);
+                recombCopy.setNode1(m_storedNodes[recomb.getNode1().getNr()]);
+
+                storedRecombs.add(recombCopy);
+            }
+        }
+    }
+    
+    @Override
+    public void restore() {
+        super.restore();
+        
+        List<Recombination> tmp = storedRecombs;
+        storedRecombs = recombs;
+        recombs = tmp;
     }
 }
