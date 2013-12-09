@@ -256,13 +256,13 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             }
         }
         
-        arg.addRecombination(newRecomb);
-        
         int convertedLength = (int)Randomizer
                 .nextExponential(1.0/deltaInput.get().getValue());
         logP += -convertedLength/deltaInput.get().getValue();
         
         newRecomb.setEndLocus(newRecomb.getStartLocus()+convertedLength);
+        
+        arg.addRecombination(newRecomb);
         
         return logP;
     }

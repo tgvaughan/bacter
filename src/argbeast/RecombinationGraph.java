@@ -64,6 +64,7 @@ public class RecombinationGraph extends Tree {
         super.initAndValidate();
         
         recombs = new ArrayList<Recombination>();
+        storedRecombs = new ArrayList<Recombination>();
         recombs.add(null); // Represents the clonal frame.
         
         if (alignmentInput.get() != null)
@@ -86,6 +87,8 @@ public class RecombinationGraph extends Tree {
      * @param recomb 
      */
     public void addRecombination(Recombination recomb) {
+        startEditing();
+        
         int i;
         for (i=1; i<recombs.size(); i++)
             if (recombs.get(i).startLocus>recomb.startLocus)
@@ -100,6 +103,8 @@ public class RecombinationGraph extends Tree {
      * @param recomb 
      */
     public void deleteRecombination(Recombination recomb) {
+        startEditing();
+        
         if (recomb == null)
             throw new IllegalArgumentException("Cannot delete the clonal frame!");
         recombs.remove(recomb);
@@ -555,7 +560,7 @@ public class RecombinationGraph extends Tree {
                 recombCopy.setHeight2(recomb.getHeight2());
                 
                 recombCopy.setNode1(m_storedNodes[recomb.getNode1().getNr()]);
-                recombCopy.setNode1(m_storedNodes[recomb.getNode1().getNr()]);
+                recombCopy.setNode2(m_storedNodes[recomb.getNode2().getNr()]);
 
                 storedRecombs.add(recombCopy);
             }
@@ -569,5 +574,13 @@ public class RecombinationGraph extends Tree {
         List<Recombination> tmp = storedRecombs;
         storedRecombs = recombs;
         recombs = tmp;
+    }
+    
+    /**
+     * Mark statenode as dirty if it belongs to a state.
+     */
+    public void startEditing() {
+        if (state != null)
+            startEditing(null);
     }
 }
