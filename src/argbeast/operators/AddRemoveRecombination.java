@@ -257,12 +257,14 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         }
         
         int convertedLength = (int)Randomizer
-                .nextExponential(1.0/deltaInput.get().getValue());
-        logP += -convertedLength/deltaInput.get().getValue();
-        
+                .nextGeometric(1.0/deltaInput.get().getValue());
+        logP += convertedLength*Math.log(1.0-1.0/deltaInput.get().getValue())
+                + Math.log(1.0/deltaInput.get().getValue());
+                        
         newRecomb.setEndLocus(newRecomb.getStartLocus()+convertedLength);
-        
-        arg.addRecombination(newRecomb);
+
+        if (!arg.addRecombination(newRecomb))
+            return Double.NEGATIVE_INFINITY;
         
         return logP;
     }

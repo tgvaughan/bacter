@@ -17,7 +17,7 @@
     <input name='taxa' idref='alignment'/>
   </input>
   
-  <run spec="MCMC" id="mcmc" chainLength="10">
+  <run spec="MCMC" id="mcmc" chainLength="10000">
     <state>
       <stateNode idref='arg'/>
     </state>
@@ -54,7 +54,7 @@
     </operator>
     -->
 
-    <logger logEvery="1">
+    <logger logEvery="100">
       <model idref='posterior'/>
       <log idref="posterior"/>
     </logger>

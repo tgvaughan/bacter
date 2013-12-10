@@ -82,11 +82,14 @@ public class RecombinationGraph extends Tree {
     
     /**
      * Add recombination to graph, ensuring recombination list
-     * remains sorted.
+     * remains sorted.  Additionally, performs check to ensure that
+     * specified conversion region does not overlap with existing regions,
+     * returning false if it does and true otherwise.
      * 
      * @param recomb 
+     * @return true if recombination was successfully added, false otherwise.
      */
-    public void addRecombination(Recombination recomb) {
+    public boolean addRecombination(Recombination recomb) {
         startEditing();
         
         int i;
@@ -95,6 +98,16 @@ public class RecombinationGraph extends Tree {
                 break;
         
         recombs.add(i, recomb);
+        
+        // Check validity of converted region wrt adjacent regions.
+        
+        if (i<recombs.size()-1 && recomb.endLocus>recombs.get(i+1).startLocus-2)
+            return false;
+        
+        if (i>1 && recomb.startLocus<recombs.get(i-1).endLocus+2)
+            return false;
+        
+        return true;
     }
     
     /**
