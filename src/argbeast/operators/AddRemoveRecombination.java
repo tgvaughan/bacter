@@ -204,22 +204,17 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         // length from an exponential distribution.  If the end of the tract
         // exceeds the start of the next region, the proposal is rejected.
         
-        int convertableLength = 0;
+        int convertableLength = arg.getSequenceLength();
         for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx);
             
-            if (ridx==1) {
-                convertableLength += Math.max(0, recomb.getStartLocus()-1);
-            } else {
-                Recombination prevRecomb = arg.getRecombinations().get(ridx-1);
-                convertableLength += Math.max(0,
-                        recomb.getStartLocus()-prevRecomb.getEndLocus()-3);
-            }
+            convertableLength -= recomb.getEndLocus()-recomb.getStartLocus()+3;
             
-            if (ridx==arg.getNRecombs()-1) {
-                int finalLocus = arg.getSequenceLength()-1;
-                convertableLength += Math.max(0, finalLocus-recomb.getEndLocus()-1);
-            }
+            if (recomb.getStartLocus()==0)
+                convertableLength += 1;
+            
+            if (recomb.getEndLocus()==arg.getSequenceLength()-1)
+                convertableLength += 1;
         }
         
         int z = Randomizer.nextInt(convertableLength);

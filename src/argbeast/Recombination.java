@@ -189,7 +189,7 @@ public class Recombination {
         if (node1.getHeight()>height1)
             return false;
         
-        if (node1.getParent().getHeight()<height2)
+        if (node1.getParent().getHeight()<height1)
             return false;
         
         if (node2.getHeight()>height2)
