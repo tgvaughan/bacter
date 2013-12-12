@@ -25,6 +25,7 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import com.google.common.collect.Lists;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -555,6 +556,10 @@ public class RecombinationGraph extends Tree {
         return sb.toString();
     }
     
+    /*
+    * StateNode implementation
+    */
+    
     @Override
     protected void store () {
         super.store();
@@ -595,5 +600,17 @@ public class RecombinationGraph extends Tree {
     public void startEditing() {
         if (state != null)
             startEditing(null);
+    }
+    
+    /*
+    * Loggable implementation.
+    */
+    @Override
+    public void log(int nSample, PrintStream out) {
+        RecombinationGraph arg = (RecombinationGraph) getCurrent();
+        out.print("tree STATE_" + nSample + " = ");
+        final String sNewick = arg.getExtendedNewick();
+        out.print(sNewick);
+        out.print(";");
     }
 }

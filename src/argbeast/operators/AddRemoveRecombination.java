@@ -101,6 +101,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             
             // Remove
             
+            if (arg.getNRecombs()==0)
+                return Double.NEGATIVE_INFINITY;
+            
             // Select recombination to remove:
             Recombination recomb = arg.getRecombinations().get(Randomizer.nextInt(arg.getNRecombs())+1);
             

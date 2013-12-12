@@ -58,6 +58,11 @@
       <model idref='posterior'/>
       <log idref="posterior"/>
     </logger>
+    
+    <logger logEvery="100" fileName="addRemoveTest.trees" mode="tree">
+       <log idref="arg"/>
+     </logger>
+
   </run>
 
 </beast>
