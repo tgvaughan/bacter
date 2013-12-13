@@ -68,6 +68,11 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
             this.tau = tau;
             this.lineages = lineages;
         }
+
+        @Override
+        public String toString() {
+            return "t: " + t + ", k: " + lineages;
+        }
     }
     private List<Event> eventList;
     
@@ -106,6 +111,7 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         
         generateRecombinations();
 
+        System.out.println(getExtendedNewick());
     }
     
     /**
@@ -271,17 +277,13 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
 
             if (!started) {
                 
-                double interval;
-                if (eidx<eventList.size()-1)
-                    interval = eventList.get(eidx+1).t - event.t;
-                else
-                    interval = Double.POSITIVE_INFINITY;
+                double interval = eventList.get(eidx+1).t - event.t;
                 
                 if (u<interval*event.lineages) {
                     for (Node node : getNodesAsArray()) {
                         if (!node.isRoot()
                                 && node.getHeight()<=event.t
-                                && node.getParent().getHeight()>=event.t) {
+                                && node.getParent().getHeight()>event.t) {
                             
                             if (u<interval) {
                                 recomb.setNode1(node);
@@ -309,7 +311,7 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
                 if (u<intervalArea*event.lineages) {
                     for (Node node : getNodesAsArray()) {
                         if (node.getHeight()<=event.t
-                                && (node.isRoot() || node.getParent().getHeight()>=event.t)) {
+                                && (node.isRoot() || node.getParent().getHeight()>event.t)) {
                             
                             if (u<intervalArea) {
                                 recomb.setNode2(node);
