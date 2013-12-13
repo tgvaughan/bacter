@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:argbeast:argbeast.model:argbeast.operators'>
+       namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:argbeast:argbeast.model:argbeast.operators:argbeast.util'>
   
   <input spec='RecombinationGraphSimulator' id='arg'
          rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="10">
@@ -61,6 +61,10 @@
     
     <logger logEvery="100" fileName="addRemoveTest.trees" mode="tree">
        <log idref="arg"/>
+     </logger>
+     
+     <logger logEvery="100" fileName="addRemoveTest.converted">
+         <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
 
   </run>
