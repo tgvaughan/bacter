@@ -611,6 +611,5 @@ public class RecombinationGraph extends Tree {
         out.print("tree STATE_" + nSample + " = ");
         final String sNewick = arg.getExtendedNewick();
         out.print(sNewick);
-        out.print(";");
     }
 }

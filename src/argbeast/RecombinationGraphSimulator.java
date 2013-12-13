@@ -110,8 +110,6 @@ public class RecombinationGraphSimulator extends RecombinationGraph implements S
         super.initAndValidate();
         
         generateRecombinations();
-
-        System.out.println(getExtendedNewick());
     }
     
     /**
