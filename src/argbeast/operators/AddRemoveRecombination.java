@@ -97,6 +97,8 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             if (!arg.isValid())
                 return Double.NEGATIVE_INFINITY;
             
+            System.out.println("Create " + logHGF);
+            
         } else {
             
             // Remove
@@ -113,6 +115,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             
             // Remove recombination
             arg.deleteRecombination(recomb);
+            System.out.println("Delete " + logHGF);
         }
         
         return logHGF;
@@ -124,7 +127,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      * 
      * @return log of proposal density
      */
-    private double drawNewRecomb() {
+    public double drawNewRecomb() {
         double logP = 0;
         
         Recombination newRecomb = new Recombination();
@@ -274,7 +277,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      * @param recomb
      * @return log of proposal density
      */
-    private double getRecombProb(Recombination recomb) {
+    public double getRecombProb(Recombination recomb) {
         double logP = 0;
         
         // Probability of choosing random point on clonal frame
@@ -340,7 +343,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      * Assemble sorted list of events on clonal frame and a map from nodes
      * to these events.
      */
-    private void updateEvents() {
+    public void updateEvents() {
         eventList.clear();
         eventMap.clear();
         
