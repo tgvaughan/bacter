@@ -334,7 +334,8 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         }
         
         logP += Math.log(1.0/convertableLength)
-                + -(recomb.getEndLocus()-recomb.getStartLocus())*deltaInput.get().getValue();
+                + -(recomb.getEndLocus()-recomb.getStartLocus())*(1.0-1.0/deltaInput.get().getValue())
+                + Math.log(1.0/deltaInput.get().getValue());
         
         return logP;
     }

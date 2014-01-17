@@ -21,7 +21,6 @@ import argbeast.Recombination;
 import argbeast.RecombinationGraphSimulator;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.evolution.tree.coalescent.PopulationFunction;
 import com.google.common.collect.Lists;
 import java.util.List;
 import org.junit.Test;
@@ -58,7 +57,8 @@ public class AddRemoveRecombinationTest {
                 "delta", new RealParameter("50.0"),
                 "populationModel", popFunc);
         
-        List<Recombination> oldRecombs = Lists.newArrayList(arg.getRecombinations());
+        List<Recombination> oldRecombs = Lists.newArrayList(
+                arg.getRecombinations());
         
         operator.updateEvents();
         double logP1 = operator.drawNewRecomb();
@@ -75,5 +75,7 @@ public class AddRemoveRecombinationTest {
         operator.updateEvents();
         double logP2 = operator.getRecombProb(newRecomb);
         System.out.println("logP2 = " + logP2);
+        
+        assertTrue(Math.abs(logP1-logP2)<1e-10);
     }
 }
