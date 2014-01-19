@@ -201,9 +201,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             }
         }
         
-        // DEBUG
-        System.out.println(logP);
-        
         // Draw location of converted region.  Currently draws start locus 
         // uniformly from among available unconverted loci and draws the tract
         // length from an exponential distribution.  If the end of the tract
@@ -221,6 +218,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             if (recomb.getEndLocus()==arg.getSequenceLength()-1)
                 convertableLength += 1;
         }
+        
+        // DEBUG
+        System.out.println("Convertable length 1 = " + convertableLength);
         
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);
@@ -308,27 +308,24 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             }
         }
         
-        // DEBUG
-        System.out.println(logP);
-        
         // Calculate probability of converted region.
-        int convertableLength = 0;
+        int convertableLength = arg.getSequenceLength();
         for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
             Recombination thisRecomb = arg.getRecombinations().get(ridx);
+            if (thisRecomb == recomb)
+                continue;
             
-            if (ridx==1) {
-                convertableLength += Math.max(0, thisRecomb.getStartLocus()-1);
-            } else {
-                Recombination prevRecomb = arg.getRecombinations().get(ridx-1);
-                convertableLength += Math.max(0,
-                        thisRecomb.getStartLocus()-prevRecomb.getEndLocus()-3);
-            }
+            convertableLength -= thisRecomb.getEndLocus()-thisRecomb.getStartLocus()+3;
             
-            if (ridx==arg.getNRecombs()-1) {
-                int finalLocus = arg.getSequenceLength()-1;
-                convertableLength += Math.max(0, finalLocus-thisRecomb.getEndLocus()-1);
-            }
+            if (thisRecomb.getStartLocus()==0)
+                convertableLength += 1;
+            
+            if (thisRecomb.getEndLocus()==arg.getSequenceLength()-1)
+                convertableLength += 1;
         }
+        
+        // DEBUG
+        System.out.println("Convertable length 2 = " + convertableLength);
         
         logP += Math.log(1.0/convertableLength)
                 + -(recomb.getEndLocus()-recomb.getStartLocus())*(1.0-1.0/deltaInput.get().getValue())
