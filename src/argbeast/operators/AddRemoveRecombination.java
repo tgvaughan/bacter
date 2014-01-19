@@ -140,11 +140,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             Event event = eventList.get(eidx);
             
             if (!started) {
-                double interval;
-                if (eidx<eventList.size()-1)
-                    interval = eventList.get(eidx+1).t - event.t;
-                else
-                    interval = Double.POSITIVE_INFINITY;
+                
+                // If edge hasn't started, eidx must be < eventList.size()-1
+                double interval = eventList.get(eidx+1).t - event.t;
                 
                 if (u<interval*event.lineages) {
                     for (Node node : arg.getNodesAsArray()){
@@ -284,37 +282,32 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         // Probability of choosing random point on clonal frame
         logP += Math.log(1.0/arg.getClonalFrameLength());
         
-        // Find event corresponding to node below starting point
-        Event event1 = eventMap.get(recomb.getNode1());
+        double tau1 = popFunc.getIntensity(recomb.getHeight1());
+        double tau2 = popFunc.getIntensity(recomb.getHeight2());
         
-        // Transform starting time to dimensionless time
-        double tau1 = event1.tau
-                + popFunc.getIntegral(event1.t, recomb.getHeight1());
-        
-        // Find event corresponding to node below finishing point
-        Event event2 = eventMap.get(recomb.getNode2());
-        
-        // Transform finishing time to dimensionless time
-        double tau2 = event2.tau
-                + popFunc.getIntegral(event2.t, recomb.getHeight2());
-        
-        // Calculate probability of coalescent time with clonal frame
-        int event1idx = eventList.indexOf(event1);
-        int event2idx = eventList.indexOf(event2);
-        
-        for (int eidx=event1idx; eidx<=event2idx; eidx++) {
+        boolean started = false;
+        for (int eidx=0; eidx<eventList.size(); eidx++) {
             
-            double tauA = Math.max(eventList.get(eidx).tau, tau1);
-            double tauB;
-            if (eidx<eventList.size()-1) {
-                tauB = Math.min(eventList.get(eidx+1).tau, tau2);
-            } else
-                tauB = tau2;
-            logP += -(tauB-tauA)*eventList.get(eidx).lineages;
+            Event event = eventList.get(eidx);
+            
+            if (!started) {
+                if (eventList.get(eidx+1).t>recomb.getHeight1())
+                    started = true;
+            }
+            
+            if (started) {
+                double tauStart = Math.max(event.tau,tau1);
+
+                if (eidx==eventList.size()-1 || eventList.get(eidx+1).tau>tau2) {
+                    logP += -event.lineages*(tau2-tauStart) +
+                            Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
+                    break;
+                } else {
+                    logP += -event.lineages*(eventList.get(eidx+1).tau-tauStart);
+                }
+            }
         }
         
-        logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
-
         // DEBUG
         System.out.println(logP);
         
