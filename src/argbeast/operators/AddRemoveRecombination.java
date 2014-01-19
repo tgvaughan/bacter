@@ -68,7 +68,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     }
     
     private List<Event> eventList;
-    private Map<Node, Event> eventMap;
     
     public AddRemoveRecombination() { };
     
@@ -78,7 +77,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         popFunc = popFuncInput.get();
         
         eventList = Lists.newArrayList();
-        eventMap = Maps.newHashMap();
     };
 
     @Override
@@ -154,7 +152,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                             continue;
                         
                         if (node.getHeight()<=event.t
-                                && node.getParent().getHeight()>=event.t) {
+                                && node.getParent().getHeight()>event.t) {
                             if (u<interval) {
                                 newRecomb.setNode1(node);
                                 newRecomb.setHeight1(event.t + u);
@@ -182,7 +180,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 if (u < interval*event.lineages) {
                     for (Node node : arg.getNodesAsArray()) {
                         if (node.getHeight()<=event.t
-                                && (node.isRoot() || node.getParent().getHeight()>=event.t)) {
+                                && (node.isRoot() || node.getParent().getHeight()>event.t)) {
                             
                             if (u<interval) {
                                 newRecomb.setNode2(node);
@@ -204,6 +202,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 
             }
         }
+        
+        // DEBUG
+        System.out.println(logP);
         
         // Draw location of converted region.  Currently draws start locus 
         // uniformly from among available unconverted loci and draws the tract
@@ -314,6 +315,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         
         logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
 
+        // DEBUG
+        System.out.println(logP);
+        
         // Calculate probability of converted region.
         int convertableLength = 0;
         for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
@@ -346,13 +350,11 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      */
     public void updateEvents() {
         eventList.clear();
-        eventMap.clear();
         
         // Create event list
         for (Node node : arg.getNodesAsArray()) {
             Event event = new Event(node);
             eventList.add(event);
-            eventMap.put(node, event);
         }
         
         // Sort events in increasing order of their times
