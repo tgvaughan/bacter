@@ -17,7 +17,7 @@
     <input name='taxa' idref='alignment'/>
   </input>
   
-  <run spec="MCMC" id="mcmc" chainLength="100">
+  <run spec="MCMC" id="mcmc" chainLength="100000">
     <state>
       <stateNode idref='arg'/>
     </state>
@@ -54,16 +54,16 @@
     </operator>
     -->
 
-    <logger logEvery="1">
+    <logger logEvery="1000">
       <model idref='posterior'/>
       <log idref="posterior"/>
     </logger>
     
-    <logger logEvery="1" fileName="addRemoveTest.trees" mode="tree">
+    <logger logEvery="1000" fileName="addRemoveTest.trees" mode="tree">
        <log idref="arg"/>
      </logger>
      
-     <logger logEvery="1" fileName="addRemoveTest.converted">
+     <logger logEvery="1000" fileName="addRemoveTest.converted">
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
 

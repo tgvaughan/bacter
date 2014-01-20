@@ -26,11 +26,9 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -95,7 +93,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             if (!arg.isValid())
                 return Double.NEGATIVE_INFINITY;
             
-            System.out.println("Create " + logHGF);
+            //System.out.println("Create " + logHGF);
             
         } else {
             
@@ -113,7 +111,8 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             
             // Remove recombination
             arg.deleteRecombination(recomb);
-            System.out.println("Delete " + logHGF);
+            
+            //System.out.println("Delete " + logHGF);
         }
         
         return logHGF;
