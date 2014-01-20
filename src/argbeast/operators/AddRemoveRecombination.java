@@ -219,9 +219,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 convertableLength += 1;
         }
         
-        // DEBUG
-        System.out.println("Convertable length 1 = " + convertableLength);
-        
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);
         
@@ -324,11 +321,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 convertableLength += 1;
         }
         
-        // DEBUG
-        System.out.println("Convertable length 2 = " + convertableLength);
-        
         logP += Math.log(1.0/convertableLength)
-                + -(recomb.getEndLocus()-recomb.getStartLocus())*(1.0-1.0/deltaInput.get().getValue())
+                + (recomb.getEndLocus()-recomb.getStartLocus())
+                *Math.log(1.0-1.0/deltaInput.get().getValue())
                 + Math.log(1.0/deltaInput.get().getValue());
         
         return logP;

@@ -21,6 +21,7 @@ import argbeast.Recombination;
 import argbeast.RecombinationGraphSimulator;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.util.Randomizer;
 import com.google.common.collect.Lists;
 import java.util.List;
 import org.junit.Test;
@@ -35,6 +36,13 @@ public class AddRemoveRecombinationTest {
     
     public AddRemoveRecombinationTest() { }
     
+    /**
+     * Tests that probability density of forward move calculated
+     * by drawNewRecomb() matches probability density of backward
+     * move calculated by getRecombProb().
+     * 
+     * @throws Exception 
+     */
     @Test
     public void testHR() throws Exception {
         
