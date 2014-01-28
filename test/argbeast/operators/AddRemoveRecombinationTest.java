@@ -18,7 +18,7 @@
 package argbeast.operators;
 
 import argbeast.Recombination;
-import argbeast.RecombinationGraphSimulator;
+import argbeast.model.SimulatedRecombinationGraph;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
@@ -49,7 +49,7 @@ public class AddRemoveRecombinationTest {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        RecombinationGraphSimulator arg = new RecombinationGraphSimulator();
+        SimulatedRecombinationGraph arg = new SimulatedRecombinationGraph();
         arg.initByName(
                 "rho", 1.0,
                 "delta", 50.0,

@@ -1,0 +1,10 @@
+<beast version='2.0'
+       namespace='beast.evolution.tree.coalescent:argbeast:argbeast.model:argbeast.operators:argbeast.util'>
+  
+    <run spec="RecombinationGraphSimulator"
+         rho="1.0" delta="50.0" sequenceLength="10000"
+         nTaxa="20" nSims="100" prefix="simulated">
+        <populationModel spec="ConstantPopulation" popSize="1.0"/>
+    </run>
+  
+</beast>

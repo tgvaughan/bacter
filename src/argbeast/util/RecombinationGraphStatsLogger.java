@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package argbeast;
+package argbeast.util;
 
+import argbeast.Recombination;
+import argbeast.RecombinationGraph;
 import beast.core.CalculationNode;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -27,7 +29,7 @@ import java.io.PrintStream;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class RecombinationGraphStats extends CalculationNode implements Loggable {
+public class RecombinationGraphStatsLogger extends CalculationNode implements Loggable {
 
     public Input<RecombinationGraph> argInput = new Input <RecombinationGraph>(
             "arg", "Recombination graph to calculate summary statistics from.",
@@ -151,10 +153,10 @@ public class RecombinationGraphStats extends CalculationNode implements Loggable
         out.print(arg.getRoot().getHeight() + "\t"
                 + arg.getClonalFrameLength() + "\t"
                 + arg.getNRecombs() + "\t"
-                + RecombinationGraphStats.getMeanTractLength(arg) + "\t"
-                + RecombinationGraphStats.getMeanInterTractLength(arg) + "\t"
-                + RecombinationGraphStats.getMeanEdgeLength(arg) + "\t"
-                + RecombinationGraphStats.getMeanDepartureHeight(arg) + "\t");
+                + RecombinationGraphStatsLogger.getMeanTractLength(arg) + "\t"
+                + RecombinationGraphStatsLogger.getMeanInterTractLength(arg) + "\t"
+                + RecombinationGraphStatsLogger.getMeanEdgeLength(arg) + "\t"
+                + RecombinationGraphStatsLogger.getMeanDepartureHeight(arg) + "\t");
     }
 
     @Override

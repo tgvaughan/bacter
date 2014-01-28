@@ -1,7 +1,7 @@
 <beast version='2.0'
        namespace='beast.core:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.core.parameter:argbeast:argbeast.model:argbeast.operators:argbeast.util'>
   
-  <input spec='RecombinationGraphSimulator' id='arg'
+  <input spec='SimulatedRecombinationGraph' id='arg'
          rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="10">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
   </input>
@@ -63,8 +63,12 @@
        <log idref="arg"/>
      </logger>
      
-     <logger logEvery="1000" fileName="addRemoveTest.converted">
+     <logger logEvery="100" fileName="addRemoveTest.converted">
          <log spec="ConvertedRegionLogger" arg="@arg"/>
+     </logger>
+     
+     <logger logEvery="100" fileName="addRemoveTest.stats">
+         <log spec="RecombinationGraphStats" arg="@arg"/>
      </logger>
 
   </run>

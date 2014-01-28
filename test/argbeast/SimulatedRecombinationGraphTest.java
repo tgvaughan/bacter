@@ -17,6 +17,8 @@
 
 package argbeast;
 
+import argbeast.model.SimulatedRecombinationGraph;
+import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
@@ -29,9 +31,9 @@ import static org.junit.Assert.*;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class RecombinationGraphSimulatorTest {
+public class SimulatedRecombinationGraphTest {
     
-    public RecombinationGraphSimulatorTest() {
+    public SimulatedRecombinationGraphTest() {
     }
 
     /**
@@ -73,9 +75,9 @@ public class RecombinationGraphSimulatorTest {
                 "datatype", "nucleotide"
         );
         
-        RecombinationGraphSimulator rgs = new RecombinationGraphSimulator();
+        SimulatedRecombinationGraph rgs = new SimulatedRecombinationGraph();
         
-        RecombinationGraphStats stats = new RecombinationGraphStats();
+        RecombinationGraphStatsLogger stats = new RecombinationGraphStatsLogger();
         stats.initByName("arg", rgs);
         stats.init(System.out);
         System.out.println();
