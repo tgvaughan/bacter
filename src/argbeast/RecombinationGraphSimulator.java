@@ -73,7 +73,8 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
                 "delta", deltaInput.get(),
                 "populationModel", popFuncInput.get(),
                 "sequenceLength", sequenceLengthInput.get(),
-                "nTaxa", nTaxaInput.get()
+                "nTaxa", nTaxaInput.get(),
+                "clonalFrame", clonalFrameInput.get()
         );
         arg.setID("arg");
         

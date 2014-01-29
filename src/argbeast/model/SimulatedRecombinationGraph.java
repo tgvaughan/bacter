@@ -125,7 +125,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         if (clonalFrameInput.get() == null) {
             simulateClonalFrame();
         } else {
-            
+            assignFromWithoutID(clonalFrameInput.get());
         }
         
         initArrays();
