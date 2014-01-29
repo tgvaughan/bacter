@@ -3,8 +3,12 @@
   
     <run spec="RecombinationGraphSimulator"
          rho="1.0" delta="50.0" sequenceLength="10000"
-         nTaxa="20" nSims="100" fileName="argStats.log">
+         nSims="10" fileName="argStats.log">
         <populationModel spec="ConstantPopulation" popSize="1.0"/>
+        <clonalFrame spec='TreeParser'>
+        
+        </clonalFrame>
+
     </run>
   
 </beast>

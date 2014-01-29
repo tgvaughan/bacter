@@ -63,12 +63,16 @@
        <log idref="arg"/>
      </logger>
      
+     <logger logEvery="1000" fileName="addRemoveTest.cf" mode="tree">
+         <log spec="ClonalFrameLogger" arg="@arg"/>
+     </logger>
+     
      <logger logEvery="100" fileName="addRemoveTest.converted">
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
      
      <logger logEvery="100" fileName="addRemoveTest.stats">
-         <log spec="RecombinationGraphStats" arg="@arg"/>
+         <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>
 
   </run>
