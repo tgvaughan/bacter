@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package argbeast;
+package argbeast.model;
 
 import argbeast.model.SimulatedRecombinationGraph;
 import argbeast.util.RecombinationGraphStatsLogger;

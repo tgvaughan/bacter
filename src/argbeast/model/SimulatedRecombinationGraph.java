@@ -26,6 +26,7 @@ import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
@@ -124,12 +125,20 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         eventList = Lists.newArrayList();        
         if (clonalFrameInput.get() == null) {
             simulateClonalFrame();
+
+            TaxonSet taxonSet = new TaxonSet();
+            taxonSet.initByName("alignment", alignmentInput.get());
+            m_taxonset.setValue(taxonSet, this);
         } else {
             assignFromWithoutID(clonalFrameInput.get());
         }
         
         initArrays();
         super.initAndValidate();
+
+        // Ensure external nodes are labelled with taxon id:
+        for (int i=0; i<getExternalNodes().size(); i++)
+            getNode(i).setID(getTaxonset().asStringList().get(i));
         
         generateRecombinations();
     }
