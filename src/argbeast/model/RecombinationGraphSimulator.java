@@ -17,7 +17,6 @@
 
 package argbeast.model;
 
-import argbeast.model.SimulatedRecombinationGraph;
 import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.Description;
 import beast.core.Input;
@@ -53,8 +52,9 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
     public Input<Integer> nSimsInput = new Input<Integer>(
             "nSims", "Number of ARGs to simulate.", Validate.REQUIRED);
     
-    public Input<String> fileNameInput = new Input<String>(
-            "fileName", "Name of file in which to record statistics.", Validate.REQUIRED);
+    public Input<String> statsFileNameInput = new Input<String>(
+            "statsFileName", "Name of file in which to record statistics.",
+            Validate.REQUIRED);
 
     public Input<Tree> clonalFrameInput = new Input<Tree>(
             "clonalFrame", "Optional tree specifying fixed clonal frame."
@@ -78,7 +78,7 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
         );
         arg.setID("arg");
         
-        PrintStream statFile = new PrintStream(fileNameInput.get());
+        PrintStream statFile = new PrintStream(statsFileNameInput.get());
 
         RecombinationGraphStatsLogger statsLogger = new RecombinationGraphStatsLogger();
         statsLogger.initByName("arg", arg);
@@ -90,6 +90,8 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
             arg.initAndValidate();
             statsLogger.log(i, statFile);
             statFile.println();
+            
+//            System.out.println(arg.toString());
         }
         
         statFile.close();

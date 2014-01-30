@@ -26,7 +26,6 @@ import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
