@@ -67,19 +67,20 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
     private PopulationFunction popFunc;
     private int nTaxa;
     
+    private enum EventType {COALESCENCE, SAMPLE };
     private class Event {
+        EventType type;
         double tau, t;
         int lineages;
         
-        Event (double t, double tau, int lineages) {
+        Event (double t, double tau) {
             this.t = t;
             this.tau = tau;
-            this.lineages = lineages;
         }
 
         @Override
         public String toString() {
-            return "t: " + t + ", k: " + lineages;
+            return "t: " + t + ", k: " + lineages + ", type: " + type;
         }
     }
     private List<Event> eventList;
@@ -96,49 +97,47 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
         
-        if (nTaxaInput.get() != null) {
-            nTaxa = nTaxaInput.get();
-            if (sequenceLengthInput.get() == null)
-                throw new IllegalArgumentException("Must specify sequence"
-                        + " length if nTaxa is used.");
-            else {
-                // Generate random alignment of specified length
-                List<Sequence> seqList = Lists.newArrayList();
-                for (int i=0; i<nTaxaInput.get(); i++)
-                    seqList.add(new Sequence("taxon" + i, getSeq(sequenceLengthInput.get())));
-
-                alignmentInput.setValue(new Alignment(seqList, 4, "nucleotide"), this);
-            }
+        if (alignmentInput.get() != null) {
+            nTaxa = alignmentInput.get().getNrTaxa();
         } else {
-            if (alignmentInput.get() != null) {
-                nTaxa = alignmentInput.get().getNrTaxa();
-            } else {
-                if (clonalFrameInput.get() != null) {
-                    nTaxa = clonalFrameInput.get().getLeafNodeCount();
-                } else {
-                    throw new IllegalArgumentException("Need to specify"
-                            + " either nTaxa, alignment or clonalFrame.");
-                }
+            if (clonalFrameInput.get() != null)
+                nTaxa = clonalFrameInput.get().getLeafNodeCount();
+            else {
+                if (nTaxaInput.get() != null)
+                    nTaxa = nTaxaInput.get();
+                else
+                    throw new IllegalArgumentException("Must specify nTaxa if"
+                            + "neither alignment nor clonalFrame are used.");
             }
         }
         
-        eventList = Lists.newArrayList();        
-        if (clonalFrameInput.get() == null) {
-            simulateClonalFrame();
-
-            TaxonSet taxonSet = new TaxonSet();
-            taxonSet.initByName("alignment", alignmentInput.get());
-            m_taxonset.setValue(taxonSet, this);
-        } else {
-            assignFromWithoutID(clonalFrameInput.get());
+        if (alignmentInput.get() == null) {
+            
+            if (sequenceLengthInput.get() == null)
+                throw new IllegalArgumentException("Must specify sequenceLength"
+                        + " for simulation if alignment is not provided.");
+            
+            // Generate random alignment of specified length
+            List<Sequence> seqList = Lists.newArrayList();
+            for (int i=0; i<nTaxa; i++)
+                seqList.add(new Sequence("taxon" + i, getSeq(sequenceLengthInput.get())));
+            
+            alignmentInput.setValue(new Alignment(seqList, 4, "nucleotide"), this);
         }
+        
+        if (clonalFrameInput.get() == null)
+            simulateClonalFrame();
+        else
+            assignFromWithoutID(clonalFrameInput.get());
         
         initArrays();
         super.initAndValidate();
+        
+        generateEventList();
 
         // Ensure external nodes are labelled with taxon id:
         for (int i=0; i<getExternalNodes().size(); i++)
-            getNode(i).setID(getTaxonset().asStringList().get(i));
+            getNode(i).setID(alignmentInput.get().getTaxaNames().get(i));
         
         generateRecombinations();
     }
@@ -192,7 +191,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         });
         
         List<Node> activeNodes = Lists.newArrayList();
-        eventList.clear();
         
         double tau = 0.0;
         int nextNr = leafNodes.size();
@@ -216,8 +214,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                 Node nextActive = inactiveNodes.remove(0);
                 activeNodes.add(nextActive);
                 tau = popFunc.getIntensity(nextActive.getHeight());
-                eventList.add(new Event(nextActive.getHeight(),
-                        tau, activeNodes.size()));
                 continue;
             }
             
@@ -232,7 +228,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
             parent.setNr(nextNr++);
             
             activeNodes.add(parent);
-            eventList.add(new Event(t, tau, activeNodes.size()));
             
             if (inactiveNodes.isEmpty() && activeNodes.size()<2)
                 break;
@@ -240,6 +235,48 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         
         // Remaining active node is root
         setRoot(activeNodes.get(0));
+    }
+    
+    private void generateEventList() {
+        
+        eventList = Lists.newArrayList();
+        
+        for (Node node : getNodesAsArray()) {
+            double t = node.getHeight();
+            double tau = popFunc.getIntensity(t);
+            Event event = new Event(t, tau);
+            
+            if (node.isLeaf())
+                event.type = EventType.SAMPLE;
+            else
+                event.type = EventType.COALESCENCE;
+            
+            eventList.add(event);
+        }
+        
+        Collections.sort(eventList, new Comparator<Event>() {
+
+            @Override
+            public int compare(Event e1, Event e2) {
+                if (e1.t<e2.t)
+                    return -1;
+                
+                if (e1.t>e2.t)
+                    return 1;
+                
+                return 0;
+            }
+        });
+        
+        int k=0;
+        for (Event event : eventList) {
+            if (event.type == EventType.SAMPLE)
+                k += 1;
+            else
+                k -= 1;
+            
+            event.lineages = k;
+        }
     }
     
     /**
