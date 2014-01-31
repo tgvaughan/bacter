@@ -1,13 +1,13 @@
 <beast version='2.0'
        namespace='beast.core
-          :beast.core.util
-          :beast.core.parameter
-          :beast.evolution.tree.coalescent
-          :beast.util
-          :argbeast
-          :argbeast.model
-          :argbeast.operators
-          :argbeast.util'>
+                 :beast.core.util
+                 :beast.core.parameter
+                 :beast.evolution.tree.coalescent
+                 :beast.util
+                 :argbeast
+                 :argbeast.model
+                 :argbeast.operators
+                 :argbeast.util'>
 
   
   <input spec='SimulatedRecombinationGraph' id='arg'

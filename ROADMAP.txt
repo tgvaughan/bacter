@@ -5,7 +5,7 @@
 ** DONE ARG state node
    CLOSED: [2014-01-31 Fri 13:34]
 
-** DONE [#B] ARG likelihood
+** DONE ARG likelihood
    CLOSED: [2014-01-31 Fri 13:36]
 
 ** DONE ARG density under model

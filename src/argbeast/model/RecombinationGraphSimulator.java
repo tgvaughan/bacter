@@ -17,6 +17,7 @@
 
 package argbeast.model;
 
+import argbeast.util.ConvertedRegionLogger;
 import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.Description;
 import beast.core.Input;
@@ -55,6 +56,9 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
     public Input<String> statsFileNameInput = new Input<String>(
             "statsFileName", "Name of file in which to record statistics.",
             Validate.REQUIRED);
+    
+    public Input<String> convFileNameInput = new Input<String>(
+            "convFileName", "Name of file in which to record converted regions.");
 
     public Input<Tree> clonalFrameInput = new Input<Tree>(
             "clonalFrame", "Optional tree specifying fixed clonal frame."
@@ -65,6 +69,8 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
 
     @Override
     public void run() throws Exception {
+        
+        boolean writeConv = (convFileNameInput.get() != null);
 
         // Initalize ARG object
         SimulatedRecombinationGraph arg = new SimulatedRecombinationGraph();
@@ -82,18 +88,34 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
 
         RecombinationGraphStatsLogger statsLogger = new RecombinationGraphStatsLogger();
         statsLogger.initByName("arg", arg);
-
         statsLogger.init(statFile);
         statFile.println();
         
+        PrintStream convFile = null;
+        ConvertedRegionLogger convLogger = null;
+        if (writeConv) {
+            convFile = new PrintStream(convFileNameInput.get());
+            convLogger = new ConvertedRegionLogger();
+            convLogger.initByName("arg", arg);
+            convLogger.init(convFile);
+            convFile.println();
+        }
+
         for (int i=0; i<nSimsInput.get(); i++) {
             arg.initAndValidate();
             statsLogger.log(i, statFile);
             statFile.println();
             
+            if (writeConv) {
+                convLogger.log(i, convFile);
+                convFile.println();
+            }
 //            System.out.println(arg.toString());
         }
         
         statFile.close();
+        
+        if (writeConv)
+            convFile.close();
     }
 }
