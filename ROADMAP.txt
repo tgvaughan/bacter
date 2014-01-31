@@ -1,0 +1,30 @@
+# Road map for ARGBEAST development
+
+* Functional sampler [80%]
+
+** DONE ARG state node
+   CLOSED: [2014-01-31 Fri 13:34]
+
+** DONE [#B] ARG likelihood
+   CLOSED: [2014-01-31 Fri 13:36]
+
+** DONE ARG density under model
+   CLOSED: [2014-01-31 Fri 13:34]
+
+** DONE ARG simulator
+   CLOSED: [2014-01-31 Fri 13:34]
+
+** TODO Operators [0%]
+
+*** TODO Add/remove
+    Implementation is complete, currently debugging.
+
+    Problems:
+       1. Sampled converted regions all begin at zero.
+       2. Distribution of number of regions is wrong.
+
+*** TODO Clonal frame operators
+
+*** TODO Converted region shifter
+
+*** TODO Recombinant edge shifter
