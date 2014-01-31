@@ -21,7 +21,6 @@ import argbeast.Recombination;
 import argbeast.model.SimulatedRecombinationGraph;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.util.Randomizer;
 import com.google.common.collect.Lists;
 import java.util.List;
 import org.junit.Test;

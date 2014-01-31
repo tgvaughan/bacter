@@ -20,7 +20,7 @@
     Implementation is complete, currently debugging.
 
     Problems:
-       1. Sampled converted regions all begin at zero.
+       1. Sampled converted regions all begin at zero. (Fixed.)
        2. Distribution of number of regions is wrong.
 
 *** TODO Clonal frame operators
