@@ -88,6 +88,7 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
 
         RecombinationGraphStatsLogger statsLogger = new RecombinationGraphStatsLogger();
         statsLogger.initByName("arg", arg);
+        statFile.print("Sample\t");
         statsLogger.init(statFile);
         statFile.println();
         
@@ -103,6 +104,7 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
 
         for (int i=0; i<nSimsInput.get(); i++) {
             arg.initAndValidate();
+            statFile.print(i + "\t");
             statsLogger.log(i, statFile);
             statFile.println();
             

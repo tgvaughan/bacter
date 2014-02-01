@@ -1,0 +1,92 @@
+<beast version='2.0'
+       namespace='beast.core
+                 :beast.core.util
+                 :beast.core.parameter
+                 :beast.evolution.tree.coalescent
+                 :beast.util
+                 :argbeast
+                 :argbeast.model
+                 :argbeast.operators
+                 :argbeast.util'>
+
+  
+  <input spec='SimulatedRecombinationGraph' id='arg'
+         rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="10">
+      <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
+      <clonalFrame spec='TreeParser' newick="(((((1:0.10775963006390847,9:0.10775963006390847):0.0553316638916269,8:0.16309129395553537):0.4285443015015583,(2:0.14178376612589796,4:0.14178376612589796):0.4498518293311957):0.022377197217951728,(((3:0.014894425916110413,6:0.014894425916110413):3.162494457449039E-4,5:0.015210675361855316):0.12792368826107853,10:0.14313436362293383):0.4708784290521115):1.9316000572606464,7:2.545612849935692):0.0;"/>
+  </input>
+
+  <input spec='GCCoalescentApprox' id="argPrior">
+      <rho spec='RealParameter' value="1.0" id="rho" estimate="false"/>
+      <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+      <treeIntervals spec='TreeIntervals' tree="@arg"/>
+      <populationModel idref="popFunc"/>
+  </input>
+
+  <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
+    <input name='taxa' idref='alignment'/>
+  </input>
+  
+  <run spec="MCMC" id="mcmc" chainLength="2000000">
+    <state>
+      <stateNode idref='arg'/>
+    </state>
+    
+    <distribution spec="CompoundDistribution" id="posterior">
+      <distribution idref="argPrior"/>
+    </distribution>
+
+    <operator id="addRemove" spec="AddRemoveRecombination" weight="1.0">
+        <arg idref="arg"/>
+        <rho idref="rho"/>
+        <delta idref="delta"/>
+        <populationModel idref="popFunc"/>
+    </operator>
+    
+    <!--
+    <operator id='treeScaler' spec='ScaleOperator' scaleFactor="0.5" weight="1">
+      <tree idref="tree"/>
+    </operator>
+    <operator spec='Uniform' weight="10">
+      <tree idref="tree"/>
+    </operator>
+    <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
+      <tree idref="tree"/>
+    </operator>
+    <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
+      <tree idref="tree"/>
+    </operator>
+    <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
+      <tree idref="tree"/>
+    </operator>
+    <operator spec='WilsonBalding' weight="1">
+      <tree idref="tree"/>
+    </operator>
+    -->
+
+    <logger logEvery="10000">
+      <model idref='posterior'/>
+      <log idref="posterior"/>
+    </logger>
+    
+    <logger logEvery="1000" fileName="addRemoveTest_fixedCF.trees" mode="tree">
+       <log idref="arg"/>
+     </logger>
+     
+     <logger logEvery="1000" fileName="addRemoveTest_fixedCF.cf" mode="tree">
+         <log spec="ClonalFrameLogger" arg="@arg"/>
+     </logger>
+     
+     <logger logEvery="100" fileName="addRemoveTest_fixedCF.converted">
+         <log idref="posterior"/>
+         <log spec="ConvertedRegionLogger" arg="@arg"/>
+     </logger>
+     
+     <logger logEvery="100" fileName="addRemoveTest_fixedCF.stats">
+         <log idref="posterior"/>
+         <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
+     </logger>
+
+  </run>
+
+</beast>
