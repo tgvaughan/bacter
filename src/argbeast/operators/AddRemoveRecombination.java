@@ -231,33 +231,13 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx+1);
             
-            if (ridx==0) {
-                z -= Math.max(0, recomb.getStartLocus()-1);
-                
-                if (z<0) {
-                    newRecomb.setStartLocus(Math.max(0, recomb.getStartLocus()-1)+z);
-                    break;
-                }
-            } else {
-                Recombination prevRecomb = arg.getRecombinations().get(ridx);
-                z -= Math.max(0,
-                        recomb.getStartLocus()-prevRecomb.getEndLocus()-3);
-                
-                if (z<0) {
-                    newRecomb.setStartLocus(recomb.getStartLocus()-1+z);
-                    break;
-                }
-            }
+            if (z<recomb.getStartLocus()-1)
+                break;
             
-            if (ridx==arg.getNRecombs()-1) {
-                int finalLocus = arg.getSequenceLength()-1;
-                z -= Math.max(0, finalLocus-recomb.getEndLocus()-1);
-                
-                if (z<0) {
-                    newRecomb.setStartLocus(finalLocus+1+z);
-                }
-            }
+            z += recomb.getEndLocus()-Math.max(0,recomb.getStartLocus()-1);
         }
+        
+        newRecomb.setStartLocus(z);
         
         int convertedLength = (int)Randomizer
                 .nextGeometric(1.0/deltaInput.get().getValue());

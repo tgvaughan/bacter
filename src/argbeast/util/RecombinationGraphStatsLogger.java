@@ -78,9 +78,9 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
             return Double.NaN;
         
         double mean = 0;
-        for (int ridx=2; ridx<arg.getNRecombs(); ridx++) {
-            mean += arg.getRecombinations().get(ridx).getStartLocus()
-                    - arg.getRecombinations().get(ridx-1).getEndLocus() - 1;
+        for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
+            mean += arg.getRecombinations().get(ridx+1).getStartLocus()
+                    - arg.getRecombinations().get(ridx).getEndLocus() - 1;
         }
         mean /= arg.getNRecombs()-1;
         
