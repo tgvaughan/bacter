@@ -14,14 +14,9 @@
 ** DONE ARG simulator
    CLOSED: [2014-01-31 Fri 13:34]
 
-** TODO Operators [0%]
+** TODO Operators [25%]
 
-*** TODO Add/remove
-    Implementation is complete, currently debugging.
-
-    Problems:
-       1. Sampled converted regions all begin at zero. (Fixed.)
-       2. Distribution of number of regions is wrong.
+*** DONE Add/remove
 
 *** TODO Clonal frame operators
 
