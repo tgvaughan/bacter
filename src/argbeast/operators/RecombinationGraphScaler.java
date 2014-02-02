@@ -42,7 +42,7 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
     
     public Input<Double> scaleParamInput = new Input<Double>("scaleFactor",
             "Scale factor tuning parameter.  Must be < 1.", Validate.REQUIRED);
-
+    
     private double scaleParam;
     private RecombinationGraph arg;
     
@@ -75,12 +75,14 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
             
             recomb.setHeight1(recomb.getHeight1()*f);
             recomb.setHeight2(recomb.getHeight2()*f);
+            count += 2;
             
             if (recomb.getHeight1()<recomb.getNode1().getHeight()
                     || recomb.getHeight2()<recomb.getNode2().getHeight())
                 return Double.NEGATIVE_INFINITY;
             
-            count += 2;
+//            if (!recomb.isValid())
+//                return Double.NEGATIVE_INFINITY;
         }
         
         // Check for illegal node heights:

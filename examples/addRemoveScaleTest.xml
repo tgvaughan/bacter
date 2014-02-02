@@ -2,6 +2,7 @@
        namespace='beast.core
                  :beast.core.util
                  :beast.core.parameter
+                 :beast.evolution.operators
                  :beast.evolution.tree
                  :beast.evolution.tree.coalescent
                  :beast.util
@@ -16,24 +17,21 @@
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
   </input>
 
-  <input spec='GCCoalescentApprox' id="argPrior">
-      <rho spec='RealParameter' value="1.0" id="rho" estimate="false"/>
-      <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
-      <treeIntervals spec='TreeIntervals' tree="@arg"/>
-      <populationModel idref="popFunc"/>
-  </input>
 
-  <input spec='beast.util.ClusterTree' id='tree' clusterType='upgma'>
-    <input name='taxa' idref='alignment'/>
-  </input>
-  
+
+
   <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
       <stateNode idref='arg'/>
     </state>
     
     <distribution spec="CompoundDistribution" id="posterior">
-      <distribution idref="argPrior"/>
+        <distribution spec='GCCoalescentApprox' id="argPrior">
+            <rho spec='RealParameter' value="1.0" id="rho" estimate="false"/>
+            <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+            <treeIntervals spec='TreeIntervals' tree="@arg"/>
+            <populationModel idref="popFunc"/>
+        </distribution>
     </distribution>
 
     <operator id="addRemove" spec="AddRemoveRecombination" weight="1.0">
@@ -43,9 +41,14 @@
         <populationModel idref="popFunc"/>
     </operator>
     
+    <!--
     <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
               scaleFactor="0.8">
         <arg idref="arg"/>
+    </operator>-->
+    
+    <operator id="scale" spec="ARGValidityWrapper" arg="@arg" weight="1.0">
+        <operator spec="ScaleOperator" tree="@arg" scaleFactor="0.8" weight="1.0"/>
     </operator>
     
     <!--
