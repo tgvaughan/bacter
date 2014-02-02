@@ -93,6 +93,8 @@ public class RecombinationGraph extends Tree {
     public boolean addRecombination(Recombination recomb) {
         startEditing();
         
+        recomb.setRecombinationGraph(this);
+        
         int i;
         for (i=1; i<recombs.size(); i++)
             if (recombs.get(i).startLocus>recomb.startLocus)
@@ -580,6 +582,8 @@ public class RecombinationGraph extends Tree {
                 recombCopy.setNode1(m_storedNodes[recomb.getNode1().getNr()]);
                 recombCopy.setNode2(m_storedNodes[recomb.getNode2().getNr()]);
 
+                recombCopy.setRecombinationGraph(this);
+                
                 storedRecombs.add(recombCopy);
             }
         }

@@ -43,15 +43,12 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
     public Input<Double> scaleParamInput = new Input<Double>("scaleFactor",
             "Scale factor tuning parameter.  Must be < 1.", Validate.REQUIRED);
 
-    private double scaleParam, scaleMax, scaleMin;
+    private double scaleParam;
     private RecombinationGraph arg;
     
     @Override
     public void initAndValidate() {
         scaleParam = scaleParamInput.get();
-        scaleMax = Math.max(scaleParam, 1.0/scaleParam);
-        scaleMin = Math.min(scaleParam, 1.0/scaleParam);
-        
         arg = argInput.get();
     }
     
@@ -63,7 +60,7 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
         int count = 0;
 
         // Choose scaling factor:
-        double f = scaleMin + Randomizer.nextDouble()*(scaleMax - scaleMin);
+        double f = scaleParam + Randomizer.nextDouble()*(1.0/scaleParam - scaleParam);
         
         // Scale clonal frame:
         for (Node node : arg.getInternalNodes()) {
@@ -117,7 +114,7 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
                 return Double.NEGATIVE_INFINITY;
             }
             
-            count += paramInv.getDimension();
+            count -= paramInv.getDimension();
         }
         
         // Return log of Hastings ratio:

@@ -288,6 +288,10 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         double pTractEnd = 1.0/delta;
         double p0cf = 1.0/(1.0 + pRec*delta);
         
+        // Check for zero recombination rate (used sometimes for testing)
+        if (pRec==0.0)
+            return;
+        
         long l; // next available convertible locus
         if (Randomizer.nextDouble()>p0cf) {
             Recombination recomb = new Recombination();
@@ -303,7 +307,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         
         if (l>=getSequenceLength())
             return;
-
+        
         while (true) {
             l += Randomizer.nextGeometric(pRec);
 

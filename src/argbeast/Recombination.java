@@ -28,6 +28,8 @@ import beast.evolution.tree.Node;
  */
 public class Recombination {
     
+    private RecombinationGraph arg;
+    
     public Recombination() { }
     
     /**
@@ -126,6 +128,7 @@ public class Recombination {
      * @param node1 
      */
     public void setNode1(Node node1) {
+        startEditing();
         this.node1 = node1;
     }
 
@@ -136,6 +139,7 @@ public class Recombination {
      * @param node2 
      */
     public void setNode2(Node node2) {
+        startEditing();
         this.node2 = node2;
     }
 
@@ -146,6 +150,7 @@ public class Recombination {
      * @param height1 
      */
     public void setHeight1(double height1) {
+        startEditing();
         this.height1 = height1;
     }
 
@@ -155,6 +160,7 @@ public class Recombination {
      * @param height2 
      */
     public void setHeight2(double height2) {
+        startEditing();
         this.height2 = height2;
     }
 
@@ -164,6 +170,7 @@ public class Recombination {
      * @param startLocus 
      */
     public void setStartLocus(long startLocus) {
+        startEditing();
         this.startLocus = startLocus;
     }
 
@@ -173,6 +180,7 @@ public class Recombination {
      * @param endLocus 
      */
     public void setEndLocus(long endLocus) {
+        startEditing();
         this.endLocus = endLocus;
     }
     
@@ -203,4 +211,21 @@ public class Recombination {
         
         return true;
     }
+    
+    /**
+     * Assign recombination graph.
+     * @param arg 
+     */
+    public void setRecombinationGraph(RecombinationGraph arg) {
+        this.arg = arg;
+    }
+    
+    /**
+     * Mark ARG statenode as dirty if available.
+     */
+    public void startEditing() {
+        if (arg != null)
+            arg.startEditing();
+    }
+    
 }

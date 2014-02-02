@@ -27,7 +27,7 @@
     <input name='taxa' idref='alignment'/>
   </input>
   
-  <run spec="MCMC" id="mcmc" chainLength="2000000">
+  <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
       <stateNode idref='arg'/>
     </state>
@@ -86,7 +86,6 @@
      </logger>
      
      <logger logEvery="100" fileName="addRemoveScaleTest.stats">
-         <log idref="posterior"/>
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>
 
