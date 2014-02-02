@@ -80,9 +80,6 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
             if (recomb.getHeight1()<recomb.getNode1().getHeight()
                     || recomb.getHeight2()<recomb.getNode2().getHeight())
                 return Double.NEGATIVE_INFINITY;
-            
-//            if (!recomb.isValid())
-//                return Double.NEGATIVE_INFINITY;
         }
         
         // Check for illegal node heights:

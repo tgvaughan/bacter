@@ -36,6 +36,10 @@ compareStats <- function(df1, df2, label1="df1", label2="df2") {
            xlab=label1, ylab=label2, col='blue',
            main='Edge length')
     lines(c(0,1e10), c(0,1e10))
-    
+
+    qqplot(df1$arg.CFheight, df2$arg.CFheight,
+           xlab=label1, ylab=label2, col='blue',
+           main='Clonal frame height')
+    lines(c(0,1e10), c(0,1e10))
 }
 
