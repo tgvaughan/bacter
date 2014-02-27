@@ -13,7 +13,7 @@
 
   
   <input spec='SimulatedRecombinationGraph' id='arg'
-         rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="2">
+         rho="5.0" delta="50.0" sequenceLength="10000" nTaxa="2">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
   </input>
 
@@ -27,7 +27,7 @@
     
     <distribution spec="CompoundDistribution" id="posterior">
         <distribution spec='GCCoalescentApprox' id="argPrior">
-            <rho spec='RealParameter' value="1.0" id="rho" estimate="false"/>
+            <rho spec='RealParameter' value="5.0" id="rho" estimate="false"/>
             <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
             <treeIntervals spec='TreeIntervals' tree="@arg"/>
             <populationModel idref="popFunc"/>
@@ -41,11 +41,10 @@
         <populationModel idref="popFunc"/>
     </operator>
     
-    <!--
-    <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
+    <!--operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
               scaleFactor="0.8">
         <arg idref="arg"/>
-    </operator>-->
+    </operator-->
     
     <operator id="scale" spec="ARGValidityWrapper" arg="@arg" weight="1.0">
         <operator spec="ScaleOperator" tree="@arg" scaleFactor="0.8" weight="1.0"/>
