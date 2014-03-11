@@ -17,7 +17,12 @@
 
 package argbeast.operators;
 
+import argbeast.Recombination;
+import argbeast.RecombinationGraph;
 import beast.core.Description;
+import beast.core.Input;
+import beast.evolution.tree.Node;
+import beast.util.Randomizer;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -26,9 +31,88 @@ import beast.core.Description;
         + "about on clonal frame.")
 public class MoveRecombinantEdge extends RecombinationGraphOperator {
 
+    public Input<Double> scaleBoundInput = new Input<Double>("scaleBound",
+            "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "
+                    + "Default is 0.8.", 0.8);
+
+    private double scaleMin, scaleMax;
+    
+    public MoveRecombinantEdge() { }
+
+    @Override
+    public void initAndValidate() throws Exception {
+        scaleMin = Math.min(scaleBoundInput.get(), 1.0/scaleBoundInput.get());
+        scaleMax = 1.0/scaleMin;
+    }
+    
     @Override
     public double proposal() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        double logHR = 0.0;
+        
+        RecombinationGraph arg = argInput.get();
+
+        if (arg.getNRecombs()==0)
+            return Double.NEGATIVE_INFINITY;
+
+        // Select edge at random:
+        Recombination recomb = arg.getRecombinations().get(
+                Randomizer.nextInt(arg.getNRecombs())+1);
+        
+        // Decide whether to move departure or arrival point
+        boolean moveDeparture = Randomizer.nextBoolean();
+        
+        double oldHeight;
+        if (moveDeparture) {
+            oldHeight = recomb.getHeight1();
+        } else {
+            oldHeight = recomb.getHeight2();
+        }
+        
+        // Choose scale factor
+        double f = Randomizer.nextDouble()*(scaleMax - scaleMin) + scaleMin;
+        
+        // Set new height
+        double newHeight = f*oldHeight;
+        
+        // Check for boundary violation
+        if (moveDeparture) {
+            if (newHeight>recomb.getHeight2())
+                return Double.NEGATIVE_INFINITY;
+        } else {
+            if (newHeight<recomb.getHeight1())
+                return Double.NEGATIVE_INFINITY;
+        }
+        
+        // Scale factor HR contribution
+        logHR += -Math.log(f);
+        
+
+        Node nodeBelow;
+        if (moveDeparture)
+            nodeBelow = recomb.getNode1();
+        else
+            nodeBelow = recomb.getNode2();
+        
+        if (f<1.0) {
+            while (newHeight<nodeBelow.getHeight()) {
+                if (nodeBelow.isLeaf())
+                    return Double.NEGATIVE_INFINITY;
+                
+                if (Randomizer.nextBoolean())
+                    nodeBelow = nodeBelow.getLeft();
+                else
+                    nodeBelow = nodeBelow.getRight();
+            }
+            
+        } else {
+            while (!nodeBelow.isRoot() && newHeight>nodeBelow.getParent().getHeight()) {
+                nodeBelow = nodeBelow.getParent();
+            }
+            
+        }
+        
+        return logHR;
     }
     
 }
