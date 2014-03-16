@@ -29,7 +29,7 @@ import beast.util.Randomizer;
  */
 @Description("Operator which moves connection points of recombinant edges "
         + "about on clonal frame.")
-public class MoveRecombinantEdge extends RecombinationGraphOperator {
+public class SlideRecombinantEdge extends RecombinationGraphOperator {
 
     public Input<Double> scaleBoundInput = new Input<Double>("scaleBound",
             "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "
@@ -37,7 +37,7 @@ public class MoveRecombinantEdge extends RecombinationGraphOperator {
 
     private double scaleMin, scaleMax;
     
-    public MoveRecombinantEdge() { }
+    public SlideRecombinantEdge() { }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -62,6 +62,7 @@ public class MoveRecombinantEdge extends RecombinationGraphOperator {
         // Decide whether to move departure or arrival point
         boolean moveDeparture = Randomizer.nextBoolean();
         
+        // Get current (old) attachment height
         double oldHeight;
         if (moveDeparture) {
             oldHeight = recomb.getHeight1();
@@ -77,7 +78,7 @@ public class MoveRecombinantEdge extends RecombinationGraphOperator {
         
         // Check for boundary violation
         if (moveDeparture) {
-            if (newHeight>recomb.getHeight2())
+            if (newHeight>recomb.getHeight2() || newHeight>arg.getRoot().getHeight())
                 return Double.NEGATIVE_INFINITY;
         } else {
             if (newHeight<recomb.getHeight1())
@@ -86,14 +87,15 @@ public class MoveRecombinantEdge extends RecombinationGraphOperator {
         
         // Scale factor HR contribution
         logHR += -Math.log(f);
-        
 
+        // Get node below current (old) attachment point
         Node nodeBelow;
         if (moveDeparture)
             nodeBelow = recomb.getNode1();
         else
             nodeBelow = recomb.getNode2();
-        
+
+        // Choose node below new attachment point
         if (f<1.0) {
             while (newHeight<nodeBelow.getHeight()) {
                 if (nodeBelow.isLeaf())
@@ -103,13 +105,23 @@ public class MoveRecombinantEdge extends RecombinationGraphOperator {
                     nodeBelow = nodeBelow.getLeft();
                 else
                     nodeBelow = nodeBelow.getRight();
+                
+                logHR += -Math.log(0.5);
             }
-            
         } else {
             while (!nodeBelow.isRoot() && newHeight>nodeBelow.getParent().getHeight()) {
                 nodeBelow = nodeBelow.getParent();
+                logHR += Math.log(0.5);
             }
-            
+        }
+        
+        // Write changes back to recombination object
+        if (moveDeparture) {
+            recomb.setHeight1(newHeight);
+            recomb.setNode1(nodeBelow);
+        } else {
+            recomb.setHeight2(newHeight);
+            recomb.setNode2(nodeBelow);
         }
         
         return logHR;
