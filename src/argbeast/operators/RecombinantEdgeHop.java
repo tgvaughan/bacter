@@ -41,12 +41,49 @@ public class RecombinantEdgeHop extends RecombinationGraphOperator {
         Recombination recomb = arg.getRecombinations().get(
                 Randomizer.nextInt(arg.getNRecombs())+1);
         
+        // Choose whether to move departure or arrival point
+        boolean moveDeparture;
+        if (recomb.getNode2().isRoot())
+            moveDeparture = true;
+        else
+            moveDeparture = Randomizer.nextBoolean();
+        
         // Select new attachment point:
         double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
-        Node nodeBelow;
-        double newHeight;
+        Node nodeBelow = null;
+        double newHeight = -1;
         for (Node node : arg.getNodesAsArray()) {
+            if (node.isRoot())
+                continue;
             
+            if (u<node.getLength()) {
+                newHeight = node.getHeight() + u;
+                nodeBelow = node;
+                break;
+            }
+            
+            u -= node.getLength();
+        }
+        
+        if (newHeight<0.0 || nodeBelow == null)
+            throw new IllegalStateException("Problem with recombinant edge "
+                    + "hop operator!  This is a bug.");
+        
+        // Check that new height does not lie out of bounds
+        if (moveDeparture) {
+            if (newHeight>recomb.getHeight2())
+                return Double.NEGATIVE_INFINITY;
+            else {
+                recomb.setHeight1(newHeight);
+                recomb.setNode1(nodeBelow);
+            }
+        } else {
+            if (newHeight<recomb.getHeight1())
+                return Double.NEGATIVE_INFINITY;
+            else {
+                recomb.setHeight2(newHeight);
+                recomb.setNode2(nodeBelow);
+            }
         }
         
         return 0.0;
