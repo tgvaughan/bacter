@@ -29,7 +29,7 @@ import beast.util.Randomizer;
  */
 @Description("Operator which moves connection points of recombinant edges "
         + "about on clonal frame.")
-public class SlideRecombinantEdge extends RecombinationGraphOperator {
+public class RecombinantEdgeSlide extends RecombinationGraphOperator {
 
     public Input<Double> scaleBoundInput = new Input<Double>("scaleBound",
             "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "
@@ -37,7 +37,7 @@ public class SlideRecombinantEdge extends RecombinationGraphOperator {
 
     private double scaleMin, scaleMax;
     
-    public SlideRecombinantEdge() { }
+    public RecombinantEdgeSlide() { }
 
     @Override
     public void initAndValidate() throws Exception {
