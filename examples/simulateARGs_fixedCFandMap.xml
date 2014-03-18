@@ -1,0 +1,20 @@
+<beast version='2.0'
+       namespace='beast.evolution.tree.coalescent
+                 :argbeast:argbeast.model
+                 :argbeast.operators
+                 :argbeast.util:beast.util
+                 :beast.core.parameter'>
+  
+    <run spec="RecombinationGraphSimulator"
+         rho="1.0" delta="50.0" sequenceLength="10000"
+         nSims="10000" statsFileName="argStats.log" convFileName="argConv.log">
+        <populationModel spec="ConstantPopulation" popSize="1.0"/>
+        <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
+        <recombinationMap spec='IntegerParameter'>
+            100 300
+            400 500
+            800 850
+        </recombinationMap>
+    </run>
+  
+</beast>

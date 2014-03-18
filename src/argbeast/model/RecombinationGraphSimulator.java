@@ -22,6 +22,7 @@ import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.parameter.IntegerParameter;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import java.io.PrintStream;
@@ -61,8 +62,14 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
             "convFileName", "Name of file in which to record converted regions.");
 
     public Input<Tree> clonalFrameInput = new Input<Tree>(
-            "clonalFrame", "Optional tree specifying fixed clonal frame."
-    );
+            "clonalFrame", "Optional tree specifying fixed clonal frame.");
+    
+    public Input<IntegerParameter> mapInput = new Input<IntegerParameter>(
+            "recombinationMap", "Optional sequence of integers specifying "
+                    + "sites affected by recombination events.  Fixes the "
+                    + "total number of recombination events and the sites "
+                    + "they affect, leaving only the clonal frame and "
+                    + "recombinant edges to be simulated.");
     
     @Override
     public void initAndValidate() { }
@@ -80,8 +87,8 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
                 "populationModel", popFuncInput.get(),
                 "sequenceLength", sequenceLengthInput.get(),
                 "nTaxa", nTaxaInput.get(),
-                "clonalFrame", clonalFrameInput.get()
-        );
+                "clonalFrame", clonalFrameInput.get(),
+                "recombinationMap", mapInput.get());
         arg.setID("arg");
         
         PrintStream statFile = new PrintStream(statsFileNameInput.get());

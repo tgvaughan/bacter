@@ -24,6 +24,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
+import beast.core.parameter.IntegerParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
@@ -61,6 +62,13 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
     
     public Input<Tree> clonalFrameInput = new Input<Tree>(
             "clonalFrame", "Optional tree specifying fixed clonal frame.");
+    
+    public Input<IntegerParameter> mapInput = new Input<IntegerParameter>(
+            "recombinationMap", "Optional sequence of integers specifying "
+                    + "sites affected by recombination events.  Fixes the "
+                    + "total number of recombination events and the sites "
+                    + "they affect, leaving only the clonal frame and "
+                    + "recombinant edges to be simulated.");
 
     private double rho, delta;
     private PopulationFunction popFunc;
@@ -137,8 +145,29 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         // Ensure external nodes are labelled with taxon id:
         for (int i=0; i<getExternalNodes().size(); i++)
             getNode(i).setID(alignmentInput.get().getTaxaNames().get(i));
-        
-        generateRecombinations();
+
+        // Generate recombinations
+        if (mapInput.get() == null)
+            generateRecombinations();
+        else {
+            // Read recombination map directly from input
+            if (mapInput.get().getDimension()%2 != 0)
+                throw new IllegalArgumentException("Map must contain an even number of site indices.");
+            
+            for (int i=0; i<mapInput.get().getDimension()/2; i++) {
+                int start = mapInput.get().getValue(i*2);
+                int end = mapInput.get().getValue(i*2 + 1);
+                if (end<start)
+                    throw new IllegalArgumentException("Map site index pairs i,j must satisfy j>=i.");
+                
+                Recombination recomb = new Recombination();
+                recomb.setStartLocus(mapInput.get().getValue(i*2));
+                recomb.setEndLocus(mapInput.get().getValue(i*2 + 1));
+                
+                associateRecombinationWithCF(recomb);
+                addRecombination(recomb);
+            }
+        }
     }
     
     /**
@@ -396,7 +425,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     u -= intervalArea*event.lineages;
             }
         }
-
     }
     
     @Override
