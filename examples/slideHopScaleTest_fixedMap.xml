@@ -13,7 +13,6 @@
   <input spec='SimulatedRecombinationGraph' id='arg'
          rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="2">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
-      <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
       <recombinationMap spec='IntegerParameter'>
             100 300
             400 500
@@ -37,6 +36,8 @@
       <distribution idref="argPrior"/>
     </distribution>
 
+    <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
+              arg="@arg" scaleFactor="0.8"/>
     <operator id="slide" spec="RecombinantEdgeSlide" weight="1.0"
               arg="@arg" scaleBound="0.8" />
     <operator id="hop" spec="RecombinantEdgeHop" weight="1.0" arg="@arg"/>
@@ -46,20 +47,20 @@
       <log idref="posterior"/>
     </logger>
     
-    <logger logEvery="1000" fileName="slideHopTest_fixedCFandMap.trees" mode="tree">
+    <logger logEvery="1000" fileName="slideHopScaleTest_fixedMap.trees" mode="tree">
        <log idref="arg"/>
      </logger>
      
-     <logger logEvery="1000" fileName="slideHopTest_fixedCFandMap.cf" mode="tree">
+     <logger logEvery="1000" fileName="slideHopScaleTest_fixedMap.cf" mode="tree">
          <log spec="ClonalFrameLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="slideHopTest_fixedCFandMap.converted">
+     <logger logEvery="100" fileName="slideHopScaleTest_fixedMap.converted">
          <log idref="posterior"/>
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="slideHopTest_fixedCFandMap.stats">
+     <logger logEvery="100" fileName="slideHopScaleTest_fixedMap.stats">
          <log idref="posterior"/>
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>

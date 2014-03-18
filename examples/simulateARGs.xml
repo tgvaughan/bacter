@@ -3,7 +3,7 @@
   
     <run spec="RecombinationGraphSimulator"
          rho="5" delta="50.0" sequenceLength="10000"
-         nTaxa="2" nSims="100000" statsFileName="argStats.log">
+         nTaxa="2" nSims="100000" statsFileName="simulated.stats">
         <populationModel spec="ConstantPopulation" popSize="1.0"/>
     </run>
   

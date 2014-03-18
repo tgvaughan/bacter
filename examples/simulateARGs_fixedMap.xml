@@ -6,15 +6,13 @@
                  :beast.core.parameter'>
   
     <run spec="RecombinationGraphSimulator"
-         rho="1.0" delta="50.0" sequenceLength="10000"
-         nSims="10000" statsFileName="simulated_fixedCFandMap.stats" convFileName="simulated_fixedCFandMap.converted">
+         rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="2"
+         nSims="10000" statsFileName="simulated_fixedMap.stats" convFileName="simulated_fixedMap.converted">
         <populationModel spec="ConstantPopulation" popSize="1.0"/>
-        <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
         <recombinationMap spec='IntegerParameter'>
             100 300
             400 500
             800 850
         </recombinationMap>
     </run>
-  
 </beast>
