@@ -30,6 +30,9 @@ import beast.util.Randomizer;
 public class RecombinantEdgeHop extends RecombinationGraphOperator {
 
     @Override
+    public void initAndValidate() { }
+
+    @Override
     public double proposal() {
 
         RecombinationGraph arg = argInput.get();

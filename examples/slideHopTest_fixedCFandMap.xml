@@ -1,0 +1,69 @@
+<beast version='2.0'
+       namespace='beast.core
+                 :beast.core.util
+                 :beast.core.parameter
+                 :beast.evolution.tree.coalescent
+                 :beast.util
+                 :argbeast
+                 :argbeast.model
+                 :argbeast.operators
+                 :argbeast.util'>
+
+  
+  <input spec='SimulatedRecombinationGraph' id='arg'
+         rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="2">
+      <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
+      <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
+      <recombinationMap spec='IntegerParameter'>
+            100 300
+            400 500
+            800 850
+      </recombinationMap>
+  </input>
+
+  <input spec='GCCoalescentApprox' id="argPrior">
+      <rho spec='RealParameter' value="1.0" id="rho" estimate="false"/>
+      <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+      <treeIntervals spec='TreeIntervals' tree="@arg"/>
+      <populationModel idref="popFunc"/>
+  </input>
+  
+  <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <state>
+      <stateNode idref='arg'/>
+    </state>
+    
+    <distribution spec="CompoundDistribution" id="posterior">
+      <distribution idref="argPrior"/>
+    </distribution>
+
+    <operator id="slide" spec="RecombinantEdgeSlide" weight="1.0"
+              arg="@arg" scaleBound="0.8" />
+    <operator id="hop" spec="RecombinantEdgeHop" weight="1.0" arg="@arg"/>
+
+    <logger logEvery="10000">
+      <model idref='posterior'/>
+      <log idref="posterior"/>
+    </logger>
+    
+    <logger logEvery="1000" fileName="slideHopTest_fixedCF.trees" mode="tree">
+       <log idref="arg"/>
+     </logger>
+     
+     <logger logEvery="1000" fileName="slideHopTest_fixedCF.cf" mode="tree">
+         <log spec="ClonalFrameLogger" arg="@arg"/>
+     </logger>
+     
+     <logger logEvery="100" fileName="slideHopTest_fixedCF.converted">
+         <log idref="posterior"/>
+         <log spec="ConvertedRegionLogger" arg="@arg"/>
+     </logger>
+     
+     <logger logEvery="100" fileName="slideHopTest_fixedCF.stats">
+         <log idref="posterior"/>
+         <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
+     </logger>
+
+  </run>
+
+</beast>
