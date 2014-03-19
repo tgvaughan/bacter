@@ -85,4 +85,46 @@ public class AddRemoveRecombinationTest {
         
         assertTrue(Math.abs(logP1-logP2)<1e-10);
     }
+    
+    /**
+     * Tests whether various marginal distributions over new
+     * states match the distribution implied by the HR.
+     * 
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void TestHR2() throws Exception {
+        
+        ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+        
+        SimulatedRecombinationGraph arg = new SimulatedRecombinationGraph();
+        arg.initByName(
+                "rho", 1.0,
+                "delta", 50.0,
+                "sequenceLength", 10000,
+                "nTaxa", 10,
+                "populationModel", popFunc);
+        
+        AddRemoveRecombination operator = new AddRemoveRecombination();
+        operator.initByName(
+                "weight", 1.0,
+                "arg", arg,
+                "rho", new RealParameter("1.0"),
+                "delta", new RealParameter("50.0"),
+                "populationModel", popFunc);
+        
+        for (int i=0; i<1000; i++) {
+            operator.updateEvents();
+            operator.drawNewRecomb();
+            
+            arg.initByName(
+                    "rho", 1.0,
+                    "delta", 50.0,
+                    "sequenceLength", 10000,
+                    "nTaxa", 10,
+                    "populationModel", popFunc);
+        }
+        
+    }
 }
