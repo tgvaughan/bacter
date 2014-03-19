@@ -5,8 +5,8 @@
                  :argbeast.util:beast.util'>
   
     <run spec="RecombinationGraphSimulator"
-         rho="1.0" delta="50.0" sequenceLength="10000"
-         nSims="10000" statsFileName="simulated_fixedCF.stats" convFileName="simulated_fixedCF.converted">
+         rho="5.0" delta="50.0" sequenceLength="10000"
+         nSims="100000" statsFileName="simulated_fixedCF.stats" convFileName="simulated_fixedCF.converted">
         <populationModel spec="ConstantPopulation" popSize="1.0"/>
         <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
     </run>

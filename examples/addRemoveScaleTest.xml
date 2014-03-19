@@ -20,7 +20,7 @@
 
 
 
-  <run spec="MCMC" id="mcmc" chainLength="10000000">
+  <run spec="MCMC" id="mcmc" chainLength="100000000">
     <state>
       <stateNode idref='arg'/>
     </state>
@@ -41,32 +41,10 @@
         <populationModel idref="popFunc"/>
     </operator>
     
-    <!--operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
+    <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
               scaleFactor="0.8">
         <arg idref="arg"/>
-    </operator-->
-    
-    <operator id="scale" spec="ARGValidityWrapper" arg="@arg" weight="1.0">
-        <operator spec="ScaleOperator" tree="@arg" scaleFactor="0.8" weight="1.0"/>
     </operator>
-    
-    <!--
-    <operator spec='Uniform' weight="10">
-      <tree idref="tree"/>
-    </operator>
-    <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
-      <tree idref="tree"/>
-    </operator>
-    <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
-      <tree idref="tree"/>
-    </operator>
-    <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
-      <tree idref="tree"/>
-    </operator>
-    <operator spec='WilsonBalding' weight="1">
-      <tree idref="tree"/>
-    </operator>
-    -->
 
     <logger logEvery="10000">
       <model idref='posterior'/>

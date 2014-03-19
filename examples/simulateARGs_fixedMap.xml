@@ -6,13 +6,11 @@
                  :beast.core.parameter'>
   
     <run spec="RecombinationGraphSimulator"
-         rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="2"
-         nSims="10000" statsFileName="simulated_fixedMap.stats" convFileName="simulated_fixedMap.converted">
+         rho="0.0" delta="50.0" sequenceLength="10000" nTaxa="2"
+         nSims="100000" statsFileName="simulated_fixedMap.stats" convFileName="simulated_fixedMap.converted">
         <populationModel spec="ConstantPopulation" popSize="1.0"/>
-        <recombinationMap spec='IntegerParameter'>
+        <!--recombinationMap spec='IntegerParameter'>
             100 300
-            400 500
-            800 850
-        </recombinationMap>
+        </recombinationMap-->
     </run>
 </beast>

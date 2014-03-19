@@ -11,13 +11,11 @@
 
   
   <input spec='SimulatedRecombinationGraph' id='arg'
-         rho="1.0" delta="50.0" sequenceLength="10000" nTaxa="2">
+         rho="0.0" delta="50.0" sequenceLength="10000" nTaxa="2">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
-      <recombinationMap spec='IntegerParameter'>
-            100 300
-            400 500
-            800 850
-      </recombinationMap>
+      <!--recombinationMap spec='IntegerParameter'>
+          100 300
+      </recombinationMap-->
   </input>
 
   <input spec='GCCoalescentApprox' id="argPrior">
