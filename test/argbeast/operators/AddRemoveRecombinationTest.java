@@ -19,6 +19,7 @@ package argbeast.operators;
 
 import argbeast.Recombination;
 import argbeast.model.SimulatedRecombinationGraph;
+import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;
@@ -93,7 +94,7 @@ public class AddRemoveRecombinationTest {
      * @throws java.lang.Exception
      */
     @Test
-    public void TestHR2() throws Exception {
+    public void testHR2() throws Exception {
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
@@ -106,6 +107,10 @@ public class AddRemoveRecombinationTest {
                 "nTaxa", 10,
                 "populationModel", popFunc);
         
+        State state = new State();
+        state.initByName("stateNode", arg);
+        state.initialise();
+        
         AddRemoveRecombination operator = new AddRemoveRecombination();
         operator.initByName(
                 "weight", 1.0,
@@ -115,16 +120,11 @@ public class AddRemoveRecombinationTest {
                 "populationModel", popFunc);
         
         for (int i=0; i<1000; i++) {
+            System.out.format("%d %d\n",i, arg.getNRecombs());
             operator.updateEvents();
             operator.drawNewRecomb();
             
-            arg.initByName(
-                    "rho", 1.0,
-                    "delta", 50.0,
-                    "sequenceLength", 10000,
-                    "nTaxa", 10,
-                    "populationModel", popFunc);
+            state.restore();
         }
-        
     }
 }
