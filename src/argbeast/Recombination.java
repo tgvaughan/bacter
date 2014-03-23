@@ -228,4 +228,62 @@ public class Recombination {
             arg.startEditing();
     }
     
+    /**
+     * Obtain new recombination with exactly the same
+     * field values as this one.
+     *
+     * @return copy of Recombination object
+     */
+    public Recombination getCopy() {
+        Recombination copy = new Recombination();
+        copy.arg = arg;
+        copy.startLocus = startLocus;
+        copy.endLocus = endLocus;
+        copy.node1 = node1;
+        copy.node2 = node2;
+        copy.height1 = height1;
+        copy.height2 = height2;
+        
+        return copy;
+    }
+
+    /**
+     * Returns true if obj is a Recombination object that represents an
+     * identical recombination to this.
+     * 
+     * @param obj
+     * @return true if recombinations are equivalent
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Recombination) {
+            Recombination otherRecomb = (Recombination)obj;
+            return arg == otherRecomb.arg
+                && startLocus == otherRecomb.startLocus
+                && endLocus == otherRecomb.endLocus
+                && node1 == otherRecomb.node1
+                && node2 == otherRecomb.node2
+                && height1 == otherRecomb.height1
+                && height2 == otherRecomb.height2;
+        } else
+            return false;
+    }
+
+    /**
+     * hashCode compatible with equals()
+     *
+     * @return hash
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.arg != null ? this.arg.hashCode() : 0);
+        hash = 29 * hash + (this.node1 != null ? this.node1.hashCode() : 0);
+        hash = 29 * hash + (this.node2 != null ? this.node2.hashCode() : 0);
+        hash = 29 * hash + (int) (Double.doubleToLongBits(this.height1) ^ (Double.doubleToLongBits(this.height1) >>> 32));
+        hash = 29 * hash + (int) (Double.doubleToLongBits(this.height2) ^ (Double.doubleToLongBits(this.height2) >>> 32));
+        hash = 29 * hash + (int) (this.startLocus ^ (this.startLocus >>> 32));
+        hash = 29 * hash + (int) (this.endLocus ^ (this.endLocus >>> 32));
+        return hash;
+    }
 }

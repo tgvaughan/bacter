@@ -18,14 +18,19 @@ package argbeast.operators;
 
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
+import argbeast.model.SimulatedRecombinationGraph;
+import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
+import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -47,6 +52,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     
     private RecombinationGraph arg;
     private PopulationFunction popFunc;
+    
+    // For DEBUGGING only:
+    double logPdepHeight, logPedgeLength, logPregion;
 
     private enum EventType {COAL, SAMP};
     private class Event {
@@ -132,13 +140,17 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      * @return log of proposal density
      */
     public double drawNewRecomb() {
-        double logP = 0;
+        //double logP = 0;
+        logPdepHeight = 0;
+        logPedgeLength = 0;
+        logPregion = 0;
         
         Recombination newRecomb = new Recombination();
         
         // Select starting point on clonal frame
-        logP += Math.log(1.0/arg.getClonalFrameLength());
-        double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
+        logPdepHeight = Math.log(1.0/arg.getClonalFrameLength());
+        //double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
+        double u = 0.5*arg.getClonalFrameLength();
         double tauStart = 0.0;
         
         boolean started = false;
@@ -191,7 +203,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                                 double tauEnd = Math.max(event.tau, tauStart) + u;
                                 double tEnd = popFunc.getInverseIntensity(tauEnd);
                                 newRecomb.setHeight2(tEnd);
-                                logP += -u*event.lineages
+                                logPedgeLength += -u*event.lineages
                                         + Math.log(1.0/popFunc.getPopSize(tEnd));
                                 break;
                             } else
@@ -201,7 +213,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                     break;
                 } else {
                     u -= interval*event.lineages;
-                    logP += -interval*event.lineages;
+                    logPedgeLength += -interval*event.lineages;
                 }
                 
             }
@@ -226,7 +238,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         }
         
         int z = Randomizer.nextInt(convertableLength);
-        logP += Math.log(1.0/convertableLength);
+        logPregion += Math.log(1.0/convertableLength);
         
         for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx+1);
@@ -241,7 +253,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         
         int convertedLength = (int)Randomizer
                 .nextGeometric(1.0/deltaInput.get().getValue());
-        logP += convertedLength*Math.log(1.0-1.0/deltaInput.get().getValue())
+        logPregion += convertedLength*Math.log(1.0-1.0/deltaInput.get().getValue())
                 + Math.log(1.0/deltaInput.get().getValue());
                         
         newRecomb.setEndLocus(newRecomb.getStartLocus()+convertedLength);
@@ -249,9 +261,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         if (!arg.addRecombination(newRecomb))
             return Double.NEGATIVE_INFINITY;
         
-        return logP;
+        return logPdepHeight + logPedgeLength + logPregion;
     }
-    
+      
     /**
      * Obtain proposal density for the move which results in the current state
      * by adding the recombination recomb to a state without that recombination.
@@ -260,10 +272,13 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      * @return log of proposal density
      */
     public double getRecombProb(Recombination recomb) {
-        double logP = 0;
+        //double logP = 0;
+        logPdepHeight = 0;
+        logPedgeLength = 0;
+        logPregion = 0;
         
         // Probability of choosing random point on clonal frame
-        logP += Math.log(1.0/arg.getClonalFrameLength());
+        logPdepHeight += Math.log(1.0/arg.getClonalFrameLength());
         
         double tau1 = popFunc.getIntensity(recomb.getHeight1());
         double tau2 = popFunc.getIntensity(recomb.getHeight2());
@@ -282,11 +297,11 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 double tauStart = Math.max(event.tau,tau1);
 
                 if (eidx==eventList.size()-1 || eventList.get(eidx+1).tau>tau2) {
-                    logP += -event.lineages*(tau2-tauStart) +
+                    logPedgeLength += -event.lineages*(tau2-tauStart) +
                             Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
                     break;
                 } else {
-                    logP += -event.lineages*(eventList.get(eidx+1).tau-tauStart);
+                    logPedgeLength += -event.lineages*(eventList.get(eidx+1).tau-tauStart);
                 }
             }
         }
@@ -307,12 +322,12 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 convertableLength += 1;
         }
         
-        logP += Math.log(1.0/convertableLength)
+        logPregion += Math.log(1.0/convertableLength)
                 + (recomb.getEndLocus()-recomb.getStartLocus())
                 *Math.log(1.0-1.0/deltaInput.get().getValue())
                 + Math.log(1.0/deltaInput.get().getValue());
         
-        return logP;
+        return logPdepHeight + logPedgeLength + logPregion;
     }
     
     /**
@@ -365,5 +380,70 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 tau += popFunc.getIntegral(event.t, nextEvent.t);
             }
         }
+    }
+    
+    /**
+     * Main method for debugging.
+     * 
+     * @param args 
+     */
+    public static void main(String [] args) throws Exception {
+        Randomizer.setSeed(1234);
+        
+        ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+        
+        SimulatedRecombinationGraph arg = new SimulatedRecombinationGraph();
+        arg.initByName(
+                "rho", 1.0,
+                "delta", 50.0,
+                "sequenceLength", 1000000,
+                "nTaxa", 10,
+                "populationModel", popFunc);
+        arg.setID("arg");
+        
+        State state = new State();
+        state.initByName("stateNode", arg);
+        state.initialise();
+        
+        AddRemoveRecombination operator = new AddRemoveRecombination();
+        operator.initByName(
+                "weight", 1.0,
+                "arg", arg,
+                "rho", new RealParameter("1.0"),
+                "delta", new RealParameter("50.0"),
+                "populationModel", popFunc);
+        
+        RecombinationGraphStatsLogger logger = new RecombinationGraphStatsLogger();
+        logger.initByName("arg", arg);
+        
+        PrintStream pstream = new PrintStream("addRemoveProposalSamples.txt");
+        pstream.println("logPdepHeight departureHeight logPedgeLength edgeLength");
+        
+        List<Recombination> oldRecombs = Lists.newArrayList();
+        for (int i=0; i<10000; i++) {
+            oldRecombs.clear();
+            for (Recombination recomb : arg.getRecombinations()) {
+                if (recomb != null)
+                    oldRecombs.add(recomb.getCopy());
+            }
+            
+            operator.updateEvents();
+            pstream.print(operator.drawNewRecomb() + " ");
+            
+            for (Recombination recomb : arg.getRecombinations()) {
+                if (recomb != null && !oldRecombs.contains(recomb)){
+                    pstream.format("%g %g %g %g\n",
+                            operator.logPdepHeight,
+                            recomb.getHeight1(),
+                            operator.logPedgeLength,
+                            recomb.getHeight2()-recomb.getHeight1());
+                }
+            }
+            
+            state.restore();
+        }
+        
+        pstream.close(); 
     }
 }

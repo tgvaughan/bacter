@@ -19,10 +19,13 @@ package argbeast.operators;
 
 import argbeast.Recombination;
 import argbeast.model.SimulatedRecombinationGraph;
+import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.util.Randomizer;
 import com.google.common.collect.Lists;
+import java.io.PrintStream;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -85,46 +88,5 @@ public class AddRemoveRecombinationTest {
         System.out.println("logP2 = " + logP2);
         
         assertTrue(Math.abs(logP1-logP2)<1e-10);
-    }
-    
-    /**
-     * Tests whether various marginal distributions over new
-     * states match the distribution implied by the HR.
-     * 
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testHR2() throws Exception {
-        
-        ConstantPopulation popFunc = new ConstantPopulation();
-        popFunc.initByName("popSize", new RealParameter("1.0"));
-        
-        SimulatedRecombinationGraph arg = new SimulatedRecombinationGraph();
-        arg.initByName(
-                "rho", 1.0,
-                "delta", 50.0,
-                "sequenceLength", 10000,
-                "nTaxa", 10,
-                "populationModel", popFunc);
-        
-        State state = new State();
-        state.initByName("stateNode", arg);
-        state.initialise();
-        
-        AddRemoveRecombination operator = new AddRemoveRecombination();
-        operator.initByName(
-                "weight", 1.0,
-                "arg", arg,
-                "rho", new RealParameter("1.0"),
-                "delta", new RealParameter("50.0"),
-                "populationModel", popFunc);
-        
-        for (int i=0; i<1000; i++) {
-            System.out.format("%d %d\n",i, arg.getNRecombs());
-            operator.updateEvents();
-            operator.drawNewRecomb();
-            
-            state.restore();
-        }
     }
 }
