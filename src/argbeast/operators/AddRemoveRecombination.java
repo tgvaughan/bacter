@@ -149,8 +149,11 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         
         // Select starting point on clonal frame
         logPdepHeight = Math.log(1.0/arg.getClonalFrameLength());
+        
+        // DEBUG
         //double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
-        double u = 0.5*arg.getClonalFrameLength();
+        double u = 0.25*arg.getClonalFrameLength();
+        
         double tauStart = 0.0;
         
         boolean started = false;
@@ -192,7 +195,8 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                             - Math.max(event.tau, tauStart));
                 else
                     interval = Double.POSITIVE_INFINITY;
-                
+
+                // DEBUG: Problem is here somewhere!
                 if (u < interval*event.lineages) {
                     for (Node node : arg.getNodesAsArray()) {
                         if (node.getHeight()<=event.t
@@ -397,8 +401,8 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         arg.initByName(
                 "rho", 1.0,
                 "delta", 50.0,
-                "sequenceLength", 1000000,
-                "nTaxa", 10,
+                "sequenceLength", 10000,
+                "nTaxa", 2,
                 "populationModel", popFunc);
         arg.setID("arg");
         
@@ -417,11 +421,11 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         RecombinationGraphStatsLogger logger = new RecombinationGraphStatsLogger();
         logger.initByName("arg", arg);
         
-        PrintStream pstream = new PrintStream("addRemoveProposalSamples.txt");
+        PrintStream pstream = new PrintStream("addRemoveProposalSamples2.txt");
         pstream.println("logPdepHeight departureHeight logPedgeLength edgeLength");
         
         List<Recombination> oldRecombs = Lists.newArrayList();
-        for (int i=0; i<10000; i++) {
+        for (int i=0; i<1000000; i++) {
             oldRecombs.clear();
             for (Recombination recomb : arg.getRecombinations()) {
                 if (recomb != null)
