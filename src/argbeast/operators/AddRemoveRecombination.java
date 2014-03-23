@@ -71,6 +71,12 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             
             t = node.getHeight();
         }
+        
+        @Override
+        public String toString() {
+            return String.format("%s (k:%d t:%g tau:%g)",
+                    type.name(), lineages, t, tau);
+        }
     }
     
     private List<Event> eventList;
@@ -117,7 +123,8 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             }
             
             // Select recombination to remove:
-            Recombination recomb = arg.getRecombinations().get(Randomizer.nextInt(arg.getNRecombs())+1);
+            Recombination recomb = arg.getRecombinations().get(
+                    Randomizer.nextInt(arg.getNRecombs())+1);
             
             // Calculate HGF
             logHGF += getRecombProb(recomb);
@@ -198,20 +205,24 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
 
                 // DEBUG: Problem is here somewhere!
                 if (u < interval*event.lineages) {
+                                        
+                    double tauEnd = Math.max(event.tau, tauStart) + u/event.lineages;
+                    double tEnd = popFunc.getInverseIntensity(tauEnd);
+                    newRecomb.setHeight2(tEnd);
+                    logPedgeLength += -u
+                            + Math.log(1.0/popFunc.getPopSize(tEnd));
+                    
+                    int nodeNumber = Randomizer.nextInt(event.lineages);
+                    
+                    // Choose particular lineage to attach to:
                     for (Node node : arg.getNodesAsArray()) {
                         if (node.getHeight()<=event.t
                                 && (node.isRoot() || node.getParent().getHeight()>event.t)) {
-                            
-                            if (u<interval) {
+                            if (nodeNumber==0) {
                                 newRecomb.setNode2(node);
-                                double tauEnd = Math.max(event.tau, tauStart) + u;
-                                double tEnd = popFunc.getInverseIntensity(tauEnd);
-                                newRecomb.setHeight2(tEnd);
-                                logPedgeLength += -u*event.lineages
-                                        + Math.log(1.0/popFunc.getPopSize(tEnd));
                                 break;
                             } else
-                                u -= interval;
+                                nodeNumber -= 1;
                         }
                     }
                     break;
@@ -390,6 +401,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      * Main method for debugging.
      * 
      * @param args 
+     * @throws java.lang.Exception 
      */
     public static void main(String [] args) throws Exception {
         Randomizer.setSeed(1234);
@@ -421,7 +433,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         RecombinationGraphStatsLogger logger = new RecombinationGraphStatsLogger();
         logger.initByName("arg", arg);
         
-        PrintStream pstream = new PrintStream("addRemoveProposalSamples2.txt");
+        PrintStream pstream = new PrintStream("addRemoveProposalSamples3.txt");
         pstream.println("logPdepHeight departureHeight logPedgeLength edgeLength");
         
         List<Recombination> oldRecombs = Lists.newArrayList();
