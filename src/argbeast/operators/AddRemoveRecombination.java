@@ -158,8 +158,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         logPdepHeight = Math.log(1.0/arg.getClonalFrameLength());
         
         // DEBUG
-        //double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
-        double u = 0.25*arg.getClonalFrameLength();
+        double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
         
         double tauStart = 0.0;
         
@@ -203,7 +202,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 else
                     interval = Double.POSITIVE_INFINITY;
 
-                // DEBUG: Problem is here somewhere!
                 if (u < interval*event.lineages) {
                                         
                     double tauEnd = Math.max(event.tau, tauStart) + u/event.lineages;

@@ -2,7 +2,7 @@
        namespace='beast.evolution.tree.coalescent:argbeast:argbeast.model:argbeast.operators:argbeast.util'>
   
     <run spec="RecombinationGraphSimulator"
-         rho="5" delta="50.0" sequenceLength="10000"
+         rho="5.0" delta="50.0" sequenceLength="10000"
          nTaxa="2" nSims="100000" statsFileName="simulated.stats" convFileName="simulated.converted">
         <populationModel spec="ConstantPopulation" popSize="1.0"/>
     </run>
