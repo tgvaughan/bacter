@@ -197,6 +197,9 @@ public class Recombination {
         if (node1.getHeight()>height1)
             return false;
         
+        if (node1.isRoot())
+            return false;
+        
         if (node1.getParent().getHeight()<height1)
             return false;
         

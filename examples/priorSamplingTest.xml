@@ -13,9 +13,12 @@
 
   
   <input spec='SimulatedRecombinationGraph' id='arg'
-         rho="5.0" delta="50.0" sequenceLength="10000" nTaxa="2">
+         rho="5.0" delta="50.0" sequenceLength="10000" nTaxa="5">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
   </input>
+
+
+
 
   <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
@@ -43,26 +46,52 @@
         <arg idref="arg"/>
     </operator>
 
+    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator spec='Uniform' weight="10">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator spec='WilsonBalding' weight="1">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+
     <logger logEvery="10000">
       <model idref='posterior'/>
       <log idref="posterior"/>
       <log spec='TreeHeightLogger' tree="@arg"/>
     </logger>
     
-    <logger logEvery="1000" fileName="addRemoveScaleTest.trees" mode="tree">
+    <logger logEvery="1000" fileName="priorSamplingTest.trees" mode="tree">
        <log idref="arg"/>
      </logger>
      
-     <logger logEvery="1000" fileName="addRemoveScaleTest.cf" mode="tree">
+     <logger logEvery="1000" fileName="priorSamplingTest.cf" mode="tree">
          <log spec="ClonalFrameLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="addRemoveScaleTest.converted">
+     <logger logEvery="100" fileName="priorSamplingTest.converted">
          <log idref="posterior"/>
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="addRemoveScaleTest.stats">
+     <logger logEvery="100" fileName="priorSamplingTest.stats">
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>
 

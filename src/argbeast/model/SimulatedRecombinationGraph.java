@@ -407,17 +407,23 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     intervalArea = Double.POSITIVE_INFINITY;
                 
                 if (u<intervalArea*event.lineages) {
+                    
+                    // Fix height of attachment point
+                    double tauEnd = Math.max(event.tau, tauStart) + u/event.lineages;
+                    double tEnd = popFunc.getInverseIntensity(tauEnd);
+                    recomb.setHeight2(tEnd);                    
+                    
+                    // Choose particular lineage to attach to
+                    int nodeNumber = Randomizer.nextInt(event.lineages);
                     for (Node node : getNodesAsArray()) {
                         if (node.getHeight()<=event.t
                                 && (node.isRoot() || node.getParent().getHeight()>event.t)) {
                             
-                            if (u<intervalArea) {
+                            if (nodeNumber == 0) {
                                 recomb.setNode2(node);
-                                double tauEnd = Math.max(event.tau, tauStart) + u;
-                                recomb.setHeight2(popFunc.getInverseIntensity(tauEnd));
                                 break;
                             } else
-                                u -= intervalArea;
+                                nodeNumber -= 1;
                         }
                     }
                     break;
