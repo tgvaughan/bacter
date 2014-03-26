@@ -14,7 +14,7 @@
 ** DONE ARG simulator
    CLOSED: [2014-01-31 Fri 13:34]
 
-** TODO Operators [85%]
+** TODO Operators [100%]
 
 *** DONE Add/remove
 
@@ -23,7 +23,8 @@
 
 *** DONE Clonal frame operators
 
-*** TODO Converted region slide
+*** DONE Converted region slide
+    CLOSED: [2014-03-27 Thu 11:02]
 
 *** DONE Converted region swap
     CLOSED: [2014-03-26 Wed 19:08]
