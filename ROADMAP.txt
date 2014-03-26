@@ -14,18 +14,24 @@
 ** DONE ARG simulator
    CLOSED: [2014-01-31 Fri 13:34]
 
-** TODO Operators [40%]
+** TODO Operators [80%]
 
 *** DONE Add/remove
 
-*** TODO ARG scaler
+*** DONE ARG scaler
+    CLOSED: [2014-03-26 Wed 16:40]
 
-    Scaler is implemented and seems to work when applied to just the
-    clonal frame without recombination, but combining this with add/remove
-    doesn't sample from the correct distribution for 2 taxon trees.
 
 *** DONE Clonal frame operators
 
 *** TODO Converted region shifter
 
-*** TODO Recombinant edge shifter
+*** DONE Recombinant edge shifter
+    CLOSED: [2014-03-26 Wed 16:41]
+
+
+** TODO Sequence alignment simulator
+
+** TODO Inference from simulated data
+
+** TODO Inference from real data
