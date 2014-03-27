@@ -85,14 +85,36 @@ public class ConvertedRegionEdgeShift extends RecombinationGraphOperator {
         
         // Select new site
         long locus = lower + Randomizer.nextInt((int)(upper-lower+1));
-        
+                
         // Perform shift
         if (moveStart)
             recomb.setStartLocus(locus);
         else
             recomb.setEndLocus(locus);
         
-        return 0.0;
+        // Calculate new boundaries for HR calculation
+        long lowerPrime, upperPrime;
+        if (moveStart) {
+            if (ridx==1)
+                lowerPrime = 0;
+            else
+                lowerPrime = argInput.get().getRecombinations().get(ridx-1).getEndLocus()+2;
+        } else
+            lowerPrime = recomb.getStartLocus();
+        
+        lowerPrime = Math.max(lowerPrime, currentLocus-delta);
+        
+        if (moveStart) {
+            upperPrime = recomb.getEndLocus();
+        } else {
+            if (ridx==argInput.get().getNRecombs())
+                upperPrime = argInput.get().getSequenceLength()-1;
+            else
+                upperPrime = argInput.get().getRecombinations().get(ridx+1).getStartLocus()-2;
+        }
+        upperPrime = Math.min(upperPrime, currentLocus+delta);
+
+        return Math.log(((double)(upper-lower+1))/((double)(upperPrime-lowerPrime+1)));
     }
     
 }
