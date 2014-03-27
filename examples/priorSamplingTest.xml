@@ -20,7 +20,7 @@
 
 
 
-  <run spec="MCMC" id="mcmc" chainLength="10000000">
+  <run spec="MCMC" id="mcmc" chainLength="2000000">
     <state>
       <stateNode idref='arg'/>
     </state>
@@ -45,28 +45,34 @@
               scaleFactor="0.8">
         <arg idref="arg"/>
     </operator>
+    
+    <operator id="CRswap" spec="ConvertedRegionSwap" weight="1.0"
+              arg="@arg"/>
 
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+    <operator id="CRshift" spec="ConvertedRegionEdgeShift" weight="1.0"
+              arg="@arg" apertureSize="0.01" />
+    
+    <operator id="Uniform" spec='ARGValidityWrapper' arg="@arg" weight="1">
         <operator spec='Uniform' weight="10">
             <tree idref="arg"/>
         </operator>
     </operator>
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+    <operator id="STS" spec='ARGValidityWrapper' arg="@arg" weight="1">
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
             <tree idref="arg"/>
         </operator>
     </operator>
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+    <operator id="STXnarrow" spec='ARGValidityWrapper' arg="@arg" weight="1">
         <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
             <tree idref="arg"/>
         </operator>
     </operator>
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+    <operator id="STXwide" spec='ARGValidityWrapper' arg="@arg" weight="1">
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
             <tree idref="arg"/>
         </operator>
     </operator>
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1">
+    <operator id="WB" spec='ARGValidityWrapper' arg="@arg" weight="1">
         <operator spec='WilsonBalding' weight="1">
             <tree idref="arg"/>
         </operator>

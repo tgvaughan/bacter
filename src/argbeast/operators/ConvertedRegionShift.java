@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Tim Vaughan <tgvaughan@gmail.com>
+ * Copyright (C) 2014 Tim Vaughan <tgvaughan@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@ import beast.util.Randomizer;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Operator which moves one edge of the alignment region affected "
-        + "by a given conversion event.")
+@Description("Operator which moves the alignment region affected "
+        + "by a randomly-selected conversion event.")
 public class ConvertedRegionShift extends RecombinationGraphOperator {
 
     public Input<Double> apertureSizeInput = new Input<Double>(
@@ -34,54 +34,15 @@ public class ConvertedRegionShift extends RecombinationGraphOperator {
             "Relative size (with respect to alignment size) of aperture "
                     + "within which new location of region edge is chosen "
                     + "uniformly. (Default 0.01, ie. 1%)", 0.01);
+
+    public ConvertedRegionShift() { }
+
+    @Override
+    public void initAndValidate() throws Exception { }
     
     @Override
     public double proposal() {
-
-        if (argInput.get().getNRecombs()<1)
-            return Double.NEGATIVE_INFINITY;
-        
-        // Select random recombination and region edge:
-        int z = Randomizer.nextInt(argInput.get().getNRecombs()*2);
-        int ridx = z/2 + 1;
-        Recombination recomb = argInput.get().getRecombinations().get(ridx);
-        boolean moveStart = (z%2 == 0);
-        
-        // Identify boundaries of aperture
-        long delta = Math.round(argInput.get().getSequenceLength()
-                *apertureSizeInput.get())/2;
-        
-        long lower, upper;
-        if (moveStart) {
-            if (ridx==1)
-                lower = 0;
-            else
-                lower = argInput.get().getRecombinations().get(ridx-1).getEndLocus()+2;
-        } else
-            lower = recomb.getStartLocus();
-        
-        lower = Math.max(lower, recomb.getStartLocus()-delta);
-        
-        if (moveStart) {
-            upper = recomb.getEndLocus();
-        } else {
-            if (ridx==argInput.get().getNRecombs())
-                upper = argInput.get().getSequenceLength()-1;
-            else
-                upper = argInput.get().getRecombinations().get(ridx+1).getStartLocus()-2;
-        }
-        upper = Math.min(upper, recomb.getStartLocus()+delta);
-        
-        // Select new site
-        long locus = Randomizer.nextLong()%(upper-lower+1); // Maybe this is bad?
-        
-        // Perform shift
-        if (moveStart)
-            recomb.setStartLocus(locus);
-        else
-            recomb.setEndLocus(locus);
-        
-        return 0.0;
+        throw new UnsupportedOperationException("Method not implemented.");
     }
     
 }
