@@ -19,13 +19,9 @@ package argbeast.operators;
 
 import argbeast.Recombination;
 import argbeast.model.SimulatedRecombinationGraph;
-import argbeast.util.RecombinationGraphStatsLogger;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.util.Randomizer;
 import com.google.common.collect.Lists;
-import java.io.PrintStream;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;

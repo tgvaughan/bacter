@@ -1,15 +1,20 @@
-<project name="feast" default="build" basedir=".">
+<project name="ARGBEAST" default="build" basedir=".">
+
   <property name="projName" value="ARGBEAST" />
 
   <property name="src" location="src"/>
   <property name="test" location="test"/>
   <property name="lib" location="lib"/>
+  <property name="examples" location="examples"/>
   <property name="build" location="build"/>
   <property name="build-lib" location="build-lib"/>
   <property name="build-test" location="build-test"/>
   <property name="test-reports" location="test-reports"/>
   <property name="dist" location="dist"/>
+  <property name="pack" location="${dist}/package"/>
 
+
+  <!-- Prepare for compilation -->
   <target name="init">
     <mkdir dir="${build}"/>
     <mkdir dir="${build-lib}"/>
@@ -21,15 +26,8 @@
     </copy>
   </target>
 
-  <target name="init-test" depends="init">
-    <mkdir dir="${build-test}"/>
-    <mkdir dir="${test-reports}"/>
-    <get src="http://search.maven.org/remotecontent?filepath=junit/junit/4.11/junit-4.11.jar"
-	 dest="${build-lib}/junit-4.11.jar" />
-    <get src="http://search.maven.org/remotecontent?filepath=org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
-	 dest="${build-lib}/hamcrest-core-1.3.jar" />
-  </target>
 
+  <!-- Compile -->
   <target name="compile" depends="init">
     <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
       <classpath>
@@ -39,6 +37,18 @@
     </javac>
   </target>
 
+  
+  <!-- Prepare for unit test compilation -->
+  <target name="init-test" depends="init">
+    <mkdir dir="${build-test}"/>
+    <mkdir dir="${test-reports}"/>
+    <get src="http://search.maven.org/remotecontent?filepath=junit/junit/4.11/junit-4.11.jar"
+	 dest="${build-lib}/junit-4.11.jar" />
+    <get src="http://search.maven.org/remotecontent?filepath=org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+	 dest="${build-lib}/hamcrest-core-1.3.jar" />
+  </target>
+
+  <!-- Compile unit tests -->
   <target name="compile-test" depends="init-test,compile">
     <javac srcdir="${test}" destdir="${build-test}" includeantruntime="false">
       <classpath>
@@ -49,6 +59,7 @@
     </javac>
   </target>
 
+  <!-- Run unit tests -->
   <target name="test" depends="compile-test">
     <junit printsummary="yes" failureproperty="testFailed">
       <classpath>
@@ -68,8 +79,42 @@
     <fail if="testFailed" status="1" message="Unit test failed."/>
   </target>
 
+  <!-- Create BEAST 2 package -->
   <target name="build" depends="compile">
-    <jar jarfile="${dist}/${projName}.jar" basedir="${build}" />
+    <fail unless="version" message="Must specify version number using -Dversion=x.y.z"/>
+
+    <property name="fullName" value="${projName}.v${version}"/>
+
+    <mkdir dir="${pack}"/>
+    <mkdir dir="${pack}/examples"/>
+    <mkdir dir="${pack}/lib"/>
+    <mkdir dir="${pack}/doc"/>
+
+    <jar jarfile="${pack}/${fullName}.src.jar" basedir="${src}" />
+
+    <copy todir="${pack}/lib">
+      <fileset dir="${lib}" includes="*.jar" />
+    </copy>
+    <jar jarfile="${pack}/lib/${fullName}.jar" basedir="${build}" />
+
+    <copy file="README.md" tofile="${pack}/README" />
+    <copy file="COPYING" todir="${pack}" />
+    <copy todir="${pack}">
+      <fileset dir="${lib}" includes="LICENSE*" />
+    </copy>
+
+    <copy todir="${pack}/examples">
+      <fileset dir="${examples}" includes="*.xml" />
+    </copy>
+
+    <echo file="${pack}/version.xml">&lt;addon name="${projName}" version="${version}"&gt;
+    &lt;depends on="beast2" atleast="2.1.0"/&gt;
+&lt;/addon&gt;
+</echo>
+
+     <zip destfile="${dist}/${fullName}.zip" basedir="${pack}" />
+
+     <delete dir="${pack}"/>
   </target>
 
   <target name="clean">
