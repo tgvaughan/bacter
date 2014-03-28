@@ -113,6 +113,7 @@
 
     <jar jarfile="${pack}/${fullName}.src.jar" basedir="${src}" />
 
+    <mkdir dir="${lib}" />
     <copy todir="${pack}/lib">
       <fileset dir="${lib}" includes="*.jar" />
     </copy>
@@ -124,12 +125,19 @@
       <fileset dir="${lib}" includes="LICENSE*" />
     </copy>
 
+    <mkdir dir="${examples}" />
     <copy todir="${pack}/examples">
       <fileset dir="${examples}" includes="*.xml" />
     </copy>
 
+    <mkdir dir="${templates}" />
     <copy todir="${pack}/templates">
       <fileset dir="${templates}" includes="*.xml" />
+    </copy>
+
+    <mkdir dir="${doc}" />
+    <copy todir="${pack}/doc">
+      <fileset dir="${doc}" includes="*.tex,*.doc,*.lyx,*.txt"/>
     </copy>
 
     <copy file="version.xml" todir="${pack}" />
@@ -137,6 +145,10 @@
     <zip destfile="${dist}/${fullName}.zip" basedir="${pack}" />
 
     <delete dir="${pack}"/>
+
+    <echo/>
+    <echo/>
+    <echo>** Package ${dist}/${fullName}.zip created successfuly! **</echo>
   </target>
 
 
