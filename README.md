@@ -7,3 +7,5 @@ inference of a (restricted kind of) ancestral recombination graph
 inspired by
 [Didelot et al.'s 2010 Genetics paper](http://www.genetics.org/content/186/4/1435)
 and is currently under heavy development.  Check back soon!
+
+[![Build Status](https://travis-ci.org/CompEvol/ARGBEAST.svg?branch=master)](https://travis-ci.org/CompEvol/ARGBEAST)
