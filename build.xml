@@ -1,0 +1,82 @@
+<project name="feast" default="build" basedir=".">
+  <property name="projName" value="ARGBEAST" />
+
+  <property name="src" location="src"/>
+  <property name="test" location="test"/>
+  <property name="lib" location="lib"/>
+  <property name="build" location="build"/>
+  <property name="build-lib" location="build-lib"/>
+  <property name="build-test" location="build-test"/>
+  <property name="test-reports" location="test-reports"/>
+  <property name="dist" location="dist"/>
+
+  <target name="init">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build-lib}"/>
+    <mkdir dir="${dist}"/>
+    <get src="http://hudson.cs.auckland.ac.nz/job/BEAST2/lastSuccessfulBuild/artifact/build/dist/beast.jar"
+	 dest="${build-lib}/beast2.jar" />
+    <copy todir="${build-lib}">
+      <fileset dir="${lib}" includes="*.jar"/>
+    </copy>
+  </target>
+
+  <target name="init-test" depends="init">
+    <mkdir dir="${build-test}"/>
+    <mkdir dir="${test-reports}"/>
+    <get src="http://search.maven.org/remotecontent?filepath=junit/junit/4.11/junit-4.11.jar"
+	 dest="${build-lib}/junit-4.11.jar" />
+    <get src="http://search.maven.org/remotecontent?filepath=org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+	 dest="${build-lib}/hamcrest-core-1.3.jar" />
+  </target>
+
+  <target name="compile" depends="init">
+    <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+      <classpath>
+	<pathelement path="${classpath}"/>
+	<fileset dir="${build-lib}" includes="*.jar"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile-test" depends="init-test,compile">
+    <javac srcdir="${test}" destdir="${build-test}" includeantruntime="false">
+      <classpath>
+	<pathelement path="${classpath}"/>
+	<pathelement path="${build}" />
+	<fileset dir="${build-lib}" includes="*.jar"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="test" depends="compile-test">
+    <junit printsummary="yes" failureproperty="testFailed">
+      <classpath>
+	<pathelement path="${classpath}"/>
+	<pathelement path="${build}" />
+	<pathelement path="${build-test}" />
+	<fileset dir="${build-lib}" includes="*.jar"/>
+      </classpath>
+      <batchtest fork="yes" todir="${test-reports}">
+	<fileset dir="${test}">
+	  <include name="**/*.java"/>
+	</fileset>
+	<formatter type="plain"/>
+      </batchtest>
+    </junit>
+
+    <fail if="testFailed" status="1" message="Unit test failed."/>
+  </target>
+
+  <target name="build" depends="compile">
+    <jar jarfile="${dist}/${projName}.jar" basedir="${build}" />
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}" />
+    <delete dir="${build-lib}" />
+    <delete dir="${dist}" />
+    <delete dir="${build-test}" />
+    <delete dir="${test-reports}" />
+  </target>
+</project>
