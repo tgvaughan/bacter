@@ -1,0 +1,5 @@
+<addon name="ARGBEAST" version="0.0.0">
+  <depends on="beast2" atleast="2.1.0"/>
+
+  <!-- Add other dependencies as necessary. -->
+</addon>
