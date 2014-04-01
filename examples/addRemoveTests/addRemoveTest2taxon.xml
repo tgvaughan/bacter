@@ -1,0 +1,102 @@
+<beast version='2.0'
+       namespace='beast.core
+                 :beast.core.util
+                 :beast.core.parameter
+                 :beast.evolution.operators
+                 :beast.evolution.tree
+                 :beast.evolution.tree.coalescent
+                 :beast.util
+                 :argbeast
+                 :argbeast.model
+                 :argbeast.operators
+                 :argbeast.util'>
+
+  
+  <input spec='SimulatedRecombinationGraph' id='arg'
+         rho="5.0" delta="50.0" sequenceLength="10000" nTaxa="2">
+      <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
+  </input>
+
+
+
+
+  <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <state>
+      <stateNode idref='arg'/>
+    </state>
+    
+    <distribution spec="CompoundDistribution" id="posterior">
+        <distribution spec='GCCoalescentApprox' id="argPrior">
+            <rho spec='RealParameter' value="5.0" id="rho" estimate="false"/>
+            <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+            <treeIntervals spec='TreeIntervals' tree="@arg"/>
+            <populationModel idref="popFunc"/>
+        </distribution>
+    </distribution>
+
+    <operator id="addRemove" spec="AddRemoveRecombination" weight="1.0">
+        <arg idref="arg"/>
+        <rho idref="rho"/>
+        <delta idref="delta"/>
+        <populationModel idref="popFunc"/>
+    </operator>
+    
+    <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
+              scaleFactor="0.8">
+        <arg idref="arg"/>
+    </operator>
+   
+<!--    
+    <operator id="Uniform" spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator spec='Uniform' weight="10">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+    <operator id="STS" spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+    <operator id="STXnarrow" spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+    <operator id="STXwide" spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+    <operator id="WB" spec='ARGValidityWrapper' arg="@arg" weight="1">
+        <operator spec='WilsonBalding' weight="1">
+            <tree idref="arg"/>
+        </operator>
+    </operator>
+-->
+
+    <logger logEvery="10000">
+      <model idref='posterior'/>
+      <log idref="posterior"/>
+      <log spec='TreeHeightLogger' tree="@arg"/>
+    </logger>
+    
+    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
+       <log idref="arg"/>
+     </logger>
+     
+     <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
+         <log spec="ClonalFrameLogger" arg="@arg"/>
+     </logger>
+     
+     <logger logEvery="100" fileName="$(filebase).log">
+         <log idref="posterior"/>
+         <log spec="ConvertedRegionLogger" arg="@arg"/>
+     </logger>
+     
+     <logger logEvery="100" fileName="$(filebase).stats">
+         <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
+     </logger>
+
+  </run>
+
+</beast>

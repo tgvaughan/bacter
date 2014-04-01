@@ -2,8 +2,6 @@
        namespace='beast.core
                  :beast.core.util
                  :beast.core.parameter
-                 :beast.evolution.operators
-                 :beast.evolution.tree
                  :beast.evolution.tree.coalescent
                  :beast.util
                  :argbeast
@@ -15,20 +13,23 @@
   <input spec='SimulatedRecombinationGraph' id='arg'
          rho="5.0" delta="50.0" sequenceLength="10000" nTaxa="2">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
+      <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
   </input>
 
-  <run spec="MCMC" id="mcmc" chainLength="10000000">
+  <input spec='GCCoalescentApprox' id="argPrior">
+      <rho spec='RealParameter' value="5.0" id="rho" estimate="false"/>
+      <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+      <treeIntervals spec='TreeIntervals' tree="@arg"/>
+      <populationModel idref="popFunc"/>
+  </input>
+  
+  <run spec="MCMC" id="mcmc" chainLength="100000000">
     <state>
       <stateNode idref='arg'/>
     </state>
     
     <distribution spec="CompoundDistribution" id="posterior">
-        <distribution spec='GCCoalescentApprox' id="argPrior">
-            <rho spec='RealParameter' value="5.0" id="rho" estimate="false"/>
-            <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
-            <treeIntervals spec='TreeIntervals' tree="@arg"/>
-            <populationModel idref="popFunc"/>
-        </distribution>
+      <distribution idref="argPrior"/>
     </distribution>
 
     <operator id="addRemove" spec="AddRemoveRecombination" weight="1.0">
@@ -37,32 +38,27 @@
         <delta idref="delta"/>
         <populationModel idref="popFunc"/>
     </operator>
-    
-    <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
-              scaleFactor="0.8">
-        <arg idref="arg"/>
-    </operator>
 
     <logger logEvery="10000">
       <model idref='posterior'/>
       <log idref="posterior"/>
-      <log spec='TreeHeightLogger' tree="@arg"/>
     </logger>
     
-    <logger logEvery="1000" fileName="addRemoveScaleTest.trees" mode="tree">
+    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
        <log idref="arg"/>
      </logger>
      
-     <logger logEvery="1000" fileName="addRemoveScaleTest.cf" mode="tree">
+     <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
          <log spec="ClonalFrameLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="addRemoveScaleTest.converted">
+     <logger logEvery="100" fileName="$(filebase).converted">
          <log idref="posterior"/>
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="addRemoveScaleTest.stats">
+     <logger logEvery="100" fileName="$(filebase).stats">
+         <log idref="posterior"/>
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>
 

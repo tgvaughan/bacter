@@ -81,20 +81,20 @@
       <log spec='TreeHeightLogger' tree="@arg"/>
     </logger>
     
-    <logger logEvery="1000" fileName="priorSamplingDynamicPopSizeTest.trees" mode="tree">
+    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
        <log idref="arg"/>
      </logger>
      
-     <logger logEvery="1000" fileName="priorSamplingDynamicPopSizeTest.cf" mode="tree">
+     <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
          <log spec="ClonalFrameLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="priorSamplingDynamicPopSizeTest.converted">
+     <logger logEvery="100" fileName="$(filebase).converted">
          <log idref="posterior"/>
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="priorSamplingDynamicPopSizeTest.stats">
+     <logger logEvery="100" fileName="$(filebase).stats">
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>
 
