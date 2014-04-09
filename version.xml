@@ -2,4 +2,5 @@
   <depends on="beast2" atleast="2.1.0"/>
 
   <!-- Add other dependencies as necessary. -->
+  <depends on="feast" atleast="1.4.0" />
 </addon>

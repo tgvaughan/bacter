@@ -1,13 +1,29 @@
 <project default="build" basedir=".">
 
-  <!-- CONFIGURATION: Source, JUnit test code and jar library locations. -->
+  <!-- Target to download and unpack dependencies -->
+  <target name="getDeps" depends="init">
+    <!-- BEAST 2.1.0 -->
+    <get src="http://hudson.cs.auckland.ac.nz/job/BEAST2/lastSuccessfulBuild/artifact/build/dist/beast.jar"
+         dest="${build-lib}/beast2.jar" />
+
+    <!-- Feast 1.4.0 -->
+    <mkdir dir="${deps}"/>
+    <get src="https://github.com/tgvaughan/feast/releases/download/v1.4.0/feast.v1.4.0.zip"
+	 dest="${deps}/package.zip"/>
+    <unzip src="${deps}/package.zip" dest="${deps}/"/>
+    <copy todir="${build-lib}">
+      <fileset dir="${deps}/lib" includes="*.jar"/>
+    </copy>
+  </target>
+
+  <!-- Source, JUnit test code and jar library locations. -->
   <property name="src" location="src"/>
   <property name="test" location="test"/>
   <property name="lib" location="lib"/>
 
+  <!-- BEAST 2 currently uses Java 1.6 -->
   <property name="sourceVersion" value="1.6"/>
   <property name="targetVersion" value="1.6"/>
-  <!--*******************************************************************-->
 
   <!-- Directories necessary for all BEAST 2 packages -->
   <property name="doc" location="doc"/>
@@ -18,9 +34,11 @@
   <property name="build" location="build"/>
   <property name="build-lib" location="build-lib"/>
   <property name="build-test" location="build-test"/>
+  <property name="deps" location="deps"/>
   <property name="test-reports" location="test-reports"/>
   <property name="dist" location="dist"/>
   <property name="pack" location="${dist}/package"/>
+
 
   <!-- Prepare for compilation -->
   <target name="init">
@@ -41,16 +59,16 @@
     <mkdir dir="${build}"/>
     <mkdir dir="${build-lib}"/>
     <mkdir dir="${dist}"/>
-    <get src="http://hudson.cs.auckland.ac.nz/job/BEAST2/lastSuccessfulBuild/artifact/build/dist/beast.jar"
-	 dest="${build-lib}/beast2.jar" />
+
     <copy todir="${build-lib}">
       <fileset dir="${lib}" includes="*.jar"/>
     </copy>
   </target>
 
 
+
   <!-- Compile -->
-  <target name="compile" depends="init">
+  <target name="compile" depends="init, getDeps">
     <javac target="${targetVersion}" source="${sourceVersion}" srcdir="${src}" destdir="${build}" includeantruntime="false">
       <classpath>
 	<pathelement path="${classpath}"/>
@@ -159,6 +177,7 @@
   <target name="clean">
     <delete dir="${build}" />
     <delete dir="${build-lib}" />
+    <delete dir="${deps}" />
     <delete dir="${dist}" />
     <delete dir="${build-test}" />
     <delete dir="${test-reports}" />
