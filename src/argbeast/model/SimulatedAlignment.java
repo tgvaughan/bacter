@@ -58,7 +58,7 @@ public class SimulatedAlignment extends Alignment {
     @Override
     public void initAndValidate() throws Exception {
 
-
+        super.initAndValidate();
     }
     
 }

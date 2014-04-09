@@ -17,10 +17,9 @@
 
 package argbeast.operators;
 
-import argbeast.Recombination;
 import beast.core.Description;
 import beast.core.Input;
-import beast.util.Randomizer;
+import feast.input.In;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -29,11 +28,11 @@ import beast.util.Randomizer;
         + "by a randomly-selected conversion event.")
 public class ConvertedRegionShift extends RecombinationGraphOperator {
 
-    public Input<Double> apertureSizeInput = new Input<Double>(
+    public Input<Double> apertureSizeInput = new In<Double>(
             "apertureSize",
             "Relative size (with respect to alignment size) of aperture "
                     + "within which new location of region edge is chosen "
-                    + "uniformly. (Default 0.01, ie. 1%)", 0.01);
+                    + "uniformly. (Default 0.01, ie. 1%)").setDefault(0.01);
 
     public ConvertedRegionShift() { }
 

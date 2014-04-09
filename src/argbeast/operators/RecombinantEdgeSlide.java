@@ -23,6 +23,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
+import feast.input.In;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -31,9 +32,9 @@ import beast.util.Randomizer;
         + "about on clonal frame.")
 public class RecombinantEdgeSlide extends RecombinationGraphOperator {
 
-    public Input<Double> scaleBoundInput = new Input<Double>("scaleBound",
+    public Input<Double> scaleBoundInput = new In<Double>("scaleBound",
             "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "
-                    + "Default is 0.8.", 0.8);
+                    + "Default is 0.8.").setDefault(0.8);
 
     private double scaleMin, scaleMax;
     

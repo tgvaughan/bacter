@@ -21,10 +21,10 @@ import argbeast.util.ConvertedRegionLogger;
 import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
+import feast.input.In;
 import java.io.PrintStream;
 
 /**
@@ -34,38 +34,37 @@ import java.io.PrintStream;
         + "sampler validation.")
 public class RecombinationGraphSimulator extends beast.core.Runnable {
 
-    public Input<Double> rhoInput = new Input<Double>("rho",
-            "Recombination rate parameter.", Validate.REQUIRED);
+    public Input<Double> rhoInput = new In<Double>("rho",
+            "Recombination rate parameter.").setRequired();
     
-    public Input<Double> deltaInput = new Input<Double>("delta",
-            "Tract length parameter.", Validate.REQUIRED);
+    public Input<Double> deltaInput = new In<Double>("delta",
+            "Tract length parameter.").setRequired();
     
-    public Input<PopulationFunction> popFuncInput = new Input<PopulationFunction>(
-            "populationModel", "Demographic model to use.", Validate.REQUIRED);
+    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
+            "populationModel", "Demographic model to use.").setRequired();
     
-    public Input<Integer> sequenceLengthInput = new Input<Integer>(
-            "sequenceLength", "Length of sequence to use in simulation."
+    public Input<Integer> sequenceLengthInput = In.create("sequenceLength",
+            "Length of sequence to use in simulation."
                     + " (Only use when alignment is not available.)");
     
-    public Input<Integer> nTaxaInput = new Input<Integer>(
-            "nTaxa", "Number of taxa to use in simulation. "
+    public Input<Integer> nTaxaInput = In.create("nTaxa",
+            "Number of taxa to use in simulation. "
                     + "(Only use when alignment is unavailable.)");
     
-    public Input<Integer> nSimsInput = new Input<Integer>(
-            "nSims", "Number of ARGs to simulate.", Validate.REQUIRED);
+    public Input<Integer> nSimsInput = new In<Integer>("nSims",
+            "Number of ARGs to simulate.").setRequired();
     
-    public Input<String> statsFileNameInput = new Input<String>(
-            "statsFileName", "Name of file in which to record statistics.",
-            Validate.REQUIRED);
+    public Input<String> statsFileNameInput = new In<String>("statsFileName",
+            "Name of file in which to record statistics.").setRequired();
     
-    public Input<String> convFileNameInput = new Input<String>(
-            "convFileName", "Name of file in which to record converted regions.");
+    public Input<String> convFileNameInput = In.create("convFileName",
+            "Name of file in which to record converted regions.");
 
-    public Input<Tree> clonalFrameInput = new Input<Tree>(
-            "clonalFrame", "Optional tree specifying fixed clonal frame.");
+    public Input<Tree> clonalFrameInput = In.create("clonalFrame",
+            "Optional tree specifying fixed clonal frame.");
     
-    public Input<IntegerParameter> mapInput = new Input<IntegerParameter>(
-            "recombinationMap", "Optional sequence of integers specifying "
+    public Input<IntegerParameter> mapInput = In.create("recombinationMap",
+            "Optional sequence of integers specifying "
                     + "sites affected by recombination events.  Fixes the "
                     + "total number of recombination events and the sites "
                     + "they affect, leaving only the clonal frame and "

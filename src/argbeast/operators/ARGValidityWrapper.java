@@ -18,8 +18,8 @@
 package argbeast.operators;
 
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.Operator;
+import feast.input.In;
 
 /**
  *
@@ -27,8 +27,8 @@ import beast.core.Operator;
  */
 public class ARGValidityWrapper extends RecombinationGraphOperator {
     
-    public Input<Operator> operatorInput = new Input<Operator>("operator",
-            "Operator to follow validity check with.", Validate.REQUIRED);
+    public Input<Operator> operatorInput = new In<Operator>("operator",
+            "Operator to follow validity check with.").setRequired();
 
     public ARGValidityWrapper() { }
     

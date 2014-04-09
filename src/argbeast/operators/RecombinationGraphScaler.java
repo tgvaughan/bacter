@@ -21,10 +21,10 @@ import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
+import feast.input.In;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +34,16 @@ import java.util.List;
 @Description("Scaling operator for recombination graphs.")
 public class RecombinationGraphScaler extends RecombinationGraphOperator {
     
-    public Input<List<RealParameter>> parametersInput = new Input<List<RealParameter>>(
-            "parameter", "Parameter to scale with ARG.", new ArrayList<RealParameter>());
+    public Input<List<RealParameter>> parametersInput = new In<List<RealParameter>>(
+            "parameter", "Parameter to scale with ARG.")
+            .setDefault(new ArrayList<RealParameter>());
 
-    public Input<List<RealParameter>> parametersInverseInput = new Input<List<RealParameter>>(
-            "parameterInverse", "Parameter to scale inversely with ARG.", new ArrayList<RealParameter>());
+    public Input<List<RealParameter>> parametersInverseInput = new In<List<RealParameter>>(
+            "parameterInverse", "Parameter to scale inversely with ARG.")
+            .setDefault(new ArrayList<RealParameter>());
     
-    public Input<Double> scaleParamInput = new Input<Double>("scaleFactor",
-            "Scale factor tuning parameter.  Must be < 1.", Validate.REQUIRED);
+    public Input<Double> scaleParamInput = new In<Double>("scaleFactor",
+            "Scale factor tuning parameter.  Must be < 1.").setRequired();
     
     private double scaleParam;
     private RecombinationGraph arg;

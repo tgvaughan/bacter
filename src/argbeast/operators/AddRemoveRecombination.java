@@ -18,19 +18,14 @@ package argbeast.operators;
 
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
-import argbeast.model.SimulatedRecombinationGraph;
-import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
-import java.io.PrintStream;
+import feast.input.In;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -41,14 +36,14 @@ import java.util.List;
 @Description("Operator which adds and removes recombinations to/from an ARG.")
 public class AddRemoveRecombination extends RecombinationGraphOperator {
     
-    public Input<RealParameter> rhoInput = new Input<RealParameter>("rho",
-            "Recombination rate parameter.", Validate.REQUIRED);
+    public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
+            "Recombination rate parameter.").setRequired();
     
-    public Input<RealParameter> deltaInput = new Input<RealParameter>("delta",
-            "Tract length parameter.", Validate.REQUIRED);
+    public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
+            "Tract length parameter.").setRequired();
     
-    public Input<PopulationFunction> popFuncInput = new Input<PopulationFunction>(
-            "populationModel", "A population size model.", Validate.REQUIRED);
+    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
+            "populationModel", "A population size model.").setRequired();
     
     private RecombinationGraph arg;
     private PopulationFunction popFunc;

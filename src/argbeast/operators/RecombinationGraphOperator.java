@@ -19,8 +19,8 @@ package argbeast.operators;
 
 import argbeast.RecombinationGraph;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.Operator;
+import feast.input.In;
 
 /**
  * Abstract class of operators which act on the RecombinationGraph state.
@@ -29,7 +29,7 @@ import beast.core.Operator;
  */
 public abstract class RecombinationGraphOperator extends Operator {
     
-    public Input<RecombinationGraph> argInput = new Input<RecombinationGraph>(
-            "arg", "Ancestral recombination graph.", Validate.REQUIRED);
+    public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
+            "arg", "Ancestral recombination graph.").setRequired();
     
 }
