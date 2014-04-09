@@ -21,24 +21,20 @@ import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
 import beast.evolution.likelihood.BeerLikelihoodCore;
 import beast.evolution.likelihood.BeerLikelihoodCore4;
 import beast.evolution.likelihood.LikelihoodCore;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
-import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
-import beast.util.ClusterTree;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
-import java.util.ArrayList;
+import feast.input.In;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -49,16 +45,14 @@ import java.util.Random;
 @Description("Probability of sequence data given recombination graph.")
 public class RecombinationGraphLikelihood extends Distribution {
     
-    public Input<RecombinationGraph> argInput = new Input<RecombinationGraph>(
-            "arg", "Recombination graph.", Validate.REQUIRED);
+    public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
+            "arg", "Recombination graph.").setRequired();
     
-    public Input<Alignment> alignmentInput = new Input<Alignment>(
-            "data", "Sequence data to evaluate probability of.",
-            Validate.REQUIRED);
+    public Input<Alignment> alignmentInput = new In<Alignment>(
+            "data", "Sequence data to evaluate probability of.").setRequired();
     
-    public Input<SiteModelInterface> siteModelInput = new Input<SiteModelInterface>(
-            "siteModel", "Site model for evolution of alignment.",
-            Validate.REQUIRED);
+    public Input<SiteModelInterface> siteModelInput = new In<SiteModelInterface>(
+            "siteModel", "Site model for evolution of alignment.").setRequired();
 
     RecombinationGraph arg;
     SiteModel.Base siteModel;

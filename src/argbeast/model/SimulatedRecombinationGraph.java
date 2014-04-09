@@ -21,7 +21,6 @@ import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.core.parameter.IntegerParameter;
@@ -32,6 +31,7 @@ import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
+import feast.input.In;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -43,27 +43,23 @@ import java.util.List;
         + "sampler validation.")
 public class SimulatedRecombinationGraph extends RecombinationGraph implements StateNodeInitialiser {
 
-    public Input<Double> rhoInput = new Input<Double>("rho",
-            "Recombination rate parameter.", Validate.REQUIRED);
+    public Input<Double> rhoInput = new In<Double>("rho",
+            "Recombination rate parameter.").setRequired();
     
-    public Input<Double> deltaInput = new Input<Double>("delta",
-            "Tract length parameter.", Validate.REQUIRED);
+    public Input<Double> deltaInput = new In<Double>("delta",
+            "Tract length parameter.").setRequired();
     
-    public Input<PopulationFunction> popFuncInput = new Input<PopulationFunction>(
-            "populationModel", "Demographic model to use.", Validate.REQUIRED);
+    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
+            "populationModel", "Demographic model to use.").setRequired();
     
-    public Input<Integer> sequenceLengthInput = new Input<Integer>(
-            "sequenceLength", "Length of sequence to use in simulation."
-                    + " (Only use when alignment is not available.)");
-    
-    public Input<Integer> nTaxaInput = new Input<Integer>(
-            "nTaxa", "Number of taxa to use in simulation. "
+    public Input<Integer> nTaxaInput = In.create("nTaxa",
+            "Number of taxa to use in simulation. "
                     + "(Only use when alignment is unavailable.)");
     
-    public Input<Tree> clonalFrameInput = new Input<Tree>(
-            "clonalFrame", "Optional tree specifying fixed clonal frame.");
+    public Input<Tree> clonalFrameInput = In.create("clonalFrame",
+            "Optional tree specifying fixed clonal frame.");
     
-    public Input<IntegerParameter> mapInput = new Input<IntegerParameter>(
+    public Input<IntegerParameter> mapInput = In.create(
             "recombinationMap", "Optional sequence of integers specifying "
                     + "sites affected by recombination events.  Fixes the "
                     + "total number of recombination events and the sites "
@@ -94,7 +90,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
     
     public SimulatedRecombinationGraph() {
 
-        alignmentInput.setRule(Validate.OPTIONAL);
+        alignmentInput.setRule(Input.Validate.OPTIONAL);
     };
     
     @Override
@@ -116,20 +112,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     throw new IllegalArgumentException("Must specify nTaxa if"
                             + "neither alignment nor clonalFrame are used.");
             }
-        }
-        
-        if (alignmentInput.get() == null) {
-            
-            if (sequenceLengthInput.get() == null)
-                throw new IllegalArgumentException("Must specify sequenceLength"
-                        + " for simulation if alignment is not provided.");
-            
-            // Generate random alignment of specified length
-            List<Sequence> seqList = Lists.newArrayList();
-            for (int i=0; i<nTaxa; i++)
-                seqList.add(new Sequence("taxon" + i, getSeq(sequenceLengthInput.get())));
-            
-            alignmentInput.setValue(new Alignment(seqList, 4, "nucleotide"), this);
         }
         
         if (clonalFrameInput.get() == null)

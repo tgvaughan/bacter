@@ -19,12 +19,12 @@ package argbeast;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import com.google.common.collect.Lists;
+import feast.input.In;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,8 +49,14 @@ public class RecombinationGraph extends Tree {
      * so that the regions of the alignment affected by recombination events
      * can be recorded.
      */
-    public Input<Alignment> alignmentInput = new Input<Alignment>("alignment",
-            "Sequence alignment corresponding to graph.", Validate.REQUIRED);
+    public Input<Alignment> alignmentInput = In.create(
+            "alignment",
+            "Sequence alignment corresponding to graph.");
+    
+    public Input<Integer> sequenceLengthInput = new In<Integer>(
+            "sequenceLength",
+            "Sequence length. Alternative to providing full alignment.")
+            .setXOR(alignmentInput);
     
     protected int sequenceLength;
     
@@ -70,6 +76,8 @@ public class RecombinationGraph extends Tree {
         
         if (alignmentInput.get() != null)
             sequenceLength = alignmentInput.get().getSiteCount();
+        else
+            sequenceLength = sequenceLengthInput.get();
     }
     
     /**
