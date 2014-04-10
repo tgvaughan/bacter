@@ -124,7 +124,7 @@ public class RecombinationGraph extends Tree {
     /**
      * Remove recombination from graph.
      * 
-     * @param recomb 
+     * @param recomb recombination to remove.
      */
     public void deleteRecombination(Recombination recomb) {
         startEditing();
@@ -164,6 +164,22 @@ public class RecombinationGraph extends Tree {
         }
         
         return length;
+    }
+    
+    /**
+     * Obtain the total number of sites corresponding to the clonal frame.
+     * 
+     * @return CF site count
+     */
+    public int getClonalFrameSiteCount() {
+        int count = getSequenceLength();
+        for (Recombination recomb : recombs) {
+            if (recomb == null)
+                continue;
+            
+            count -= recomb.getEndLocus()-recomb.getStartLocus() + 1;
+        }
+        return count;
     }
 
     /**

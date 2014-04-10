@@ -17,12 +17,16 @@
 
 package argbeast.model;
 
+import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.branchratemodel.BranchRateModel;
+import beast.evolution.datatype.DataType;
+import beast.evolution.datatype.Nucleotide;
 import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.tree.Node;
+import beast.util.Randomizer;
 import feast.input.In;
 
 /**
@@ -36,29 +40,89 @@ public class SimulatedAlignment extends Alignment {
             "Recombination graph down which to simulate evolution.")
             .setRequired();
     
-    public Input<SiteModel.Base> siteModelInput = new In<SiteModel.Base>(
+    public Input<SiteModel> siteModelInput = new In<SiteModel>(
             "siteModel",
             "site model for leafs in the beast.tree")
             .setRequired();
     
-    public Input<BranchRateModel.Base> branchRateModelInput = In.create(
-            "branchRateModel",
-            "A model describing the rates on the branches of the beast.tree.");
+    public Input<DataType> dataTypeInput = new In<DataType>(
+            "dataType", "Data type for alignment").setDefault(new Nucleotide());
     
-    public Input<String> outputFileNameInput = In.create(
-            "outputFileName",
+    public Input<String> outputFileNameInput = In.create("outputFileName",
             "If provided, simulated alignment is additionally written to this file.");    
     
+    private RecombinationGraph arg;
+    private SiteModel siteModel;
+    private DataType dataType;
+    
     public SimulatedAlignment() {
-        
-        // Override the sequence input requirement.
         In.setOptional(sequenceInput);
     }
 
     @Override
     public void initAndValidate() throws Exception {
 
+        arg = argInput.get();
+        siteModel = siteModelInput.get();
+        dataType = dataTypeInput.get();
+        
+        simulate();
+        
         super.initAndValidate();
     }
+
+    /**
+     * Perform actual sequence simulation.
+     */
+    private void simulate() {
+        RecombinationGraph arg = argInput.get();
+        Node cfRoot = arg.getRoot();
+        int nTaxa = arg.getLeafNodeCount();
+        
+        double[] categoryProbs = siteModel.getCategoryProportions(cfRoot);
+        int[] categories = new int[arg.getSequenceLength()];
+        for (int i = 0; i < arg.getSequenceLength(); i++) {
+            categories[i] = Randomizer.randomChoicePDF(categoryProbs);
+        }
+        int nCategories = siteModel.getCategoryCount();
+        int nStates = dataType.getStateCount();
+        double[][] transitionProbs = new double[nCategories][nStates*nStates];
+        
+        int[][] alignment = new int[nTaxa][arg.getSequenceLength()];
+        
+        for (Recombination recomb : arg.getRecombinations()) {
+
+        }
+    }
     
+    
+    private void traverse(Node node, int[] parentSequence,
+            int[] categories, double[][] transitionProbs,
+            Recombination recomb) {
+        
+        // Draw random ancestral sequence if necessary
+        if (parentSequence == null) {
+            if (recomb == null)
+                parentSequence = new int[arg.getClonalFrameSiteCount()];
+            else
+                parentSequence = new int[recomb.getSiteCount()];
+            
+            double[] frequencies = siteModel.getSubstitutionModel().getFrequencies();
+            for (int i=0; i<parentSequence.length; i++)
+                parentSequence[i] = Randomizer.randomChoicePDF(frequencies);
+        }
+        
+        double nodeHeight = arg.getMarginalNodeHeight(node, recomb);
+        for (Node child : arg.getMarginalChildren(node, recomb)) {
+            double childHeight = arg.getMarginalNodeHeight(node, recomb);
+
+            // Calculate transition probabilities
+            for (int i=0; i<siteModel.getCategoryCount(); i++) {
+                siteModel.getSubstitutionModel().getTransitionProbabilities(
+                        child, nodeHeight, childHeight,
+                        siteModel.getRateForCategory(i, child),
+                        transitionProbs[i]);
+            }
+        }
+    }
 }

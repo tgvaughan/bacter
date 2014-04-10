@@ -122,6 +122,16 @@ public class Recombination {
     }
 
     /**
+     * Set locus of end of alignment region affected by conversion event.
+     * 
+     * @param endLocus 
+     */
+    public void setEndLocus(long endLocus) {
+        startEditing();
+        this.endLocus = endLocus;
+    }
+    
+    /**
      * Set node below most recent point at which recombinant edge attaches
      * to clonal frame.
      * 
@@ -173,15 +183,13 @@ public class Recombination {
         startEditing();
         this.startLocus = startLocus;
     }
-
+    
     /**
-     * Set locus of end of alignment region affected by conversion event.
      * 
-     * @param endLocus 
+     * @return 
      */
-    public void setEndLocus(long endLocus) {
-        startEditing();
-        this.endLocus = endLocus;
+    public int getSiteCount() {
+        return (int)(endLocus - startLocus + 1);
     }
     
     /**
