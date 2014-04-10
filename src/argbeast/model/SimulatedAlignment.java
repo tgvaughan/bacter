@@ -46,9 +46,6 @@ public class SimulatedAlignment extends Alignment {
             "site model for leafs in the beast.tree")
             .setRequired();
     
-    public Input<DataType> dataTypeInput = new In<DataType>(
-            "dataType", "Data type for alignment").setDefault(new Nucleotide());
-    
     public Input<String> outputFileNameInput = In.create("outputFileName",
             "If provided, simulated alignment is additionally written to this file.");    
     
@@ -65,7 +62,13 @@ public class SimulatedAlignment extends Alignment {
 
         arg = argInput.get();
         siteModel = siteModelInput.get();
-        dataType = dataTypeInput.get();
+
+        // We can't wait for Alignment.initAndValidate() to get the
+        // data type for us.
+        dataType = getDataTypeFromDesc(dataTypeDescInput.get());
+        if (dataType == null)
+            throw new IllegalArgumentException("Data type '"
+                    + dataTypeDescInput.get() + "' not found.");
         
         simulate();
         
