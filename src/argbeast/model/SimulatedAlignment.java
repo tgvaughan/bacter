@@ -52,7 +52,7 @@ public class SimulatedAlignment extends Alignment {
     public SimulatedAlignment() {
         
         // Override the sequence input requirement.
-        sequenceInput.setRule(Input.Validate.OPTIONAL);
+        In.setOptional(sequenceInput);
     }
 
     @Override
