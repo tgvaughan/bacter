@@ -22,6 +22,7 @@ import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.Nucleotide;
 import beast.evolution.sitemodel.SiteModel;
@@ -74,16 +75,12 @@ public class SimulatedAlignment extends Alignment {
     /**
      * Perform actual sequence simulation.
      */
-    private void simulate() {
-        RecombinationGraph arg = argInput.get();
+    private void simulate() throws Exception {
         Node cfRoot = arg.getRoot();
         int nTaxa = arg.getLeafNodeCount();
         
         double[] categoryProbs = siteModel.getCategoryProportions(cfRoot);
-        int[] categories = new int[arg.getSequenceLength()];
-        for (int i = 0; i < arg.getSequenceLength(); i++) {
-            categories[i] = Randomizer.randomChoicePDF(categoryProbs);
-        }
+
         int nCategories = siteModel.getCategoryCount();
         int nStates = dataType.getStateCount();
         double[][] transitionProbs = new double[nCategories][nStates*nStates];
@@ -91,14 +88,49 @@ public class SimulatedAlignment extends Alignment {
         int[][] alignment = new int[nTaxa][arg.getSequenceLength()];
         
         for (Recombination recomb : arg.getRecombinations()) {
-
+            int thisLength;
+            if (recomb==null)
+                thisLength = arg.getClonalFrameSiteCount();
+            else
+                thisLength = recomb.getSiteCount();
+            
+            int[] categories = new int[thisLength];
+            for (int i=0; i<thisLength; i++)
+                categories[i] = Randomizer.randomChoicePDF(categoryProbs);
+            
+            int[][] regionAlignment = new int[nTaxa][thisLength];
+            
+            Node thisRoot = arg.getMarginalRoot(recomb);
+            
+            traverse(recomb, thisRoot, null,
+                    categories, transitionProbs,
+                    regionAlignment);
+            
+            copyToAlignment(alignment, regionAlignment, recomb);
+        }
+        
+        for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
+            String sSeq = dataType.state2string(alignment[leafIdx]);
+            String sTaxon = arg.getNode(leafIdx).getID();
+            sequenceInput.setValue(new Sequence(sTaxon, sSeq), this);
         }
     }
     
-    
-    private void traverse(Node node, int[] parentSequence,
+    /**
+     * Traverse a marginal tree simulating a region of the sequence alignment
+     * down it.
+     * 
+     * @param recomb  Recombination identifying the marginal tree
+     * @param node Node of the marginal tree
+     * @param parentSequence Sequence at the parent node in the marginal tree
+     * @param categories Mapping from sites to categories
+     * @param transitionProbs
+     * @param regionAlignment 
+     */
+    private void traverse(Recombination recomb, Node node,
+            int[] parentSequence,
             int[] categories, double[][] transitionProbs,
-            Recombination recomb) {
+            int[][] regionAlignment) {
         
         // Draw random ancestral sequence if necessary
         if (parentSequence == null) {
@@ -123,6 +155,66 @@ public class SimulatedAlignment extends Alignment {
                         siteModel.getRateForCategory(i, child),
                         transitionProbs[i]);
             }
+            
+            // Draw characters on child sequence
+            int[] childSequence = new int[parentSequence.length];
+            int nStates = dataType.getStateCount();
+            double[] charProb = new double[nStates];
+            for (int i=0; i<childSequence.length; i++) {
+                int category = categories[i];
+                System.arraycopy(transitionProbs[category],
+                        parentSequence[i]*nStates, charProb, 0, nStates);
+                childSequence[i] = Randomizer.randomChoice(charProb);
+            }
+            
+            if (arg.isNodeMarginalLeaf(child, recomb)) {
+                System.arraycopy(childSequence, 0,
+                        regionAlignment[child.getNr()], 0, childSequence.length);
+            } else {
+                traverse(recomb, child, childSequence,
+                        categories, transitionProbs,
+                        regionAlignment);
+            }
         }
+    }
+    
+    private void copyToAlignment(int[][] alignment, int[][] regionAlignment,
+            Recombination recomb) {
+        
+        int nTaxa = alignment.length;
+        
+        if (recomb==null) {
+                
+                int ridx=0;
+                int sidx=0;
+                int jidx=0;
+                while (ridx<arg.getNRecombs()) {
+                    Recombination nextRecomb = arg.getRecombinations().get(ridx+1);
+                    int nextStart = (int)nextRecomb.getStartLocus();
+                    if (nextStart>sidx) {
+                        for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
+                            System.arraycopy(regionAlignment[leafIdx], jidx,
+                                    alignment[leafIdx], sidx, nextStart-sidx);
+                        }
+                    }
+                    jidx += nextStart-sidx;
+                    sidx = (int)nextRecomb.getEndLocus()+1;
+                    
+                }
+                if (sidx<arg.getSequenceLength()-1) {
+                    for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
+                        System.arraycopy(regionAlignment[leafIdx], jidx,
+                                alignment[leafIdx], sidx,
+                                arg.getSequenceLength()-sidx);
+                    }
+                }
+                
+            } else {
+                for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
+                    System.arraycopy(regionAlignment[leafIdx], 0,
+                            alignment[leafIdx], (int)recomb.getStartLocus(),
+                            recomb.getSiteCount());
+                }
+            }
     }
 }
