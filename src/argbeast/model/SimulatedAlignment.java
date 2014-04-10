@@ -24,11 +24,12 @@ import beast.core.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.Nucleotide;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
+import beast.util.XMLProducer;
 import feast.input.In;
+import java.io.PrintStream;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -37,7 +38,7 @@ import feast.input.In;
 public class SimulatedAlignment extends Alignment {
     
     public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
-            "ARG",
+            "arg",
             "Recombination graph down which to simulate evolution.")
             .setRequired();
     
@@ -71,6 +72,12 @@ public class SimulatedAlignment extends Alignment {
                     + dataTypeDescInput.get() + "' not found.");
         
         simulate();
+        
+        // Write simulated alignment to disk if requested:
+        if (outputFileNameInput.get() != null) {
+            PrintStream pstream = new PrintStream(outputFileNameInput.get());
+            pstream.println(new XMLProducer().toRawXML(this));
+        }
         
         super.initAndValidate();
     }
