@@ -26,6 +26,7 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
+import beast.util.NexusWriter;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
 import feast.input.In;
@@ -48,7 +49,10 @@ public class SimulatedAlignment extends Alignment {
             .setRequired();
     
     public Input<String> outputFileNameInput = In.create("outputFileName",
-            "If provided, simulated alignment is additionally written to this file.");    
+            "If provided, simulated alignment is additionally written to this file."); 
+    
+    public Input<Boolean> useNexusInput = new In<Boolean>("useNexus",
+            "Use Nexus format to write alignment file.").setDefault(false);
     
     private RecombinationGraph arg;
     private SiteModel siteModel;
@@ -73,13 +77,16 @@ public class SimulatedAlignment extends Alignment {
         
         simulate();
         
+        super.initAndValidate();
+        
         // Write simulated alignment to disk if requested:
         if (outputFileNameInput.get() != null) {
             PrintStream pstream = new PrintStream(outputFileNameInput.get());
-            pstream.println(new XMLProducer().toRawXML(this));
+            if (useNexusInput.get())
+                NexusWriter.write(this, null, pstream);
+            else
+                pstream.println(new XMLProducer().toRawXML(this));
         }
-        
-        super.initAndValidate();
     }
 
     /**
@@ -188,6 +195,14 @@ public class SimulatedAlignment extends Alignment {
         }
     }
     
+    /**
+     * Copy region alignment over to full alignment.  Trivial in all
+     * cases besides the clonal frame alignment.
+     * 
+     * @param alignment
+     * @param regionAlignment
+     * @param recomb 
+     */
     private void copyToAlignment(int[][] alignment, int[][] regionAlignment,
             Recombination recomb) {
         
@@ -209,7 +224,7 @@ public class SimulatedAlignment extends Alignment {
                     }
                     jidx += nextStart-sidx;
                     sidx = (int)nextRecomb.getEndLocus()+1;
-                    
+                    ridx += 1;
                 }
                 if (sidx<arg.getSequenceLength()-1) {
                     for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {

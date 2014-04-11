@@ -17,6 +17,12 @@
 
 package argbeast.model;
 
+import argbeast.RecombinationGraph;
+import beast.core.parameter.RealParameter;
+import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.substitutionmodel.JukesCantor;
+import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.util.Randomizer;
 import org.junit.Test;
 
 /**
@@ -26,7 +32,34 @@ import org.junit.Test;
 public class SimulatedAlignmentTest {
     
     @Test
-    public void test() {
+    public void test() throws Exception {
         
+        Randomizer.setSeed(42);
+        
+        ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+        
+        RecombinationGraph arg = new SimulatedRecombinationGraph();
+        arg.initByName(
+                "rho", 5.0,
+                "delta", 50.0,
+                "populationModel", popFunc,
+                "nTaxa", 2,
+                "sequenceLength", 10000);
+        
+
+        // Site model:
+        JukesCantor jc = new JukesCantor();
+        jc.initByName();
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName(
+                "substModel", jc);
+
+        SimulatedAlignment alignment = new SimulatedAlignment();
+        alignment.initByName(
+                "arg", arg,
+                "siteModel", siteModel,
+                "outputFileName", "simulated_alignment.nexus",
+                "useNexus", true);
     }
 }
