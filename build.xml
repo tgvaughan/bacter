@@ -8,7 +8,7 @@
 
     <!-- Feast 1.4.0 -->
     <mkdir dir="${deps}"/>
-    <get src="https://github.com/tgvaughan/feast/releases/download/v1.4.0/feast.v1.4.0.zip"
+    <get src="https://github.com/tgvaughan/feast/releases/download/v1.5.0/feast.v1.5.0.zip"
 	 dest="${deps}/package.zip"/>
     <unzip src="${deps}/package.zip" dest="${deps}/"/>
     <copy todir="${build-lib}">

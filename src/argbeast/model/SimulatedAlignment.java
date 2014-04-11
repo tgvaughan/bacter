@@ -26,11 +26,15 @@ import beast.evolution.alignment.Sequence;
 import beast.evolution.datatype.DataType;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
-import beast.util.NexusWriter;
+import beast.util.AddOnManager;
+import feast.nexus.NexusWriter;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
+import com.google.common.collect.Lists;
 import feast.input.In;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -70,11 +74,9 @@ public class SimulatedAlignment extends Alignment {
 
         // We can't wait for Alignment.initAndValidate() to get the
         // data type for us.
-        dataType = getDataTypeFromDesc(dataTypeDescInput.get());
-        if (dataType == null)
-            throw new IllegalArgumentException("Data type '"
-                    + dataTypeDescInput.get() + "' not found.");
-        
+        grabDataType();
+
+        // Simulate alignment
         simulate();
         
         super.initAndValidate();
@@ -241,5 +243,40 @@ public class SimulatedAlignment extends Alignment {
                             recomb.getSiteCount());
                 }
             }
+    }
+    
+    /**
+     * HORRIBLE function to identify data type from given description.
+     * 
+     * @param dataTypeDesc
+     * @return DataType instance (null if none found)
+     */
+    private void grabDataType() {
+        if (userDataTypeInput.get() != null) {
+            dataType = userDataTypeInput.get();
+        } else {
+
+            List<String> dataTypeDescList = Lists.newArrayList();
+            List<String> classNames = AddOnManager.find(beast.evolution.datatype.DataType.class, "beast.evolution.datatype");
+            for (String className : classNames) {
+                try {
+                    DataType thisDataType = (DataType) Class.forName(className).newInstance();
+                    if (dataTypeInput.get().equals(thisDataType.getDescription())) {
+                        dataType = thisDataType;
+                        break;
+                    }
+                    dataTypeDescList.add(thisDataType.getDescription());
+                } catch (ClassNotFoundException e) {
+                } catch (InstantiationException e) {
+                } catch (IllegalAccessException e) {
+                }
+            }
+            if (dataType == null) {
+                throw new IllegalArgumentException("Data type + '"
+                        + dataTypeInput.get()
+                        + "' cannot be found.  Choose one of "
+                        + Arrays.toString(dataTypeDescList.toArray(new String[0])));
+            }
+        }
     }
 }
