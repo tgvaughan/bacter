@@ -297,4 +297,12 @@ public class Recombination {
         hash = 29 * hash + (int) (this.endLocus ^ (this.endLocus >>> 32));
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Depart: (Node %d, height %g, site %d) "
+                + "Arrive: (Node %d, height %g, site %d)",
+                node1.getNr(), height1, startLocus,
+                node2.getNr(), height2, endLocus);
+    }
 }

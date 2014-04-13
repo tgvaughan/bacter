@@ -125,6 +125,20 @@ public class SimulatedAlignment extends Alignment {
                     categories, transitionProbs,
                     regionAlignment);
             
+            // DEBUG: Count differences
+            int segsites = 0;
+            for (int s=0; s<regionAlignment[0].length; s++) {
+                int state = regionAlignment[0][s];
+                for (int l=1; l<nTaxa; l++) {
+                    if (state != regionAlignment[l][s]) {
+                        segsites += 1;
+                        break;
+                    }
+                }
+            }
+            System.out.println(segsites + " segregating sites in region "
+                    + "corresponding to recomb " + recomb);
+            
             copyToAlignment(alignment, regionAlignment, recomb);
         }
         
@@ -165,7 +179,7 @@ public class SimulatedAlignment extends Alignment {
         
         double nodeHeight = arg.getMarginalNodeHeight(node, recomb);
         for (Node child : arg.getMarginalChildren(node, recomb)) {
-            double childHeight = arg.getMarginalNodeHeight(node, recomb);
+            double childHeight = arg.getMarginalNodeHeight(child, recomb);
 
             // Calculate transition probabilities
             for (int i=0; i<siteModel.getCategoryCount(); i++) {

@@ -34,7 +34,7 @@ public class SimulatedAlignmentTest {
     @Test
     public void test() throws Exception {
         
-        Randomizer.setSeed(42);
+        //Randomizer.setSeed(42);
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
@@ -42,17 +42,19 @@ public class SimulatedAlignmentTest {
         RecombinationGraph arg = new SimulatedRecombinationGraph();
         arg.initByName(
                 "rho", 5.0,
-                "delta", 50.0,
+                "delta", 200.0,
                 "populationModel", popFunc,
                 "nTaxa", 2,
                 "sequenceLength", 10000);
         
+        System.out.println(arg);
 
         // Site model:
         JukesCantor jc = new JukesCantor();
         jc.initByName();
         SiteModel siteModel = new SiteModel();
         siteModel.initByName(
+                "mutationRate", new RealParameter("0.1"),
                 "substModel", jc);
 
         SimulatedAlignment alignment = new SimulatedAlignment();
