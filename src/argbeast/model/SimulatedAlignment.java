@@ -197,7 +197,7 @@ public class SimulatedAlignment extends Alignment {
                 int category = categories[i];
                 System.arraycopy(transitionProbs[category],
                         parentSequence[i]*nStates, charProb, 0, nStates);
-                childSequence[i] = Randomizer.randomChoice(charProb);
+                childSequence[i] = Randomizer.randomChoicePDF(charProb);
             }
             
             if (arg.isNodeMarginalLeaf(child, recomb)) {
