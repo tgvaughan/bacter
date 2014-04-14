@@ -317,7 +317,7 @@ public class RecombinationGraph extends Tree {
 
     /**
      * Determine whether node is leaf in marginal tree defined by recomb.
-     * Just here for aesthetic completeness - all marginal trees share the
+     * Just here for completeness - all marginal trees share the
      * same leaves.
      * 
      * @param node

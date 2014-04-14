@@ -17,12 +17,15 @@
 
 package argbeast.model;
 
+import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import beast.core.parameter.RealParameter;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
+import com.google.common.collect.Maps;
+import java.util.Map;
 import org.junit.Test;
 
 /**
@@ -34,7 +37,7 @@ public class SimulatedAlignmentTest {
     @Test
     public void test() throws Exception {
         
-        Randomizer.setSeed(42);
+        Randomizer.setSeed(1);
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
@@ -42,9 +45,9 @@ public class SimulatedAlignmentTest {
         RecombinationGraph arg = new SimulatedRecombinationGraph();
         arg.initByName(
                 "rho", 5.0,
-                "delta", 200.0,
+                "delta", 1000.0,
                 "populationModel", popFunc,
-                "nTaxa", 2,
+                "nTaxa", 10,
                 "sequenceLength", 10000);
         
         System.out.println(arg);
@@ -54,14 +57,52 @@ public class SimulatedAlignmentTest {
         jc.initByName();
         SiteModel siteModel = new SiteModel();
         siteModel.initByName(
-                "mutationRate", new RealParameter("0.01"),
+                "mutationRate", new RealParameter("0.2"),
                 "substModel", jc);
 
+        // Simulate alignment:
         SimulatedAlignment alignment = new SimulatedAlignment();
         alignment.initByName(
                 "arg", arg,
                 "siteModel", siteModel,
                 "outputFileName", "simulated_alignment.nexus",
                 "useNexus", true);
+        
+        // Compute number of segregating sites in each region
+        Map<Recombination, Integer> numSS = Maps.newHashMap();
+        int numSSrecomb = 0;
+        for (Recombination recomb : arg.getRecombinations()) {
+            if (recomb == null)
+                continue;
+            
+            numSS.put(recomb, 0);
+            for (long i=recomb.getStartLocus(); i<=recomb.getEndLocus(); i++) {
+                int leaf0state = alignment.getCounts().get(0).get((int)i);
+                for (int leaf=1; leaf<arg.getLeafNodeCount(); leaf++) {
+                    if (alignment.getCounts().get(leaf).get((int)i)!=leaf0state) {
+                        numSS.put(recomb, numSS.get(recomb)+1);
+                        break;
+                    }
+                }
+            }
+            numSSrecomb += numSS.get(recomb);
+        }
+        
+        numSS.put(null, 0);
+        for (int i=0; i<arg.getSequenceLength(); i++) {
+            int leaf0state = alignment.getCounts().get(0).get((int)i);
+            for (int leaf=1; leaf<arg.getLeafNodeCount(); leaf++) {
+                if (alignment.getCounts().get(leaf).get((int)i)!=leaf0state) {
+                    numSS.put(null, numSS.get(null)+1);
+                    break;
+                }
+            }
+        }
+        numSS.put(null, numSS.get(null)-numSSrecomb);
+        
+        for (Recombination recomb : arg.getRecombinations())
+            System.out.println(arg.getMarginalNewick(recomb));
+        
+        // Compare with expected values
     }
 }
