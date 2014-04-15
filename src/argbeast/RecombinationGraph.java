@@ -49,14 +49,16 @@ public class RecombinationGraph extends Tree {
      * so that the regions of the alignment affected by recombination events
      * can be recorded.
      */
-    public Input<Alignment> alignmentInput = In.create(
-            "alignment",
+    public Input<Alignment> alignmentInput = In.create("alignment",
             "Sequence alignment corresponding to graph.");
     
     public Input<Integer> sequenceLengthInput = new In<Integer>(
             "sequenceLength",
             "Sequence length. Alternative to providing full alignment.")
             .setXOR(alignmentInput);
+    
+    public Input<String> fromStringInput = In.create("fromString",
+            "Initialise ARG from string representation.");
     
     protected int sequenceLength;
     
@@ -383,10 +385,14 @@ public class RecombinationGraph extends Tree {
             return sb.toString();
     }
     
-    @Override
-    public void fromXML(final org.w3c.dom.Node node) {
-        String str = node.getTextContent();
-        
+    /**
+     * Load ARG from string representation.  This is the same representation
+     * used for XML state restoration.
+     *
+     * @param str
+     */
+    public void fromString(String str) {
+
         // Extract clonal frame and recombination components of string
         Pattern cfPattern = Pattern.compile("^[^\\(]*(\\(.*)$");
         Matcher cfMatcher = cfPattern.matcher(str);
@@ -430,6 +436,11 @@ public class RecombinationGraph extends Tree {
             
             addRecombination(recomb);
         }
+    }
+    
+    @Override
+    public void fromXML(final org.w3c.dom.Node node) {
+        fromString(node.getTextContent());
     }
     
     /**

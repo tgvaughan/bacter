@@ -24,8 +24,10 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -64,25 +66,19 @@ public class SimulatedRecombinationGraphTest {
         alignment.initByName(
                 "sequence", new Sequence("taxon1", getSeq(length)),
                 "sequence", new Sequence("taxon2", getSeq(length)),
-                "sequence", new Sequence("taxon3", getSeq(length)),
-                "sequence", new Sequence("taxon4", getSeq(length)),
-                "sequence", new Sequence("taxon5", getSeq(length)),
-                "sequence", new Sequence("taxon6", getSeq(length)),
-                "sequence", new Sequence("taxon7", getSeq(length)),
-                "sequence", new Sequence("taxon8", getSeq(length)),
-                "sequence", new Sequence("taxon9", getSeq(length)),
-                "sequence", new Sequence("taxon10", getSeq(length)),
                 "datatype", "nucleotide"
         );
         
         SimulatedRecombinationGraph rgs = new SimulatedRecombinationGraph();
         
-        RecombinationGraphStatsLogger stats = new RecombinationGraphStatsLogger();
-        stats.initByName("arg", rgs);
-        stats.init(System.out);
-        System.out.println();
+        int nIter = 100000;
+        double meanNRecomb = 0.0;
+        double meanCoalTime = 0.0;
+        double meanDepHeight = 0.0;
+        double meanArrHeight = 0.0;
+        int totalRecomb = 0;
         
-        for (int i=0; i<100; i++) {
+        for (int i=0; i<nIter; i++) {
             rgs.initByName(
                     "rho", 1.0,
                     "delta", 50.0,
@@ -90,9 +86,33 @@ public class SimulatedRecombinationGraphTest {
                     //"sequenceLength", 10000,
                     //"nTaxa", 10);
                     "alignment", alignment);
-            
-            stats.log(-1, System.out);
-            System.out.println();
+
+            meanNRecomb += rgs.getNRecombs();
+            meanCoalTime += rgs.getRoot().getHeight();
+            for (Recombination recomb : rgs.getRecombinations()) {
+                if (recomb == null)
+                    continue;
+                
+                totalRecomb += 1;
+                meanDepHeight += recomb.getHeight1();
+                meanArrHeight += recomb.getHeight2();
+            }
         }
+        
+        meanNRecomb /= nIter;
+        meanCoalTime /= nIter;
+        meanDepHeight /= totalRecomb;
+        meanArrHeight /= totalRecomb;
+        
+        System.out.println("meanNRecomb=" + meanNRecomb + " (truth 1.0)");
+        System.out.println("meanCoalTime=" + meanCoalTime + " (truth 1.0)");
+        System.out.println("meanDepHeight=" + meanDepHeight + " (truth 1.0)");
+        System.out.println("meanArrHeight=" + meanArrHeight + " (truth 1.66)");
+        
+        assertTrue(Math.abs(meanCoalTime-1.0)<1e-2);
+        assertTrue(Math.abs(meanNRecomb-1.0)<1e-2);
+        assertTrue(Math.abs(meanDepHeight-1.0)<1e-2);
+        assertTrue(Math.abs(meanArrHeight-1.66)<1e-2);
+        
     }
 }
