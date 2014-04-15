@@ -190,20 +190,54 @@ public class RecombinationGraph extends Tree {
     }
 
     /**
+     * Determine whether given recombination changes tree topology.  If this
+     * is false, the question of which child belongs to which parent and
+     * visa versa is the same as for the clonal frame.  This is the case
+     * whenever
+     * 
+     * 1. node2 is the same as node1
+     * 2. node2 is the parent of node1
+     * 3. node2 is the sibling of node1
+     * 
+     * It is also trivially true when recomb is null, representing the clonal
+     * frame.
+     * 
+     * @param recomb
+     * @return true if the recombination changes the tree topology
+     */
+    public boolean recombChangesTopology(Recombination recomb) {
+        boolean topologyUnchanged =
+                recomb == null
+                || recomb.getNode2() == recomb.getNode1()
+                || recomb.getNode2() == recomb.getNode1().getParent()
+                || recomb.getNode1().getParent().getChildren().contains(recomb.getNode2());
+        
+        return !topologyUnchanged;
+    }
+    
+    /**
      * Retrieve root for marginal tree defined by recomb.
      * 
      * @param recomb
      * @return root node
      */
     public Node getMarginalRoot(Recombination recomb) {
-        if (recomb==null)
-            return root;
-        
-        if (recomb.node2.isRoot())
-            return recomb.node1.getParent();
-        else
-            return getRoot();
+        if (recombChangesTopology(recomb)) {
 
+            Node node1parent = recomb.getNode1().getParent();
+            if (node1parent.isRoot()) {
+                if (node1parent.getLeft() == recomb.getNode1())
+                    return node1parent.getRight();
+                else
+                    return node1parent.getLeft();
+            }
+            
+            if (recomb.getNode2().isRoot()) {
+                return recomb.getNode1().getParent();
+            }
+        }
+        
+        return getRoot();        
     }
     
     /**
@@ -214,19 +248,13 @@ public class RecombinationGraph extends Tree {
      * @return node parent
      */
     public Node getMarginalParent(Node node, Recombination recomb) {
-        if (recomb==null
-                || recomb.node1==recomb.node2
-                || recomb.node1.getParent()==recomb.node2)
-            return node.getParent();
-        
-        if (node == recomb.node1 || node == recomb.node2)
-            return recomb.node1.getParent();
-        
-        if (node == recomb.node1.getParent())
-            return recomb.node2.getParent();
-        
-        if (node.getParent()==recomb.node1.getParent())
-            return node.getParent().getParent();
+        if (recombChangesTopology(recomb)) {
+            if (node == recomb.getNode1().getParent())
+                return recomb.getNode2().getParent();
+            
+            if (node.getParent() == recomb.getNode1().getParent())
+                return node.getParent().getParent();
+        }
         
         return node.getParent();
     }
@@ -239,51 +267,23 @@ public class RecombinationGraph extends Tree {
      * @return node children
      */
     public List<Node> getMarginalChildren(Node node, Recombination recomb) {
-        if (recomb==null
-                || recomb.node1==recomb.node2
-                || recomb.node1.getParent() == recomb.node2)
-            return node.getChildren();
-        
-        List<Node> children = Lists.newArrayList();        
-        
-        // Recombination-shifted node
-        if (node==recomb.node1.getParent()) {
-            children.add(recomb.node1);
-            children.add(recomb.node2);
-            return children;
-        }
-        
-        // Any other node:
-        for (Node child : node.getChildren()) {
-            if (child==recomb.node2)
-                children.add(recomb.node1.getParent());
-            else {
-                if (child == recomb.node1.getParent()) {
-                    if (child.getChild(0)==recomb.node1)
-                        children.add(child.getChild(1));
-                    else
-                        children.add(child.getChild(0));
-                } else
-                    children.add(child);
-            }
-        }
-        
-        return children;
+        throw new UnsupportedOperationException("Unsupported operation.");
     }
 
     /**
      * Height of node in marginal tree defined by recomb.
+     * 
      * 
      * @param node
      * @param recomb
      * @return node height
      */
     public double getMarginalNodeHeight(Node node, Recombination recomb) {
-        if (recomb==null || recomb.node1==recomb.node2)
+        if (recomb==null || recomb.getNode1()==recomb.getNode2())
             return node.getHeight();
-
-        if (node == recomb.node1.getParent())
-            return recomb.height2;
+        
+        if (node == recomb.getNode1().getParent())
+            return recomb.getHeight2();
         else
             return node.getHeight();
     }
@@ -297,15 +297,13 @@ public class RecombinationGraph extends Tree {
      * @return edge length (zero if node is root of marginal tree)
      */
     public double getMarginalBranchLength(Node node, Recombination recomb) {
-        if (recomb==null || recomb.node1==recomb.node2)
-            return node.getLength();
-        
-        Node parent = getMarginalParent(node, recomb);
-        if (parent == null)
-            return 0.0;
-        else
-            return getMarginalNodeHeight(parent, recomb)
+        if (!isNodeMarginalRoot(node, recomb)) {
+            Node parent = getMarginalParent(node, recomb);
+            return getMarginalNodeHeight(parent,recomb)
                     -getMarginalNodeHeight(node, recomb);
+        }
+        else 
+            return 0.0;
     }
     
     /**
@@ -316,10 +314,7 @@ public class RecombinationGraph extends Tree {
      * @return true if node is marginal root, false otherwise.
      */
     public boolean isNodeMarginalRoot(Node node, Recombination recomb) {
-        if (recomb==null)
-            return node.isRoot();
-        
-        return (getMarginalParent(node, recomb) == null);
+        return getMarginalParent(node, recomb)==null;
     }
 
     /**
