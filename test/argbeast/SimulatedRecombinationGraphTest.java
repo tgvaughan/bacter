@@ -18,14 +18,11 @@
 package argbeast;
 
 import argbeast.model.SimulatedRecombinationGraph;
-import argbeast.util.RecombinationGraphStatsLogger;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
-import java.util.ArrayList;
-import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -83,8 +80,6 @@ public class SimulatedRecombinationGraphTest {
                     "rho", 1.0,
                     "delta", 50.0,
                     "populationModel", popFunc,
-                    //"sequenceLength", 10000,
-                    //"nTaxa", 10);
                     "alignment", alignment);
 
             meanNRecomb += rgs.getNRecombs();

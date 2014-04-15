@@ -70,8 +70,7 @@ public class RecombinationGraph extends Tree {
     
     @Override
     public void initAndValidate() throws Exception {
-        super.initAndValidate();
-        
+
         recombs = new ArrayList<Recombination>();
         storedRecombs = new ArrayList<Recombination>();
         recombs.add(null); // Represents the clonal frame.
@@ -80,6 +79,12 @@ public class RecombinationGraph extends Tree {
             sequenceLength = alignmentInput.get().getSiteCount();
         else
             sequenceLength = sequenceLengthInput.get();
+
+        if (fromStringInput.get() != null) {
+            fromString(fromStringInput.get());
+        }
+        
+        super.initAndValidate();
     }
     
     /**
