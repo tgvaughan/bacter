@@ -216,7 +216,15 @@ public class RecombinationGraph extends Tree {
     }
     
     /**
-     * Retrieve root for marginal tree defined by recomb.
+     * Retrieve root for marginal tree defined by recomb.  There are two main
+     * special cases to handle here.
+     * 
+     * 1. Parent of node1 is the root.  In this case, the old root is going
+     * to be shifted because the lineage originally leading to it is being
+     * removed. In this case the root simply becomes the sibling of node1.
+     * 
+     * 2. node2 is the root.  In this case, the old root becomes a child of
+     * the new root (parent of node1).
      * 
      * @param recomb
      * @return root node
@@ -254,6 +262,9 @@ public class RecombinationGraph extends Tree {
             
             if (node.getParent() == recomb.getNode1().getParent())
                 return node.getParent().getParent();
+            
+            if (node == recomb.getNode2())
+                return recomb.getNode1().getParent();
         }
         
         return node.getParent();
@@ -301,7 +312,9 @@ public class RecombinationGraph extends Tree {
     }
 
     /**
-     * Height of node in marginal tree defined by recomb.
+     * Height of node in marginal tree defined by recomb.  This is easy - there
+     * is only one node whose height is potentially different: the parent of
+     * node1.  All other nodes retain their clonal frame heights.
      * 
      * 
      * @param node
@@ -309,10 +322,7 @@ public class RecombinationGraph extends Tree {
      * @return node height
      */
     public double getMarginalNodeHeight(Node node, Recombination recomb) {
-        if (recomb==null || recomb.getNode1()==recomb.getNode2())
-            return node.getHeight();
-        
-        if (node == recomb.getNode1().getParent())
+        if (recomb != null && node == recomb.getNode1().getParent())
             return recomb.getHeight2();
         else
             return node.getHeight();
