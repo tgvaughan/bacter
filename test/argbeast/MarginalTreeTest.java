@@ -51,6 +51,9 @@ public class MarginalTreeTest {
         arg.initByName("fromString", str, "sequenceLength", 10000);
         List<Recombination> recombs = arg.getRecombinations();
         
+        for (Recombination recomb : arg.getRecombinations())
+            System.out.println(arg.getMarginalNewick(recomb));
+        
         // Test root nodes values
         assertEquals(18, arg.getMarginalRoot(recombs.get(0)).getNr());
         assertEquals(17, arg.getMarginalRoot(recombs.get(1)).getNr());

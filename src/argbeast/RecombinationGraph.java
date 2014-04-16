@@ -267,7 +267,37 @@ public class RecombinationGraph extends Tree {
      * @return node children
      */
     public List<Node> getMarginalChildren(Node node, Recombination recomb) {
-        throw new UnsupportedOperationException("Unsupported operation.");
+        if (recombChangesTopology(recomb)) {
+            List<Node> children = new ArrayList<Node>();
+            Node node1parent = recomb.getNode1().getParent();
+            
+            if (node == node1parent) {
+                
+                children.add(recomb.getNode1());
+                children.add(recomb.getNode2());
+                
+            } else {
+                
+                children.addAll(node.getChildren());
+                
+                if (children.contains(node1parent)) {
+                    Node node1sibling;
+                    if (node1parent.getLeft() == recomb.getNode1())
+                        node1sibling = node1parent.getRight();
+                    else
+                        node1sibling = node1parent.getLeft();
+                    
+                    children.set(children.indexOf(node1parent), node1sibling);
+                }
+                
+                if (children.contains(recomb.getNode2()))
+                    children.set(children.indexOf(recomb.getNode2()), node1parent);
+            }
+            
+            return children;
+            
+        } else
+            return node.getChildren();
     }
 
     /**

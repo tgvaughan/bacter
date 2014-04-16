@@ -28,7 +28,7 @@ import beast.evolution.tree.Node;
  */
 public class Recombination {
     
-    private RecombinationGraph arg;
+    protected RecombinationGraph arg;
     
     public Recombination() { }
     
@@ -54,17 +54,17 @@ public class Recombination {
     /**
      * Nodes below branches to which recombinant edge connects.
      */
-    Node node1, node2;
+    protected Node node1, node2;
     
     /**
      * Heights on branches at which recombinant edge connects.
      */
-    double height1, height2;
+    protected double height1, height2;
     
     /**
      * Range of nucleotides affected by homologous gene conversion.
      */
-    long startLocus, endLocus;
+    protected long startLocus, endLocus;
     
     /**
      * Obtain node below most recent point at which recombinant edge
