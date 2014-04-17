@@ -251,20 +251,29 @@ public class RecombinationGraph extends Tree {
     /**
      * Retrieve parent of node in marginal tree defined by recomb.
      * 
+     * 1. node is node1 or node2. In this case, the shifted node (node1's
+     * parent) is the marginal parent.
+     * 
+     * 2. 1 doesn't apply and node's parent is node1's parent in the clonal
+     * frame.  In this case, node1's grandparent is the marginal parent
+     * 
+     * 3. 1 doesn't apply and node is node1's clonal frame parent. In this
+     * case, the parent is node2's parent in the clonal frame.
+     * 
      * @param node
      * @param recomb
      * @return node parent
      */
     public Node getMarginalParent(Node node, Recombination recomb) {
         if (recombChangesTopology(recomb)) {
-            if (node == recomb.getNode1().getParent())
-                return recomb.getNode2().getParent();
-            
+            if (node == recomb.getNode1() || node == recomb.getNode2())
+                return recomb.getNode1().getParent();
+                        
             if (node.getParent() == recomb.getNode1().getParent())
                 return node.getParent().getParent();
             
-            if (node == recomb.getNode2())
-                return recomb.getNode1().getParent();
+            if (node == recomb.getNode1().getParent())
+                return recomb.getNode2().getParent();
         }
         
         return node.getParent();
