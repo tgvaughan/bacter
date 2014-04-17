@@ -306,11 +306,11 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         if (pRec==0.0)
             return;
         
-        long l; // next available convertible locus
+        int l; // next available convertible locus
         if (Randomizer.nextDouble()>p0cf) {
             Recombination recomb = new Recombination();
             recomb.setStartLocus(0);
-            long tractLength = Randomizer.nextGeometric(pTractEnd);
+            int tractLength = (int)Randomizer.nextGeometric(pTractEnd);
             recomb.setEndLocus(Math.min(tractLength, getSequenceLength()-1));
             associateRecombinationWithCF(recomb);
             addRecombination(recomb);

@@ -53,17 +53,17 @@ public class ConvertedRegionEdgeShift extends RecombinationGraphOperator {
         Recombination recomb = argInput.get().getRecombinations().get(ridx);
         boolean moveStart = (z%2 == 0);
         
-        long currentLocus;
+        int currentLocus;
         if (moveStart)
             currentLocus = recomb.getStartLocus();
         else
             currentLocus = recomb.getEndLocus();
         
         // Identify boundaries of aperture
-        long delta = Math.round(argInput.get().getSequenceLength()
+        int delta = (int)Math.round(argInput.get().getSequenceLength()
                 *apertureSizeInput.get())/2;
         
-        long lower, upper;
+        int lower, upper;
         if (moveStart) {
             if (ridx==1)
                 lower = 0;
@@ -85,7 +85,7 @@ public class ConvertedRegionEdgeShift extends RecombinationGraphOperator {
         upper = Math.min(upper, currentLocus+delta);
         
         // Select new site
-        long locus = lower + Randomizer.nextInt((int)(upper-lower+1));
+        int locus = lower + Randomizer.nextInt((int)(upper-lower+1));
                 
         // Perform shift
         if (moveStart)

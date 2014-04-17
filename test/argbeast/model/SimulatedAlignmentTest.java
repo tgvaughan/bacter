@@ -20,11 +20,15 @@ package argbeast.model;
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
@@ -57,7 +61,7 @@ public class SimulatedAlignmentTest {
         jc.initByName();
         SiteModel siteModel = new SiteModel();
         siteModel.initByName(
-                "mutationRate", new RealParameter("0.2"),
+                "mutationRate", new RealParameter("0.5"),
                 "substModel", jc);
 
         // Simulate alignment:
@@ -103,6 +107,57 @@ public class SimulatedAlignmentTest {
         for (Recombination recomb : arg.getRecombinations())
             System.out.println(arg.getMarginalNewick(recomb));
         
-        // Compare with expected values
+        // Compare UPGMA topologies with true topologies
+        // (Should be enough info here for precise agreement)
+        for (Recombination recomb : arg.getRecombinations()) {
+            Alignment margAlign = createMarginalAlignment(alignment, arg, recomb);
+        }
+    }
+    
+    /**
+     * Create Alignment object representing alignment of a region
+     * corresponding to a single marginal tree.
+     * 
+     * @param alignment
+     * @param arg
+     * @param recomb
+     * @return
+     * @throws Exception 
+     */
+    private Alignment createMarginalAlignment(Alignment alignment,
+            RecombinationGraph arg, Recombination recomb) throws Exception {
+        List<Sequence> sequences = Lists.newArrayList();
+
+        for (int leafIdx=0; leafIdx<alignment.getNrTaxa(); leafIdx++) {
+            List<Integer> stateSequence;
+            
+            if (recomb == null) {
+                stateSequence =Lists.newArrayList();
+                
+                int i=0;
+                for (int r=0; r<arg.getNRecombs(); r++) {
+                    while (i<arg.getRecombinations().get(r+1).getStartLocus()) {
+                        stateSequence.add(alignment.getCounts().get(leafIdx).get(i));
+                        i += 1;
+                    }
+                    i=arg.getRecombinations().get(r+1).getEndLocus()+1;
+                }
+
+
+            } else {
+
+                stateSequence = alignment.getCounts().get(leafIdx)
+                        .subList(recomb.getStartLocus(), recomb.getEndLocus()+1);
+            }
+            
+            sequences.add(new Sequence(alignment.getTaxaNames().get(leafIdx),
+                    alignment.getDataType().state2string(stateSequence)));
+        }
+        
+        Alignment margAlignment = new Alignment(sequences,
+                alignment.getDataType().getStateCount(),
+                alignment.getDataType().getDescription());
+        
+        return margAlignment;
     }
 }

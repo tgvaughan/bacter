@@ -226,37 +226,38 @@ public class SimulatedAlignment extends Alignment {
         
         if (recomb==null) {
                 
-                int ridx=0;
-                int sidx=0;
-                int jidx=0;
-                while (ridx<arg.getNRecombs()) {
-                    Recombination nextRecomb = arg.getRecombinations().get(ridx+1);
-                    int nextStart = (int)nextRecomb.getStartLocus();
-                    if (nextStart>sidx) {
-                        for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
-                            System.arraycopy(regionAlignment[leafIdx], jidx,
-                                    alignment[leafIdx], sidx, nextStart-sidx);
-                        }
-                    }
-                    jidx += nextStart-sidx;
-                    sidx = (int)nextRecomb.getEndLocus()+1;
-                    ridx += 1;
-                }
-                if (sidx<arg.getSequenceLength()-1) {
+            int ridx=0;
+            int sidx=0;
+            int jidx=0;
+            while (ridx<arg.getNRecombs()) {
+                Recombination nextRecomb = arg.getRecombinations().get(ridx+1);
+                int nextStart = (int)nextRecomb.getStartLocus();
+                if (nextStart>sidx) {
                     for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
                         System.arraycopy(regionAlignment[leafIdx], jidx,
-                                alignment[leafIdx], sidx,
-                                arg.getSequenceLength()-sidx);
+                                alignment[leafIdx], sidx, nextStart-sidx);
                     }
                 }
-                
-            } else {
+                jidx += nextStart-sidx;
+                sidx = (int)nextRecomb.getEndLocus()+1;
+                ridx += 1;
+            }
+            
+            if (sidx<arg.getSequenceLength()-1) {
                 for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
-                    System.arraycopy(regionAlignment[leafIdx], 0,
-                            alignment[leafIdx], (int)recomb.getStartLocus(),
-                            recomb.getSiteCount());
+                    System.arraycopy(regionAlignment[leafIdx], jidx,
+                            alignment[leafIdx], sidx,
+                            arg.getSequenceLength()-sidx);
                 }
             }
+            
+        } else {
+            for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
+                System.arraycopy(regionAlignment[leafIdx], 0,
+                        alignment[leafIdx], (int)recomb.getStartLocus(),
+                        recomb.getSiteCount());
+            }
+        }
     }
     
     /**

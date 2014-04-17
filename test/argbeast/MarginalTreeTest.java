@@ -69,5 +69,7 @@ public class MarginalTreeTest {
                 recombs.get(2)), recombs.get(2)) - 1.7031)<1e-3);
         assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
                 recombs.get(3)), recombs.get(3)) - 1.7031)<1e-3);
+        
+        // Test all marginal parents and children:
     }
 }
