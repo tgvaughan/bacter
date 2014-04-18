@@ -39,6 +39,7 @@ public class MarginalTreeTest {
         String str = "[&2,2759,0.3260126313706676,10,2808,0.42839862922656696] "
                 + "[&10,6692,0.3381366423491633,2,6693,0.5683827224649434] "
                 + "[&10,8069,0.2807615297583804,14,8160,0.3415740002783274] "
+                + "[&2,9000,0.1,2,9500,0.4] "
                 + "(((0:0.04916909893812008,1:0.04916909893812008)10:0.5465237639426681,"
                 + "(4:0.3773111326866937,(((8:0.22180790639747835,"
                 + "(3:0.07561592852503513,6:0.07561592852503513)11:0.14619197787244323)"
@@ -59,6 +60,7 @@ public class MarginalTreeTest {
         assertEquals(17, arg.getMarginalRoot(recombs.get(1)).getNr());
         assertEquals(18, arg.getMarginalRoot(recombs.get(2)).getNr());
         assertEquals(18, arg.getMarginalRoot(recombs.get(3)).getNr());
+        assertEquals(18, arg.getMarginalRoot(recombs.get(4)).getNr());
         
         // Test root heights
         assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
@@ -69,6 +71,8 @@ public class MarginalTreeTest {
                 recombs.get(2)), recombs.get(2)) - 1.7031)<1e-3);
         assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
                 recombs.get(3)), recombs.get(3)) - 1.7031)<1e-3);
+        assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
+                recombs.get(4)), recombs.get(4)) - 1.7031)<1e-3);
         
         // Test all marginal parents and children:
     }

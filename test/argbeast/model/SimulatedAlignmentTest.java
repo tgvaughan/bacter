@@ -24,12 +24,21 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
+import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.util.ClusterTree;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -41,7 +50,7 @@ public class SimulatedAlignmentTest {
     @Test
     public void test() throws Exception {
         
-        Randomizer.setSeed(1);
+        Randomizer.setSeed(5);
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
@@ -51,7 +60,7 @@ public class SimulatedAlignmentTest {
                 "rho", 5.0,
                 "delta", 1000.0,
                 "populationModel", popFunc,
-                "nTaxa", 10,
+                "nTaxa", 5,
                 "sequenceLength", 10000);
         
         System.out.println(arg);
@@ -61,7 +70,7 @@ public class SimulatedAlignmentTest {
         jc.initByName();
         SiteModel siteModel = new SiteModel();
         siteModel.initByName(
-                "mutationRate", new RealParameter("0.5"),
+                "mutationRate", new RealParameter("1"),
                 "substModel", jc);
 
         // Simulate alignment:
@@ -72,45 +81,18 @@ public class SimulatedAlignmentTest {
                 "outputFileName", "simulated_alignment.nexus",
                 "useNexus", true);
         
-        // Compute number of segregating sites in each region
-        Map<Recombination, Integer> numSS = Maps.newHashMap();
-        int numSSrecomb = 0;
-        for (Recombination recomb : arg.getRecombinations()) {
-            if (recomb == null)
-                continue;
-            
-            numSS.put(recomb, 0);
-            for (long i=recomb.getStartLocus(); i<=recomb.getEndLocus(); i++) {
-                int leaf0state = alignment.getCounts().get(0).get((int)i);
-                for (int leaf=1; leaf<arg.getLeafNodeCount(); leaf++) {
-                    if (alignment.getCounts().get(leaf).get((int)i)!=leaf0state) {
-                        numSS.put(recomb, numSS.get(recomb)+1);
-                        break;
-                    }
-                }
-            }
-            numSSrecomb += numSS.get(recomb);
-        }
-        
-        numSS.put(null, 0);
-        for (int i=0; i<arg.getSequenceLength(); i++) {
-            int leaf0state = alignment.getCounts().get(0).get((int)i);
-            for (int leaf=1; leaf<arg.getLeafNodeCount(); leaf++) {
-                if (alignment.getCounts().get(leaf).get((int)i)!=leaf0state) {
-                    numSS.put(null, numSS.get(null)+1);
-                    break;
-                }
-            }
-        }
-        numSS.put(null, numSS.get(null)-numSSrecomb);
-        
-        for (Recombination recomb : arg.getRecombinations())
-            System.out.println(arg.getMarginalNewick(recomb));
-        
+
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
         for (Recombination recomb : arg.getRecombinations()) {
             Alignment margAlign = createMarginalAlignment(alignment, arg, recomb);
+            
+            ClusterTree upgmaTree = new ClusterTree();
+            upgmaTree.initByName(
+                    "clusterType", "upgma",
+                    "taxa", margAlign);
+
+            assertTrue(topologiesEquivalent(arg.getMarginalTree(recomb), upgmaTree));
         }
     }
     
@@ -132,8 +114,9 @@ public class SimulatedAlignmentTest {
             List<Integer> stateSequence;
             
             if (recomb == null) {
-                stateSequence =Lists.newArrayList();
+                stateSequence = Lists.newArrayList();
                 
+                // Portions of CF sequence before each converted region
                 int i=0;
                 for (int r=0; r<arg.getNRecombs(); r++) {
                     while (i<arg.getRecombinations().get(r+1).getStartLocus()) {
@@ -142,7 +125,12 @@ public class SimulatedAlignmentTest {
                     }
                     i=arg.getRecombinations().get(r+1).getEndLocus()+1;
                 }
-
+                
+                // Any remaining CF sequence
+                while (i<arg.getSequenceLength()) {
+                    stateSequence.add(alignment.getCounts().get(leafIdx).get(i));
+                    i += 1;
+                }
 
             } else {
 
@@ -159,5 +147,46 @@ public class SimulatedAlignmentTest {
                 alignment.getDataType().getDescription());
         
         return margAlignment;
+    }
+    
+    /**
+     * Method to test whether the topologies of two trees are equivalent.
+     * 
+     * @param treeA
+     * @param treeB
+     * @return true iff topologies are equivalent.
+     */
+    private boolean topologiesEquivalent(Tree treeA, Tree treeB) {
+        
+        Set<String> cladesA = getCladeStrings(treeA);
+        Set<String> cladesB = getCladeStrings(treeB);
+        
+        return (cladesA.size() == cladesB.size())
+                && cladesA.containsAll(cladesB);
+    }
+    
+    /**
+     * Method to turn a tree into a set of strings uniquely identifying
+     * clades in the tree.
+     * 
+     * @param tree
+     * @return 
+     */
+    private Set<String> getCladeStrings(Tree tree) {
+        Set<String> clades = Sets.newHashSet();
+        for (Node node : tree.getInternalNodes()) {
+            List<Integer> clade = new ArrayList<Integer>();
+            for (Node child : node.getAllLeafNodes())
+                clade.add(child.getNr());
+            Collections.sort(clade);
+            
+            StringBuilder sb = new StringBuilder();
+            for (int id : clade)
+                sb.append(id).append("_");
+            
+            clades.add(sb.toString());
+        }
+        
+        return clades;
     }
 }

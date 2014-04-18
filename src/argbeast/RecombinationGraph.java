@@ -23,7 +23,6 @@ import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
-import com.google.common.collect.Lists;
 import feast.input.In;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -321,9 +320,13 @@ public class RecombinationGraph extends Tree {
     }
 
     /**
-     * Height of node in marginal tree defined by recomb.  This is easy - there
+     * Height of node in marginal tree defined by recomb.  There
      * is only one node whose height is potentially different: the parent of
      * node1.  All other nodes retain their clonal frame heights.
+     * 
+     * A special case is where the recombinant edge reconnects to the
+     * same edge of the clonal frame.  Such edges do *not* alter the
+     * marginal genealogy, and have no effect on the height of node1's parent.
      * 
      * 
      * @param node
@@ -331,7 +334,9 @@ public class RecombinationGraph extends Tree {
      * @return node height
      */
     public double getMarginalNodeHeight(Node node, Recombination recomb) {
-        if (recomb != null && node == recomb.getNode1().getParent())
+        if (recomb != null
+                && node == recomb.getNode1().getParent()
+                && recomb.getNode2() != recomb.getNode1())
             return recomb.getHeight2();
         else
             return node.getHeight();
@@ -640,6 +645,38 @@ public class RecombinationGraph extends Tree {
             sb.append(getMarginalBranchLength(node, recomb));
         
         return sb.toString();
+    }
+    
+    /**
+     * Construct a completely new BEAST tree object representing a single
+     * marginal tree.
+     * 
+     * @param recomb Recombination corresponding to marginal tree
+     * @return Marginal tree
+     */
+    public Tree getMarginalTree(Recombination recomb) {
+        Node marginalRoot = getMarginalTreeTraverse(recomb, getRoot());
+        
+        // Ensure numbers are set correctly
+        int nextNr = getLeafNodeCount();
+        for (Node margNode : marginalRoot.getAllChildNodes())
+            if (!margNode.isLeaf() && !margNode.isRoot())
+                margNode.setNr(nextNr++);
+        marginalRoot.setNr(nextNr);
+        
+        return new Tree(marginalRoot);
+    }
+    
+    private Node getMarginalTreeTraverse(Recombination recomb, Node node) {
+        Node margNode = new Node();
+        node.setHeight(getMarginalNodeHeight(node, recomb));
+        for (Node child : getMarginalChildren(node, recomb))
+            margNode.addChild(getMarginalTreeTraverse(recomb, child));
+        
+        if (node.isLeaf())
+            margNode.setNr(node.getNr());
+        
+        return margNode;
     }
     
     /*
