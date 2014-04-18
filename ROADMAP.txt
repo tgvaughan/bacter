@@ -1,6 +1,6 @@
 # Road map for ARGBEAST development
 
-* Functional sampler [66%]
+* Functional sampler [62%]
 
 ** DONE ARG state node
    CLOSED: [2014-01-31 Fri 13:34]
@@ -36,7 +36,8 @@
     CLOSED: [2014-03-26 Wed 19:09]
 
 
-** TODO Sequence alignment simulator
+** DONE Sequence alignment simulator
+   CLOSED: [2014-04-18 Fri 20:18]
 
 ** TODO Inference from simulated data
 
