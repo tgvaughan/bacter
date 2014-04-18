@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package argbeast;
+package argbeast.model;
 
+import argbeast.Recombination;
 import argbeast.model.SimulatedRecombinationGraph;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;

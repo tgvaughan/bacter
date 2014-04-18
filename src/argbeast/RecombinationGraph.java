@@ -655,7 +655,8 @@ public class RecombinationGraph extends Tree {
      * @return Marginal tree
      */
     public Tree getMarginalTree(Recombination recomb) {
-        Node marginalRoot = getMarginalTreeTraverse(recomb, getRoot());
+        Node marginalRoot = getMarginalTreeTraverse(recomb,
+                getMarginalRoot(recomb));
         
         // Ensure numbers are set correctly
         int nextNr = getLeafNodeCount();
@@ -669,7 +670,7 @@ public class RecombinationGraph extends Tree {
     
     private Node getMarginalTreeTraverse(Recombination recomb, Node node) {
         Node margNode = new Node();
-        node.setHeight(getMarginalNodeHeight(node, recomb));
+        margNode.setHeight(getMarginalNodeHeight(node, recomb));
         for (Node child : getMarginalChildren(node, recomb))
             margNode.addChild(getMarginalTreeTraverse(recomb, child));
         

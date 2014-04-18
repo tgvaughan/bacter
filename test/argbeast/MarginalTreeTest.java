@@ -17,8 +17,27 @@
 
 package argbeast;
 
+import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
+import beast.util.TreeParser;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -50,30 +69,75 @@ public class MarginalTreeTest {
         
         RecombinationGraph arg = new RecombinationGraph();
         arg.initByName("fromString", str, "sequenceLength", 10000);
-        List<Recombination> recombs = arg.getRecombinations();
         
-        for (Recombination recomb : arg.getRecombinations())
-            System.out.println(arg.getMarginalNewick(recomb));
-        
-        // Test root nodes values
-        assertEquals(18, arg.getMarginalRoot(recombs.get(0)).getNr());
-        assertEquals(17, arg.getMarginalRoot(recombs.get(1)).getNr());
-        assertEquals(18, arg.getMarginalRoot(recombs.get(2)).getNr());
-        assertEquals(18, arg.getMarginalRoot(recombs.get(3)).getNr());
-        assertEquals(18, arg.getMarginalRoot(recombs.get(4)).getNr());
-        
-        // Test root heights
-        assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
-                recombs.get(0)), recombs.get(0)) - 1.7031)<1e-3);
-        assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
-                recombs.get(1)), recombs.get(1)) - 0.59569)<1e-3);
-        assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
-                recombs.get(2)), recombs.get(2)) - 1.7031)<1e-3);
-        assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
-                recombs.get(3)), recombs.get(3)) - 1.7031)<1e-3);
-        assertTrue(Math.abs(arg.getMarginalNodeHeight(arg.getMarginalRoot(
-                recombs.get(4)), recombs.get(4)) - 1.7031)<1e-3);
-        
-        // Test all marginal parents and children:
+        // Test all marginals against truth
+        String[] correctNewickStrings = {
+            "(((0:0.04916909893812016,1:0.04916909893812016)10:0.5465237639426681,(((((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:0.21838173019409446)17:1.1073878800617445,2:1.7030807429425328)18:0.0",
+            "((2:0.42839862922656696,(0:0.04916909893812016,1:0.04916909893812016)10:0.3792295302884468)18:0.1672942336542213,(((((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:0.21838173019409446)17:0.0",
+            "((((((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:1.325769610255839,((0:0.04916909893812016,1:0.04916909893812016)10:0.5192136235268232,2:0.5683827224649434)17:1.1346980204775894)18:0.0",
+            "(((((0:0.04916909893812016,1:0.04916909893812016)10:0.29240490134020725,(((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.1095596268069634)17:0.006983062380941707,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:1.325769610255839,2:1.7030807429425328)18:0.0",
+            "(((0:0.04916909893812016,1:0.04916909893812016)10:0.5465237639426681,(((((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:0.21838173019409446)17:1.1073878800617445,2:1.7030807429425328)18:0.0"
+        };
+        for (int r=0; r<arg.getRecombinations().size(); r++) {
+            Recombination recomb = arg.getRecombinations().get(r);
+            assertTrue(treesEquivalent(arg.getMarginalTree(recomb),
+                    new TreeParser(correctNewickStrings[r], false, true, false, 0), 1e-15));
+        }
     }
+    
+    /**
+     * Tests whether treeA and treeB are equivalent.  That is, whether they
+     * have the same node heights (to within tolerance) and clade sets.
+     * 
+     * @param treeA
+     * @param treeB
+     * @param tolerance
+     * @return 
+     */
+    private boolean treesEquivalent(Tree treeA, Tree treeB, double tolerance) {
+        
+        Map<Clade, Double> cladeHeightsA = getCladeHeights(treeA);
+        Map<Clade, Double> cladeHeightsB = getCladeHeights(treeB);
+        
+        if (!cladeHeightsA.keySet().containsAll(cladeHeightsB.keySet()))
+            return false;
+        
+        for (Clade clade : cladeHeightsA.keySet()) {
+            if (Math.abs(cladeHeightsA.get(clade)-cladeHeightsB.get(clade))>tolerance)
+                return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Retrieve clades and heights of clade MRCAs from tree.
+     * 
+     * @param tree
+     * @return Map from clades to corresponding MRCA heights.
+     */
+    private Map<Clade, Double> getCladeHeights(Tree tree) {
+        Map<Clade, Double> cladeHeights = new HashMap<Clade, Double>();
+        
+        for (Node node : tree.getInternalNodes())
+            cladeHeights.put(new Clade(node), node.getHeight());
+        
+        return cladeHeights;
+    }
+    
+    /**
+     * Convenience clade class.
+     */
+    private class Clade extends HashSet<Integer> {
+
+        /**
+         * Construct clade from leaves below node.
+         * 
+         * @param node 
+         */
+        public Clade(Node node) {
+            for (Node leaf : node.getAllLeafNodes())
+                add(leaf.getNr());
+        }        
+    };
 }
