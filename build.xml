@@ -1,21 +1,5 @@
 <project default="build" basedir=".">
 
-  <!-- Target to download and unpack dependencies -->
-  <target name="getDeps" depends="init">
-    <!-- BEAST 2.1.0 -->
-    <get src="http://hudson.cs.auckland.ac.nz/job/BEAST2/lastSuccessfulBuild/artifact/build/dist/beast.jar"
-         dest="${build-lib}/beast2.jar" />
-
-    <!-- Feast 1.4.0 -->
-    <mkdir dir="${deps}"/>
-    <get src="https://github.com/tgvaughan/feast/releases/download/v1.5.0/feast.v1.5.0.zip"
-	 dest="${deps}/package.zip"/>
-    <unzip src="${deps}/package.zip" dest="${deps}/"/>
-    <copy todir="${build-lib}">
-      <fileset dir="${deps}/lib" includes="*.jar"/>
-    </copy>
-  </target>
-
   <!-- Source, JUnit test code and jar library locations. -->
   <property name="src" location="src"/>
   <property name="test" location="test"/>
@@ -39,6 +23,12 @@
   <property name="dist" location="dist"/>
   <property name="pack" location="${dist}/package"/>
 
+  <!-- Target to download and unpack dependencies -->
+  <target name="getDeps" depends="init">
+    <!-- BEAST 2.1.0 -->
+    <get src="http://hudson.cs.auckland.ac.nz/job/BEAST2/lastSuccessfulBuild/artifact/build/dist/beast.jar"
+         dest="${build-lib}/beast2.jar" />
+  </target>
 
   <!-- Prepare for compilation -->
   <target name="init">
