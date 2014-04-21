@@ -14,22 +14,22 @@ and is currently under heavy development.  Check back soon!
 Road map for ARGBEAST development
 ---------------------------------
 
-* [X] ARG state node
-* [X] ARG likelihood
-* [X] ARG density under model
-* [X] ARG simulator
+- [x] ARG state node
+- [x] ARG likelihood
+- [x] ARG density under model
+- [x] ARG simulator
 
-* [X] Operators
+- [x] Operators
 
-  * [X] Add/remove
-  * [X] ARG scaler
-  * [X] Clonal frame operators
-  * [X] Converted region slide
-  * [X] Converted region swap
-  * [X] Recombinant edge slide
-  * [X] Recombinant edge hop
+  - [x] Add/remove
+  - [x] ARG scaler
+  - [x] Clonal frame operators
+  - [x] Converted region slide
+  - [x] Converted region swap
+  - [x] Recombinant edge slide
+  - [x] Recombinant edge hop
 
-* [X] Sequence alignment simulator
+- [x] Sequence alignment simulator
 
-* [ ] Inference from simulated data
-* [ ] Inference from real data
+- [ ] Inference from simulated data
+- [ ] Inference from real data
