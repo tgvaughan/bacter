@@ -49,7 +49,7 @@
     <operator id="CRswap" spec="ConvertedRegionSwap" weight="1.0"
               arg="@arg"/>
 
-    <operator id="CRshift" spec="ConvertedRegionEdgeShift" weight="1.0"
+    <operator id="CRshift" spec="ConvertedRegionShift" weight="1.0"
               arg="@arg" apertureSize="0.01" />
     
     <operator id="Uniform" spec='ARGValidityWrapper' arg="@arg" weight="1">
@@ -84,20 +84,20 @@
       <log spec='TreeHeightLogger' tree="@arg"/>
     </logger>
     
-    <logger logEvery="1000" fileName="priorSamplingTest.trees" mode="tree">
+    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
        <log idref="arg"/>
      </logger>
      
-     <logger logEvery="1000" fileName="priorSamplingTest.cf" mode="tree">
+     <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
          <log spec="ClonalFrameLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="priorSamplingTest.converted">
+     <logger logEvery="100" fileName="$(filebase).converted">
          <log idref="posterior"/>
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="priorSamplingTest.stats">
+     <logger logEvery="100" fileName="$(filebase).stats">
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>
 

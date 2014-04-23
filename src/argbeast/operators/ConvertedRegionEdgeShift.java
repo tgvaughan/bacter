@@ -18,6 +18,7 @@
 package argbeast.operators;
 
 import argbeast.Recombination;
+import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
@@ -43,79 +44,51 @@ public class ConvertedRegionEdgeShift extends RecombinationGraphOperator {
     
     @Override
     public double proposal() {
+        
+        RecombinationGraph arg = argInput.get();
 
-        if (argInput.get().getNRecombs()<1)
+        if (arg.getNRecombs()<1)
             return Double.NEGATIVE_INFINITY;
         
         // Select random recombination and region edge:
-        int z = Randomizer.nextInt(argInput.get().getNRecombs()*2);
+        int z = Randomizer.nextInt(arg.getNRecombs()*2);
         int ridx = z/2 + 1;
-        Recombination recomb = argInput.get().getRecombinations().get(ridx);
+        Recombination recomb = arg.getRecombinations().get(ridx);
         boolean moveStart = (z%2 == 0);
         
-        int currentLocus;
-        if (moveStart)
+        int currentLocus, minLocus, maxLocus;
+        if (moveStart) {
             currentLocus = recomb.getStartLocus();
-        else
+            maxLocus = recomb.getEndLocus();
+            
+            if (ridx>1)
+                minLocus = arg.getRecombinations().get(ridx-1).getEndLocus() + 2;
+            else
+                minLocus = 0;
+        } else {
             currentLocus = recomb.getEndLocus();
+            minLocus = recomb.getStartLocus();
+            
+            if (ridx<arg.getNRecombs())
+                maxLocus = arg.getRecombinations().get(ridx+1).getStartLocus() - 2;
+            else
+                maxLocus = arg.getSequenceLength()-1;
+        }
         
-        // Identify boundaries of aperture
-        int delta = (int)Math.round(argInput.get().getSequenceLength()
+        int radius = (int)Math.round(argInput.get().getSequenceLength()
                 *apertureSizeInput.get())/2;
         
-        int lower, upper;
-        if (moveStart) {
-            if (ridx==1)
-                lower = 0;
-            else
-                lower = argInput.get().getRecombinations().get(ridx-1).getEndLocus()+2;
-        } else
-            lower = recomb.getStartLocus();
+        int newLocus = currentLocus + Randomizer.nextInt(2*radius+1)-radius;
         
-        lower = Math.max(lower, currentLocus-delta);
-        
-        if (moveStart) {
-            upper = recomb.getEndLocus();
-        } else {
-            if (ridx==argInput.get().getNRecombs())
-                upper = argInput.get().getSequenceLength()-1;
-            else
-                upper = argInput.get().getRecombinations().get(ridx+1).getStartLocus()-2;
-        }
-        upper = Math.min(upper, currentLocus+delta);
-        
-        // Select new site
-        int locus = lower + Randomizer.nextInt((int)(upper-lower+1));
-                
-        // Perform shift
-        if (moveStart)
-            recomb.setStartLocus(locus);
-        else
-            recomb.setEndLocus(locus);
-        
-        // Calculate new boundaries for HR calculation
-        long lowerPrime, upperPrime;
-        if (moveStart) {
-            if (ridx==1)
-                lowerPrime = 0;
-            else
-                lowerPrime = argInput.get().getRecombinations().get(ridx-1).getEndLocus()+2;
-        } else
-            lowerPrime = recomb.getStartLocus();
-        
-        lowerPrime = Math.max(lowerPrime, currentLocus-delta);
-        
-        if (moveStart) {
-            upperPrime = recomb.getEndLocus();
-        } else {
-            if (ridx==argInput.get().getNRecombs())
-                upperPrime = argInput.get().getSequenceLength()-1;
-            else
-                upperPrime = argInput.get().getRecombinations().get(ridx+1).getStartLocus()-2;
-        }
-        upperPrime = Math.min(upperPrime, currentLocus+delta);
+        if (newLocus < minLocus || newLocus > maxLocus)
+            return Double.NEGATIVE_INFINITY;
 
-        return Math.log(((double)(upper-lower+1))/((double)(upperPrime-lowerPrime+1)));
+        if (moveStart)
+            recomb.setStartLocus(newLocus);
+        else
+            recomb.setEndLocus(newLocus);
+        
+        return 0;
     }
     
 }

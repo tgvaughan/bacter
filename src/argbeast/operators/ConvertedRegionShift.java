@@ -17,8 +17,11 @@
 
 package argbeast.operators;
 
+import argbeast.Recombination;
+import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
+import beast.util.Randomizer;
 import feast.input.In;
 
 /**
@@ -41,7 +44,46 @@ public class ConvertedRegionShift extends RecombinationGraphOperator {
     
     @Override
     public double proposal() {
-        throw new UnsupportedOperationException("Method not implemented.");
+        
+        RecombinationGraph arg = argInput.get();
+        
+        if (arg.getNRecombs()<1)
+            return Double.NEGATIVE_INFINITY;
+        
+        int ridx = Randomizer.nextInt(arg.getNRecombs()) + 1;
+        Recombination recomb = arg.getRecombinations().get(ridx);
+        
+        int radius = (int)Math.round(argInput.get().getSequenceLength()
+                *apertureSizeInput.get())/2;
+
+        int delta = Randomizer.nextInt(radius*2 + 1) - radius;
+        
+        if (delta>0) {
+            int maxDelta;
+            if (ridx<arg.getNRecombs())
+                maxDelta = arg.getRecombinations().get(ridx+1).getStartLocus() - 2
+                        - recomb.getEndLocus();
+            else
+                maxDelta = arg.getSequenceLength() - 1 - recomb.getEndLocus();
+            
+            if (delta>maxDelta)
+                return Double.NEGATIVE_INFINITY;
+        } else {
+            int minDelta;
+            if (ridx>1)
+                minDelta = arg.getRecombinations().get(ridx-1).getEndLocus() + 2
+                        - recomb.getStartLocus();
+            else
+                minDelta = 0 - recomb.getStartLocus();
+            
+            if (delta<minDelta)
+                return Double.NEGATIVE_INFINITY;
+        }
+        
+        recomb.setStartLocus(recomb.getStartLocus()+delta);
+        recomb.setEndLocus(recomb.getEndLocus()+delta);
+        
+        return 0.0;
     }
     
 }
