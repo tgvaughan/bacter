@@ -18,16 +18,21 @@ package argbeast.model;
 
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
+import argbeast.util.UtilMethods;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.ClusterTree;
+import beast.util.Randomizer;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Tests the calculation of the ARG likelihood given the sequence data.
@@ -36,14 +41,7 @@ import static org.junit.Assert.*;
  */
 public class RecombinationGraphLikelihoodTest {
     
-    public RecombinationGraphLikelihoodTest() {
-    }
-    
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+    public RecombinationGraphLikelihoodTest() { }
     
     @Test
     public void testClonalFrameLikelihood() throws Exception {
@@ -130,5 +128,67 @@ public class RecombinationGraphLikelihoodTest {
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
+    }
+    
+    @Test
+    public void testLikelihoodUsingSimulatedData() throws Exception {
+        
+        Randomizer.setSeed(5);
+        
+        ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+        
+        RecombinationGraph arg = new SimulatedRecombinationGraph();
+        arg.initByName(
+                "rho", 5.0,
+                "delta", 1000.0,
+                "populationModel", popFunc,
+                "nTaxa", 5,
+                "sequenceLength", 10000);
+        
+        System.out.println(arg);
+
+        // Site model:
+        JukesCantor jc = new JukesCantor();
+        jc.initByName();
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName(
+                "mutationRate", new RealParameter("1"),
+                "substModel", jc);
+
+        // Simulate alignment:
+        SimulatedAlignment alignment = new SimulatedAlignment();
+        alignment.initByName(
+                "arg", arg,
+                "siteModel", siteModel,
+                "outputFileName", "simulated_alignment.nexus",
+                "useNexus", true);
+        
+        // Calculate likelihood:
+        RecombinationGraphLikelihood argLikelihood = new RecombinationGraphLikelihood();
+        argLikelihood.initByName(
+                "data", alignment,
+                "arg", arg,
+                "siteModel", siteModel);
+        
+        double logP = argLikelihood.calculateLogP();
+
+        // Compare product of likelihoods of "marginal alignments" with
+        // likelihod computed using RGL.
+        double logPprime = 0.0;
+        for (Recombination recomb : arg.getRecombinations()) {
+            Alignment margAlign = UtilMethods.createMarginalAlignment(alignment, arg, recomb);
+            TreeLikelihood treeLikelihood = new TreeLikelihood();
+            treeLikelihood.initByName(
+                    "data", margAlign,
+                    "tree", arg.getMarginalTree(recomb, margAlign),
+                    "siteModel", siteModel);
+            
+            logPprime += treeLikelihood.calculateLogP();
+        }
+        
+        // Rounding errors (?) in the 11th decimal place.  Is this expected?
+        assertTrue(Math.abs(logP-logPprime)<1e-10);
+        
     }
 }

@@ -19,25 +19,14 @@ package argbeast.model;
 
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
+import argbeast.util.UtilMethods;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.ClusterTree;
 import beast.util.Randomizer;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -85,108 +74,17 @@ public class SimulatedAlignmentTest {
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
         for (Recombination recomb : arg.getRecombinations()) {
-            Alignment margAlign = createMarginalAlignment(alignment, arg, recomb);
+            Alignment margAlign = UtilMethods.createMarginalAlignment(alignment, arg, recomb);
             
             ClusterTree upgmaTree = new ClusterTree();
             upgmaTree.initByName(
                     "clusterType", "upgma",
                     "taxa", margAlign);
 
-            assertTrue(topologiesEquivalent(arg.getMarginalTree(recomb), upgmaTree));
+            assertTrue(UtilMethods.topologiesEquivalent(arg.getMarginalTree(recomb, null), upgmaTree));
         }
     }
     
-    /**
-     * Create Alignment object representing alignment of a region
-     * corresponding to a single marginal tree.
-     * 
-     * @param alignment
-     * @param arg
-     * @param recomb
-     * @return
-     * @throws Exception 
-     */
-    private Alignment createMarginalAlignment(Alignment alignment,
-            RecombinationGraph arg, Recombination recomb) throws Exception {
-        List<Sequence> sequences = Lists.newArrayList();
 
-        for (int leafIdx=0; leafIdx<alignment.getNrTaxa(); leafIdx++) {
-            List<Integer> stateSequence;
-            
-            if (recomb == null) {
-                stateSequence = Lists.newArrayList();
-                
-                // Portions of CF sequence before each converted region
-                int i=0;
-                for (int r=0; r<arg.getNRecombs(); r++) {
-                    while (i<arg.getRecombinations().get(r+1).getStartLocus()) {
-                        stateSequence.add(alignment.getCounts().get(leafIdx).get(i));
-                        i += 1;
-                    }
-                    i=arg.getRecombinations().get(r+1).getEndLocus()+1;
-                }
-                
-                // Any remaining CF sequence
-                while (i<arg.getSequenceLength()) {
-                    stateSequence.add(alignment.getCounts().get(leafIdx).get(i));
-                    i += 1;
-                }
-
-            } else {
-
-                stateSequence = alignment.getCounts().get(leafIdx)
-                        .subList(recomb.getStartLocus(), recomb.getEndLocus()+1);
-            }
-            
-            sequences.add(new Sequence(alignment.getTaxaNames().get(leafIdx),
-                    alignment.getDataType().state2string(stateSequence)));
-        }
-        
-        Alignment margAlignment = new Alignment(sequences,
-                alignment.getDataType().getStateCount(),
-                alignment.getDataType().getDescription());
-        
-        return margAlignment;
-    }
     
-    /**
-     * Method to test whether the topologies of two trees are equivalent.
-     * 
-     * @param treeA
-     * @param treeB
-     * @return true iff topologies are equivalent.
-     */
-    private boolean topologiesEquivalent(Tree treeA, Tree treeB) {
-        
-        Set<String> cladesA = getCladeStrings(treeA);
-        Set<String> cladesB = getCladeStrings(treeB);
-        
-        return (cladesA.size() == cladesB.size())
-                && cladesA.containsAll(cladesB);
-    }
-    
-    /**
-     * Method to turn a tree into a set of strings uniquely identifying
-     * clades in the tree.
-     * 
-     * @param tree
-     * @return 
-     */
-    private Set<String> getCladeStrings(Tree tree) {
-        Set<String> clades = Sets.newHashSet();
-        for (Node node : tree.getInternalNodes()) {
-            List<Integer> clade = new ArrayList<Integer>();
-            for (Node child : node.getAllLeafNodes())
-                clade.add(child.getNr());
-            Collections.sort(clade);
-            
-            StringBuilder sb = new StringBuilder();
-            for (int id : clade)
-                sb.append(id).append("_");
-            
-            clades.add(sb.toString());
-        }
-        
-        return clades;
-    }
 }

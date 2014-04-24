@@ -17,27 +17,8 @@
 
 package argbeast;
 
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
+import argbeast.util.UtilMethods;
 import beast.util.TreeParser;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -80,64 +61,8 @@ public class MarginalTreeTest {
         };
         for (int r=0; r<arg.getRecombinations().size(); r++) {
             Recombination recomb = arg.getRecombinations().get(r);
-            assertTrue(treesEquivalent(arg.getMarginalTree(recomb),
+            assertTrue(UtilMethods.treesEquivalent(arg.getMarginalTree(recomb, null),
                     new TreeParser(correctNewickStrings[r], false, true, false, 0), 1e-15));
         }
     }
-    
-    /**
-     * Tests whether treeA and treeB are equivalent.  That is, whether they
-     * have the same node heights (to within tolerance) and clade sets.
-     * 
-     * @param treeA
-     * @param treeB
-     * @param tolerance
-     * @return 
-     */
-    private boolean treesEquivalent(Tree treeA, Tree treeB, double tolerance) {
-        
-        Map<Clade, Double> cladeHeightsA = getCladeHeights(treeA);
-        Map<Clade, Double> cladeHeightsB = getCladeHeights(treeB);
-        
-        if (!cladeHeightsA.keySet().containsAll(cladeHeightsB.keySet()))
-            return false;
-        
-        for (Clade clade : cladeHeightsA.keySet()) {
-            if (Math.abs(cladeHeightsA.get(clade)-cladeHeightsB.get(clade))>tolerance)
-                return false;
-        }
-        
-        return true;
-    }
-    
-    /**
-     * Retrieve clades and heights of clade MRCAs from tree.
-     * 
-     * @param tree
-     * @return Map from clades to corresponding MRCA heights.
-     */
-    private Map<Clade, Double> getCladeHeights(Tree tree) {
-        Map<Clade, Double> cladeHeights = new HashMap<Clade, Double>();
-        
-        for (Node node : tree.getInternalNodes())
-            cladeHeights.put(new Clade(node), node.getHeight());
-        
-        return cladeHeights;
-    }
-    
-    /**
-     * Convenience clade class.
-     */
-    private class Clade extends HashSet<Integer> {
-
-        /**
-         * Construct clade from leaves below node.
-         * 
-         * @param node 
-         */
-        public Clade(Node node) {
-            for (Node leaf : node.getAllLeafNodes())
-                add(leaf.getNr());
-        }        
-    };
 }

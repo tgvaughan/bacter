@@ -44,9 +44,9 @@ import java.util.regex.Pattern;
 public class RecombinationGraph extends Tree {
     
     /**
-     * Unlike Trees, Recombination graphs require an alignment to be specified
-     * so that the regions of the alignment affected by recombination events
-     * can be recorded.
+     * Unlike Trees, Recombination graphs require an alignment (or at least
+     * the length of an alignment) to be specified so that the regions of
+     * the alignment affected by recombination events can be recorded.
      */
     public Input<Alignment> alignmentInput = In.create("alignment",
             "Sequence alignment corresponding to graph.");
@@ -649,12 +649,15 @@ public class RecombinationGraph extends Tree {
     
     /**
      * Construct a completely new BEAST tree object representing a single
-     * marginal tree.
+     * marginal tree.  If an alignment is specified (either through the
+     * alignment argument or the alignment input), the leaf nodes of the
+     * generated tree are associated with the taxa in that alignment.
      * 
      * @param recomb Recombination corresponding to marginal tree
+     * @param alignment Alignment with which to associate tree (may be null)
      * @return Marginal tree
      */
-    public Tree getMarginalTree(Recombination recomb) {
+    public Tree getMarginalTree(Recombination recomb, Alignment alignment) {
         Node marginalRoot = getMarginalTreeTraverse(recomb,
                 getMarginalRoot(recomb));
         
@@ -664,6 +667,20 @@ public class RecombinationGraph extends Tree {
             if (!margNode.isLeaf() && !margNode.isRoot())
                 margNode.setNr(nextNr++);
         marginalRoot.setNr(nextNr);
+
+        // Associate leaves with taxa if alignment available
+        Alignment alignConsol = null;
+        if (alignment != null)
+            alignConsol = alignment;
+        else {
+            if (alignmentInput.get() != null)
+                alignConsol = alignmentInput.get();
+        }
+        
+        if (alignConsol != null) {
+            for (Node margLeaf : marginalRoot.getAllLeafNodes())
+                margLeaf.setID(alignConsol.getTaxaNames().get(margLeaf.getNr()));
+        }
         
         return new Tree(marginalRoot);
     }
