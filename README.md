@@ -30,6 +30,6 @@ Road map for ARGBEAST development
   - [x] Recombinant edge hop
 
 - [x] Sequence alignment simulator
+- [x] Inference from simulated data
 
-- [ ] Inference from simulated data
 - [ ] Inference from real data
