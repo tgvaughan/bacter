@@ -122,15 +122,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         
         generateEventList();
 
-        // Ensure external nodes are labelled with taxon id if alignment is available:
-        if (alignmentInput.get() != null) {
-            for (int i=0; i<getExternalNodes().size(); i++)
-                getNode(i).setID(alignmentInput.get().getTaxaNames().get(i));
-        } else {
-            for (int i=0; i<getExternalNodes().size(); i++)
-                getNode(i).setID("t" + i);
-        }
-
         // Generate recombinations
         if (mapInput.get() == null)
             generateRecombinations();
@@ -180,6 +171,12 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         for (int i=0; i<nTaxa; i++) {
             Node leaf = new Node();
             leaf.setNr(i);
+            
+            if (alignmentInput.get() != null)
+                leaf.setID(alignmentInput.get().getTaxaNames().get(i));
+            else
+                leaf.setID("t" + i);
+                        
             if (timeTraitSet != null)
                 leaf.setHeight(timeTraitSet.getValue(i));
             else

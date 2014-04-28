@@ -196,16 +196,16 @@ public class RecombinationGraphLikelihood extends Distribution {
             constantPatterns.put(recomb, constantPatternList);
         }
         
-        // Debugging
-        for (Recombination recomb : arg.getRecombinations()) {
-            System.out.print(patterns.get(recomb).elementSet().size()
-                    + " unique patterns of " + patterns.get(recomb).size()
-                    + " sites");
-            if (recomb == null)
-                System.out.println(" in clonal frame");
-            else
-                System.out.println(" in recombined region");
-        }
+        // DEBUG
+//        for (Recombination recomb : arg.getRecombinations()) {
+//            System.out.print(patterns.get(recomb).elementSet().size()
+//                    + " unique patterns of " + patterns.get(recomb).size()
+//                    + " sites");
+//            if (recomb == null)
+//                System.out.println(" in clonal frame");
+//            else
+//                System.out.println(" in recombined region");
+//        }
     }
     
     

@@ -2,7 +2,6 @@
        namespace='beast.core
                  :beast.core.util
                  :beast.core.parameter
-		 :beast.evolution.datatype
                  :beast.evolution.operators
 		 :beast.evolution.sitemodel
 		 :beast.evolution.substitutionmodel
@@ -19,7 +18,7 @@
   <!-- Simulated ARG -->  
 
   <input spec='SimulatedRecombinationGraph' id='argTruth'
-         rho="5.0" delta="500.0" sequenceLength="10000" nTaxa="5">
+         rho="5.0" delta="500.0" sequenceLength="10000" nTaxa="20">
       <populationModel spec='ConstantPopulation' popSize="1.0"/>
   </input>
 
@@ -27,7 +26,7 @@
 
   <input spec='SimulatedAlignment' id='alignment' arg="@argTruth"
 	 outputFileName="simulated_alignment.nexus" useNexus="true">
-    <siteModel spec='SiteModel' mutationRate="0.005">
+    <siteModel spec='SiteModel' mutationRate="0.1">
       <substModel spec='JukesCantor'/>
     </siteModel>
   </input>
@@ -36,14 +35,14 @@
   <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
       <stateNode id="arg" spec='SimulatedRecombinationGraph'
-		 alignment="@alignment" nTaxa="5" rho="1.0" delta="50.0">
-	<populationModel spec='ConstantPopulation' popSize="0.1" id="popModel"/>
+		 alignment="@alignment" rho="5.0" delta="500.0">
+	<populationModel spec='ConstantPopulation' popSize="1.0"/>
       </stateNode>
 
       <stateNode id="rho" spec='RealParameter' value="1.0" />
-      <stateNode id="delta" spec='RealParameter' value="50.0" />
+      <stateNode id="delta" spec='RealParameter' value="500.0" />
       <stateNode id="popSize" spec='RealParameter' value="1.0"/>
-      <stateNode id="mutationRate" spec='RealParameter' value="1.0"/>
+      <stateNode id="mutationRate" spec='RealParameter' value="0.1"/>
     </state>
 
 
@@ -64,22 +63,26 @@
 
       <distribution spec='GCCoalescentApprox' id="argPrior" rho="@rho" delta="@delta">
 	<treeIntervals spec='TreeIntervals' tree="@arg"/>
-	<populationModel idref="popModel"/>
+	<populationModel spec='ConstantPopulation' popSize='@popSize' id='popModel'/>
       </distribution>
 
       <!-- Parameter priors -->
 
       <distribution spec='Prior' x='@rho'>
-	<distr spec='OneOnX'/>
+	<!--distr spec='OneOnX'/-->
+	<distr spec='LogNormalDistributionModel' M='0.0' S='2.0'/>
       </distribution>
       <distribution spec='Prior' x='@delta'>
-	<distr spec='OneOnX'/>
+	<!--distr spec='OneOnX'/-->
+	<distr spec='LogNormalDistributionModel' M='0.0' S='4.0'/>
       </distribution>
       <distribution spec='Prior' x='@popSize'>
-	<distr spec='OneOnX'/>
+	<!--distr spec='OneOnX'/-->
+	<distr spec='LogNormalDistributionModel' M='0.0' S='2.0'/>
       </distribution>
       <distribution spec='Prior' x='@mutationRate'>
-	<distr spec='OneOnX'/>
+	<!--distr spec='OneOnX'/-->
+	<distr spec='LogNormalDistributionModel' M='0.0' S='2.0'/>
       </distribution>
 
     </distribution>
@@ -90,14 +93,14 @@
     <operator id="rhoScaler" spec="ScaleOperator" weight="1.0"
 	      scaleFactor="0.8" parameter="@rho"/>
 
-    <operator id="deltaScaler" spec="ScaleOperator" weight="1.0"
-	      scaleFactor="0.8" parameter="@delta"/>
+    <!--operator id="deltaScaler" spec="ScaleOperator" weight="1.0"
+	      scaleFactor="0.8" parameter="@delta"/-->
 
-    <operator id="popSizeScaler" spec="ScaleOperator" weight="1.0"
-	      scaleFactor="0.8" parameter="@popSize"/>
+    <!--operator id="popSizeScaler" spec="ScaleOperator" weight="1.0"
+	      scaleFactor="0.8" parameter="@popSize"/-->
 
-    <operator id="mutationRateScaler" spec="ScaleOperator" weight="1.0"
-	      scaleFactor="0.8" parameter="@mutationRate"/>
+    <!--operator id="mutationRateScaler" spec="ScaleOperator" weight="1.0"
+	      scaleFactor="0.8" parameter="@mutationRate"/-->
 
 
     <!-- ARG operators -->
