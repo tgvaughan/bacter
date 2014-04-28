@@ -38,6 +38,8 @@ import feast.input.In;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -68,7 +70,7 @@ public class RecombinationGraphLikelihood extends Distribution {
     
     int nStates;
     
-    /*
+    /**
      * Memory for transition probabilities.
      */
     double [] probabilities;
@@ -214,7 +216,8 @@ public class RecombinationGraphLikelihood extends Distribution {
      */
     private void updateCores() {
         
-        likelihoodCores.keySet().retainAll(arg.getRecombinations());
+        //likelihoodCores.keySet().retainAll(arg.getRecombinations());
+        likelihoodCores.clear();
         
         for (Recombination recomb : arg.getRecombinations()) {
             

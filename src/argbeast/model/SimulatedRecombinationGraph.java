@@ -30,6 +30,8 @@ import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
 import feast.input.In;
+import feast.nexus.NexusWriter;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -63,6 +65,9 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     + "total number of recombination events and the sites "
                     + "they affect, leaving only the clonal frame and "
                     + "recombinant edges to be simulated.");
+    
+    public Input<String> outputFileNameInput = In.create("outputFileName",
+            "If provided, simulated ARG is additionally written to this file."); 
 
     private double rho, delta;
     private PopulationFunction popFunc;
@@ -143,6 +148,17 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                 associateRecombinationWithCF(recomb);
                 addRecombination(recomb);
             }
+        }
+        
+        // Write output file
+        if (outputFileNameInput.get() != null) {
+            PrintStream pstream = new PrintStream(outputFileNameInput.get());
+            List<Tree> marginalTrees = Lists.newArrayList();
+            for (Recombination recomb : getRecombinations())
+                marginalTrees.add(getMarginalTree(recomb, alignmentInput.get()));
+            
+            NexusWriter.write(null, marginalTrees, pstream);
+            pstream.close();
         }
     }
     

@@ -20,12 +20,16 @@ import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
+import com.google.common.collect.Lists;
 import feast.input.In;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -656,8 +660,9 @@ public class RecombinationGraph extends Tree {
      * @param recomb Recombination corresponding to marginal tree
      * @param alignment Alignment with which to associate tree (may be null)
      * @return Marginal tree
+     * @throws java.lang.Exception
      */
-    public Tree getMarginalTree(Recombination recomb, Alignment alignment) {
+    public Tree getMarginalTree(Recombination recomb, Alignment alignment) throws Exception {
         Node marginalRoot = getMarginalTreeTraverse(recomb,
                 getMarginalRoot(recomb));
         
@@ -669,20 +674,15 @@ public class RecombinationGraph extends Tree {
         marginalRoot.setNr(nextNr);
 
         // Associate leaves with taxa if alignment available
-        Alignment alignConsol = null;
-        if (alignment != null)
-            alignConsol = alignment;
-        else {
-            if (alignmentInput.get() != null)
-                alignConsol = alignmentInput.get();
-        }
         
-        if (alignConsol != null) {
-            for (Node margLeaf : marginalRoot.getAllLeafNodes())
-                margLeaf.setID(alignConsol.getTaxaNames().get(margLeaf.getNr()));
-        }
+        Taxon[] taxonArray = new Taxon[getLeafNodeCount()];
+        for (Node margLeaf : marginalRoot.getAllLeafNodes())
+            taxonArray[margLeaf.getNr()] = new Taxon(margLeaf.getID());
         
-        return new Tree(marginalRoot);
+        Tree marginalTree = new Tree(marginalRoot);
+        marginalTree.m_taxonset.setValue(new TaxonSet(Arrays.asList(taxonArray)), marginalTree);
+        
+        return marginalTree;
     }
     
     private Node getMarginalTreeTraverse(Recombination recomb, Node node) {
@@ -691,8 +691,10 @@ public class RecombinationGraph extends Tree {
         for (Node child : getMarginalChildren(node, recomb))
             margNode.addChild(getMarginalTreeTraverse(recomb, child));
         
-        if (node.isLeaf())
+        if (node.isLeaf()) {
             margNode.setNr(node.getNr());
+            margNode.setID(node.getID());
+        }
         
         return margNode;
     }

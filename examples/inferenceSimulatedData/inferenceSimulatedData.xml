@@ -18,7 +18,8 @@
   <!-- Simulated ARG -->  
 
   <input spec='SimulatedRecombinationGraph' id='argTruth'
-         rho="5.0" delta="500.0" sequenceLength="10000" nTaxa="20">
+         rho="5.0" delta="500.0" sequenceLength="10000" nTaxa="20"
+	 outputFileName="trueMarginalTrees.nexus">
       <populationModel spec='ConstantPopulation' popSize="1.0"/>
   </input>
 
