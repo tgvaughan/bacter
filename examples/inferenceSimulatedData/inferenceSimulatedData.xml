@@ -181,12 +181,13 @@
 	 <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
          <log spec="ClonalFrameLogger" arg="@arg"/>
 	 </logger>
-	 
-	 <logger logEvery="100" fileName="$(filebase).converted">
-         <log idref="posterior"/>
-         <log spec="ConvertedRegionLogger" arg="@arg"/>
-	 </logger>
     --> 
+	 
+    <logger logEvery="100" fileName="$(filebase).converted">
+      <log idref="posterior"/>
+      <log spec="ConvertedRegionLogger" arg="@arg"/>
+    </logger>
+
 
      <logger logEvery="100" fileName="$(filebase).stats">
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
