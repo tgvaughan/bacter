@@ -158,6 +158,19 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                 marginalTrees.add(getMarginalTree(recomb, alignmentInput.get()));
             
             NexusWriter.write(null, marginalTrees, pstream);
+            
+            // Add block containing converted regions:
+            pstream.println("\nBegin ARGBEAST;");
+            pstream.println("\tclonalframe " + root.toShortNewick(true) + ";");
+            for (int r = 1; r <= getNRecombs(); r++) {
+                Recombination recomb = getRecombinations().get(r);
+                pstream.println("\tconversion node1=" + recomb.getNode1().getNr()
+                        + " node2=" + recomb.getNode2().getNr()
+                        + " site1=" + recomb.getStartLocus()
+                        + " site2=" + recomb.getEndLocus() + ";");
+            }
+            pstream.println("End;");
+            
             pstream.close();
         }
     }

@@ -3,9 +3,12 @@ require(reshape2)
 
 getSiteConversionStatus <- function(convMapStr, seqLen) {
     res <- rep(0, seqLen)
-    for (regionStr in strsplit(convMapStr, ',')[[1]]) {
-        bounds <- strtoi(strsplit(regionStr, ':')[[1]])
-        res[(bounds[1]+1):(bounds[2]+1)] <- 1
+
+    if (!is.na(convMapStr)) {
+        for (regionStr in strsplit(convMapStr, ',')[[1]]) {
+            bounds <- strtoi(strsplit(regionStr, ':')[[1]])
+            res[(bounds[1]+1):(bounds[2]+1)] <- 1
+        }
     }
 
     return(res)

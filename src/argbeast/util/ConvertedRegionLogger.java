@@ -51,17 +51,18 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
     @Override
     public void log(int nSample, PrintStream out) {
         
-        boolean first = true;
-        for (Recombination recomb : argInput.get().getRecombinations()) {
-            if (recomb == null)
-                continue;
-            if (!first)
-                out.print(",");
-            else
-                first = false;
-            out.print(recomb.getStartLocus() + ":" + recomb.getEndLocus());
+        if (argInput.get().getNRecombs()==0) {
+            out.print("NA\t");
+            return;
         }
         
+        for (int r=1; r<=argInput.get().getNRecombs(); r++) {
+            if (r>1)
+                out.print(",");
+
+            Recombination recomb = argInput.get().getRecombinations().get(r);
+            out.print(recomb.getStartLocus() + ":" + recomb.getEndLocus());
+        }
         out.print("\t");
     }
 

@@ -18,7 +18,7 @@
   <!-- Simulated ARG -->  
 
   <input spec='SimulatedRecombinationGraph' id='argTruth'
-         rho="5.0" delta="500.0" sequenceLength="10000" nTaxa="20"
+         rho="1.0" delta="500.0" sequenceLength="10000" nTaxa="20"
 	 outputFileName="trueMarginalTrees.nexus">
       <populationModel spec='ConstantPopulation' popSize="1.0"/>
   </input>
@@ -36,7 +36,7 @@
   <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
       <stateNode id="arg" spec='SimulatedRecombinationGraph'
-		 alignment="@alignment" rho="5.0" delta="500.0">
+		 alignment="@alignment" rho="1.0" delta="500.0">
 	<populationModel spec='ConstantPopulation' popSize="1.0"/>
       </stateNode>
 
@@ -91,8 +91,8 @@
 
     <!-- Parameter operators -->
 
-    <operator id="rhoScaler" spec="ScaleOperator" weight="1.0"
-	      scaleFactor="0.8" parameter="@rho"/>
+    <!--operator id="rhoScaler" spec="ScaleOperator" weight="1.0"
+	      scaleFactor="0.8" parameter="@rho"/-->
 
     <!--operator id="deltaScaler" spec="ScaleOperator" weight="1.0"
 	      scaleFactor="0.8" parameter="@delta"/-->
@@ -184,7 +184,7 @@
     --> 
 	 
     <logger logEvery="100" fileName="$(filebase).converted">
-      <log idref="posterior"/>
+      <model idref="posterior"/>
       <log spec="ConvertedRegionLogger" arg="@arg"/>
     </logger>
 
