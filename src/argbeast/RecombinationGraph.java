@@ -25,7 +25,6 @@ import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
-import com.google.common.collect.Lists;
 import feast.input.In;
 import java.io.PrintStream;
 import java.util.ArrayList;

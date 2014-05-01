@@ -24,14 +24,21 @@ import beast.core.Input;
 import beast.core.StateNode;
 import beast.core.StateNodeInitialiser;
 import beast.core.parameter.IntegerParameter;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
 import feast.input.In;
+import feast.nexus.NexusBlock;
+import feast.nexus.NexusBuilder;
 import feast.nexus.NexusWriter;
+import feast.nexus.TaxaBlock;
+import feast.nexus.TreesBlock;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -72,6 +79,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
     private double rho, delta;
     private PopulationFunction popFunc;
     private int nTaxa;
+    private TaxonSet taxonSet;
     
     private enum EventType {COALESCENCE, SAMPLE };
     private class Event {
@@ -105,17 +113,24 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         
         if (alignmentInput.get() != null) {
             nTaxa = alignmentInput.get().getNrTaxa();
+            taxonSet = new TaxonSet(alignmentInput.get());
         } else {
-            if (clonalFrameInput.get() != null)
+            if (clonalFrameInput.get() != null) {
                 nTaxa = clonalFrameInput.get().getLeafNodeCount();
-            else {
-                if (nTaxaInput.get() != null)
+                taxonSet = clonalFrameInput.get().getTaxonset();
+            } else {
+                if (nTaxaInput.get() != null) {
                     nTaxa = nTaxaInput.get();
-                else
+                    List<Taxon> taxonList = new ArrayList<Taxon>();
+                    for (int i=0; i<nTaxa; i++)
+                        taxonList.add(new Taxon("t" + i));
+                    taxonSet = new TaxonSet(taxonList);
+                } else
                     throw new IllegalArgumentException("Must specify nTaxa if"
                             + "neither alignment nor clonalFrame are used.");
             }
         }
+        m_taxonset.setValue(taxonSet, this);
         
         if (clonalFrameInput.get() == null)
             simulateClonalFrame();
@@ -152,25 +167,44 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         
         // Write output file
         if (outputFileNameInput.get() != null) {
-            PrintStream pstream = new PrintStream(outputFileNameInput.get());
-            List<Tree> marginalTrees = Lists.newArrayList();
-            for (Recombination recomb : getRecombinations())
-                marginalTrees.add(getMarginalTree(recomb, alignmentInput.get()));
+
+            NexusBuilder nexusBuilder = new NexusBuilder();
             
-            NexusWriter.write(null, marginalTrees, pstream);
+            nexusBuilder.append(new TaxaBlock(taxonSet));
             
-            // Add block containing converted regions:
-            pstream.println("\nBegin ARGBEAST;");
-            pstream.println("\tclonalframe " + root.toShortNewick(true) + ";");
-            for (int r = 1; r <= getNRecombs(); r++) {
-                Recombination recomb = getRecombinations().get(r);
-                pstream.println("\tconversion node1=" + recomb.getNode1().getNr()
+            nexusBuilder.append((new TreesBlock() {
+                @Override
+                public String getTreeString(Tree tree) {
+                    RecombinationGraph arg = (RecombinationGraph)tree;
+                    return arg.getExtendedNewick();
+                }
+            }).addTree(this, "simulatedARG"));
+            
+            nexusBuilder.append(new NexusBlock() {
+
+                @Override
+                public String getBlockName() {
+                    return "ARGBEAST";
+                }
+
+                @Override
+                public List<String> getBlockLines() {
+                    List<String> lines = new ArrayList<String>();
+                    lines.add("clonalframe " + root.toShortNewick(true));
+                    for (int r = 1; r <= getNRecombs(); r++) {
+                        Recombination recomb = getRecombinations().get(r);
+                        lines.add("conversion node1=" + recomb.getNode1().getNr()
                         + " node2=" + recomb.getNode2().getNr()
                         + " site1=" + recomb.getStartLocus()
-                        + " site2=" + recomb.getEndLocus() + ";");
-            }
-            pstream.println("End;");
+                        + " site2=" + recomb.getEndLocus());
+                    }
+                    
+                    return lines;
+                }
+            });
             
+            PrintStream pstream = new PrintStream(outputFileNameInput.get());
+            nexusBuilder.write(pstream);
             pstream.close();
         }
     }
@@ -200,11 +234,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         for (int i=0; i<nTaxa; i++) {
             Node leaf = new Node();
             leaf.setNr(i);
-            
-            if (alignmentInput.get() != null)
-                leaf.setID(alignmentInput.get().getTaxaNames().get(i));
-            else
-                leaf.setID("t" + i);
+            leaf.setID(taxonSet.asStringList().get(i));
                         
             if (timeTraitSet != null)
                 leaf.setHeight(timeTraitSet.getValue(i));

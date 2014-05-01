@@ -23,6 +23,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.datatype.DataType;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
@@ -32,6 +33,9 @@ import beast.util.Randomizer;
 import beast.util.XMLProducer;
 import com.google.common.collect.Lists;
 import feast.input.In;
+import feast.nexus.CharactersBlock;
+import feast.nexus.NexusBuilder;
+import feast.nexus.TaxaBlock;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
@@ -84,9 +88,12 @@ public class SimulatedAlignment extends Alignment {
         // Write simulated alignment to disk if requested:
         if (outputFileNameInput.get() != null) {
             PrintStream pstream = new PrintStream(outputFileNameInput.get());
-            if (useNexusInput.get())
-                NexusWriter.write(this, null, pstream);
-            else
+            if (useNexusInput.get()) {
+                NexusBuilder nb = new NexusBuilder();
+                nb.append(new TaxaBlock(arg.getTaxonset()));
+                nb.append(new CharactersBlock(this));
+                nb.write(pstream);
+            } else
                 pstream.println(new XMLProducer().toRawXML(this));
         }
     }
