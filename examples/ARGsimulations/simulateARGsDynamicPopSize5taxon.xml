@@ -4,8 +4,8 @@
     <run spec="RecombinationGraphSimulator"
          rho="1.0" delta="50.0" sequenceLength="10000"
          nTaxa="5" nSims="100000"
-         statsFileName="simulatedDynamicPopSize5taxon.stats"
-         convFileName="simulatedDynamicPopSize5taxon.converted">
+         statsFileName="$(filebase).stats"
+         convFileName="$(filebase).converted">
         <!--populationModel spec="ConstantPopulation" popSize="15.0"/-->
         <populationModel spec="ExponentialGrowth"
                          popSize="10.0" growthRate="0.1"/>
