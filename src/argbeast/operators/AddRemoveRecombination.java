@@ -226,6 +226,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
             if (recomb.getEndLocus()==arg.getSequenceLength()-1)
                 convertableLength += 1;
         }
+
+        if (convertableLength==0)
+            return Double.NEGATIVE_INFINITY;
         
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);

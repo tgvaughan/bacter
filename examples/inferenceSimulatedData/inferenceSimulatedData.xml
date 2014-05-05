@@ -18,8 +18,8 @@
   <!-- Simulated ARG -->  
 
   <input spec='SimulatedRecombinationGraph' id='argTruth'
-         rho="1.0" delta="500.0" sequenceLength="10000" nTaxa="20"
-	 outputFileName="trueMarginalTrees.nexus">
+         rho="1.5" delta="500.0" sequenceLength="10000" nTaxa="20"
+	 outputFileName="simulated_arg.nexus">
       <populationModel spec='ConstantPopulation' popSize="1.0"/>
   </input>
 
@@ -36,11 +36,11 @@
   <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
       <stateNode id="arg" spec='SimulatedRecombinationGraph'
-		 alignment="@alignment" rho="1.0" delta="500.0">
+		 alignment="@alignment" rho="1.5" delta="500.0">
 	<populationModel spec='ConstantPopulation' popSize="1.0"/>
       </stateNode>
 
-      <stateNode id="rho" spec='RealParameter' value="1.0" />
+      <stateNode id="rho" spec='RealParameter' value="1.5" />
       <stateNode id="delta" spec='RealParameter' value="500.0" />
       <stateNode id="popSize" spec='RealParameter' value="1.0"/>
       <stateNode id="mutationRate" spec='RealParameter' value="0.1"/>
@@ -173,15 +173,13 @@
       <log idref='mutationRate'/>
     </logger>
 
-    <!--    
-	 <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
-	 <log idref="arg"/>
-	 </logger>
-	 
-	 <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
-         <log spec="ClonalFrameLogger" arg="@arg"/>
-	 </logger>
-    --> 
+    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
+      <log idref="arg"/>
+    </logger>
+
+    <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
+      <log spec="ClonalFrameLogger" arg="@arg"/>
+    </logger>
 	 
     <logger logEvery="100" fileName="$(filebase).converted">
       <model idref="posterior"/>

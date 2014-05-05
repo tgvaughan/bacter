@@ -176,7 +176,8 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                 @Override
                 public String getTreeString(Tree tree) {
                     RecombinationGraph arg = (RecombinationGraph)tree;
-                    return arg.getExtendedNewick(true);
+                    String newick = arg.getExtendedNewick(true);
+                    return newick.substring(0, newick.length()-1);
                 }
             }).addTree(this, "simulatedARG"));
             
