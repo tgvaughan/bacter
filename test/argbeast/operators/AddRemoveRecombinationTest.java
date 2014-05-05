@@ -56,19 +56,27 @@ public class AddRemoveRecombinationTest {
                 "nTaxa", 10,
                 "populationModel", popFunc);
         
+
         AddRemoveRecombination operator = new AddRemoveRecombination();
-        operator.initByName(
-                "weight", 1.0,
-                "arg", arg,
-                "rho", new RealParameter("1.0"),
-                "delta", new RealParameter("50.0"),
-                "populationModel", popFunc);
         
-        List<Recombination> oldRecombs = Lists.newArrayList(
-                arg.getRecombinations());
+        // Loop until a valid proposal is made
+        double logP1;
+        List<Recombination> oldRecombs;
+        do {
+            operator.initByName(
+                    "weight", 1.0,
+                    "arg", arg,
+                    "rho", new RealParameter("1.0"),
+                    "delta", new RealParameter("50.0"),
+                    "populationModel", popFunc);
+            
+            oldRecombs = Lists.newArrayList(
+                    arg.getRecombinations());
         
-        operator.updateEvents();
-        double logP1 = operator.drawNewRecomb();
+            operator.updateEvents();
+            logP1 = operator.drawNewRecomb();
+        } while (Double.isInfinite(logP1));
+        
         System.out.println("logP1 = " + logP1);
         
         // Identify new recomination
