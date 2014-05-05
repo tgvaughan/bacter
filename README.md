@@ -1,4 +1,4 @@
-ARGBEAST
+>ARGBEAST
 ========
 
 ARGBEAST is a [BEAST 2](http://beast2.org) package which facilitates
@@ -30,6 +30,5 @@ Road map for ARGBEAST development
   - [x] Recombinant edge hop
 
 - [x] Sequence alignment simulator
-- [x] Inference from simulated data
-
+- [ ] Inference from simulated data *IN PROGRESS*
 - [ ] Inference from real data
