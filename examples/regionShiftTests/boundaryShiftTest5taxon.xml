@@ -49,7 +49,7 @@
     <operator id="CRswap" spec="ConvertedRegionSwap" weight="1.0"
               arg="@arg"/>
 
-    <operator id="CRshift" spec="ConvertedRegionEdgeShift" weight="1.0"
+    <operator id="CRshift" spec="ConvertedRegionBoundaryShift" weight="1.0"
               arg="@arg" apertureSize="0.01" />
     
     <operator id="Uniform" spec='ARGValidityWrapper' arg="@arg" weight="1">

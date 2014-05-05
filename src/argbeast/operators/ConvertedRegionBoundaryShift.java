@@ -29,7 +29,7 @@ import feast.input.In;
  */
 @Description("Operator which moves one edge of the alignment region affected "
         + "by a randomly-selected conversion event.")
-public class ConvertedRegionEdgeShift extends RecombinationGraphOperator {
+public class ConvertedRegionBoundaryShift extends RecombinationGraphOperator {
 
     public Input<Double> apertureSizeInput = new In<Double>(
             "apertureSize",
@@ -37,7 +37,7 @@ public class ConvertedRegionEdgeShift extends RecombinationGraphOperator {
                     + "within which new location of region edge is chosen "
                     + "uniformly. (Default 0.01, ie. 1%)").setDefault(0.01);
 
-    public ConvertedRegionEdgeShift() { }
+    public ConvertedRegionBoundaryShift() { }
 
     @Override
     public void initAndValidate() throws Exception { }
