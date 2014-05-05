@@ -501,20 +501,23 @@ public class RecombinationGraph extends Tree {
     }
     
     /**
-     * Obtain extended Newick representation of ARG.
+     * Obtain extended Newick representation of ARG.  If includeRegionInfo
+     * is true, include Nexus metadata on hybrid leaf nodes describing the
+     * alignment sites affected by the conversion event.
      * 
+     * @param includeRegionInfo
      * @return Extended Newick string.
      */
-    public String getExtendedNewick() {
+    public String getExtendedNewick(boolean includeRegionInfo) {
         StringBuilder sb = new StringBuilder();
         
-        sb.append(extendedNewickTraverse(root));
+        sb.append(extendedNewickTraverse(root, includeRegionInfo));
         sb.append(";");
         
         return sb.toString();
     }
     
-    private String extendedNewickTraverse(Node node) {
+    private String extendedNewickTraverse(Node node, boolean includeRegionInfo) {
         StringBuilder sb = new StringBuilder();
         
         // Determine sequence of events along this node.
@@ -570,7 +573,14 @@ public class RecombinationGraph extends Tree {
                 thisLength = lastTime - event.time;
             
             if (event.isArrival) {
+                String meta = !includeRegionInfo ? ""
+                        : String.format("[&recomb=%d, region={%d,%d}]",
+                                recombs.indexOf(event.recomb),
+                                event.recomb.getStartLocus(),
+                                event.recomb.getEndLocus());
+
                 sb.insert(cursor, "(,#" + recombs.indexOf(event.recomb)
+                        + meta
                         + ":" + (event.recomb.height2-event.recomb.height1)
                         + "):" + thisLength);
                 cursor += 1;
@@ -586,8 +596,10 @@ public class RecombinationGraph extends Tree {
         // Process this node and its children.
 
         if (!node.isLeaf()) {
-            String subtree1 = extendedNewickTraverse(node.getChild(0));
-            String subtree2 = extendedNewickTraverse(node.getChild(1));
+            String subtree1 = extendedNewickTraverse(node.getChild(0),
+                    includeRegionInfo);
+            String subtree2 = extendedNewickTraverse(node.getChild(1),
+                    includeRegionInfo);
             sb.insert(cursor, "(" + subtree1 + "," + subtree2 + ")");
             cursor += subtree1.length() + subtree2.length() + 3;
         }
@@ -753,7 +765,7 @@ public class RecombinationGraph extends Tree {
     public void log(int nSample, PrintStream out) {
         RecombinationGraph arg = (RecombinationGraph) getCurrent();
         out.print("tree STATE_" + nSample + " = ");
-        final String sNewick = arg.getExtendedNewick();
+        final String sNewick = arg.getExtendedNewick(true);
         out.print(sNewick);
     }
 }
