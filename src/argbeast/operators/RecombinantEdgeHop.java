@@ -29,14 +29,11 @@ import beast.util.Randomizer;
 @Description("Cause recombinant edge to hop between clonal frame edges.")
 public class RecombinantEdgeHop extends RecombinationGraphOperator {
 
-    @Override
-    public void initAndValidate() { }
-
+    public RecombinantEdgeHop() { }
+    
     @Override
     public double proposal() {
 
-        RecombinationGraph arg = argInput.get();
-        
         if (arg.getNRecombs()==0)
             return Double.NEGATIVE_INFINITY;
         

@@ -26,6 +26,10 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import feast.input.In;
+import feast.nexus.NexusBlock;
+import feast.nexus.NexusBuilder;
+import feast.nexus.TaxaBlock;
+import feast.nexus.TreesBlock;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -759,13 +763,38 @@ public class RecombinationGraph extends Tree {
     }
     
     /*
-    * Loggable implementation.
-    */
+     * Loggable implementation.
+     */
+    
+    @Override
+    public void init(PrintStream out) throws Exception {
+
+        out.println("#NEXUS");
+        
+        out.println("begin trees;");
+        
+        StringBuilder translate = new StringBuilder("\ttranslate");
+        for (int i=0; i<getLeafNodeCount(); i++) {
+            if (i>0)
+                translate.append(",");
+            translate.append(String.format(" %d %s",
+                    i, getTaxonset().asStringList().get(i)));
+        }
+        out.println(translate + ";");
+        
+    }
+    
+    
     @Override
     public void log(int nSample, PrintStream out) {
         RecombinationGraph arg = (RecombinationGraph) getCurrent();
-        out.print("tree STATE_" + nSample + " = ");
-        final String sNewick = arg.getExtendedNewick(true);
-        out.print(sNewick);
+        
+        out.print(String.format("\ttree STATE_%d = [&R] %s",
+                nSample, arg.getExtendedNewick(true)));
+    }
+
+    @Override
+    public void close(PrintStream out) {
+        out.println("end;");
     }
 }

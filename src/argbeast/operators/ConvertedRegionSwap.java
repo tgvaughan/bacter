@@ -32,18 +32,15 @@ public class ConvertedRegionSwap extends RecombinationGraphOperator {
     public ConvertedRegionSwap() { }
     
     @Override
-    public void initAndValidate() throws Exception { }
-
-    @Override
     public double proposal() {
         
-        if (argInput.get().getNRecombs()<2)
+        if (arg.getNRecombs()<2)
             return Double.NEGATIVE_INFINITY;
 
         // Select a random pair of recombinations
-        int[] idx = Randomizer.shuffled(argInput.get().getNRecombs());
-        Recombination recomb1 = argInput.get().getRecombinations().get(idx[0]+1);
-        Recombination recomb2 = argInput.get().getRecombinations().get(idx[1]+1);
+        int[] idx = Randomizer.shuffled(arg.getNRecombs());
+        Recombination recomb1 = arg.getRecombinations().get(idx[0]+1);
+        Recombination recomb2 = arg.getRecombinations().get(idx[1]+1);
         
         // Switch edges corresponding to recombinations.  (Can't switch
         // loci, as this would break ordering constraint.)

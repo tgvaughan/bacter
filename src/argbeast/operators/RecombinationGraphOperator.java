@@ -32,4 +32,10 @@ public abstract class RecombinationGraphOperator extends Operator {
     public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
             "arg", "Ancestral recombination graph.").setRequired();
     
+    protected RecombinationGraph arg;
+
+    @Override
+    public void initAndValidate() throws Exception {
+        arg = argInput.get();
+    }
 }

@@ -40,13 +40,8 @@ public class ConvertedRegionBoundaryShift extends RecombinationGraphOperator {
     public ConvertedRegionBoundaryShift() { }
 
     @Override
-    public void initAndValidate() throws Exception { }
-    
-    @Override
     public double proposal() {
         
-        RecombinationGraph arg = argInput.get();
-
         if (arg.getNRecombs()<1)
             return Double.NEGATIVE_INFINITY;
         

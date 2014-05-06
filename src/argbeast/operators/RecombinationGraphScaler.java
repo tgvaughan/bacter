@@ -46,12 +46,11 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
             "Scale factor tuning parameter.  Must be < 1.").setRequired();
     
     private double scaleParam;
-    private RecombinationGraph arg;
     
     @Override
-    public void initAndValidate() {
+    public void initAndValidate() throws Exception {
+        super.initAndValidate();
         scaleParam = scaleParamInput.get();
-        arg = argInput.get();
     }
     
     @Override

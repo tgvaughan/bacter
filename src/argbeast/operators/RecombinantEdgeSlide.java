@@ -37,11 +37,12 @@ public class RecombinantEdgeSlide extends RecombinationGraphOperator {
                     + "Default is 0.8.").setDefault(0.8);
 
     private double scaleMin, scaleMax;
-    
+
     public RecombinantEdgeSlide() { }
 
     @Override
     public void initAndValidate() throws Exception {
+        super.initAndValidate();
         scaleMin = Math.min(scaleBoundInput.get(), 1.0/scaleBoundInput.get());
         scaleMax = 1.0/scaleMin;
     }
@@ -51,8 +52,6 @@ public class RecombinantEdgeSlide extends RecombinationGraphOperator {
         
         double logHR = 0.0;
         
-        RecombinationGraph arg = argInput.get();
-
         if (arg.getNRecombs()==0)
             return Double.NEGATIVE_INFINITY;
 

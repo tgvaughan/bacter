@@ -121,8 +121,17 @@
     <operator id="CRswap" spec="ConvertedRegionSwap" weight="1.0"
               arg="@arg"/>
 
-    <operator id="CRshift" spec="ConvertedRegionEdgeShift" weight="1.0"
+    <operator id="CRshift" spec="ConvertedRegionShift" weight="1.0"
               arg="@arg" apertureSize="0.01" />
+
+    <operator id="CRBshift" spec="ConvertedRegionBoundaryShift" weight="1.0"
+              arg="@arg" apertureSize="0.01" />
+
+    <operator id="REhop" spec="RecombinantEdgeHop" weight="1.0"
+              arg="@arg" />
+
+    <operator id="REslide" spec="RecombinantEdgeSlide" weight="1.0"
+              arg="@arg" scaleBound="0.8" />
     
     <operator id="Uniform" spec='ARGValidityWrapper' arg="@arg" weight="1">
         <operator spec='Uniform' weight="10">

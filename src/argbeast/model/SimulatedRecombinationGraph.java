@@ -175,9 +175,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
             nexusBuilder.append((new TreesBlock() {
                 @Override
                 public String getTreeString(Tree tree) {
-                    RecombinationGraph arg = (RecombinationGraph)tree;
-                    String newick = arg.getExtendedNewick(true);
-                    return newick.substring(0, newick.length()-1);
+                    return ((RecombinationGraph)tree).getExtendedNewick(true);
                 }
             }).addTree(this, "simulatedARG"));
             
