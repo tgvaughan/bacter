@@ -53,7 +53,6 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
     }
     
     private double splitProposal() {
-        
         double logHR = 0.0;
         
         if (arg.getNRecombs()==0)
@@ -76,8 +75,8 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         logHR -= Math.log(1.0/(double)(recomb.getSiteCount()-2));
         
         // Select gap size
-        int gap = 1 + (int)Randomizer.nextGeometric(gapRate);
-        logHR -= (gap-1)*Math.log(1-gapRate) + Math.log(gapRate);
+        int gap = (int)Randomizer.nextGeometric(gapRate);
+        logHR -= gap*Math.log(1-gapRate) + Math.log(gapRate);
         
         // Select new departure height
         double depMin = recomb.getNode1().getHeight();
@@ -90,13 +89,16 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         double arrMax = recomb.getNode2().getParent().getHeight();
         double arrHeight = arrMin + (arrMax-arrMin)*Randomizer.nextDouble();
         logHR -= Math.log(1/(arrMax-arrMin));
+        
+        if (arrHeight<depHeight)
+            return Double.NEGATIVE_INFINITY;
 
         // Update original recombination
         recomb.setEndLocus(s);
         
         // Create new recombination
         Recombination newRecomb = new Recombination();
-        newRecomb.setStartLocus(s+gap+1);
+        newRecomb.setStartLocus(s+gap+2);
         newRecomb.setEndLocus(origEnd);
         newRecomb.setNode1(recomb.getNode1());
         newRecomb.setNode2(recomb.getNode2());
@@ -104,7 +106,8 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         newRecomb.setHeight2(arrHeight);
         arg.addRecombination(newRecomb);
         
-        // TODO: complete HR
+        // Include probability of reverse (merge) move in HR:
+        logHR += Math.log(1.0/((double)(arg.getNRecombs()-1)));
         
         return logHR;
     }
@@ -128,6 +131,13 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
                 || recomb1.getNode2().isRoot())
             return Double.NEGATIVE_INFINITY;
         
+        // Record stuff needed for HR calculation:
+        int gap = recomb2.getStartLocus() - recomb1.getEndLocus() - 2;
+        double depRange = recomb1.getNode1().getParent().getHeight()
+                - recomb1.getNode1().getHeight();
+        double arrRange = recomb1.getNode2().getParent().getHeight()
+                - recomb1.getNode2().getHeight();
+        
         // Extend left-most region to cover entire region originally
         // spanned by both regions
         recomb1.setEndLocus(recomb2.getEndLocus());
@@ -135,7 +145,10 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         // Remove the right-most recombination
         arg.deleteRecombination(recomb2);
         
-        // TODO: complete HR
+        // Include probability of reverse (split) move in HR:
+        logHR += Math.log(1.0/arg.getNRecombs())
+                + gap*Math.log(1.0-gapRate) + Math.log(gapRate)
+                + Math.log(1.0/(depRange*arrRange));
         
         return logHR;
     }
