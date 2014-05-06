@@ -82,13 +82,13 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         double depMin = recomb.getNode1().getHeight();
         double depMax = recomb.getNode1().getParent().getHeight();
         double depHeight = depMin + (depMax-depMin)*Randomizer.nextDouble();
-        logHR -= Math.log(1/(depMax-depMin));
+        logHR -= Math.log(1.0/(depMax-depMin));
         
         // Select new arrival height
         double arrMin = recomb.getNode2().getHeight();
         double arrMax = recomb.getNode2().getParent().getHeight();
         double arrHeight = arrMin + (arrMax-arrMin)*Randomizer.nextDouble();
-        logHR -= Math.log(1/(arrMax-arrMin));
+        logHR -= Math.log(1.0/(arrMax-arrMin));
         
         if (arrHeight<depHeight)
             return Double.NEGATIVE_INFINITY;
@@ -147,6 +147,7 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         
         // Include probability of reverse (split) move in HR:
         logHR += Math.log(1.0/arg.getNRecombs())
+                + Math.log(1.0/((double)(recomb1.getSiteCount()-2)))
                 + gap*Math.log(1.0-gapRate) + Math.log(gapRate)
                 + Math.log(1.0/(depRange*arrRange));
         
