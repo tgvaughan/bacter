@@ -44,20 +44,12 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         gapRate = 1.0/gapSizeInput.get();
     }
     
-    
-
     @Override
     public double proposal() {
-        
-        if (Randomizer.nextBoolean()) {
-            // Attempt merge
-            
-            return mergeProposal();
-        } else {
-            // Attempt split
-            
-            return splitProposal();
-        }
+        if (Randomizer.nextBoolean())
+            return mergeProposal(); // Attempt merge
+        else
+            return splitProposal(); // Attempt split
     }
     
     private double splitProposal() {
@@ -70,27 +62,81 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         // Select recombination
         Recombination recomb = arg.getRecombinations()
                 .get(Randomizer.nextInt(arg.getNRecombs())+1);
-        
         logHR -= Math.log(1.0/arg.getNRecombs());
         
-        if (recomb.getSiteCount()<3)
+        if (recomb.getSiteCount()<3 || recomb.getNode2().isRoot())
             return Double.NEGATIVE_INFINITY;
         
-        // Select split point:
-        int s1 = recomb.getStartLocus()
-                + Randomizer.nextInt(recomb.getSiteCount()-2) + 1;
+        // Record original end of region:
+        int origEnd = recomb.getEndLocus();
         
+        // Select split point:
+        int s = recomb.getStartLocus()
+                + Randomizer.nextInt(recomb.getSiteCount()-2) + 1;
         logHR -= Math.log(1.0/(double)(recomb.getSiteCount()-2));
         
         // Select gap size
         int gap = 1 + (int)Randomizer.nextGeometric(gapRate);
+        logHR -= (gap-1)*Math.log(1-gapRate) + Math.log(gapRate);
         
-        logHR -= gap*Math.log(1-gapRate) + Math.log(gapRate);
+        // Select new departure height
+        double depMin = recomb.getNode1().getHeight();
+        double depMax = recomb.getNode1().getParent().getHeight();
+        double depHeight = depMin + (depMax-depMin)*Randomizer.nextDouble();
+        logHR -= Math.log(1/(depMax-depMin));
         
-        return 0;
+        // Select new arrival height
+        double arrMin = recomb.getNode2().getHeight();
+        double arrMax = recomb.getNode2().getParent().getHeight();
+        double arrHeight = arrMin + (arrMax-arrMin)*Randomizer.nextDouble();
+        logHR -= Math.log(1/(arrMax-arrMin));
+
+        // Update original recombination
+        recomb.setEndLocus(s);
+        
+        // Create new recombination
+        Recombination newRecomb = new Recombination();
+        newRecomb.setStartLocus(s+gap+1);
+        newRecomb.setEndLocus(origEnd);
+        newRecomb.setNode1(recomb.getNode1());
+        newRecomb.setNode2(recomb.getNode2());
+        newRecomb.setHeight1(depHeight);
+        newRecomb.setHeight2(arrHeight);
+        arg.addRecombination(newRecomb);
+        
+        // TODO: complete HR
+        
+        return logHR;
     }
     
     private double mergeProposal() {
-        return 0;
+        double logHR = 0.0;
+        
+        if (arg.getNRecombs()<2)
+            return Double.NEGATIVE_INFINITY;
+        
+        // Select a random pair of adjacent (on alignment) regions
+        int r1idx = Randomizer.nextInt(arg.getNRecombs()-1) + 1;
+        int r2idx = r1idx + 1;
+        Recombination recomb1 = arg.getRecombinations().get(r1idx);
+        Recombination recomb2 = arg.getRecombinations().get(r2idx);
+        logHR -= Math.log(1.0/((double)(arg.getNRecombs()-1)));
+        
+        // Ensure a split operator could have generated this pair
+        if (recomb1.getNode1() != recomb2.getNode1()
+                || recomb1.getNode2() != recomb2.getNode2()
+                || recomb1.getNode2().isRoot())
+            return Double.NEGATIVE_INFINITY;
+        
+        // Extend left-most region to cover entire region originally
+        // spanned by both regions
+        recomb1.setEndLocus(recomb2.getEndLocus());
+        
+        // Remove the right-most recombination
+        arg.deleteRecombination(recomb2);
+        
+        // TODO: complete HR
+        
+        return logHR;
     }
 }
