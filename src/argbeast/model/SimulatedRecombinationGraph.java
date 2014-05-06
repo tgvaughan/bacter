@@ -370,7 +370,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
             associateRecombinationWithCF(recomb);
             addRecombination(recomb);
             
-            l = tractLength+1;
+            l = tractLength + 1;
         } else
             l = 1;
         
@@ -387,10 +387,13 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
 
             recomb.setStartLocus(l);
             l += Randomizer.nextGeometric(pTractEnd);
-            recomb.setEndLocus(Math.min(l,getSequenceLength()-1));
+            recomb.setEndLocus(Math.min(l, getSequenceLength()-1));
 
             associateRecombinationWithCF(recomb);
             addRecombination(recomb);
+            
+            // The next site at which a conversion can begin
+            l += 2;
             
             if (l>=getSequenceLength())
                 break;

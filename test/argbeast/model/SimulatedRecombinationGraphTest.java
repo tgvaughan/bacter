@@ -54,7 +54,7 @@ public class SimulatedRecombinationGraphTest {
     @Test
     public void test() throws Exception {
         
-        Randomizer.setSeed(53);
+        Randomizer.setSeed(42);
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));

@@ -96,7 +96,6 @@ public class GCCoalescentApproxTest {
         // Coalescent
         GCCoalescentApprox coalescent = new GCCoalescentApprox();
         coalescent.initByName(
-//                "tree", arg,
                 "treeIntervals", new TreeIntervals(arg),
                 "populationModel", popFunction,
                 "rho", new RealParameter("1"),
@@ -115,10 +114,8 @@ public class GCCoalescentApproxTest {
         
         //Add a single recombination event
         Node node1 = arg.getExternalNodes().get(0);
-        //Node node2 = arg.getRoot();
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
-        //double height2 = node2.getHeight() + 1.0;
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;

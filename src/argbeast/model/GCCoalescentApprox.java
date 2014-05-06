@@ -156,46 +156,46 @@ public class GCCoalescentApprox extends Coalescent {
         List<Recombination> recombs = arg.getRecombinations();
         
         double rho = rhoInput.get().getValue();
-        double deltaInv = 1.0/deltaInput.get().getValue();
+        double pTractEnd = 1.0/deltaInput.get().getValue();
         double cfLength = arg.getClonalFrameLength();
         
         // Probability of recombination per site along sequence
-        double alpha = 0.5*rho*cfLength/sequenceLength;
+        double pRec = 0.5*rho*cfLength/sequenceLength;
         
         // Probability that sequence begins in the clonal frame:
-        double pStartCF = 1.0/(alpha/deltaInv + 1.0);
+        double pStartCF = 1.0/(pRec/pTractEnd + 1.0);
         
-        if (recombs.size()<2){
+        if (arg.getNRecombs()==0){
             // Probability of no recombinations
             thisLogP += Math.log(pStartCF) 
-                    + (sequenceLength-1)*Math.log(1.0-alpha);
+                    + (sequenceLength-1)*Math.log(1.0-pRec);
         } else {
             
             // Contribution from start of sequence up to first recomb region
             if (recombs.get(1).getStartLocus()>0) {
                 thisLogP += Math.log(pStartCF)
-                        + (recombs.get(1).getStartLocus()-1)*Math.log(1-alpha);
+                        + (recombs.get(1).getStartLocus()-1)*Math.log(1-pRec);
             }  else {
                 thisLogP += Math.log(1.0-pStartCF)
-                        - Math.log(alpha);
+                        - Math.log(pRec);
             }
             
             // Contribution from remaining recomb regions and adjacent CF regions
             for (int ridx=1; ridx<recombs.size(); ridx++) {
                 Recombination recomb = recombs.get(ridx);
                 
-                thisLogP += Math.log(alpha)
-                        + (recomb.getEndLocus() - recomb.getStartLocus())*Math.log(1.0-deltaInv);
+                thisLogP += Math.log(pRec)
+                        + (recomb.getEndLocus() - recomb.getStartLocus())*Math.log(1.0-pTractEnd);
                 
                 if (ridx<recombs.size()-1) {
-                    thisLogP += Math.log(deltaInv)
+                    thisLogP += Math.log(pTractEnd)
                             + (recombs.get(ridx+1).getStartLocus()-recomb.getEndLocus()-2)
-                            *Math.log(1.0-alpha);
+                            *Math.log(1.0-pRec);
                 } else {
                     if (recomb.getEndLocus()<sequenceLength-1) {
-                        thisLogP += Math.log(deltaInv)
+                        thisLogP += Math.log(pTractEnd)
                                 + (sequenceLength-1-recomb.getEndLocus()-1)
-                                *Math.log(1.0-alpha);
+                                *Math.log(1.0-pRec);
                     }
                 }
             }
