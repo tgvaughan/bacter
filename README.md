@@ -1,4 +1,4 @@
->ARGBEAST
+ARGBEAST
 ========
 
 ARGBEAST is a [BEAST 2](http://beast2.org) package which facilitates
