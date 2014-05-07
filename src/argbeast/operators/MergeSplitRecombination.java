@@ -52,7 +52,7 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
             return splitProposal(); // Attempt split
     }
     
-    private double splitProposal() {
+    double splitProposal() {
         double logHR = 0.0;
         
         if (arg.getNRecombs()==0)
@@ -112,7 +112,7 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         return logHR;
     }
     
-    private double mergeProposal() {
+    double mergeProposal() {
         double logHR = 0.0;
         
         if (arg.getNRecombs()<2)
