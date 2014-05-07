@@ -18,7 +18,7 @@
   <!-- Simulated ARG -->  
 
   <input spec='SimulatedRecombinationGraph' id='argTruth'
-         rho="1.5" delta="500.0" sequenceLength="10000" nTaxa="20"
+         rho="2.0" delta="500.0" sequenceLength="10000" nTaxa="20"
 	 outputFileName="simulated_arg.nexus">
       <populationModel spec='ConstantPopulation' popSize="1.0"/>
   </input>
@@ -36,11 +36,11 @@
   <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
       <stateNode id="arg" spec='SimulatedRecombinationGraph'
-		 alignment="@alignment" rho="1.5" delta="500.0">
+		 alignment="@alignment" rho="2.0" delta="500.0">
 	<populationModel spec='ConstantPopulation' popSize="1.0"/>
       </stateNode>
 
-      <stateNode id="rho" spec='RealParameter' value="1.5" />
+      <stateNode id="rho" spec='RealParameter' value="2.0" />
       <stateNode id="delta" spec='RealParameter' value="500.0" />
       <stateNode id="popSize" spec='RealParameter' value="1.0"/>
       <stateNode id="mutationRate" spec='RealParameter' value="0.1"/>
@@ -112,6 +112,9 @@
         <delta idref="delta"/>
         <populationModel idref="popModel"/>
     </operator>
+
+    <operator id="mergeSplit" spec="MergeSplitRecombination" weight="1.0"
+              expectedGapSize="100" arg="@arg" />
     
     <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
               scaleFactor="0.8">
