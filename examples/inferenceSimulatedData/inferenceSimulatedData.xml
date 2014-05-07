@@ -133,6 +133,9 @@
     <operator id="REhop" spec="RecombinantEdgeHop" weight="1.0"
               arg="@arg" />
 
+   <operator id="REflip" spec="RecombinantEdgeFlip" weight="1.0"
+              arg="@arg" />
+
     <operator id="REslide" spec="RecombinantEdgeSlide" weight="1.0"
               arg="@arg" scaleBound="0.8" />
     
