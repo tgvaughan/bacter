@@ -71,12 +71,15 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         
         // Select split point:
         int s = recomb.getStartLocus()
-                + Randomizer.nextInt(recomb.getSiteCount()-2) + 1;
+                + Randomizer.nextInt(recomb.getSiteCount()-2);
         logHR -= Math.log(1.0/(double)(recomb.getSiteCount()-2));
         
         // Select gap size
         int gap = (int)Randomizer.nextGeometric(gapRate);
-        logHR -= gap*Math.log(1-gapRate) + Math.log(gapRate);
+        logHR -= gap*Math.log(1.0-gapRate) + Math.log(gapRate);
+        
+        if (s + gap + 2 > recomb.getEndLocus())
+            return Double.NEGATIVE_INFINITY;
         
         // Select new departure height
         double depMin = recomb.getNode1().getHeight();
@@ -98,7 +101,7 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         
         // Create new recombination
         Recombination newRecomb = new Recombination();
-        newRecomb.setStartLocus(s+gap+2);
+        newRecomb.setStartLocus(s + gap + 2);
         newRecomb.setEndLocus(origEnd);
         newRecomb.setNode1(recomb.getNode1());
         newRecomb.setNode2(recomb.getNode2());

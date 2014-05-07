@@ -19,7 +19,6 @@
 
 
 
-
   <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
       <stateNode idref='arg'/>
