@@ -169,7 +169,6 @@
     <!-- Output logging -->
 
     <logger logEvery="10000">
-      <model idref='posterior'/>
       <log idref="posterior"/>
       <log spec='TreeHeightLogger' tree="@arg"/>
       <log idref='rho'/>

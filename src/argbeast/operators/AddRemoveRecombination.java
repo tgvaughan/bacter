@@ -17,7 +17,6 @@
 package argbeast.operators;
 
 import argbeast.Recombination;
-import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -45,7 +44,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "A population size model.").setRequired();
     
-    private RecombinationGraph arg;
     private PopulationFunction popFunc;
     
     private enum EventType {COAL, SAMP};
@@ -73,13 +71,15 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     
     private List<Event> eventList;
     
+    private class ProposalFailed extends Exception { };
+    
     public AddRemoveRecombination() { };
     
     @Override
-    public void initAndValidate() {
-        arg = argInput.get();
+    public void initAndValidate() throws Exception {
+        super.initAndValidate();
+
         popFunc = popFuncInput.get();
-        
         eventList = Lists.newArrayList();
     };
 
@@ -89,12 +89,17 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         
         updateEvents();
         
-        if (Randomizer.nextDouble()<0.5) {
+        if (Randomizer.nextBoolean()) {
             
             // Add
             
             logHGF += Math.log(1.0/(arg.getNRecombs()+1));
-            logHGF -= drawNewRecomb();
+            
+            try {
+                logHGF -= drawNewRecomb();
+            } catch (ProposalFailed ex) {
+                return Double.NEGATIVE_INFINITY;
+            }
             
             if (!arg.isValid())
                 return Double.NEGATIVE_INFINITY;
@@ -127,8 +132,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      * new edge and converted region location.
      * 
      * @return log of proposal density
+     * @throws argbeast.operators.AddRemoveRecombination.ProposalFailed 
      */
-    public double drawNewRecomb() {
+    public double drawNewRecomb() throws ProposalFailed {
         double logP = 0;
         
         Recombination newRecomb = new Recombination();
@@ -214,21 +220,13 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         // length from an exponential distribution.  If the end of the tract
         // exceeds the start of the next region, the proposal is rejected.
         
-        int convertableLength = arg.getSequenceLength();
-        for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
-            Recombination recomb = arg.getRecombinations().get(ridx+1);
-            
-            convertableLength -= recomb.getEndLocus()-recomb.getStartLocus()+3;
-            
-            if (recomb.getStartLocus()==0)
-                convertableLength += 1;
-            
-            if (recomb.getEndLocus()==arg.getSequenceLength()-1)
-                convertableLength += 1;
-        }
-
+        int convertableLength = getConvertableSiteCount();
         if (convertableLength==0)
-            return Double.NEGATIVE_INFINITY;
+            throw new ProposalFailed();
+        
+        // DEBUG:
+        if (convertableLength<0)
+            System.out.println(arg.getExtendedNewick(true));
         
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);
@@ -252,7 +250,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         newRecomb.setEndLocus(newRecomb.getStartLocus()+convertedLength);
 
         if (!arg.addRecombination(newRecomb))
-            return Double.NEGATIVE_INFINITY;
+            throw new ProposalFailed();
         
         return logP;
     }
@@ -297,20 +295,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         }
         
         // Calculate probability of converted region.
-        int convertableLength = arg.getSequenceLength();
-        for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
-            Recombination thisRecomb = arg.getRecombinations().get(ridx+1);
-            if (thisRecomb == recomb)
-                continue;
-            
-            convertableLength -= thisRecomb.getEndLocus()-thisRecomb.getStartLocus()+3;
-            
-            if (thisRecomb.getStartLocus()==0)
-                convertableLength += 1;
-            
-            if (thisRecomb.getEndLocus()==arg.getSequenceLength()-1)
-                convertableLength += 1;
-        }
+        int convertableLength = getConvertableSiteCount();
+        if (convertableLength==0)
+            return Double.NEGATIVE_INFINITY;
         
         logP += Math.log(1.0/convertableLength)
                 + (recomb.getEndLocus()-recomb.getStartLocus())
@@ -370,5 +357,25 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 tau += popFunc.getIntegral(event.t, nextEvent.t);
             }
         }
+    }
+    
+    /**
+     * @return number of sites available for conversion along alignment
+     */
+    private int getConvertableSiteCount() {
+        int count = 0;
+        
+        int l=0;
+        for (int ridx=1; ridx<=arg.getNRecombs(); ridx++) {
+            Recombination recomb = arg.getRecombinations().get(ridx);
+            
+            count += Math.max(0, recomb.getStartLocus()-l+1);
+            
+            l = recomb.getEndLocus()+2;
+        }
+        
+        count += Math.max(0, arg.getSequenceLength() - l); // L - 1 - l + 1
+        
+        return count;
     }
 }
