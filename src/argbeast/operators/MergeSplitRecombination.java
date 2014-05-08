@@ -33,10 +33,6 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
     public Input<Double> gapSizeInput = new In<Double>("expectedGapSize",
             "Expected gap size.").setDefault(10.0);
     
-    public Input<Double> rootScaleBoundInput = new In<Double>("rootScaleBound",
-    "Generated root-attached edges are randomly scaled by a factor between "
-            + "rootScaleBound and 1.0/rootScaleBound").setDefault(0.8);
-
     private double gapRate;
     
     public MergeSplitRecombination() { }
@@ -67,7 +63,7 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
                 .get(Randomizer.nextInt(arg.getNRecombs())+1);
         logHR -= Math.log(1.0/arg.getNRecombs());
         
-        if (recomb.getSiteCount()<3 || recomb.getNode2().isRoot())
+        if (recomb.getSiteCount()<3)
             return Double.NEGATIVE_INFINITY;
         
         // Record original end of region:
@@ -93,7 +89,12 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         
         // Select new arrival height
         double arrMin = recomb.getNode2().getHeight();
-        double arrMax = recomb.getNode2().getParent().getHeight();
+        double arrMax;
+        if (recomb.getNode2().isRoot())
+            arrMax = arrMin + 2.0*(recomb.getHeight2() - arrMin);
+        else
+            arrMax = recomb.getNode2().getParent().getHeight();            
+
         double arrHeight = arrMin + (arrMax-arrMin)*Randomizer.nextDouble();
         logHR -= Math.log(1.0/(arrMax-arrMin));
         
@@ -134,16 +135,25 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         
         // Ensure a split operator could have generated this pair
         if (recomb1.getNode1() != recomb2.getNode1()
-                || recomb1.getNode2() != recomb2.getNode2()
-                || recomb1.getNode2().isRoot())
+                || recomb1.getNode2() != recomb2.getNode2())
             return Double.NEGATIVE_INFINITY;
         
         // Record stuff needed for HR calculation:
         int gap = recomb2.getStartLocus() - recomb1.getEndLocus() - 2;
         double depRange = recomb1.getNode1().getParent().getHeight()
                 - recomb1.getNode1().getHeight();
-        double arrRange = recomb1.getNode2().getParent().getHeight()
-                - recomb1.getNode2().getHeight();
+        double arrRange;
+        if (recomb1.getNode2().isRoot())
+            arrRange = 2.0*(recomb1.getHeight2()
+                    - recomb1.getNode2().getHeight());
+        else
+            arrRange = recomb1.getNode2().getParent().getHeight()
+                    - recomb1.getNode2().getHeight();
+        
+        // Final check to make sure height of recomb2's arrival point is
+        // within the range available to the split move
+        if (Math.abs(recomb2.getHeight2()-recomb1.getHeight2()) > arrRange)
+            return Double.NEGATIVE_INFINITY;
         
         // Extend left-most region to cover entire region originally
         // spanned by both regions
