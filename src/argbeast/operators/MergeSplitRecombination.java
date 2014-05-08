@@ -32,6 +32,10 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
     
     public Input<Double> gapSizeInput = new In<Double>("expectedGapSize",
             "Expected gap size.").setDefault(10.0);
+    
+    public Input<Double> rootScaleBoundInput = new In<Double>("rootScaleBound",
+    "Generated root-attached edges are randomly scaled by a factor between "
+            + "rootScaleBound and 1.0/rootScaleBound").setDefault(0.8);
 
     private double gapRate;
     

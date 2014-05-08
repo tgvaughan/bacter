@@ -220,13 +220,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         // length from an exponential distribution.  If the end of the tract
         // exceeds the start of the next region, the proposal is rejected.
         
-        int convertableLength = getConvertableSiteCount();
+        int convertableLength = getConvertibleSiteCount(null);
         if (convertableLength==0)
             throw new ProposalFailed();
-        
-        // DEBUG:
-        if (convertableLength<0)
-            System.out.println(arg.getExtendedNewick(true));
         
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);
@@ -295,7 +291,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         }
         
         // Calculate probability of converted region.
-        int convertableLength = getConvertableSiteCount();
+        int convertableLength = getConvertibleSiteCount(recomb);
         if (convertableLength==0)
             return Double.NEGATIVE_INFINITY;
         
@@ -360,14 +356,20 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     }
     
     /**
-     * @return number of sites available for conversion along alignment
+     * Get total number of sites available to convert, optionally skipping
+     * one recombination.
+     * 
+     * @param skip recombination to skip (may be null)
+     * @return convertible site count
      */
-    private int getConvertableSiteCount() {
+    private int getConvertibleSiteCount(Recombination skip) {
         int count = 0;
         
         int l=0;
         for (int ridx=1; ridx<=arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx);
+            if (recomb == skip)
+                continue;
             
             count += Math.max(0, recomb.getStartLocus()-l+1);
             
