@@ -1,5 +1,6 @@
 require(ggplot2)
 require(reshape2)
+require(stringr)
 
 getSiteConversionStatus <- function(convMapStr, seqLen) {
     res <- rep(0, seqLen)
@@ -14,6 +15,31 @@ getSiteConversionStatus <- function(convMapStr, seqLen) {
     return(res)
 }
 
+getTruth <- function(filename) {
+    start <- NULL
+    end <- NULL
+    visible <- NULL
+    idx <- 1
+    for (line in readLines(filename)) {
+        if (!str_detect(line, "conversion"))
+            next
+
+        start[idx] <- strtoi(strsplit(strsplit(line, "site1=")[[1]][2], " ")[[1]][1])
+        end[idx] <- strtoi(strsplit(strsplit(line, "site2=")[[1]][2], ";")[[1]][1])
+
+        node1 <- strtoi(strsplit(strsplit(line, "node1=")[[1]][2], " ")[[1]][1])
+        node2 <- strtoi(strsplit(strsplit(line, "node2=")[[1]][2], " ")[[1]][1])
+        if (node1==node2)
+            visible[idx] <- FALSE
+        else
+            visible[idx] <- TRUE
+        
+        idx <- idx + 1
+    }
+
+    return(data.frame(start=start, end=end, visible=visible))
+}
+
 getSiteConversionProb <- function(df, seqLen) {
     res <- rep(0, seqLen)
     for (i in 1:length(df$arg.converted)) {
@@ -23,7 +49,7 @@ getSiteConversionProb <- function(df, seqLen) {
     return (res/length(df$arg.converted))
 }
 
-plotConversionProb <- function(filename, seqLen) {
+plotConversionProb <- function(filename, seqLen, truthFile=NA) {
     df <- read.table(filename, as.is=T, header=T)
     siteProbs <- getSiteConversionProb(df, seqLen)
 
@@ -33,6 +59,12 @@ plotConversionProb <- function(filename, seqLen) {
     p <- p + xlab("Site") + ylab("Posterior probability")
     p <- p + ggtitle("Per-site probability of conversion")
 
+    if (!is.na(truthFile)) {
+        truth <- getTruth(truthFile)
+        p <- p + geom_rect(data=truth, mapping=aes(x=NULL, y=NULL, xmin=start, xmax=end, ymin=0, ymax=1,
+                                           fill=visible, alpha=1/3))
+    }
+    
     return(p)
 }
 
