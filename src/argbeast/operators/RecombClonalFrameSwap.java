@@ -46,6 +46,24 @@ public class RecombClonalFrameSwap extends RecombinationGraphOperator {
         Node origNode1Par = origNode1.getParent();
         Node origNode1Sis = getSibling(origNode1);
         
+        // Move all recombinant edge connections on origNode1Par to origNode1Sis
+        for (Recombination otherRecomb : arg.getRecombinations()) {
+            if (otherRecomb == null || otherRecomb == recomb)
+                continue;
+            
+            if (otherRecomb.getNode1() == origNode1Par)
+                otherRecomb.setNode1(origNode1Sis);
+            
+            if (otherRecomb.getNode2() == origNode1Par)
+                otherRecomb.setNode2(origNode1Sis);
+        }
+        
+        // Detach origNode1Par
+        origNode1Par.removeChild(origNode1Sis);
+        origNode1Sis.setParent(origNode1Par.getParent());
+
+        // TODO: Finish operator logic
+        
         return 0.0;
     }
 }
