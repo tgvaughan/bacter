@@ -20,6 +20,7 @@ package argbeast.operators;
 import argbeast.RecombinationGraph;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.evolution.tree.Node;
 import feast.input.In;
 
 /**
@@ -37,5 +38,19 @@ public abstract class RecombinationGraphOperator extends Operator {
     @Override
     public void initAndValidate() throws Exception {
         arg = argInput.get();
+    }
+    
+    /**
+     * Return sister of node.
+     * 
+     * @param node
+     * @return sister node
+     */
+    protected Node getSibling(Node node) {
+        Node parent = node.getParent();
+        if (parent.getLeft() == node)
+            return parent.getRight();
+        else
+            return parent.getLeft();
     }
 }

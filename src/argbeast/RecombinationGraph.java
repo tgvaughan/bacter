@@ -25,11 +25,8 @@ import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
+import com.google.common.collect.Lists;
 import feast.input.In;
-import feast.nexus.NexusBlock;
-import feast.nexus.NexusBuilder;
-import feast.nexus.TaxaBlock;
-import feast.nexus.TreesBlock;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,8 +74,8 @@ public class RecombinationGraph extends Tree {
     @Override
     public void initAndValidate() throws Exception {
 
-        recombs = new ArrayList<Recombination>();
-        storedRecombs = new ArrayList<Recombination>();
+        recombs = Lists.newArrayList();
+        storedRecombs = Lists.newArrayList();
         recombs.add(null); // Represents the clonal frame.
         
         if (alignmentInput.get() != null)
