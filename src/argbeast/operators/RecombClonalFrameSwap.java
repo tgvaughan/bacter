@@ -45,25 +45,55 @@ public class RecombClonalFrameSwap extends RecombinationGraphOperator {
         Node origNode1 = recomb.getNode1();
         Node origNode1Par = origNode1.getParent();
         Node origNode1Sis = getSibling(origNode1);
-        
-        // Move all recombinant edge connections on origNode1Par to origNode1Sis
+        Node origNode2 = recomb.getNode2();
+
         for (Recombination otherRecomb : arg.getRecombinations()) {
             if (otherRecomb == null || otherRecomb == recomb)
                 continue;
+
+            // Can't perform move reversibly if there are recombinant edge
+            // connections above height2 on node1
+            if ((otherRecomb.getNode1() == origNode1
+                    && otherRecomb.getHeight1()>recomb.getHeight2())
+                    || (otherRecomb.getNode2() == origNode1
+                    && otherRecomb.getHeight2()>recomb.getHeight2()))
+                return Double.NEGATIVE_INFINITY;
+            
+            // Move all recombinant edge connections on origNode1Par to origNode1Sis
             
             if (otherRecomb.getNode1() == origNode1Par)
                 otherRecomb.setNode1(origNode1Sis);
             
             if (otherRecomb.getNode2() == origNode1Par)
                 otherRecomb.setNode2(origNode1Sis);
+            
+                    
+            // Move all recombinant edge connetions on origNode2 above height2
+            // to origNode1Par
+            
+            if (otherRecomb.getNode1() == origNode2 && otherRecomb.getHeight1()>recomb.getHeight2())
+                otherRecomb.setNode1(origNode1Par);
+            
+            if (otherRecomb.getNode2() == origNode2 && otherRecomb.getHeight2()>recomb.getHeight2())
+                otherRecomb.setNode2(origNode1Par);
         }
         
-        // Detach origNode1Par
+        // Clonal frame topology changes
+        
         origNode1Par.removeChild(origNode1Sis);
         origNode1Sis.setParent(origNode1Par.getParent());
+        if (origNode1Sis.getParent() != null) {
+            origNode1Sis.getParent().removeChild(origNode1Par);
+            origNode1Sis.getParent().addChild(origNode1Sis);
+        }
 
-        // TODO: Finish operator logic
-        
+        origNode1Par.setParent(origNode2.getParent());
+        origNode1Par.addChild(origNode2);
+        if (origNode1Par.getParent() != null) {
+            origNode1Par.getParent().removeChild(origNode2);
+            origNode1Par.getParent().addChild(origNode1Par);
+        }
+
         return 0.0;
     }
 }
