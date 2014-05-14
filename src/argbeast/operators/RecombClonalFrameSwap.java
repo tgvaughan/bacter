@@ -46,7 +46,11 @@ public class RecombClonalFrameSwap extends RecombinationGraphOperator {
         Node origNode1Par = origNode1.getParent();
         Node origNode1Sis = getSibling(origNode1);
         Node origNode2 = recomb.getNode2();
+        double origHeight2 = recomb.getHeight2();
+        double newHeight2 = origNode1Par.getHeight();
 
+        String oldARG = arg.getExtendedNewick(true);
+        
         for (Recombination otherRecomb : arg.getRecombinations()) {
             if (otherRecomb == null || otherRecomb == recomb)
                 continue;
@@ -78,6 +82,12 @@ public class RecombClonalFrameSwap extends RecombinationGraphOperator {
                 otherRecomb.setNode2(origNode1Par);
         }
         
+        // Ensure that if recomb attaches above node1Par it is reattached to node1Sis
+        if (recomb.getNode2()==origNode1Par) {
+            recomb.setNode2(origNode1Sis);
+            origNode2 = origNode1Sis;
+        }
+        
         // Clonal frame topology changes
         
         origNode1Par.removeChild(origNode1Sis);
@@ -93,6 +103,15 @@ public class RecombClonalFrameSwap extends RecombinationGraphOperator {
             origNode1Par.getParent().removeChild(origNode2);
             origNode1Par.getParent().addChild(origNode1Par);
         }
+        
+        origNode1Par.setHeight(origHeight2);
+        
+        // Move original recombinant edge
+        recomb.setHeight2(newHeight2);
+        recomb.setNode2(origNode1Sis);
+        
+        System.out.println(oldARG);
+        System.out.println(arg.getExtendedNewick(true));
 
         return 0.0;
     }

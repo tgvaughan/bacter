@@ -37,6 +37,8 @@ getTruth <- function(filename) {
         idx <- idx + 1
     }
 
+    #visible <- factor(visible, levels=c(TRUE, FALSE))
+    
     return(data.frame(start=start, end=end, visible=visible))
 }
 
@@ -49,8 +51,11 @@ getSiteConversionProb <- function(df, seqLen) {
     return (res/length(df$arg.converted))
 }
 
-plotConversionProb <- function(filename, seqLen, truthFile=NA) {
+plotConversionProb <- function(filename, seqLen, truthFile=NA, burnin=0.1) {
     df <- read.table(filename, as.is=T, header=T)
+    N <- dim(df)[1]
+    df <- df[-(1:(round(burnin*N))),]
+    
     siteProbs <- getSiteConversionProb(df, seqLen)
 
     probdf <- data.frame(site=1:seqLen, prob=siteProbs)
@@ -62,7 +67,8 @@ plotConversionProb <- function(filename, seqLen, truthFile=NA) {
     if (!is.na(truthFile)) {
         truth <- getTruth(truthFile)
         p <- p + geom_rect(data=truth, mapping=aes(x=NULL, y=NULL, xmin=start, xmax=end, ymin=0, ymax=1,
-                                           fill=visible, alpha=1/3))
+                                           fill=visible), alpha=1/3)
+        p <- p + guides(fill = guide_legend(reverse = TRUE))
     }
     
     return(p)
