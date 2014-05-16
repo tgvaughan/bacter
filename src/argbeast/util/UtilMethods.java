@@ -165,6 +165,6 @@ public class UtilMethods {
         public Clade(Node node) {
             for (Node leaf : node.getAllLeafNodes())
                 add(leaf.getNr());
-        }        
+        }
     };
 }

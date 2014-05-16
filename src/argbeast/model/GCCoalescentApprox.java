@@ -52,18 +52,16 @@ public class GCCoalescentApprox extends Coalescent {
     
     boolean allowSEC;
     
-    //double logPcfCoal, logPrecombCoal, logPrecombRegion;
-    
     @Override
     public void initAndValidate() throws Exception {
         
         intervals = treeIntervalsInput.get();
         if (intervals == null)
-            throw new Exception("treeIntervals must be specified.");
+            throw new IllegalArgumentException("treeIntervals must be specified.");
 
         if (!(intervals.treeInput.get() instanceof RecombinationGraph))
-            throw new Exception("Error: GCCoalescentApprox only applicable to"
-                    + " RecombinationGraph objects.");
+            throw new IllegalArgumentException("Error: GCCoalescentApprox only"
+                    + " applicable to RecombinationGraph objects.");
         
         arg = (RecombinationGraph)intervals.treeInput.get();
         sequenceLength = arg.getSequenceLength();

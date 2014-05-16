@@ -22,6 +22,7 @@ import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
 import feast.input.In;
@@ -43,6 +44,9 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "A population size model.").setRequired();
+    
+    public Input<TreeIntervals> treeIntervalsInput = new In<TreeIntervals>(
+            "treeIntervals", "Tree intervals calculation node.").setRequired();
     
     private PopulationFunction popFunc;
     

@@ -37,9 +37,9 @@ getTruth <- function(filename) {
         idx <- idx + 1
     }
 
-    #visible <- factor(visible, levels=c(TRUE, FALSE))
+    indices <- factor(1:length(visible))
     
-    return(data.frame(start=start, end=end, visible=visible))
+    return(data.frame(start=start, end=end, visible=visible, index=indices))
 }
 
 getSiteConversionProb <- function(df, seqLen) {
@@ -67,8 +67,9 @@ plotConversionProb <- function(filename, seqLen, truthFile=NA, burnin=0.1) {
     if (!is.na(truthFile)) {
         truth <- getTruth(truthFile)
         p <- p + geom_rect(data=truth, mapping=aes(x=NULL, y=NULL, xmin=start, xmax=end, ymin=0, ymax=1,
-                                           fill=visible), alpha=1/3)
-        p <- p + guides(fill = guide_legend(reverse = TRUE))
+                                           fill=index), alpha=0.1)
+        p <- p + scale_fill_manual(values=rep(c("blue","red","green","purple","yellow"),
+                                       length.out=length(truth$index)), guide=FALSE)
     }
     
     return(p)
