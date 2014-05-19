@@ -106,7 +106,8 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
             double timeB = events.get(i+1).getHeight();
 
             double intervalArea = popSize.getIntegral(timeA, timeB);
-            thisLogP += -events.get(i).getLineageCount()*intervalArea;
+            int k = events.get(i).getLineageCount();
+            thisLogP += -0.5*k*(k-1)*intervalArea;
             
             if (events.get(i+1).getType()==RecombinationGraph.EventType.COALESCENCE)
                 thisLogP += -Math.log(1.0/popSize.getPopSize(timeB));
