@@ -72,7 +72,14 @@ public class RecombinationGraph extends Tree {
     protected List<Recombination> recombs;
     protected List<Recombination> storedRecombs;
     
+    /**
+     * Class of events types on clonal frame.
+     */
     public enum EventType {COALESCENCE, SAMPLE };
+
+    /**
+     * Class of events on clonal frame.
+     */
     public class Event {
         EventType type;
         double t;

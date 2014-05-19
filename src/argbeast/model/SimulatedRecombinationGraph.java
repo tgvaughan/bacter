@@ -81,24 +81,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
     private int nTaxa;
     private TaxonSet taxonSet;
     
-    private enum EventType {COALESCENCE, SAMPLE };
-    private class Event {
-        EventType type;
-        double tau, t;
-        int lineages;
-        
-        Event (double t, double tau) {
-            this.t = t;
-            this.tau = tau;
-        }
-
-        @Override
-        public String toString() {
-            return "t: " + t + ", k: " + lineages + ", type: " + type;
-        }
-    }
-    private List<Event> eventList;
-    
     public SimulatedRecombinationGraph() {
 
         alignmentInput.setRule(Input.Validate.OPTIONAL);
@@ -139,8 +121,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         
         initArrays();
         super.initAndValidate();
-        
-        generateEventList();
 
         // Generate recombinations
         if (mapInput.get() == null)
@@ -305,48 +285,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         setRoot(activeNodes.get(0));
     }
     
-    private void generateEventList() {
-        
-        eventList = Lists.newArrayList();
-        
-        for (Node node : getNodesAsArray()) {
-            double t = node.getHeight();
-            double tau = popFunc.getIntensity(t);
-            Event event = new Event(t, tau);
-            
-            if (node.isLeaf())
-                event.type = EventType.SAMPLE;
-            else
-                event.type = EventType.COALESCENCE;
-            
-            eventList.add(event);
-        }
-        
-        Collections.sort(eventList, new Comparator<Event>() {
-
-            @Override
-            public int compare(Event e1, Event e2) {
-                if (e1.t<e2.t)
-                    return -1;
-                
-                if (e1.t>e2.t)
-                    return 1;
-                
-                return 0;
-            }
-        });
-        
-        int k=0;
-        for (Event event : eventList) {
-            if (event.type == EventType.SAMPLE)
-                k += 1;
-            else
-                k -= 1;
-            
-            event.lineages = k;
-        }
-    }
-    
     /**
      * Uses a discrete two-state Markov process to generate the list of
      * converted segments along the sequence.
@@ -408,9 +346,10 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
      */
     private void associateRecombinationWithCF(Recombination recomb) {
     
+        List<Event> eventList = getCFEvents();
+
         // Select departure point            
         double u = Randomizer.nextDouble()*getClonalFrameLength();
-        double tauStart = 0.0;
         
         boolean started = false;
         for (int eidx=0; eidx<eventList.size(); eidx++) {
@@ -418,18 +357,17 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
 
             if (!started) {
                 
-                double interval = eventList.get(eidx+1).t - event.t;
+                double interval = eventList.get(eidx+1).getHeight() - event.getHeight();
                 
-                if (u<interval*event.lineages) {
+                if (u<interval*event.getLineageCount()) {
                     for (Node node : getNodesAsArray()) {
                         if (!node.isRoot()
-                                && node.getHeight()<=event.t
-                                && node.getParent().getHeight()>event.t) {
+                                && node.getHeight()<=event.getHeight()
+                                && node.getParent().getHeight()>event.getHeight()) {
                             
                             if (u<interval) {
                                 recomb.setNode1(node);
-                                recomb.setHeight1(event.t + u);
-                                tauStart = popFunc.getIntensity(event.t + u);
+                                recomb.setHeight1(event.getHeight() + u);
                                 break;
                             } else
                                 u -= interval;
@@ -439,28 +377,31 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     started = true;
                     u = Randomizer.nextExponential(1.0);
                 } else
-                    u -= interval*event.lineages;
+                    u -= interval*event.getLineageCount();
             }
             
             if (started) {
+                double t = Math.max(event.getHeight(), recomb.getHeight1());
+
                 double intervalArea;
-                if (eidx<eventList.size()-1)
-                    intervalArea = (eventList.get(eidx+1).tau - Math.max(event.tau, tauStart));
-                else
+                if (eidx<eventList.size()-1) {
+                    intervalArea = popFunc.getIntegral(t, eventList.get(eidx+1).getHeight());
+                } else
                     intervalArea = Double.POSITIVE_INFINITY;
                 
-                if (u<intervalArea*event.lineages) {
+                if (u<intervalArea*event.getLineageCount()) {
                     
                     // Fix height of attachment point
-                    double tauEnd = Math.max(event.tau, tauStart) + u/event.lineages;
+
+                    double tauEnd = popFunc.getIntensity(t) + u/event.getLineageCount();
                     double tEnd = popFunc.getInverseIntensity(tauEnd);
                     recomb.setHeight2(tEnd);                    
                     
                     // Choose particular lineage to attach to
-                    int nodeNumber = Randomizer.nextInt(event.lineages);
+                    int nodeNumber = Randomizer.nextInt(event.getLineageCount());
                     for (Node node : getNodesAsArray()) {
-                        if (node.getHeight()<=event.t
-                                && (node.isRoot() || node.getParent().getHeight()>event.t)) {
+                        if (node.getHeight()<=event.getHeight()
+                                && (node.isRoot() || node.getParent().getHeight()>event.getHeight())) {
                             
                             if (nodeNumber == 0) {
                                 recomb.setNode2(node);
@@ -471,7 +412,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     }
                     break;
                 } else
-                    u -= intervalArea*event.lineages;
+                    u -= intervalArea*event.getLineageCount();
             }
         }
     }
