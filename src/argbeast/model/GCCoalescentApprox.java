@@ -20,18 +20,26 @@ import argbeast.Recombination;
 import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.Coalescent;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.evolution.tree.coalescent.TreeIntervals;
 import feast.input.In;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Appoximation to the coalescent with gene conversion.")
-public class GCCoalescentApprox extends Coalescent {
+public class GCCoalescentApprox extends RecombinationGraphDistribution {
+    
+    public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
+            "arg", "Recombination graph.").setRequired();
+    
+    public Input<PopulationFunction> popSizeInput = new In<PopulationFunction>(
+            "populationModel", "Population model.").setRequired();
     
     public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
             "Recombination rate parameter.").setRequired();
@@ -46,24 +54,16 @@ public class GCCoalescentApprox extends Coalescent {
 
     
     RecombinationGraph arg;
-    TreeIntervals intervals;
     PopulationFunction popSize;
     int sequenceLength;
     
     boolean allowSEC;
-    
+
     @Override
     public void initAndValidate() throws Exception {
-        
-        intervals = treeIntervalsInput.get();
-        if (intervals == null)
-            throw new IllegalArgumentException("treeIntervals must be specified.");
 
-        if (!(intervals.treeInput.get() instanceof RecombinationGraph))
-            throw new IllegalArgumentException("Error: GCCoalescentApprox only"
-                    + " applicable to RecombinationGraph objects.");
+        arg = argInput.get();
         
-        arg = (RecombinationGraph)intervals.treeInput.get();
         sequenceLength = arg.getSequenceLength();
 
         popSize = popSizeInput.get();
@@ -78,14 +78,42 @@ public class GCCoalescentApprox extends Coalescent {
         
         logP = 0.0;
         
-        for (Recombination recomb : arg.getRecombinations())
-            logP += calculateRecombinantLogP(recomb);
+        for (Recombination recomb : arg.getRecombinations()) {
+            if (recomb == null)
+                logP += calculateClonalFrameLogP();
+            else
+                logP += calculateRecombinantLogP(recomb);
+        }
         
         logP += calculateConvertedRegionMapLogP();
         
         return logP;        
     }
 
+    /**
+     * Compute probability of clonal frame under coalescent.
+     * 
+     * @return log(P)
+     */
+    public double calculateClonalFrameLogP() {
+        
+        List<RecombinationGraph.Event> events = arg.getCFEvents();
+        
+        double thisLogP = 0.0;
+        
+        for (int i=0; i<events.size()-1; i++) {
+            double timeA = events.get(i).getHeight();
+            double timeB = events.get(i+1).getHeight();
+
+            double intervalArea = popSize.getIntegral(timeA, timeB);
+            thisLogP += -events.get(i).getLineageCount()*intervalArea;
+            
+            if (events.get(i+1).getType()==RecombinationGraph.EventType.COALESCENCE)
+                thisLogP += -Math.log(1.0/popSize.getPopSize(timeB));
+        }
+        
+        return thisLogP;
+    }
     
     /**
      * Compute probability of recombinant edges under conditional coalescent.
@@ -93,37 +121,34 @@ public class GCCoalescentApprox extends Coalescent {
      * @return log(P)
      */
     public double calculateRecombinantLogP(Recombination recomb) {
-
-        if (recomb == null) // Clonal frame
-            return calculateLogLikelihood(intervals, popSize);
+        
+        List<RecombinationGraph.Event> events = arg.getCFEvents();
         
         // Probability density of location of recombinant edge start
         double thisLogP = -Math.log(arg.getClonalFrameLength());
 
         // Identify interval containing the start of the recombinant edge
-        int startInterval = 0;
-        double t = 0.0;
-        while (t+intervals.getInterval(startInterval)<recomb.getHeight1()) {
-            t += intervals.getInterval(startInterval);
-            startInterval += 1;
+        int startIdx = 0;
+        while (startIdx < events.size()-1 &&
+                events.get(startIdx+1).getHeight() < recomb.getHeight1()) {
+            startIdx += 1;
         }
         
         // Lineages with which recombinant lineage can coalesce before
         // this time = k(t)-1, while after this time = k(t).
         double oldCoalescenceTime = recomb.getNode1().getParent().getHeight();
         
-        int i=startInterval;
-        while (t<recomb.getHeight2()) {
+        for (int i=startIdx; events.get(i).getHeight()<recomb.getHeight2(); i++) {
             
-            double timeA = Math.max(t, recomb.getHeight1());
+            double timeA = Math.max(events.get(i).getHeight(), recomb.getHeight1());
             
             double timeB;
             int k;
-            if (i<intervals.getIntervalCount()) {
-                timeB = Math.min(recomb.getHeight2(), t+intervals.getInterval(i));
-                k = intervals.getLineageCount(i);
+            if (i<events.size()-1) {
+                timeB = Math.min(recomb.getHeight2(), events.get(i+1).getHeight());
+                k = events.get(i).getLineageCount();
                 
-                if (!allowSEC && t < oldCoalescenceTime)
+                if (!allowSEC && events.get(i).getHeight() < oldCoalescenceTime)
                     k -=1;
             } else {
                 timeB = recomb.getHeight2();
@@ -132,9 +157,6 @@ public class GCCoalescentApprox extends Coalescent {
             
             double intervalArea = popSize.getIntegral(timeA, timeB);
             thisLogP += -k*intervalArea;
-            
-            t = timeB;
-            i += 1;
         }
         
         // Probability of single coalescence event
@@ -206,5 +228,20 @@ public class GCCoalescentApprox extends Coalescent {
     @Override
     protected boolean requiresRecalculation() {
         return true;
+    }
+
+    @Override
+    public List<String> getArguments() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<String> getConditions() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void sample(State state, Random random) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

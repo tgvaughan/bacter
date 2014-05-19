@@ -19,6 +19,7 @@ package argbeast;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Operator;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -71,6 +72,49 @@ public class RecombinationGraph extends Tree {
     protected List<Recombination> recombs;
     protected List<Recombination> storedRecombs;
     
+    public enum EventType {COALESCENCE, SAMPLE };
+    public class Event {
+        EventType type;
+        double t;
+        int lineages;
+        
+        public Event(Node node) {
+            if (node.isLeaf())
+                type = EventType.SAMPLE;
+            else
+                type = EventType.COALESCENCE;
+            
+            t = node.getHeight();
+        }
+        
+        public double getHeight() {
+            return t;
+        }
+        
+        public EventType getType() {
+            return type;
+        }
+        
+        /**
+         * @return number of lineages _above_ this event.
+         */
+        public int getLineageCount() {
+            return lineages;
+        }
+        
+        @Override
+        public String toString() {
+            return "t: " + t + ", k: " + lineages + ", type: " + type;
+        }
+    }
+    
+    /**
+     * List of events on clonal frame.
+     */
+    protected List<Event> cfEventList;
+    protected boolean cfEventListDirty;
+    
+    
     @Override
     public void initAndValidate() throws Exception {
 
@@ -86,6 +130,9 @@ public class RecombinationGraph extends Tree {
         if (fromStringInput.get() != null) {
             fromString(fromStringInput.get());
         }
+        
+        cfEventList = Lists.newArrayList();
+        cfEventListDirty = true;
         
         super.initAndValidate();
     }
@@ -711,6 +758,63 @@ public class RecombinationGraph extends Tree {
         return margNode;
     }
     
+
+    /**
+     * Obtain ordered list of events that make up the clonal frame.  Used
+     * for ARG probability density calculations and for various state proposal
+     * operators.
+     * 
+     * @return List of events.
+     */
+    public List<Event> getCFEvents() {
+        updateEvents();
+        
+        return cfEventList;
+    }
+    /**
+     * Assemble sorted list of events on clonal frame and a map from nodes
+     * to these events.
+     */
+    public void updateEvents() {
+        if (!cfEventListDirty)
+            return;
+        
+        cfEventList.clear();
+        
+        // Create event list
+        for (Node node : getNodesAsArray()) {
+            Event event = new Event(node);
+            cfEventList.add(event);
+        }
+        
+        // Sort events in increasing order of their times
+        Collections.sort(cfEventList, new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                if (o1.t<o2.t)
+                    return -1;
+                
+                if (o2.t<o1.t)
+                    return 1;
+                
+                return 0;
+            }
+        });
+        
+        // Compute lineage counts:
+        int k=0;
+        for (Event event : cfEventList) {
+            if (event.type == EventType.SAMPLE)
+                k += 1;
+            else
+                k -= 1;
+            
+            event.lineages = k;
+        }
+        
+        cfEventListDirty = false;
+    }
+    
     /*
     * StateNode implementation
     */
@@ -749,7 +853,10 @@ public class RecombinationGraph extends Tree {
         List<Recombination> tmp = storedRecombs;
         storedRecombs = recombs;
         recombs = tmp;
+        
+        cfEventListDirty = true;
     }
+
     
     /**
      * Mark statenode as dirty if it belongs to a state.
@@ -757,6 +864,13 @@ public class RecombinationGraph extends Tree {
     public void startEditing() {
         if (state != null)
             startEditing(null);
+        cfEventListDirty = true;
+    }
+    
+    @Override
+    public void startEditing(Operator operator) {
+        super.startEditing(operator);
+        cfEventListDirty = true;
     }
     
     /*

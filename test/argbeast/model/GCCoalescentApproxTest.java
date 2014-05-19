@@ -96,7 +96,7 @@ public class GCCoalescentApproxTest {
         // Coalescent
         GCCoalescentApprox coalescent = new GCCoalescentApprox();
         coalescent.initByName(
-                "treeIntervals", new TreeIntervals(arg),
+                "arg", arg,
                 "populationModel", popFunction,
                 "rho", new RealParameter("1"),
                 "delta", new RealParameter("10"),
@@ -108,7 +108,7 @@ public class GCCoalescentApproxTest {
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         
         // Coalescent probability when no recombinations exist
-        logP = coalescent.calculateRecombinantLogP(null);
+        logP = coalescent.calculateClonalFrameLogP();
         logPtrue = -4.733611657513131;
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         

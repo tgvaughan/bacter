@@ -74,7 +74,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     + "recombinant edges to be simulated.");
     
     public Input<String> outputFileNameInput = In.create("outputFileName",
-            "If provided, simulated ARG is additionally written to this file."); 
+            "If provided, simulated ARG is additionally written to this file.");
 
     private double rho, delta;
     private PopulationFunction popFunc;
@@ -112,7 +112,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         popFunc = popFuncInput.get();
         
         if (alignmentInput.get() != null) {
-            nTaxa = alignmentInput.get().getNrTaxa();
+            nTaxa = alignmentInput.get().getTaxonCount();
             taxonSet = new TaxonSet(alignmentInput.get());
         } else {
             if (clonalFrameInput.get() != null) {
