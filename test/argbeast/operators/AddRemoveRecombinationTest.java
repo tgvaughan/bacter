@@ -73,7 +73,6 @@ public class AddRemoveRecombinationTest {
             oldRecombs = Lists.newArrayList(
                     arg.getRecombinations());
         
-            operator.updateEvents();
             logP1 = operator.drawNewRecomb();
         } while (Double.isInfinite(logP1));
         
@@ -87,7 +86,6 @@ public class AddRemoveRecombinationTest {
         }
         assertNotNull(newRecomb);
         
-        operator.updateEvents();
         double logP2 = operator.getRecombProb(newRecomb);
         System.out.println("logP2 = " + logP2);
         

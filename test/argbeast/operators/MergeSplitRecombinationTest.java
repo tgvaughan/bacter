@@ -19,13 +19,10 @@ package argbeast.operators;
 
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
-import argbeast.model.SimulatedRecombinationGraph;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.TreeParser;
-import com.google.common.collect.Lists;
-import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
 

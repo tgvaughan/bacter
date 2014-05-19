@@ -17,6 +17,7 @@
 package argbeast.operators;
 
 import argbeast.Recombination;
+import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -50,31 +51,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     
     private PopulationFunction popFunc;
     
-    private enum EventType {COAL, SAMP};
-    private class Event {
-        EventType type;
-        double t;
-        double tau = -1.0;
-        int lineages = -1;
-        
-        public Event(Node node) {
-            if (node.isLeaf())
-                type = EventType.SAMP;
-            else
-                type = EventType.COAL;
-            
-            t = node.getHeight();
-        }
-        
-        @Override
-        public String toString() {
-            return String.format("%s (k:%d t:%g tau:%g)",
-                    type.name(), lineages, t, tau);
-        }
-    }
-    
-    private List<Event> eventList;
-    
     private class ProposalFailed extends Exception { };
     
     public AddRemoveRecombination() { };
@@ -84,14 +60,11 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
         super.initAndValidate();
 
         popFunc = popFuncInput.get();
-        eventList = Lists.newArrayList();
     };
 
     @Override
     public double proposal() {
         double logHGF = 0;
-        
-        updateEvents();
         
         if (Randomizer.nextBoolean()) {
             
@@ -140,35 +113,34 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
      */
     public double drawNewRecomb() throws ProposalFailed {
         double logP = 0;
-        
+
         Recombination newRecomb = new Recombination();
+        
+        List<RecombinationGraph.Event> eventList = arg.getCFEvents();
         
         // Select starting point on clonal frame
         double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
         logP += Math.log(1.0/arg.getClonalFrameLength());
         
-        double tauStart = 0.0;
-        
         boolean started = false;
         for (int eidx=0; eidx<eventList.size(); eidx++) {
-            Event event = eventList.get(eidx);
+            RecombinationGraph.Event event = eventList.get(eidx);
             
             if (!started) {
                 
                 // If edge hasn't started, eidx must be < eventList.size()-1
-                double interval = eventList.get(eidx+1).t - event.t;
+                double interval = eventList.get(eidx+1).getHeight() - event.getHeight();
                 
-                if (u<interval*event.lineages) {
+                if (u<interval*event.getLineageCount()) {
                     for (Node node : arg.getNodesAsArray()){
                         if (node.isRoot())
                             continue;
                         
-                        if (node.getHeight()<=event.t
-                                && node.getParent().getHeight()>event.t) {
+                        if (node.getHeight()<=event.getHeight()
+                                && node.getParent().getHeight()>event.getHeight()) {
                             if (u<interval) {
                                 newRecomb.setNode1(node);
-                                newRecomb.setHeight1(event.t + u);
-                                tauStart = popFunc.getIntensity(event.t + u);
+                                newRecomb.setHeight1(event.getHeight() + u);
                                 break;
                             } else
                                 u -= interval;
@@ -178,31 +150,30 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                     started = true;
                     u = Randomizer.nextExponential(1.0);
                 } else
-                    u -= interval*event.lineages;
+                    u -= interval*event.getLineageCount();
             }
             
             if (started) {
+                double t = Math.max(event.getHeight(), newRecomb.getHeight1());
                 double interval;
                 if (eidx<eventList.size()-1)
-                    interval = (eventList.get(eidx+1).tau
-                            - Math.max(event.tau, tauStart));
+                    interval = popFunc.getIntegral(t, eventList.get(eidx+1).getHeight());
                 else
                     interval = Double.POSITIVE_INFINITY;
 
-                if (u < interval*event.lineages) {
+                if (u < interval*event.getLineageCount()) {
                                         
                     // Fix height of attachment point
-                    double tauEnd = Math.max(event.tau, tauStart) + u/event.lineages;
+                    double tauEnd = popFunc.getIntensity(t) + u/event.getLineageCount();
                     double tEnd = popFunc.getInverseIntensity(tauEnd);
                     newRecomb.setHeight2(tEnd);
-                    logP += -u
-                            + Math.log(1.0/popFunc.getPopSize(tEnd));
+                    logP += -u + Math.log(1.0/popFunc.getPopSize(tEnd));
                     
                     // Choose particular lineage to attach to
-                    int nodeNumber = Randomizer.nextInt(event.lineages);
+                    int nodeNumber = Randomizer.nextInt(event.getLineageCount());
                     for (Node node : arg.getNodesAsArray()) {
-                        if (node.getHeight()<=event.t
-                                && (node.isRoot() || node.getParent().getHeight()>event.t)) {
+                        if (node.getHeight()<=event.getHeight()
+                                && (node.isRoot() || node.getParent().getHeight()>event.getHeight())) {
                             if (nodeNumber==0) {
                                 newRecomb.setNode2(node);
                                 break;
@@ -212,8 +183,8 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                     }
                     break;
                 } else {
-                    u -= interval*event.lineages;
-                    logP += -interval*event.lineages;
+                    u -= interval*event.getLineageCount();
+                    logP += -interval*event.getLineageCount();
                 }
                 
             }
@@ -265,31 +236,32 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     public double getRecombProb(Recombination recomb) {
         double logP = 0;
         
+        List<RecombinationGraph.Event> eventList = arg.getCFEvents();
+        
         // Probability of choosing random point on clonal frame
         logP += Math.log(1.0/arg.getClonalFrameLength());
-        
-        double tau1 = popFunc.getIntensity(recomb.getHeight1());
-        double tau2 = popFunc.getIntensity(recomb.getHeight2());
         
         boolean started = false;
         for (int eidx=0; eidx<eventList.size(); eidx++) {
             
-            Event event = eventList.get(eidx);
+            RecombinationGraph.Event event = eventList.get(eidx);
             
             if (!started) {
-                if (eventList.get(eidx+1).t>recomb.getHeight1())
+                if (eventList.get(eidx+1).getHeight()>recomb.getHeight1())
                     started = true;
             }
             
             if (started) {
-                double tauStart = Math.max(event.tau,tau1);
+                double t = Math.max(recomb.getHeight1(), event.getHeight());
 
-                if (eidx==eventList.size()-1 || eventList.get(eidx+1).tau>tau2) {
-                    logP += -event.lineages*(tau2-tauStart) +
-                            Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
+                if (eidx==eventList.size()-1
+                        || eventList.get(eidx+1).getHeight()>recomb.getHeight2()) {
+                    logP += -event.getLineageCount()*popFunc.getIntegral(t, recomb.getHeight2())
+                            + Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
                     break;
                 } else {
-                    logP += -event.lineages*(eventList.get(eidx+1).tau-tauStart);
+                    logP += -event.getLineageCount()
+                            *popFunc.getIntegral(t, eventList.get(eidx+1).getHeight());
                 }
             }
         }
@@ -305,58 +277,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
                 + Math.log(1.0/deltaInput.get().getValue());
         
         return logP;
-    }
-    
-    /**
-     * Assemble sorted list of events on clonal frame and a map from nodes
-     * to these events.
-     */
-    public void updateEvents() {
-        eventList.clear();
-        
-        // Create event list
-        for (Node node : arg.getNodesAsArray()) {
-            Event event = new Event(node);
-            eventList.add(event);
-        }
-        
-        // Sort events in increasing order of their times
-        Collections.sort(eventList, new Comparator<Event>() {
-            @Override
-            public int compare(Event o1, Event o2) {
-                if (o1.t<o2.t)
-                    return -1;
-                
-                if (o2.t<o1.t)
-                    return 1;
-                
-                return 0;
-            }
-        });
-        
-        // Compute dimensionless event times and lineage counts
-        double tau = eventList.get(0).t;
-        int k = 0;
-        
-        for (int eidx = 0; eidx<eventList.size(); eidx++) {
-            Event event = eventList.get(eidx);            
-            
-            // Record current dimensionless time
-            event.tau = tau;
-            
-            // Update and record current lineage count
-            if (event.type == EventType.SAMP)
-                k += 1;
-            else
-                k -= 1;
-            event.lineages = k;
-            
-            // Increment dimensionless time using population model
-            if (eidx<eventList.size()-1) {
-                Event nextEvent = eventList.get(eidx+1);
-                tau += popFunc.getIntegral(event.t, nextEvent.t);
-            }
-        }
     }
     
     /**
