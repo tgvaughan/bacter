@@ -108,12 +108,13 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         
         double u = Randomizer.nextExponential(1.0);
         
-        for (int eidx=0; eidx<events.size(); eidx++) {
+        int startEventIdx = 0;
+        while (events.get(startEventIdx+1).getHeight()<recomb.getHeight1())
+            startEventIdx += 1;
+        
+        for (int eidx=startEventIdx; eidx<events.size(); eidx++) {
             
             RecombinationGraph.Event event = events.get(eidx);
-            
-            if (events.get(eidx+1).getHeight()<recomb.getHeight1())
-                continue;
             
             double t = Math.max(recomb.getHeight1(), event.getHeight());
         
@@ -164,10 +165,11 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         
         List<RecombinationGraph.Event> events = arg.getCFEvents();
         
-        for (int eidx=0; eidx<events.size(); eidx++) {
-            if (events.get(eidx+1).getHeight()<recomb.getHeight1())
-                continue;
-            
+        int startEventIdx = 0;
+        while (events.get(startEventIdx+1).getHeight()<recomb.getHeight1())
+            startEventIdx += 1;
+        
+        for (int eidx=startEventIdx; eidx<events.size(); eidx++) {           
             double t1 = Math.max(recomb.getHeight1(), events.get(eidx).getHeight());
             double t2 = recomb.getHeight2();
             if (eidx<events.size()-1)
@@ -176,7 +178,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
             double intervalArea = popFunc.getIntegral(t1, t2);
             logP += -intervalArea*events.get(eidx).getLineageCount();
             
-            if (eidx==events.size()-1 || events.get(eidx+1).getHeight()>t2)
+            if (eidx==events.size()-1 || events.get(eidx+1).getHeight()>recomb.getHeight2())
                 break;
         }
         

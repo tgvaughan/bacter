@@ -23,8 +23,8 @@ import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;
 import java.util.List;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Tests for AddRemoveRecombination operator.
