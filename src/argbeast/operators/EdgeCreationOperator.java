@@ -73,6 +73,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
                 u -= node.getLength();
         }
         
+        // Select arrival point
         logP += coalesceEdge(recomb);
         
         return logP;
@@ -106,28 +107,36 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         
         List<RecombinationGraph.Event> events = arg.getCFEvents();
         
-        double u = Randomizer.nextExponential(1.0);
-        
+        // Locate event immediately below departure point
         int startEventIdx = 0;
         while (events.get(startEventIdx+1).getHeight()<recomb.getHeight1())
             startEventIdx += 1;
+                
+        // Choose edge length in dimensionless time.
+        double u = Randomizer.nextExponential(1.0);
         
+        // Determine arrival point in real time
         for (int eidx=startEventIdx; eidx<events.size(); eidx++) {
             
             RecombinationGraph.Event event = events.get(eidx);
             
             double t = Math.max(recomb.getHeight1(), event.getHeight());
         
+            // Determine length of interval in dimensionless time
             double intervalArea;
             if (eidx<events.size()-1)
                 intervalArea = popFunc.getIntegral(t, events.get(eidx+1).getHeight());
             else
                 intervalArea = Double.POSITIVE_INFINITY;
             
+            // Check whether arrival falls within this interval
             if (u<intervalArea*event.getLineageCount()) {
                 
-                recomb.setHeight2(popFunc.getIntensity(t) + u/event.getLineageCount());
+                // Set arrival point in real time
+                recomb.setHeight2(popFunc.getInverseIntensity(
+                        popFunc.getIntensity(t) + u/event.getLineageCount()));
                 
+                // Attach to random clonal frame lineage extant at this time
                 int z = Randomizer.nextInt(event.getLineageCount());
                 for (Node node : arg.getNodesAsArray()) {
                     if (recomb.getHeight2()>=node.getHeight() &&
@@ -139,16 +148,15 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
                             z -= 1;
                     }
                 }
-                
+
+                logP += -u + Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
                 break;
                 
             } else {
-                logP += -intervalArea*event.getLineageCount();
                 u -= intervalArea*event.getLineageCount();
+                logP += -intervalArea*event.getLineageCount();
             }
         }
-        
-        logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
         
         return logP;
     }
@@ -165,10 +173,12 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         
         List<RecombinationGraph.Event> events = arg.getCFEvents();
         
+        // Find event immediately below departure point
         int startEventIdx = 0;
         while (events.get(startEventIdx+1).getHeight()<recomb.getHeight1())
             startEventIdx += 1;
         
+        // Compute probability of edge length and arrival
         for (int eidx=startEventIdx; eidx<events.size(); eidx++) {           
             double t1 = Math.max(recomb.getHeight1(), events.get(eidx).getHeight());
             double t2 = recomb.getHeight2();
@@ -178,11 +188,11 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
             double intervalArea = popFunc.getIntegral(t1, t2);
             logP += -intervalArea*events.get(eidx).getLineageCount();
             
-            if (eidx==events.size()-1 || events.get(eidx+1).getHeight()>recomb.getHeight2())
+            if (eidx==events.size()-1 || events.get(eidx+1).getHeight()>recomb.getHeight2()) {
+                logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
                 break;
+            }
         }
-        
-        logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
         
         return logP;
     }
