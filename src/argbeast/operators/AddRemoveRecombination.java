@@ -35,7 +35,7 @@ import java.util.List;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Operator which adds and removes recombinations to/from an ARG.")
-public class AddRemoveRecombination extends RecombinationGraphOperator {
+public class AddRemoveRecombination extends EdgeCreationOperator {
     
     public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
             "Recombination rate parameter.").setRequired();
@@ -43,13 +43,8 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
     
-    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
-            "populationModel", "A population size model.").setRequired();
-    
     public Input<TreeIntervals> treeIntervalsInput = new In<TreeIntervals>(
             "treeIntervals", "Tree intervals calculation node.").setRequired();
-    
-    private PopulationFunction popFunc;
     
     private class ProposalFailed extends Exception { };
     
@@ -58,8 +53,6 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
-
-        popFunc = popFuncInput.get();
     };
 
     @Override
@@ -116,79 +109,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
 
         Recombination newRecomb = new Recombination();
         
-        List<RecombinationGraph.Event> eventList = arg.getCFEvents();
-        
-        // Select starting point on clonal frame
-        double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
-        logP += Math.log(1.0/arg.getClonalFrameLength());
-        
-        boolean started = false;
-        for (int eidx=0; eidx<eventList.size(); eidx++) {
-            RecombinationGraph.Event event = eventList.get(eidx);
-            
-            if (!started) {
-                
-                // If edge hasn't started, eidx must be < eventList.size()-1
-                double interval = eventList.get(eidx+1).getHeight() - event.getHeight();
-                
-                if (u<interval*event.getLineageCount()) {
-                    for (Node node : arg.getNodesAsArray()){
-                        if (node.isRoot())
-                            continue;
-                        
-                        if (node.getHeight()<=event.getHeight()
-                                && node.getParent().getHeight()>event.getHeight()) {
-                            if (u<interval) {
-                                newRecomb.setNode1(node);
-                                newRecomb.setHeight1(event.getHeight() + u);
-                                break;
-                            } else
-                                u -= interval;
-                        }
-                    }
-
-                    started = true;
-                    u = Randomizer.nextExponential(1.0);
-                } else
-                    u -= interval*event.getLineageCount();
-            }
-            
-            if (started) {
-                double t = Math.max(event.getHeight(), newRecomb.getHeight1());
-                double interval;
-                if (eidx<eventList.size()-1)
-                    interval = popFunc.getIntegral(t, eventList.get(eidx+1).getHeight());
-                else
-                    interval = Double.POSITIVE_INFINITY;
-
-                if (u < interval*event.getLineageCount()) {
-                                        
-                    // Fix height of attachment point
-                    double tauEnd = popFunc.getIntensity(t) + u/event.getLineageCount();
-                    double tEnd = popFunc.getInverseIntensity(tauEnd);
-                    newRecomb.setHeight2(tEnd);
-                    logP += -u + Math.log(1.0/popFunc.getPopSize(tEnd));
-                    
-                    // Choose particular lineage to attach to
-                    int nodeNumber = Randomizer.nextInt(event.getLineageCount());
-                    for (Node node : arg.getNodesAsArray()) {
-                        if (node.getHeight()<=event.getHeight()
-                                && (node.isRoot() || node.getParent().getHeight()>event.getHeight())) {
-                            if (nodeNumber==0) {
-                                newRecomb.setNode2(node);
-                                break;
-                            } else
-                                nodeNumber -= 1;
-                        }
-                    }
-                    break;
-                } else {
-                    u -= interval*event.getLineageCount();
-                    logP += -interval*event.getLineageCount();
-                }
-                
-            }
-        }
+        logP += attachEdge(newRecomb);
         
         // Draw location of converted region.  Currently draws start locus 
         // uniformly from among available unconverted loci and draws the tract
@@ -236,35 +157,7 @@ public class AddRemoveRecombination extends RecombinationGraphOperator {
     public double getRecombProb(Recombination recomb) {
         double logP = 0;
         
-        List<RecombinationGraph.Event> eventList = arg.getCFEvents();
-        
-        // Probability of choosing random point on clonal frame
-        logP += Math.log(1.0/arg.getClonalFrameLength());
-        
-        boolean started = false;
-        for (int eidx=0; eidx<eventList.size(); eidx++) {
-            
-            RecombinationGraph.Event event = eventList.get(eidx);
-            
-            if (!started) {
-                if (eventList.get(eidx+1).getHeight()>recomb.getHeight1())
-                    started = true;
-            }
-            
-            if (started) {
-                double t = Math.max(recomb.getHeight1(), event.getHeight());
-
-                if (eidx==eventList.size()-1
-                        || eventList.get(eidx+1).getHeight()>recomb.getHeight2()) {
-                    logP += -event.getLineageCount()*popFunc.getIntegral(t, recomb.getHeight2())
-                            + Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
-                    break;
-                } else {
-                    logP += -event.getLineageCount()
-                            *popFunc.getIntegral(t, eventList.get(eidx+1).getHeight());
-                }
-            }
-        }
+        logP += getEdgeAttachmentProb(recomb);
         
         // Calculate probability of converted region.
         int convertableLength = getConvertibleSiteCount(recomb);
