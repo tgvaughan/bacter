@@ -133,8 +133,6 @@ public class RecombinationGraphLikelihoodTest {
     @Test
     public void testLikelihoodUsingSimulatedData() throws Exception {
         
-        Randomizer.setSeed(5);
-        
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
@@ -188,7 +186,14 @@ public class RecombinationGraphLikelihoodTest {
         }
         
         // Rounding errors (?) in the 11th decimal place.  Is this expected?
-        assertTrue(Math.abs(logP-logPprime)<1e-10);
+        double relError = 2.0*Math.abs(logP-logPprime)/(logP + logPprime);
+        System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
+                logP, logPprime, relError);
+        assertTrue(relError<1e-15);
         
+    }
+    
+    private double relError(double val, double truth) {
+        return 2.0*Math.abs(val-truth)/(val + truth);
     }
 }

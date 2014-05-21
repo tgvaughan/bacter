@@ -47,18 +47,12 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
     
-    public Input<Boolean> allowSECInput = new In<Boolean>(
-            "allowSameEdgeCoalescence",
-            "Allow recombinant edges to attach to the edge they depart from.")
-            .setDefault(true);
-
-    
     RecombinationGraph arg;
     PopulationFunction popSize;
     int sequenceLength;
     
-    boolean allowSEC;
-
+    public GCCoalescentApprox() { }
+    
     @Override
     public void initAndValidate() throws Exception {
 
@@ -67,8 +61,6 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
         sequenceLength = arg.getSequenceLength();
 
         popSize = popSizeInput.get();
-        
-        allowSEC = allowSECInput.get();
         
         super.initAndValidate();
     }
@@ -126,7 +118,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
         List<RecombinationGraph.Event> events = arg.getCFEvents();
         
         // Probability density of location of recombinant edge start
-        double thisLogP = -Math.log(arg.getClonalFrameLength());
+        double thisLogP = Math.log(1.0/arg.getClonalFrameLength());
 
         // Identify interval containing the start of the recombinant edge
         int startIdx = 0;
@@ -135,29 +127,18 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
             startIdx += 1;
         }
         
-        // Lineages with which recombinant lineage can coalesce before
-        // this time = k(t)-1, while after this time = k(t).
-        double oldCoalescenceTime = recomb.getNode1().getParent().getHeight();
-        
-        for (int i=startIdx; events.get(i).getHeight()<recomb.getHeight2(); i++) {
+        for (int i=startIdx; i<events.size() && events.get(i).getHeight()<recomb.getHeight2(); i++) {
             
             double timeA = Math.max(events.get(i).getHeight(), recomb.getHeight1());
             
             double timeB;
-            int k;
-            if (i<events.size()-1) {
+            if (i<events.size()-1)
                 timeB = Math.min(recomb.getHeight2(), events.get(i+1).getHeight());
-                k = events.get(i).getLineageCount();
-                
-                if (!allowSEC && events.get(i).getHeight() < oldCoalescenceTime)
-                    k -=1;
-            } else {
+            else
                 timeB = recomb.getHeight2();
-                k = 1;
-            }
             
             double intervalArea = popSize.getIntegral(timeA, timeB);
-            thisLogP += -k*intervalArea;
+            thisLogP += -events.get(i).getLineageCount()*intervalArea;
         }
         
         // Probability of single coalescence event
@@ -233,12 +214,12 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
 
     @Override
     public List<String> getArguments() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null; // Doesn't seem to be used...
     }
 
     @Override
     public List<String> getConditions() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null; // Doesn't seem to be used...
     }
 
     @Override

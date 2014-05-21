@@ -43,9 +43,6 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
     
-    public Input<TreeIntervals> treeIntervalsInput = new In<TreeIntervals>(
-            "treeIntervals", "Tree intervals calculation node.").setRequired();
-    
     private class ProposalFailed extends Exception { };
     
     public AddRemoveRecombination() { };

@@ -99,8 +99,7 @@ public class GCCoalescentApproxTest {
                 "arg", arg,
                 "populationModel", popFunction,
                 "rho", new RealParameter("1"),
-                "delta", new RealParameter("10"),
-                "allowSameEdgeCoalescence", true);
+                "delta", new RealParameter("10"));
         
         // Test converted region probability when no recombinations exist
         double logP = coalescent.calculateConvertedRegionMapLogP();
