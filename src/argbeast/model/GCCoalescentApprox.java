@@ -38,7 +38,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
     public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
             "arg", "Recombination graph.").setRequired();
     
-    public Input<PopulationFunction> popSizeInput = new In<PopulationFunction>(
+    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "Population model.").setRequired();
     
     public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
@@ -48,7 +48,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
             "Tract length parameter.").setRequired();
     
     RecombinationGraph arg;
-    PopulationFunction popSize;
+    PopulationFunction popFunc;
     int sequenceLength;
     
     public GCCoalescentApprox() { }
@@ -60,7 +60,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
         
         sequenceLength = arg.getSequenceLength();
 
-        popSize = popSizeInput.get();
+        popFunc = popFuncInput.get();
         
         super.initAndValidate();
     }
@@ -97,12 +97,12 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
             double timeA = events.get(i).getHeight();
             double timeB = events.get(i+1).getHeight();
 
-            double intervalArea = popSize.getIntegral(timeA, timeB);
+            double intervalArea = popFunc.getIntegral(timeA, timeB);
             int k = events.get(i).getLineageCount();
             thisLogP += -0.5*k*(k-1)*intervalArea;
             
             if (events.get(i+1).getType()==RecombinationGraph.EventType.COALESCENCE)
-                thisLogP += -Math.log(1.0/popSize.getPopSize(timeB));
+                thisLogP += -Math.log(1.0/popFunc.getPopSize(timeB));
         }
         
         return thisLogP;
@@ -122,10 +122,8 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
 
         // Identify interval containing the start of the recombinant edge
         int startIdx = 0;
-        while (startIdx < events.size()-1 &&
-                events.get(startIdx+1).getHeight() < recomb.getHeight1()) {
+        while (events.get(startIdx+1).getHeight() < recomb.getHeight1())
             startIdx += 1;
-        }
         
         for (int i=startIdx; i<events.size() && events.get(i).getHeight()<recomb.getHeight2(); i++) {
             
@@ -137,12 +135,12 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
             else
                 timeB = recomb.getHeight2();
             
-            double intervalArea = popSize.getIntegral(timeA, timeB);
+            double intervalArea = popFunc.getIntegral(timeA, timeB);
             thisLogP += -events.get(i).getLineageCount()*intervalArea;
         }
         
         // Probability of single coalescence event
-        thisLogP += -Math.log(popSize.getPopSize(recomb.getHeight2()));
+        thisLogP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
         
         return thisLogP;
     }

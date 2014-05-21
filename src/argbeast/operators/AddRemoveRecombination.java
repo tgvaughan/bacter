@@ -17,19 +17,11 @@
 package argbeast.operators;
 
 import argbeast.Recombination;
-import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.coalescent.PopulationFunction;
-import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.Randomizer;
-import com.google.common.collect.Lists;
 import feast.input.In;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>

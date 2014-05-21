@@ -108,24 +108,24 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         List<RecombinationGraph.Event> events = arg.getCFEvents();
         
         // Locate event immediately below departure point
-        int startEventIdx = 0;
-        while (events.get(startEventIdx+1).getHeight()<recomb.getHeight1())
-            startEventIdx += 1;
+        int startIdx = 0;
+        while (events.get(startIdx+1).getHeight()<recomb.getHeight1())
+            startIdx += 1;
                 
         // Choose edge length in dimensionless time.
         double u = Randomizer.nextExponential(1.0);
         
         // Determine arrival point in real time
-        for (int eidx=startEventIdx; eidx<events.size(); eidx++) {
+        for (int i=startIdx; i<events.size(); i++) {
             
-            RecombinationGraph.Event event = events.get(eidx);
+            RecombinationGraph.Event event = events.get(i);
             
             double t = Math.max(recomb.getHeight1(), event.getHeight());
         
             // Determine length of interval in dimensionless time
             double intervalArea;
-            if (eidx<events.size()-1)
-                intervalArea = popFunc.getIntegral(t, events.get(eidx+1).getHeight());
+            if (i<events.size()-1)
+                intervalArea = popFunc.getIntegral(t, events.get(i+1).getHeight());
             else
                 intervalArea = Double.POSITIVE_INFINITY;
             
@@ -174,25 +174,23 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         List<RecombinationGraph.Event> events = arg.getCFEvents();
         
         // Find event immediately below departure point
-        int startEventIdx = 0;
-        while (events.get(startEventIdx+1).getHeight()<recomb.getHeight1())
-            startEventIdx += 1;
+        int startIdx = 0;
+        while (events.get(startIdx+1).getHeight()<recomb.getHeight1())
+            startIdx += 1;
         
         // Compute probability of edge length and arrival
-        for (int eidx=startEventIdx; eidx<events.size(); eidx++) {           
-            double t1 = Math.max(recomb.getHeight1(), events.get(eidx).getHeight());
+        for (int i=startIdx; i<events.size() && events.get(i).getHeight()<recomb.getHeight2(); i++) {           
+            double t1 = Math.max(recomb.getHeight1(), events.get(i).getHeight());
             double t2 = recomb.getHeight2();
-            if (eidx<events.size()-1)
-                t2 = Math.min(t2, events.get(eidx+1).getHeight());
+            if (i<events.size()-1)
+                t2 = Math.min(t2, events.get(i+1).getHeight());
         
             double intervalArea = popFunc.getIntegral(t1, t2);
-            logP += -intervalArea*events.get(eidx).getLineageCount();
-            
-            if (eidx==events.size()-1 || events.get(eidx+1).getHeight()>recomb.getHeight2()) {
-                logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
-                break;
-            }
+            logP += -intervalArea*events.get(i).getLineageCount();
         }
+        
+        // Probability of single coalescence event
+        logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
         
         return logP;
     }
