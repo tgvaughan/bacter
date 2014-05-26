@@ -185,15 +185,9 @@ public class RecombinationGraphLikelihoodTest {
             logPprime += treeLikelihood.calculateLogP();
         }
         
-        // Rounding errors (?) in the 11th decimal place.  Is this expected?
-        double relError = 2.0*Math.abs(logP-logPprime)/(logP + logPprime);
+        double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
         System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
                 logP, logPprime, relError);
-        assertTrue(relError<1e-15);
-        
-    }
-    
-    private double relError(double val, double truth) {
-        return 2.0*Math.abs(val-truth)/(val + truth);
+        assertTrue(relError<1e-14);
     }
 }

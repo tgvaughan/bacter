@@ -58,20 +58,49 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         
         double logP = 0.0;
         
+        List<RecombinationGraph.Event> eventList = arg.getCFEvents();
+        
         // Select departure point
         double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
         logP += Math.log(1.0/arg.getClonalFrameLength());
         
-        for (Node node : arg.getNodesAsArray()) {
-            if (node.isRoot())
-                continue;
+        for (int eidx=0; eidx<eventList.size(); eidx++) {
+            RecombinationGraph.Event event = eventList.get(eidx);
             
-            if (u<node.getLength()) {
-                recomb.setNode1(node);
-                recomb.setHeight1(node.getHeight()+u);
+            // If edge hasn't started, eidx must be < eventList.size()-1
+            double interval = eventList.get(eidx+1).getHeight() - event.getHeight();
+                
+            if (u<interval*event.getLineageCount()) {
+                for (Node node : arg.getNodesAsArray()){
+                    if (node.isRoot())
+                        continue;
+                    
+                    if (node.getHeight()<=event.getHeight()
+                            && node.getParent().getHeight()>event.getHeight()) {
+                        if (u<interval) {
+                            recomb.setNode1(node);
+                            recomb.setHeight1(event.getHeight() + u);
+                            break;
+                        } else
+                                u -= interval;
+                    }
+                }
+
+                break;
             } else
-                u -= node.getLength();
+                u -= interval*event.getLineageCount();
         }
+        
+//        for (Node node : arg.getNodesAsArray()) {
+//            if (node.isRoot())
+//                continue;
+//            
+//            if (u<node.getLength()) {
+//                recomb.setNode1(node);
+//                recomb.setHeight1(node.getHeight()+u);
+//            } else
+//                u -= node.getLength();
+//        }
         
         // Select arrival point
         logP += coalesceEdge(recomb);
@@ -139,8 +168,10 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
                 // Attach to random clonal frame lineage extant at this time
                 int z = Randomizer.nextInt(event.getLineageCount());
                 for (Node node : arg.getNodesAsArray()) {
-                    if (recomb.getHeight2()>=node.getHeight() &&
-                            (node.isRoot() || node.getParent().getHeight()>recomb.getHeight2())) {
+                    if (node.getHeight()<=event.getHeight()
+                            && (node.isRoot() || node.getParent().getHeight()>event.getHeight())) {
+                    //if (recomb.getHeight2()>=node.getHeight() &&
+                     //       (node.isRoot() || node.getParent().getHeight()>recomb.getHeight2())) {
                         if (z==0) {
                             recomb.setNode2(node);
                             break;
