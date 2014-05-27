@@ -21,6 +21,9 @@ import argbeast.Recombination;
 import beast.core.Description;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
+import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -28,13 +31,17 @@ import beast.util.Randomizer;
 @Description("Operator which swaps the role of the clonal frame with that of "
         + "one of the marginal trees resulting from a conversion.  Note that "
         + "this move conserves the marginal trees themselves.")
-public class RecombClonalFrameSwap extends RecombinationGraphOperator {
+public class RecombClonalFrameSwap extends EdgeCreationOperator {
 
     @Override
     public double proposal() {
+        
+        double logP = 0.0;
 
         if (arg.getNRecombs()==0)
             return Double.NEGATIVE_INFINITY;
+        
+        // 1. Choose recombination
         
         Recombination recomb = arg.getRecombinations().get(
                 Randomizer.nextInt(arg.getNRecombs())+1);
@@ -42,77 +49,91 @@ public class RecombClonalFrameSwap extends RecombinationGraphOperator {
         if (recomb.getNode1()==recomb.getNode2())
             return Double.NEGATIVE_INFINITY;
         
-        Node origNode1 = recomb.getNode1();
-        Node origNode1Par = origNode1.getParent();
-        Node origNode1Sis = getSibling(origNode1);
-        Node origNode2 = recomb.getNode2();
-        double origHeight2 = recomb.getHeight2();
-        double newHeight2 = origNode1Par.getHeight();
+        logP -= Math.log(1.0/arg.getNRecombs());
 
         String oldARG = arg.getExtendedNewick(true);
         
-        for (Recombination otherRecomb : arg.getRecombinations()) {
-            if (otherRecomb == null || otherRecomb == recomb)
-                continue;
+        // 2. Make marginal tree of chosen recomb the new clonal frame.
+        
+        Node floating = recomb.getNode1().getParent();
+        Node sister = floating.getLeft()==recomb.getNode1()
+                ? floating.getRight()
+                : floating.getLeft();
+        
+        floating.removeChild(sister);
+        
+        if (recomb.getNode2() == floating)
+            recomb.setNode2(sister);
+        
+        if (floating.isRoot())
+            sister.setParent(null);
+        else {
+            Node grandparent = floating.getParent();
+            floating.setParent(null);
+            grandparent.removeChild(floating);
+            grandparent.addChild(sister);
+        }
+        
+        Node newSister = recomb.getNode2();
 
-            // Can't perform move reversibly if there are recombinant edge
-            // connections above height2 on node1
-            if ((otherRecomb.getNode1() == origNode1
-                    && otherRecomb.getHeight1()>recomb.getHeight2())
-                    || (otherRecomb.getNode2() == origNode1
-                    && otherRecomb.getHeight2()>recomb.getHeight2()))
-                return Double.NEGATIVE_INFINITY;
-            
-            // Move all recombinant edge connections on origNode1Par to origNode1Sis
-            
-            if (otherRecomb.getNode1() == origNode1Par)
-                otherRecomb.setNode1(origNode1Sis);
-            
-            if (otherRecomb.getNode2() == origNode1Par)
-                otherRecomb.setNode2(origNode1Sis);
-            
-                    
-            // Move all recombinant edge connetions on origNode2 above height2
-            // to origNode1Par
-            
-            if (otherRecomb.getNode1() == origNode2 && otherRecomb.getHeight1()>recomb.getHeight2())
-                otherRecomb.setNode1(origNode1Par);
-            
-            if (otherRecomb.getNode2() == origNode2 && otherRecomb.getHeight2()>recomb.getHeight2())
-                otherRecomb.setNode2(origNode1Par);
+        if (!newSister.isRoot()) {
+            Node newParent = newSister.getParent();
+            newParent.removeChild(newSister);
+            newParent.addChild(floating);
         }
+        floating.addChild(newSister);
+        floating.setHeight(recomb.getHeight2());
         
-        // Ensure that if recomb attaches above node1Par it is reattached to node1Sis
-        if (recomb.getNode2()==origNode1Par) {
-            recomb.setNode2(origNode1Sis);
-            origNode2 = origNode1Sis;
-        }
+        if (floating.isRoot())
+            arg.setRoot(floating);
         
-        // Clonal frame topology changes
+        // 3. Record the site ranges the existing conversions apply to and
+        // delete those conversions. (The CF now applies to those conversions.)
         
-        origNode1Par.removeChild(origNode1Sis);
-        origNode1Sis.setParent(origNode1Par.getParent());
-        if (origNode1Sis.getParent() != null) {
-            origNode1Sis.getParent().removeChild(origNode1Par);
-            origNode1Sis.getParent().addChild(origNode1Sis);
-        }
+        List<Integer> startSites = Lists.newArrayList();
+        List<Integer> endSites = Lists.newArrayList();
 
-        origNode1Par.setParent(origNode2.getParent());
-        origNode1Par.addChild(origNode2);
-        if (origNode1Par.getParent() != null) {
-            origNode1Par.getParent().removeChild(origNode2);
-            origNode1Par.getParent().addChild(origNode1Par);
+        while (arg.getRecombinations().size()>1) {
+            Recombination thisRecomb = arg.getRecombinations().get(arg.getNRecombs());
+            startSites.add(thisRecomb.getStartLocus());
+            endSites.add(thisRecomb.getEndLocus());
+            arg.deleteRecombination(arg.getRecombinations().get(arg.getNRecombs()));
         }
         
-        origNode1Par.setHeight(origHeight2);
+        Collections.reverse(startSites);
+        Collections.reverse(endSites);
         
-        // Move original recombinant edge
-        recomb.setHeight2(newHeight2);
-        recomb.setNode2(origNode1Sis);
+        // 4. Create new conversions corresponding to the regions originally
+        // governed by the CF.
+        
+        if (startSites.get(0)>0) {
+            Recombination newRecomb = new Recombination();
+            newRecomb.setStartLocus(0);
+            newRecomb.setEndLocus(startSites.get(0)-1);
+            logP -= attachEdge(newRecomb);
+            arg.addRecombination(newRecomb);
+        }
+        
+        for (int i=0; i<startSites.size()-1; i++) {
+            Recombination newRecomb = new Recombination();
+            newRecomb.setEndLocus(endSites.get(i)+1);
+            newRecomb.setEndLocus(startSites.get(i+1)-1);
+            logP -= attachEdge(newRecomb);
+            arg.addRecombination(newRecomb);
+        }
+        
+        if (endSites.get(endSites.size()-1)<arg.getSequenceLength()-1) {
+            Recombination newRecomb = new Recombination();
+            newRecomb.setStartLocus(endSites.get(endSites.size()-1)+1);
+            newRecomb.setEndLocus(arg.getSequenceLength()-1);
+            logP -= attachEdge(newRecomb);
+            arg.addRecombination(newRecomb);
+        }
         
         System.out.println(oldARG);
         System.out.println(arg.getExtendedNewick(true));
-
+        
         return 0.0;
     }
+    
 }

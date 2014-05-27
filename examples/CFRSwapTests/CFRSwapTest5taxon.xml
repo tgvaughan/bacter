@@ -27,7 +27,7 @@
         <distribution spec='GCCoalescentApprox' id="argPrior">
             <rho spec='RealParameter' value="5.0" id="rho" estimate="false"/>
             <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
-            <treeIntervals spec='TreeIntervals' tree="@arg"/>
+            <arg idref="arg"/>
             <populationModel idref="popFunc"/>
         </distribution>
     </distribution>
@@ -46,7 +46,7 @@
               arg="@arg"/>
 
     <operator id="CFRswap" spec="RecombClonalFrameSwap" weight="1.0"
-              arg="@arg"/>
+              arg="@arg" populationModel="@popFunc"/>
     
     <operator id="Uniform" spec='ARGValidityWrapper' arg="@arg" weight="1">
         <operator spec='Uniform' weight="10">
