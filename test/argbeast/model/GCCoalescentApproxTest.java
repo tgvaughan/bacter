@@ -91,7 +91,7 @@ public class GCCoalescentApproxTest {
         
         // Population size model:
         ConstantPopulation popFunction = new ConstantPopulation();
-        popFunction.initByName("popSize", new RealParameter("1.0"));
+        popFunction.initByName("popSize", new RealParameter("15.0"));
         
         // Coalescent
         GCCoalescentApprox coalescent = new GCCoalescentApprox();
@@ -108,7 +108,7 @@ public class GCCoalescentApproxTest {
         
         // Coalescent probability when no recombinations exist
         logP = coalescent.calculateClonalFrameLogP();
-        logPtrue = -4.733611657513131;
+        logPtrue = -30.104126322625184;
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         
         //Add a single recombination event
@@ -129,8 +129,7 @@ public class GCCoalescentApproxTest {
         
         // Test coalescent probability when one recombination exists
         logP = coalescent.calculateRecombinantLogP(newRecomb);
-        //logPtrue = -0.68980134962441774782; // Same edge coalescence not allowed
-        logPtrue = -0.7677147135425042;
+        logPtrue = -3.0160971318674776;
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
     }
 }

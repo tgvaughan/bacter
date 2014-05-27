@@ -30,10 +30,11 @@
             <rho spec='RealParameter' value="1.0" id="rho" estimate="false"/>
             <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
             <arg idref="arg"/>
-            <populationModel spec="ConstantPopulation" popSize="15.0" id="popFunc"/>
-            <!--populationModel spec="ExponentialGrowth"
+            <!--treeIntervals spec='TreeIntervals' tree='@arg'/-->
+            <!--populationModel spec="ConstantPopulation" popSize="15.0" id="popFunc"/-->
+            <populationModel spec="ExponentialGrowth"
                              popSize="10.0" growthRate="0.1"
-                             id="popFunc" /-->
+                             id="popFunc" />
         </distribution>
     </distribution>
 

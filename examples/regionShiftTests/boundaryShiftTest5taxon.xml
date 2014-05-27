@@ -29,7 +29,7 @@
         <distribution spec='GCCoalescentApprox' id="argPrior">
             <rho spec='RealParameter' value="5.0" id="rho" estimate="false"/>
             <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
-            <treeIntervals spec='TreeIntervals' tree="@arg"/>
+            <arg idref="arg"/>
             <populationModel idref="popFunc"/>
         </distribution>
     </distribution>
