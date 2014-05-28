@@ -95,8 +95,8 @@ public class RecombClonalFrameSwap extends EdgeCreationOperator {
 
         while (arg.getRecombinations().size()>1) {
             Recombination thisRecomb = arg.getRecombinations().get(arg.getNRecombs());
-            startSites.add(thisRecomb.getStartLocus());
-            endSites.add(thisRecomb.getEndLocus());
+            startSites.add(thisRecomb.getStartSite());
+            endSites.add(thisRecomb.getEndSite());
             arg.deleteRecombination(arg.getRecombinations().get(arg.getNRecombs()));
         }
         
@@ -108,24 +108,24 @@ public class RecombClonalFrameSwap extends EdgeCreationOperator {
         
         if (startSites.get(0)>0) {
             Recombination newRecomb = new Recombination();
-            newRecomb.setStartLocus(0);
-            newRecomb.setEndLocus(startSites.get(0)-1);
+            newRecomb.setStartSite(0);
+            newRecomb.setEndSite(startSites.get(0)-1);
             logP -= attachEdge(newRecomb);
             arg.addRecombination(newRecomb);
         }
         
         for (int i=0; i<startSites.size()-1; i++) {
             Recombination newRecomb = new Recombination();
-            newRecomb.setEndLocus(endSites.get(i)+1);
-            newRecomb.setEndLocus(startSites.get(i+1)-1);
+            newRecomb.setEndSite(endSites.get(i)+1);
+            newRecomb.setEndSite(startSites.get(i+1)-1);
             logP -= attachEdge(newRecomb);
             arg.addRecombination(newRecomb);
         }
         
         if (endSites.get(endSites.size()-1)<arg.getSequenceLength()-1) {
             Recombination newRecomb = new Recombination();
-            newRecomb.setStartLocus(endSites.get(endSites.size()-1)+1);
-            newRecomb.setEndLocus(arg.getSequenceLength()-1);
+            newRecomb.setStartSite(endSites.get(endSites.size()-1)+1);
+            newRecomb.setEndSite(arg.getSequenceLength()-1);
             logP -= attachEdge(newRecomb);
             arg.addRecombination(newRecomb);
         }

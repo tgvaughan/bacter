@@ -56,27 +56,27 @@ public class ConvertedRegionShift extends RecombinationGraphOperator {
         if (delta>0) {
             int maxDelta;
             if (ridx<arg.getNRecombs())
-                maxDelta = arg.getRecombinations().get(ridx+1).getStartLocus() - 2
-                        - recomb.getEndLocus();
+                maxDelta = arg.getRecombinations().get(ridx+1).getStartSite() - 2
+                        - recomb.getEndSite();
             else
-                maxDelta = arg.getSequenceLength() - 1 - recomb.getEndLocus();
+                maxDelta = arg.getSequenceLength() - 1 - recomb.getEndSite();
             
             if (delta>maxDelta)
                 return Double.NEGATIVE_INFINITY;
         } else {
             int minDelta;
             if (ridx>1)
-                minDelta = arg.getRecombinations().get(ridx-1).getEndLocus() + 2
-                        - recomb.getStartLocus();
+                minDelta = arg.getRecombinations().get(ridx-1).getEndSite() + 2
+                        - recomb.getStartSite();
             else
-                minDelta = 0 - recomb.getStartLocus();
+                minDelta = 0 - recomb.getStartSite();
             
             if (delta<minDelta)
                 return Double.NEGATIVE_INFINITY;
         }
         
-        recomb.setStartLocus(recomb.getStartLocus()+delta);
-        recomb.setEndLocus(recomb.getEndLocus()+delta);
+        recomb.setStartSite(recomb.getStartSite()+delta);
+        recomb.setEndSite(recomb.getEndSite()+delta);
         
         return 0.0;
     }

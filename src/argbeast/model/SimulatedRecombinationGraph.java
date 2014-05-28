@@ -137,8 +137,8 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     throw new IllegalArgumentException("Map site index pairs i,j must satisfy j>=i.");
                 
                 Recombination recomb = new Recombination();
-                recomb.setStartLocus(mapInput.get().getValue(i*2));
-                recomb.setEndLocus(mapInput.get().getValue(i*2 + 1));
+                recomb.setStartSite(mapInput.get().getValue(i*2));
+                recomb.setEndSite(mapInput.get().getValue(i*2 + 1));
                 
                 associateRecombinationWithCF(recomb);
                 addRecombination(recomb);
@@ -174,8 +174,8 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                         Recombination recomb = getRecombinations().get(r);
                         lines.add("conversion node1=" + recomb.getNode1().getNr()
                         + " node2=" + recomb.getNode2().getNr()
-                        + " site1=" + recomb.getStartLocus()
-                        + " site2=" + recomb.getEndLocus());
+                        + " site1=" + recomb.getStartSite()
+                        + " site2=" + recomb.getEndSite());
                     }
                     
                     return lines;
@@ -302,9 +302,9 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         int l; // next available convertible locus
         if (Randomizer.nextDouble()>p0cf) {
             Recombination recomb = new Recombination();
-            recomb.setStartLocus(0);
+            recomb.setStartSite(0);
             int tractLength = (int)Randomizer.nextGeometric(pTractEnd);
-            recomb.setEndLocus(Math.min(tractLength, getSequenceLength()-1));
+            recomb.setEndSite(Math.min(tractLength, getSequenceLength()-1));
             associateRecombinationWithCF(recomb);
             addRecombination(recomb);
             
@@ -323,9 +323,9 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
             
             Recombination recomb = new Recombination();
 
-            recomb.setStartLocus(l);
+            recomb.setStartSite(l);
             l += Randomizer.nextGeometric(pTractEnd);
-            recomb.setEndLocus(Math.min(l, getSequenceLength()-1));
+            recomb.setEndSite(Math.min(l, getSequenceLength()-1));
 
             associateRecombinationWithCF(recomb);
             addRecombination(recomb);

@@ -61,7 +61,7 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
                 out.print(",");
 
             Recombination recomb = argInput.get().getRecombinations().get(r);
-            out.print(recomb.getStartLocus() + ":" + recomb.getEndLocus());
+            out.print(recomb.getStartSite() + ":" + recomb.getEndSite());
         }
         out.print("\t");
     }

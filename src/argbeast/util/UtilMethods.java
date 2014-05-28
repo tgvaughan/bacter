@@ -59,11 +59,11 @@ public class UtilMethods {
                 // Portions of CF sequence before each converted region
                 int i=0;
                 for (int r=0; r<arg.getNRecombs(); r++) {
-                    while (i<arg.getRecombinations().get(r+1).getStartLocus()) {
+                    while (i<arg.getRecombinations().get(r+1).getStartSite()) {
                         stateSequence.add(alignment.getCounts().get(leafIdx).get(i));
                         i += 1;
                     }
-                    i=arg.getRecombinations().get(r+1).getEndLocus()+1;
+                    i=arg.getRecombinations().get(r+1).getEndSite()+1;
                 }
                 
                 // Any remaining CF sequence
@@ -75,7 +75,7 @@ public class UtilMethods {
             } else {
 
                 stateSequence = alignment.getCounts().get(leafIdx)
-                        .subList(recomb.getStartLocus(), recomb.getEndLocus()+1);
+                        .subList(recomb.getStartSite(), recomb.getEndSite()+1);
             }
             
             sequences.add(new Sequence(alignment.getTaxaNames().get(leafIdx),

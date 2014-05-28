@@ -169,17 +169,17 @@ public class RecombinationGraph extends Tree {
         
         int i;
         for (i=1; i<recombs.size(); i++)
-            if (recombs.get(i).startLocus>recomb.startLocus)
+            if (recombs.get(i).startSite>recomb.startSite)
                 break;
         
         recombs.add(i, recomb);
         
         // Check validity of converted region wrt adjacent regions.
         
-        if (i<recombs.size()-1 && recomb.endLocus>recombs.get(i+1).startLocus-2)
+        if (i<recombs.size()-1 && recomb.endSite>recombs.get(i+1).startSite-2)
             return false;
         
-        if (i>1 && recomb.startLocus<recombs.get(i-1).endLocus+2)
+        if (i>1 && recomb.startSite<recombs.get(i-1).endSite+2)
             return false;
         
         return true;
@@ -241,7 +241,7 @@ public class RecombinationGraph extends Tree {
             if (recomb == null)
                 continue;
             
-            count -= recomb.getEndLocus()-recomb.getStartLocus() + 1;
+            count -= recomb.getEndSite()-recomb.getStartSite() + 1;
         }
         return count;
     }
@@ -456,15 +456,15 @@ public class RecombinationGraph extends Tree {
                 return false;
             
             if (ridx>1) {
-                if (recombs.get(ridx-1).getEndLocus()>recombs.get(ridx).getStartLocus()-2)
+                if (recombs.get(ridx-1).getEndSite()>recombs.get(ridx).getStartSite()-2)
                     return false;
             } else {
-                if (recombs.get(ridx).startLocus<0)
+                if (recombs.get(ridx).startSite<0)
                     return false;
             }
             
             if (ridx==recombs.size()-1)
-                if (recombs.get(ridx).getEndLocus()>getSequenceLength()-1)
+                if (recombs.get(ridx).getEndSite()>getSequenceLength()-1)
                     return false;
         }
         
@@ -480,10 +480,10 @@ public class RecombinationGraph extends Tree {
                 continue;
             sb.append(String.format("[&%d,%d,%s,%d,%d,%s] ",
                     recomb.node1.getNr(),
-                    recomb.startLocus,
+                    recomb.startSite,
                     String.valueOf(recomb.height1),
                     recomb.node2.getNr(),
-                    recomb.endLocus,
+                    recomb.endSite,
                     String.valueOf(recomb.height2)));
         }
         sb.append(super.toString());
@@ -631,8 +631,8 @@ public class RecombinationGraph extends Tree {
                 String meta = !includeRegionInfo ? ""
                         : String.format("[&recomb=%d, region={%d,%d}]",
                                 recombs.indexOf(event.recomb),
-                                event.recomb.getStartLocus(),
-                                event.recomb.getEndLocus());
+                                event.recomb.getStartSite(),
+                                event.recomb.getEndSite());
 
                 sb.insert(cursor, "(,#" + recombs.indexOf(event.recomb)
                         + meta
@@ -838,8 +838,8 @@ public class RecombinationGraph extends Tree {
             else {
                 Recombination recombCopy = new Recombination();
                 
-                recombCopy.setStartLocus(recomb.getStartLocus());
-                recombCopy.setEndLocus(recomb.getEndLocus());
+                recombCopy.setStartSite(recomb.getStartSite());
+                recombCopy.setEndSite(recomb.getEndSite());
                 recombCopy.setHeight1(recomb.getHeight1());
                 recombCopy.setHeight2(recomb.getHeight2());
                 

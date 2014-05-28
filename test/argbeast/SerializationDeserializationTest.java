@@ -109,16 +109,16 @@ public class SerializationDeserializationTest {
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
         assertEquals(newRecomb1.getHeight2(),recomb1.getHeight2(), 1e-15);
-        assertEquals(newRecomb1.getStartLocus(), recomb1.getStartLocus());
-        assertEquals(newRecomb1.getEndLocus(), recomb1.getEndLocus());
+        assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
+        assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
         Recombination newRecomb2 = argNew.getRecombinations().get(2);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
         assertEquals(newRecomb2.getHeight2(),recomb2.getHeight2(), 1e-15);
-        assertEquals(newRecomb2.getStartLocus(), recomb2.getStartLocus());
-        assertEquals(newRecomb2.getEndLocus(), recomb2.getEndLocus());
+        assertEquals(newRecomb2.getStartSite(), recomb2.getStartSite());
+        assertEquals(newRecomb2.getEndSite(), recomb2.getEndSite());
         
         // Note that there are minor differences in the tree due to
         // rounding errors.  Is this normal!?
@@ -186,16 +186,16 @@ public class SerializationDeserializationTest {
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
         assertEquals(newRecomb1.getHeight2(),recomb1.getHeight2(), 1e-15);
-        assertEquals(newRecomb1.getStartLocus(), recomb1.getStartLocus());
-        assertEquals(newRecomb1.getEndLocus(), recomb1.getEndLocus());
+        assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
+        assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
         Recombination newRecomb2 = argNew.getRecombinations().get(2);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
         assertEquals(newRecomb2.getHeight2(),recomb2.getHeight2(), 1e-15);
-        assertEquals(newRecomb2.getStartLocus(), recomb2.getStartLocus());
-        assertEquals(newRecomb2.getEndLocus(), recomb2.getEndLocus());
+        assertEquals(newRecomb2.getStartSite(), recomb2.getStartSite());
+        assertEquals(newRecomb2.getEndSite(), recomb2.getEndSite());
         
         // Note that there are minor differences in the tree due to
         // rounding errors.  Is this normal!?

@@ -53,19 +53,19 @@ public class ConvertedRegionBoundaryShift extends RecombinationGraphOperator {
         
         int currentLocus, minLocus, maxLocus;
         if (moveStart) {
-            currentLocus = recomb.getStartLocus();
-            maxLocus = recomb.getEndLocus();
+            currentLocus = recomb.getStartSite();
+            maxLocus = recomb.getEndSite();
             
             if (ridx>1)
-                minLocus = arg.getRecombinations().get(ridx-1).getEndLocus() + 2;
+                minLocus = arg.getRecombinations().get(ridx-1).getEndSite() + 2;
             else
                 minLocus = 0;
         } else {
-            currentLocus = recomb.getEndLocus();
-            minLocus = recomb.getStartLocus();
+            currentLocus = recomb.getEndSite();
+            minLocus = recomb.getStartSite();
             
             if (ridx<arg.getNRecombs())
-                maxLocus = arg.getRecombinations().get(ridx+1).getStartLocus() - 2;
+                maxLocus = arg.getRecombinations().get(ridx+1).getStartSite() - 2;
             else
                 maxLocus = arg.getSequenceLength()-1;
         }
@@ -79,9 +79,9 @@ public class ConvertedRegionBoundaryShift extends RecombinationGraphOperator {
             return Double.NEGATIVE_INFINITY;
 
         if (moveStart)
-            recomb.setStartLocus(newLocus);
+            recomb.setStartSite(newLocus);
         else
-            recomb.setEndLocus(newLocus);
+            recomb.setEndSite(newLocus);
         
         return 0;
     }

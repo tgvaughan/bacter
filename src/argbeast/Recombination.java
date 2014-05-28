@@ -38,17 +38,17 @@ public class Recombination {
      * @param height1
      * @param node2
      * @param height2
-     * @param startLocus
-     * @param endLocus 
+     * @param startSite
+     * @param endSite
      */
     public Recombination(Node node1, double height1, Node node2, double height2,
-            int startLocus, int endLocus) {
+            int startSite, int endSite) {
         this.node1 = node1;
         this.node2 = node2;
         this.height1 = height1;
         this.height2 = height2;
-        this.startLocus = startLocus;
-        this.endLocus = endLocus;
+        this.startSite = startSite;
+        this.endSite = endSite;
     }
 
     /**
@@ -64,7 +64,7 @@ public class Recombination {
     /**
      * Range of nucleotides affected by homologous gene conversion.
      */
-    protected int startLocus, endLocus;
+    protected int startSite, endSite;
     
     /**
      * Obtain node below most recent point at which recombinant edge
@@ -106,29 +106,39 @@ public class Recombination {
     }
     
     /**
-     * Return locus of start of alignment region affected by recombination.
-     * @return locus
+     * Return site of start of alignment region affected by recombination.
+     * @return site
      */
-    public int getStartLocus() {
-        return startLocus;
+    public int getStartSite() {
+        return startSite;
     }
     
     /**
-     * Return locus of end of alignment region affected by recombination.
-     * @return locus
+     * Set site of start of alignment region affected by conversion event.
+     * 
+     * @param startSite 
      */
-    public int getEndLocus() {
-        return endLocus;
+    public void setStartSite(int startSite) {
+        startEditing();
+        this.startSite = startSite;
+    }
+    
+    /**
+     * Return site  of end of alignment region affected by recombination.
+     * @return site
+     */
+    public int getEndSite() {
+        return endSite;
     }
 
     /**
-     * Set locus of end of alignment region affected by conversion event.
+     * Set site of end of alignment region affected by conversion event.
      * 
-     * @param endLocus 
+     * @param endSite 
      */
-    public void setEndLocus(int endLocus) {
+    public void setEndSite(int endSite) {
         startEditing();
-        this.endLocus = endLocus;
+        this.endSite = endSite;
     }
     
     /**
@@ -174,22 +184,13 @@ public class Recombination {
         this.height2 = height2;
     }
 
-    /**
-     * Set locus of start of alignment region affected by conversion event.
-     * 
-     * @param startLocus 
-     */
-    public void setStartLocus(int startLocus) {
-        startEditing();
-        this.startLocus = startLocus;
-    }
     
     /**
      * 
      * @return 
      */
     public int getSiteCount() {
-        return (int)(endLocus - startLocus + 1);
+        return (int)(endSite - startSite + 1);
     }
     
     /**
@@ -217,7 +218,7 @@ public class Recombination {
         if (!node2.isRoot() && node2.getParent().getHeight()<height2)
             return false;
         
-        if (startLocus>endLocus)
+        if (startSite>endSite)
             return false;
         
         return true;
@@ -248,8 +249,8 @@ public class Recombination {
     public Recombination getCopy() {
         Recombination copy = new Recombination();
         copy.arg = arg;
-        copy.startLocus = startLocus;
-        copy.endLocus = endLocus;
+        copy.startSite = startSite;
+        copy.endSite = endSite;
         copy.node1 = node1;
         copy.node2 = node2;
         copy.height1 = height1;
@@ -270,8 +271,8 @@ public class Recombination {
         if (obj instanceof Recombination) {
             Recombination otherRecomb = (Recombination)obj;
             return arg == otherRecomb.arg
-                && startLocus == otherRecomb.startLocus
-                && endLocus == otherRecomb.endLocus
+                && startSite == otherRecomb.startSite
+                && endSite == otherRecomb.endSite
                 && node1 == otherRecomb.node1
                 && node2 == otherRecomb.node2
                 && height1 == otherRecomb.height1
@@ -293,8 +294,8 @@ public class Recombination {
         hash = 29 * hash + (this.node2 != null ? this.node2.hashCode() : 0);
         hash = 29 * hash + (int) (Double.doubleToLongBits(this.height1) ^ (Double.doubleToLongBits(this.height1) >>> 32));
         hash = 29 * hash + (int) (Double.doubleToLongBits(this.height2) ^ (Double.doubleToLongBits(this.height2) >>> 32));
-        hash = 29 * hash + (int) (this.startLocus ^ (this.startLocus >>> 32));
-        hash = 29 * hash + (int) (this.endLocus ^ (this.endLocus >>> 32));
+        hash = 29 * hash + (int) (this.startSite ^ (this.startSite >>> 32));
+        hash = 29 * hash + (int) (this.endSite ^ (this.endSite >>> 32));
         return hash;
     }
 
@@ -302,7 +303,7 @@ public class Recombination {
     public String toString() {
         return String.format("Depart: (Node %d, height %g, site %d) "
                 + "Arrive: (Node %d, height %g, site %d)",
-                node1.getNr(), height1, startLocus,
-                node2.getNr(), height2, endLocus);
+                node1.getNr(), height1, startSite,
+                node2.getNr(), height2, endSite);
     }
 }

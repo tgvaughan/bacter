@@ -172,9 +172,9 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
         } else {
             
             // Contribution from start of sequence up to first recomb region
-            if (recombs.get(1).getStartLocus()>0) {
+            if (recombs.get(1).getStartSite()>0) {
                 thisLogP += Math.log(pStartCF)
-                        + (recombs.get(1).getStartLocus()-1)*Math.log(1-pRec);
+                        + (recombs.get(1).getStartSite()-1)*Math.log(1-pRec);
             }  else {
                 thisLogP += Math.log(1.0-pStartCF)
                         - Math.log(pRec);
@@ -185,16 +185,16 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
                 Recombination recomb = recombs.get(ridx);
                 
                 thisLogP += Math.log(pRec)
-                        + (recomb.getEndLocus() - recomb.getStartLocus())*Math.log(1.0-pTractEnd);
+                        + (recomb.getEndSite() - recomb.getStartSite())*Math.log(1.0-pTractEnd);
                 
                 if (ridx<recombs.size()-1) {
                     thisLogP += Math.log(pTractEnd)
-                            + (recombs.get(ridx+1).getStartLocus()-recomb.getEndLocus()-2)
+                            + (recombs.get(ridx+1).getStartSite()-recomb.getEndSite()-2)
                             *Math.log(1.0-pRec);
                 } else {
-                    if (recomb.getEndLocus()<sequenceLength-1) {
+                    if (recomb.getEndSite()<sequenceLength-1) {
                         thisLogP += Math.log(pTractEnd)
-                                + (sequenceLength-1-recomb.getEndLocus()-1)
+                                + (sequenceLength-1-recomb.getEndSite()-1)
                                 *Math.log(1.0-pRec);
                     }
                 }

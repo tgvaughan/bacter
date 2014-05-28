@@ -115,20 +115,20 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
         for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
             Recombination recomb = arg.getRecombinations().get(ridx+1);
             
-            if (z<recomb.getStartLocus()-1)
+            if (z<recomb.getStartSite()-1)
                 break;
             
-            z += recomb.getEndLocus()-Math.max(0,recomb.getStartLocus()-1);
+            z += recomb.getEndSite()-Math.max(0,recomb.getStartSite()-1);
         }
         
-        newRecomb.setStartLocus(z);
+        newRecomb.setStartSite(z);
         
         int convertedLength = (int)Randomizer
                 .nextGeometric(1.0/deltaInput.get().getValue());
         logP += convertedLength*Math.log(1.0-1.0/deltaInput.get().getValue())
                 + Math.log(1.0/deltaInput.get().getValue());
                         
-        newRecomb.setEndLocus(newRecomb.getStartLocus()+convertedLength);
+        newRecomb.setEndSite(newRecomb.getStartSite()+convertedLength);
 
         if (!arg.addRecombination(newRecomb))
             throw new ProposalFailed();
@@ -154,7 +154,7 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
             return Double.NEGATIVE_INFINITY;
         
         logP += Math.log(1.0/convertableLength)
-                + (recomb.getEndLocus()-recomb.getStartLocus())
+                + (recomb.getEndSite()-recomb.getStartSite())
                 *Math.log(1.0-1.0/deltaInput.get().getValue())
                 + Math.log(1.0/deltaInput.get().getValue());
         
@@ -177,9 +177,9 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
             if (recomb == skip)
                 continue;
             
-            count += Math.max(0, recomb.getStartLocus()-l+1);
+            count += Math.max(0, recomb.getStartSite()-l+1);
             
-            l = recomb.getEndLocus()+2;
+            l = recomb.getEndSite()+2;
         }
         
         count += Math.max(0, arg.getSequenceLength() - l); // L - 1 - l + 1

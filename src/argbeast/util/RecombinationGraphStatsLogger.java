@@ -58,7 +58,7 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
             if (recomb == null)
                 continue;
             
-            mean += recomb.getEndLocus()-recomb.getStartLocus()+1;
+            mean += recomb.getEndSite()-recomb.getStartSite()+1;
         }
         mean /= arg.getNRecombs();
         
@@ -79,8 +79,8 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
         
         double mean = 0;
         for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
-            mean += arg.getRecombinations().get(ridx+1).getStartLocus()
-                    - arg.getRecombinations().get(ridx).getEndLocus() - 1;
+            mean += arg.getRecombinations().get(ridx+1).getStartSite()
+                    - arg.getRecombinations().get(ridx).getEndSite() - 1;
         }
         mean /= arg.getNRecombs()-1;
         

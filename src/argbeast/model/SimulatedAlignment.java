@@ -238,7 +238,7 @@ public class SimulatedAlignment extends Alignment {
             int jidx=0;
             while (ridx<arg.getNRecombs()) {
                 Recombination nextRecomb = arg.getRecombinations().get(ridx+1);
-                int nextStart = (int)nextRecomb.getStartLocus();
+                int nextStart = (int)nextRecomb.getStartSite();
                 if (nextStart>sidx) {
                     for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
                         System.arraycopy(regionAlignment[leafIdx], jidx,
@@ -246,7 +246,7 @@ public class SimulatedAlignment extends Alignment {
                     }
                 }
                 jidx += nextStart-sidx;
-                sidx = (int)nextRecomb.getEndLocus()+1;
+                sidx = (int)nextRecomb.getEndSite()+1;
                 ridx += 1;
             }
             
@@ -261,7 +261,7 @@ public class SimulatedAlignment extends Alignment {
         } else {
             for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
                 System.arraycopy(regionAlignment[leafIdx], 0,
-                        alignment[leafIdx], (int)recomb.getStartLocus(),
+                        alignment[leafIdx], (int)recomb.getStartSite(),
                         recomb.getSiteCount());
             }
         }

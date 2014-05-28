@@ -139,7 +139,7 @@ public class RecombinationGraphLikelihood extends Distribution {
             if (recomb == null)
                 continue; // Skip clonal frame
             
-            while (j < recomb.getStartLocus()) {
+            while (j < recomb.getStartSite()) {
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
                 cfPatSet.add(pat);
                 j += 1;
@@ -147,7 +147,7 @@ public class RecombinationGraphLikelihood extends Distribution {
             
             Multiset<int[]> recombPatSet = LinkedHashMultiset.create();
             
-            while (j <= recomb.getEndLocus()) {                
+            while (j <= recomb.getEndSite()) {                
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
                 recombPatSet.add(pat);
                 j += 1;

@@ -58,8 +58,8 @@ public class MergeSplitRecombinationTest {
         state.initialise();
 
         Recombination recomb = new Recombination();
-        recomb.setStartLocus(200);
-        recomb.setEndLocus(500);
+        recomb.setStartSite(200);
+        recomb.setEndSite(500);
         recomb.setNode1(arg.getNode(0));
         recomb.setNode2(arg.getNode(1));
         recomb.setHeight1(0.1);
