@@ -67,7 +67,7 @@ plotConversionProb <- function(filename, seqLen, truthFile=NA, burnin=0.1) {
     if (!is.na(truthFile)) {
         truth <- getTruth(truthFile)
         p <- p + geom_rect(data=truth, mapping=aes(x=NULL, y=NULL, xmin=start, xmax=end, ymin=0, ymax=1,
-                                           fill=index), alpha=0.1)
+                                           fill=index), alpha=0.2)
         p <- p + scale_fill_manual(values=rep(c("blue","red","green","purple","yellow"),
                                        length.out=length(truth$index)), guide=FALSE)
     }
