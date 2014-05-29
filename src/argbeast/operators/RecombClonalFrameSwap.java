@@ -64,7 +64,7 @@ public class RecombClonalFrameSwap extends EdgeCreationOperator {
         // Record details required to effect topology change:
         Node pivot = recomb.getNode1();
         Node floating = pivot.getParent();
-        Node sister = floating.getLeft()==pivot
+        Node sister = floating.getLeft() == pivot
                 ? floating.getRight()
                 : floating.getLeft();
         
@@ -211,9 +211,24 @@ public class RecombClonalFrameSwap extends EdgeCreationOperator {
     public double getReverseMoveProb(Recombination recomb, int chosenGapIdx, int gapCount) {
         double logP = 0.0;
         
-        // Prob of selecting conversion and inter-conversion region.
-        logP += Math.log(1.0/(gapCount*arg.getNRecombs()));
+        // Probability of selecting conversion in x' corresponding to chosen
+        // gap in x:
+        logP += Math.log(1.0/gapCount);
         
+        // Probability of selecting gap in x' corresponding to chosen
+        // conversion in x:
+        logP += Math.log(1.0/arg.getNRecombs());
+        
+        // Probability of drawing existing recombinant edges in x from
+        // the clonal frame in x'.  (This excludes the conversion corresponding
+        // to the chosen gap in x'.)
+        for (Recombination thisRecomb : arg.getRecombinations()) {
+            if (thisRecomb == null || thisRecomb == recomb)
+                continue;
+            
+            logP += getEdgeAttachmentProb(thisRecomb);
+        }
+
         
         return logP;
     }
