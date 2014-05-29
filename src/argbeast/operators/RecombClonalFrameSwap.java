@@ -41,7 +41,8 @@ public class RecombClonalFrameSwap extends EdgeCreationOperator {
         if (arg.getNRecombs()==0)
             return Double.NEGATIVE_INFINITY;
         
-        // 1. Choose recombination
+        
+        // Choose recombination
         
         Recombination recomb = arg.getRecombinations().get(
                 Randomizer.nextInt(arg.getNRecombs())+1);
@@ -50,16 +51,35 @@ public class RecombClonalFrameSwap extends EdgeCreationOperator {
             return Double.NEGATIVE_INFINITY;
         
         logP -= Math.log(1.0/arg.getNRecombs());
+        
+        
+        // Choose unconverted (clonal frame) fragment:
+        int gapCount = getGapCount();
+        int chosenGapIdx = Randomizer.nextInt(gapCount);
+        logP -= Math.log(1.0/gapCount);
 
-        String oldARG = arg.getExtendedNewick(true);
+        // Calculate probability of reverse move:
+        logP += getReverseMoveProb(recomb, chosenGapIdx, gapCount);
         
-        // 2. Make marginal tree of chosen recomb the new clonal frame.
-        
-        Node floating = recomb.getNode1().getParent();
-        Node sister = floating.getLeft()==recomb.getNode1()
+        // Record details required to effect topology change:
+        Node pivot = recomb.getNode1();
+        Node floating = pivot.getParent();
+        Node sister = floating.getLeft()==pivot
                 ? floating.getRight()
                 : floating.getLeft();
         
+        
+        // Create recombination corresponding to original clonal frame:
+        
+        Recombination oldCFrecomb = new Recombination();
+        oldCFrecomb.setNode1(pivot);
+        oldCFrecomb.setHeight1(recomb.getHeight1());
+        oldCFrecomb.setNode2(sister);
+        oldCFrecomb.setHeight2(sister.getHeight());
+        
+        
+        // Make marginal tree of chosen recomb the new clonal frame.
+
         floating.removeChild(sister);
         
         if (recomb.getNode2() == floating)
@@ -87,7 +107,8 @@ public class RecombClonalFrameSwap extends EdgeCreationOperator {
         if (floating.isRoot())
             arg.setRoot(floating);
         
-        // 3. Record the site ranges the existing conversions apply to and
+        
+        // Record the site ranges the existing conversions apply to and
         // delete those conversions. (The CF now applies to those conversions.)
         
         List<Integer> startSites = Lists.newArrayList();
@@ -103,37 +124,97 @@ public class RecombClonalFrameSwap extends EdgeCreationOperator {
         Collections.reverse(startSites);
         Collections.reverse(endSites);
         
+
         // 4. Create new conversions corresponding to the regions originally
-        // governed by the CF.
+        // governed by the CF. One of these will be equivalent to the old CF.
         
+        int gapIdx = 0;
         if (startSites.get(0)>0) {
-            Recombination newRecomb = new Recombination();
+            Recombination newRecomb;
+
+            if (chosenGapIdx==0) {
+                newRecomb = oldCFrecomb;
+            } else {
+                newRecomb = new Recombination();
+                logP -= attachEdge(newRecomb);                
+            }
+            
             newRecomb.setStartSite(0);
             newRecomb.setEndSite(startSites.get(0)-1);
-            logP -= attachEdge(newRecomb);
             arg.addRecombination(newRecomb);
+            
+            gapIdx += 1;
         }
         
         for (int i=0; i<startSites.size()-1; i++) {
-            Recombination newRecomb = new Recombination();
-            newRecomb.setEndSite(endSites.get(i)+1);
+            Recombination newRecomb;
+            if (chosenGapIdx==gapIdx) {
+                newRecomb = oldCFrecomb;
+            } else {
+                newRecomb = new Recombination();
+                logP -= attachEdge(newRecomb);
+            }
+            newRecomb.setStartSite(endSites.get(i)+1);
             newRecomb.setEndSite(startSites.get(i+1)-1);
-            logP -= attachEdge(newRecomb);
             arg.addRecombination(newRecomb);
+            
+            gapIdx += 1;
         }
         
         if (endSites.get(endSites.size()-1)<arg.getSequenceLength()-1) {
-            Recombination newRecomb = new Recombination();
+            Recombination newRecomb;
+            if (chosenGapIdx==gapIdx) {
+                newRecomb = oldCFrecomb;
+            } else {
+                newRecomb = new Recombination();
+                logP -= attachEdge(newRecomb);
+            }
             newRecomb.setStartSite(endSites.get(endSites.size()-1)+1);
             newRecomb.setEndSite(arg.getSequenceLength()-1);
-            logP -= attachEdge(newRecomb);
             arg.addRecombination(newRecomb);
+            
+            gapIdx += 1;
         }
         
-        System.out.println(oldARG);
-        System.out.println(arg.getExtendedNewick(true));
-        
-        return 0.0;
+        return logP;
     }
     
+    /**
+     * Return number of contiguous regions corresponding to clonal frame.
+     * 
+     * @return clonal frame region count
+     */
+    private int getGapCount() {
+        int count = 0;
+
+        if (arg.getNRecombs()>0 && arg.getRecombinations().get(1).getStartSite()>0)
+            count += 1;
+        
+        if (arg.getNRecombs()>1)
+            count += arg.getNRecombs()-1;
+        
+        if (arg.getNRecombs() == 0
+                || arg.getRecombinations().get(arg.getNRecombs()).getEndSite()<arg.getSequenceLength()-1)
+            count += 1;
+        
+        return count;
+    }
+    
+    /**
+     * Obtain probability of reverse move.
+     * 
+     * @param recomb
+     * @param chosenGapIdx
+     * @param gapCount
+     * @return log of reverse move probability.
+     */
+    public double getReverseMoveProb(Recombination recomb, int chosenGapIdx, int gapCount) {
+        double logP = 0.0;
+        
+        // Prob of selecting conversion and inter-conversion region.
+        logP += Math.log(1.0/(gapCount*arg.getNRecombs()));
+        
+        
+        return logP;
+    }
 }
