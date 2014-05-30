@@ -114,7 +114,7 @@
     </operator>
 
     <operator id="mergeSplit" spec="MergeSplitRecombination" weight="1.0"
-              expectedGapSize="100" arg="@arg" />
+              expectedGapSize="200" arg="@arg" />
     
     <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
               scaleFactor="0.8">

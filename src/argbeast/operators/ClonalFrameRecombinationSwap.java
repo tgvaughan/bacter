@@ -33,8 +33,14 @@ import java.util.List;
         + "this move conserves the marginal trees themselves.")
 public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
 
+    // DEBUG
+    public int propCount = 0;
+    
     @Override
     public double proposal() {
+        
+        // DEBUG
+        propCount += 1;
         
         double logHR = 0.0;
 
@@ -48,19 +54,12 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
         if (recomb.getNode1()==recomb.getNode2())
             return Double.NEGATIVE_INFINITY;
 
-//        System.out.println(ridx);
-//        System.out.println(arg);
-//        System.out.println(arg.getExtendedNewick(true));
-
         // Calculate probability of reverse move:
         logHR += getReverseMoveProb(recomb);
         
         // Perform swap and incorporate probability of forward move:
         logHR -= performSwap(recomb);
         
-//        System.out.println(arg.getExtendedNewick(true));
-//        System.out.println(arg);
-
         return logHR;
     }
     
