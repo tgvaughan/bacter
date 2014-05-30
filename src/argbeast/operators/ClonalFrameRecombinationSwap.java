@@ -33,16 +33,12 @@ import java.util.List;
         + "this move conserves the marginal trees themselves.")
 public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
 
-    int count = 0;
-    
     @Override
     public double proposal() {
         
-        count += 1;
-        
         double logHR = 0.0;
 
-        if (arg.getNRecombs()==0)
+        if (arg.getNRecombs()==0 || getGapCount()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Choose recombination

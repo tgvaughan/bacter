@@ -13,7 +13,7 @@
 
   
   <input spec='SimulatedRecombinationGraph' id='arg'
-         rho="5.0" delta="50.0" sequenceLength="10000" nTaxa="5">
+         rho="5.0" delta="500.0" sequenceLength="10000" nTaxa="5">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
   </input>
 
@@ -26,7 +26,7 @@
     <distribution spec="CompoundDistribution" id="posterior">
         <distribution spec='GCCoalescentApprox' id="argPrior">
             <rho spec='RealParameter' value="5.0" id="rho" estimate="false"/>
-            <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+            <delta spec='RealParameter' value="500.0" id="delta" estimate="false"/>
             <arg idref="arg"/>
             <populationModel idref="popFunc"/>
         </distribution>
@@ -93,7 +93,7 @@
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="10000" fileName="$(filebase).stats">
+     <logger logEvery="100" fileName="$(filebase).stats">
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>
 
