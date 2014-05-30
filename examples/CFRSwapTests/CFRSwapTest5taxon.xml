@@ -45,7 +45,7 @@
     <operator id="CRswap" spec="ConvertedRegionSwap" weight="1.0"
               arg="@arg"/>
 
-    <operator id="CFRswap" spec="RecombClonalFrameSwap" weight="1.0"
+    <operator id="CFRswap" spec="ClonalFrameRecombinationSwap" weight="1.0"
               arg="@arg" populationModel="@popFunc"/>
     
     <operator id="Uniform" spec='ARGValidityWrapper' arg="@arg" weight="1">
@@ -80,20 +80,20 @@
       <log spec='TreeHeightLogger' tree="@arg"/>
     </logger>
     
-    <logger logEvery="1" fileName="$(filebase).trees" mode="tree">
+    <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
        <log idref="arg"/>
      </logger>
      
-     <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
+     <logger logEvery="10000" fileName="$(filebase).cf" mode="tree">
          <log spec="ClonalFrameLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="$(filebase).converted">
+     <logger logEvery="10000" fileName="$(filebase).converted">
          <log idref="posterior"/>
          <log spec="ConvertedRegionLogger" arg="@arg"/>
      </logger>
      
-     <logger logEvery="100" fileName="$(filebase).stats">
+     <logger logEvery="10000" fileName="$(filebase).stats">
          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
      </logger>
 

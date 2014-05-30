@@ -120,6 +120,9 @@
               scaleFactor="0.8">
         <arg idref="arg"/>
     </operator>
+
+    <operator id="CFRSwap" spec="ClonalFrameRecombinationSwap" weight="1.0"
+              arg="@arg" populationModel="@popModel"/>
     
     <operator id="CRswap" spec="ConvertedRegionSwap" weight="1.0"
               arg="@arg"/>
