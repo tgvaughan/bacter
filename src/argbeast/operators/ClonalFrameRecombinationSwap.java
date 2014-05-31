@@ -33,15 +33,8 @@ import java.util.List;
         + "this move conserves the marginal trees themselves.")
 public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
 
-    // DEBUG
-    public int propCount = 0;
-    
     @Override
     public double proposal() {
-        
-        // DEBUG
-        propCount += 1;
-        
         double logHR = 0.0;
 
         if (arg.getNRecombs()==0 || getGapCount()==0)
@@ -104,14 +97,15 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
                 ? floating.getRight()
                 : floating.getLeft();
         
-        
         // Create recombination corresponding to original clonal frame:
         Recombination oldCFrecomb = new Recombination();
         oldCFrecomb.setNode1(pivot);
         oldCFrecomb.setHeight1(recomb.getHeight1());
-        oldCFrecomb.setNode2(sister);
+        if (recomb.getNode2()==sister)
+            oldCFrecomb.setNode2(floating);
+        else
+            oldCFrecomb.setNode2(sister);
         oldCFrecomb.setHeight2(floating.getHeight());
-        
         
         // Make marginal tree of chosen recomb the new clonal frame.
 
@@ -163,8 +157,7 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
         Collections.reverse(startSites);
         Collections.reverse(endSites);
         
-
-        // 4. Create new conversions corresponding to the regions originally
+        // Create new conversions corresponding to the regions originally
         // governed by the CF. One of these will be equivalent to the old CF.
         
         int gapIdx = 0;
