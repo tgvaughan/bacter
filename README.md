@@ -29,7 +29,7 @@ Road map for ARGBEAST development
   - [x] Recombinant edge slide
   - [x] Recombinant edge hop
   - [x] Recombination merge/split
-  - [ ] Clonal frame / recomb topology switch *IN PROGRESS*
+  - [x] Clonal frame / recomb topology switch
 
 - [x] Sequence alignment simulator
 - [ ] Inference from simulated data *IN PROGRESS*
