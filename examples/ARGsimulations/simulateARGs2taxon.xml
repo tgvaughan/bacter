@@ -1,10 +1,20 @@
 <beast version='2.0'
        namespace='beast.evolution.tree.coalescent:argbeast:argbeast.model:argbeast.operators:argbeast.util'>
   
-    <run spec="RecombinationGraphSimulator"
-         rho="5.0" delta="50.0" sequenceLength="10000"
-         nTaxa="2" nSims="100000" statsFileName="$(filebase).stats" convFileName="$(filebase).converted">
-        <populationModel spec="ConstantPopulation" popSize="1.0"/>
+    <run spec="RecombinationGraphSimulator" nSims="100000">
+        <simARG spec="SimulatedRecombinationGraph" id="arg"
+                rho="5.0" delta="50.0" sequenceLength="10000"
+                nTaxa="2">
+            <populationModel spec="ConstantPopulation" popSize="1.0"/>
+        </simARG>
+        
+        <logger logEvery="1" fileName="$(filebase).converted">
+            <log spec="ConvertedRegionLogger" arg="@arg"/>
+        </logger>
+        
+        <logger logEvery="1" fileName="$(filebase).stats">
+          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
+        </logger>
     </run>
   
 </beast>

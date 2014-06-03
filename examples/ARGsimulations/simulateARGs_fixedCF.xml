@@ -4,11 +4,20 @@
                  :argbeast.operators
                  :argbeast.util:beast.util'>
   
-    <run spec="RecombinationGraphSimulator"
-         rho="5.0" delta="50.0" sequenceLength="10000"
-         nSims="100000" statsFileName="simulated_fixedCF.stats" convFileName="simulated_fixedCF.converted">
-        <populationModel spec="ConstantPopulation" popSize="1.0"/>
-        <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
+    <run spec="RecombinationGraphSimulator" nSims="10000">
+         <simARG spec="SimulatedRecombinationGraph" id="arg"
+                 rho="5.0" delta="50.0" sequenceLength="10000">
+             <populationModel spec="ConstantPopulation" popSize="1.0"/>
+             <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
+         </simARG>
+         
+         <logger logEvery="1" fileName="$(filebase).converted">
+            <log spec="ConvertedRegionLogger" arg="@arg"/>
+        </logger>
+        
+        <logger logEvery="1" fileName="$(filebase).stats">
+          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
+        </logger>
     </run>
   
 </beast>

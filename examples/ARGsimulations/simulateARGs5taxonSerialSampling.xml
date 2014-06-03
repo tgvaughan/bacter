@@ -1,0 +1,42 @@
+<beast version='2.0'
+       namespace='beast.evolution.tree
+                  :beast.evolution.alignment
+                  :beast.evolution.tree.coalescent
+                  :argbeast
+                  :argbeast.model
+                  :argbeast.util'>
+
+  <traitSet spec='TraitSet' id="timeTrait" traitname="date-backward">
+    <taxa spec='TaxonSet'>
+      <alignment spec='Alignment'>
+        <sequence spec='Sequence' taxon="t1" value="?"/>
+        <sequence spec='Sequence' taxon="t2" value="?"/>
+        <sequence spec='Sequence' taxon="t3" value="?"/>
+        <sequence spec='Sequence' taxon="t4" value="?"/>
+        <sequence spec='Sequence' taxon="t5" value="?"/>
+      </alignment>
+    </taxa>
+    t1=0.0,
+    t2=0.5,
+    t3=1.0,
+    t4=1.5,
+    t5=2.0
+  </traitSet>
+
+  <run spec="RecombinationGraphSimulator" nSims="100">
+      <simARG spec='SimulatedRecombinationGraph' id="arg"
+         rho="5.0" delta="50.0" sequenceLength="10000">
+          <populationModel spec="ConstantPopulation" popSize="1.0"/>
+          <trait idref="timeTrait"/>
+      </simARG>
+        
+      <logger logEvery="1" fileName="$(filebase).stats">
+          <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
+      </logger>
+      
+      <logger logEvery="1" fileName="$(filebase).trees" mode="tree">
+          <log idref="arg"/>
+      </logger>
+  </run>
+  
+</beast>

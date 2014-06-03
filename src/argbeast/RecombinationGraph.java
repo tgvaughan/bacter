@@ -891,14 +891,16 @@ public class RecombinationGraph extends Tree {
         
         out.println("begin trees;");
         
-        StringBuilder translate = new StringBuilder("\ttranslate");
-        for (int i=0; i<getLeafNodeCount(); i++) {
-            if (i>0)
-                translate.append(",");
-            translate.append(String.format(" %d %s",
-                    i, getTaxonset().asStringList().get(i)));
+        if (getTaxonset() != null) {
+            StringBuilder translate = new StringBuilder("\ttranslate");
+            for (int i=0; i<getLeafNodeCount(); i++) {
+                if (i>0)
+                    translate.append(",");
+                translate.append(String.format(" %d %s",
+                        i, getTaxonset().asStringList().get(i)));
+            }
+            out.println(translate + ";");
         }
-        out.println(translate + ";");
         
     }
     

@@ -81,14 +81,11 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
     private int nTaxa;
     private TaxonSet taxonSet;
     
-    public SimulatedRecombinationGraph() {
-
-        alignmentInput.setRule(Input.Validate.OPTIONAL);
-    };
+    public SimulatedRecombinationGraph() { };
     
     @Override
     public void initAndValidate() throws Exception {
-
+        
         rho = rhoInput.get();
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
@@ -101,15 +98,20 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                 nTaxa = clonalFrameInput.get().getLeafNodeCount();
                 taxonSet = clonalFrameInput.get().getTaxonset();
             } else {
-                if (nTaxaInput.get() != null) {
-                    nTaxa = nTaxaInput.get();
-                    List<Taxon> taxonList = new ArrayList<Taxon>();
-                    for (int i=0; i<nTaxa; i++)
-                        taxonList.add(new Taxon("t" + i));
-                    taxonSet = new TaxonSet(taxonList);
-                } else
-                    throw new IllegalArgumentException("Must specify nTaxa if"
-                            + "neither alignment nor clonalFrame are used.");
+                if (!m_traitList.get().isEmpty()) {
+                    taxonSet = m_traitList.get().get(0).taxaInput.get();
+                    nTaxa = taxonSet.getTaxonCount();
+                } else {
+                    if (nTaxaInput.get() != null) {
+                        nTaxa = nTaxaInput.get();
+                        List<Taxon> taxonList = new ArrayList<Taxon>();
+                        for (int i=0; i<nTaxa; i++)
+                            taxonList.add(new Taxon("t" + i));
+                        taxonSet = new TaxonSet(taxonList);
+                    } else
+                        throw new IllegalArgumentException("Must specify nTaxa if"
+                                + "neither alignment nor clonalFrame are used.");
+                }
             }
         }
         m_taxonset.setValue(taxonSet, this);
@@ -119,22 +121,24 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         else
             assignFromWithoutID(clonalFrameInput.get());
         
-        initArrays();
         super.initAndValidate();
-
+        initArrays();
+        
         // Generate recombinations
         if (mapInput.get() == null)
             generateRecombinations();
         else {
             // Read recombination map directly from input
             if (mapInput.get().getDimension()%2 != 0)
-                throw new IllegalArgumentException("Map must contain an even number of site indices.");
+                throw new IllegalArgumentException(
+                        "Map must contain an even number of site indices.");
             
             for (int i=0; i<mapInput.get().getDimension()/2; i++) {
                 int start = mapInput.get().getValue(i*2);
                 int end = mapInput.get().getValue(i*2 + 1);
                 if (end<start)
-                    throw new IllegalArgumentException("Map site index pairs i,j must satisfy j>=i.");
+                    throw new IllegalArgumentException(
+                            "Map site index pairs i,j must satisfy j>=i.");
                 
                 Recombination recomb = new Recombination();
                 recomb.setStartSite(mapInput.get().getValue(i*2));
@@ -188,21 +192,6 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         }
     }
     
-    /**
-     * Generate a random nucleotide sequence of specified length.
-     * 
-     * @param length
-     * @return String representation of DNA sequence
-     */
-    private String getSeq(int length) {
-        StringBuilder seq = new StringBuilder();
-        String alphabet = "GTCA";
-        for (int i=0; i<length; i++)
-            seq.append(alphabet.charAt((Randomizer.nextInt(4))));
-        
-        return seq.toString();
-    }
-
     /**
      * Use coalescent model to simulate clonal frame.
      */

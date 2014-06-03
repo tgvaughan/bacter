@@ -32,5 +32,6 @@ Road map for ARGBEAST development
   - [x] Clonal frame / recomb topology switch
 
 - [x] Sequence alignment simulator
-- [ ] Inference from simulated data *IN PROGRESS*
+- [ ] Inference from data simulated under approximate model *IN PROGRESS*
+- [ ] Inference from data simulated under full model.
 - [ ] Inference from real data
