@@ -84,7 +84,7 @@ public class UtilMethods {
         
         Alignment margAlignment = new Alignment(sequences,
                 alignment.getDataType().getStateCount(),
-                alignment.getDataType().getDescription());
+                alignment.getDataType().getTypeDescription());
         
         return margAlignment;
     }
@@ -144,7 +144,7 @@ public class UtilMethods {
      * @return Map from clades to corresponding MRCA heights.
      */
     private static Map<Clade, Double> getCladeHeights(Tree tree) {
-        Map<Clade, Double> cladeHeights = new HashMap<Clade, Double>();
+        Map<Clade, Double> cladeHeights = new HashMap<>();
         
         for (Node node : tree.getInternalNodes())
             cladeHeights.put(new Clade(node), node.getHeight());

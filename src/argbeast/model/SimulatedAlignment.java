@@ -23,12 +23,10 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.datatype.DataType;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
 import beast.util.AddOnManager;
-import feast.nexus.NexusWriter;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
 import com.google.common.collect.Lists;
@@ -283,11 +281,11 @@ public class SimulatedAlignment extends Alignment {
             for (String className : classNames) {
                 try {
                     DataType thisDataType = (DataType) Class.forName(className).newInstance();
-                    if (dataTypeInput.get().equals(thisDataType.getDescription())) {
+                    if (dataTypeInput.get().equals(thisDataType.getTypeDescription())) {
                         dataType = thisDataType;
                         break;
                     }
-                    dataTypeDescList.add(thisDataType.getDescription());
+                    dataTypeDescList.add(thisDataType.getTypeDescription());
                 } catch (ClassNotFoundException e) {
                 } catch (InstantiationException e) {
                 } catch (IllegalAccessException e) {

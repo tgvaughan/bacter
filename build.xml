@@ -6,8 +6,8 @@
   <property name="lib" location="lib"/>
 
   <!-- BEAST 2 currently uses Java 1.6 -->
-  <property name="sourceVersion" value="1.6"/>
-  <property name="targetVersion" value="1.6"/>
+  <property name="sourceVersion" value="1.8"/>
+  <property name="targetVersion" value="1.8"/>
 
   <!-- Directories necessary for all BEAST 2 packages -->
   <property name="doc" location="doc"/>
@@ -18,17 +18,9 @@
   <property name="build" location="build"/>
   <property name="build-lib" location="build-lib"/>
   <property name="build-test" location="build-test"/>
-  <property name="deps" location="deps"/>
   <property name="test-reports" location="test-reports"/>
   <property name="dist" location="dist"/>
   <property name="pack" location="${dist}/package"/>
-
-  <!-- Target to download and unpack dependencies -->
-  <target name="getDeps" depends="init">
-    <!-- BEAST 2.1.0 -->
-    <get src="http://hudson.cs.auckland.ac.nz/job/BEAST2/lastSuccessfulBuild/artifact/build/dist/beast.jar"
-         dest="${build-lib}/beast2.jar" />
-  </target>
 
   <!-- Prepare for compilation -->
   <target name="init">
@@ -55,10 +47,32 @@
     </copy>
   </target>
 
+  <!-- Get beast -->
+  <target name="get-beast" depends="init">
+    <property name="build-beast" location="build-beast"/>
+    <mkdir dir="${build-beast}"/>
 
+    <get src="https://github.com/CompEvol/beast2/archive/master.zip" dest="${build-beast}/beast.zip"/>
+    <unzip src="${build-beast}/beast.zip" dest="${build-beast}"/>
+    <mkdir dir="${build-beast}/beast2-master/build"/>
+    <javac target="${targetVersion}" source="${sourceVersion}"
+           srcdir="${build-beast}/beast2-master/src"
+           destdir="${build-beast}/beast2-master/build" includeantruntime="false">
+      <classpath>
+	<pathelement path="${classpath}"/>
+	<fileset dir="${build-beast}/beast2-master/lib" includes="*.jar"/>
+      </classpath>
+    </javac>
+    <jar jarfile="${build-lib}/beast2.jar" basedir="${build-beast}/beast2-master/build" />
+    <copy todir="${build-lib}">
+      <fileset dir="${build-beast}/beast2-master/lib" includes="*.jar"/>
+    </copy>
+
+    <delete dir="${build-beast}" />
+  </target>
 
   <!-- Compile -->
-  <target name="compile" depends="init, getDeps">
+  <target name="compile" depends="init, get-beast">
     <javac target="${targetVersion}" source="${sourceVersion}" srcdir="${src}" destdir="${build}" includeantruntime="false">
       <classpath>
 	<pathelement path="${classpath}"/>
@@ -72,10 +86,6 @@
   <target name="init-test" depends="init">
     <mkdir dir="${build-test}"/>
     <mkdir dir="${test-reports}"/>
-    <get src="http://search.maven.org/remotecontent?filepath=junit/junit/4.11/junit-4.11.jar"
-	 dest="${build-lib}/junit-4.11.jar" />
-    <get src="http://search.maven.org/remotecontent?filepath=org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
-	 dest="${build-lib}/hamcrest-core-1.3.jar" />
   </target>
 
 
@@ -167,7 +177,6 @@
   <target name="clean">
     <delete dir="${build}" />
     <delete dir="${build-lib}" />
-    <delete dir="${deps}" />
     <delete dir="${dist}" />
     <delete dir="${build-test}" />
     <delete dir="${test-reports}" />
