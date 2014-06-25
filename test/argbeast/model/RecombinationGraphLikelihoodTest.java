@@ -90,7 +90,9 @@ public class RecombinationGraphLikelihoodTest {
         arg.setEverythingDirty(true);
         
         double logP = argLikelihood.calculateLogP();
-        double logPtrue = -6444.862402765536;
+        double logPtrue = slowLikelihood(arg, alignment, siteModel);
+        //double logPtrue = -6444.862402765536;
+        
         double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
@@ -107,7 +109,9 @@ public class RecombinationGraphLikelihoodTest {
         arg.addRecombination(recomb1);
         
         logP = argLikelihood.calculateLogP();
-        logPtrue = -6445.810702954902;
+        logPtrue = slowLikelihood(arg, alignment, siteModel);
+        //logPtrue = -6445.810702954902;
+        
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
@@ -124,7 +128,9 @@ public class RecombinationGraphLikelihoodTest {
         arg.addRecombination(recomb2);
         
         logP = argLikelihood.calculateLogP();
-        logPtrue = -6452.466389537251;
+        logPtrue = slowLikelihood(arg, alignment, siteModel);
+        //logPtrue = -6452.466389537251;
+        
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
@@ -173,7 +179,28 @@ public class RecombinationGraphLikelihoodTest {
 
         // Compare product of likelihoods of "marginal alignments" with
         // likelihod computed using RGL.
-        double logPprime = 0.0;
+        double logPprime = slowLikelihood(arg, alignment, siteModel);
+        
+        double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
+        System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
+                logP, logPprime, relError);
+        assertTrue(relError<1e-14);
+    }
+    
+    /**
+     * Calculate ARG likelihood using the product of the likelihoods of the
+     * marginal trees.
+     * 
+     * @param arg
+     * @param alignment
+     * @param siteModel
+     * @return
+     * @throws Exception 
+     */
+    private double slowLikelihood(RecombinationGraph arg, Alignment alignment,
+            SiteModel siteModel) throws Exception {
+
+        double logP = 0.0;
         for (Recombination recomb : arg.getRecombinations()) {
             Alignment margAlign = UtilMethods.createMarginalAlignment(alignment, arg, recomb);
             TreeLikelihood treeLikelihood = new TreeLikelihood();
@@ -182,12 +209,9 @@ public class RecombinationGraphLikelihoodTest {
                     "tree", arg.getMarginalTree(recomb, margAlign),
                     "siteModel", siteModel);
             
-            logPprime += treeLikelihood.calculateLogP();
+            logP += treeLikelihood.calculateLogP();
         }
         
-        double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
-        System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
-                logP, logPprime, relError);
-        assertTrue(relError<1e-14);
+        return logP;
     }
 }

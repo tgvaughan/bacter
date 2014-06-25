@@ -35,9 +35,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import feast.input.In;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -67,6 +71,8 @@ public class RecombinationGraphLikelihood extends Distribution {
     Map<Recombination, List<Integer>> constantPatterns;
     
     int nStates;
+    
+    int count = 0;
     
     /**
      * Memory for transition probabilities.
@@ -102,6 +108,8 @@ public class RecombinationGraphLikelihood extends Distribution {
     
     @Override
     public double calculateLogP() {
+        
+        count += 1;
         
         logP = 0.0;
         
@@ -187,8 +195,8 @@ public class RecombinationGraphLikelihood extends Distribution {
                         break;
                     }
                 
-                if (isConstant)
-                    constantPatternList.add(patternIdx + pattern[0]);
+                if (isConstant && !alignment.getDataType().isAmbiguousState(pattern[0]))
+                    constantPatternList.add(patternIdx*nStates + pattern[0]);
                 
                 patternIdx += 1;
             }
