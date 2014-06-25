@@ -33,5 +33,5 @@ Road map for ARGBEAST development
 
 - [x] Sequence alignment simulator
 - [ ] Inference from data simulated under approximate model *IN PROGRESS*
-- [ ] Inference from data simulated under full model.
-- [ ] Inference from real data
+- [ ] Inference from data simulated under full model
+- [ ] Inference from real data *IN PROGRESS*
