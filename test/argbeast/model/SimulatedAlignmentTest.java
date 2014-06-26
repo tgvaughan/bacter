@@ -19,7 +19,7 @@ package argbeast.model;
 
 import argbeast.Recombination;
 import argbeast.RecombinationGraph;
-import argbeast.util.UtilMethods;
+import argbeast.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.sitemodel.SiteModel;
@@ -34,7 +34,7 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class SimulatedAlignmentTest {
+public class SimulatedAlignmentTest extends TestBase {
     
     @Test
     public void test() throws Exception {
@@ -74,14 +74,14 @@ public class SimulatedAlignmentTest {
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
         for (Recombination recomb : arg.getRecombinations()) {
-            Alignment margAlign = UtilMethods.createMarginalAlignment(alignment, arg, recomb);
+            Alignment margAlign = createMarginalAlignment(alignment, arg, recomb);
             
             ClusterTree upgmaTree = new ClusterTree();
             upgmaTree.initByName(
                     "clusterType", "upgma",
                     "taxa", margAlign);
 
-            assertTrue(UtilMethods.topologiesEquivalent(arg.getMarginalTree(recomb, null), upgmaTree));
+            assertTrue(topologiesEquivalent(arg.getMarginalTree(recomb, null), upgmaTree));
         }
     }
     

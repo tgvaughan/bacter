@@ -18,7 +18,7 @@
 package argbeast.model;
 
 import argbeast.Recombination;
-import argbeast.model.SimulatedRecombinationGraph;
+import argbeast.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
@@ -31,7 +31,7 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class SimulatedRecombinationGraphTest {
+public class SimulatedRecombinationGraphTest extends TestBase {
     
     public SimulatedRecombinationGraphTest() {
     }

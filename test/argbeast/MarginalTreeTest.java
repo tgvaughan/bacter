@@ -17,7 +17,6 @@
 
 package argbeast;
 
-import argbeast.util.UtilMethods;
 import beast.util.TreeParser;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -27,7 +26,7 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class MarginalTreeTest {
+public class MarginalTreeTest extends TestBase {
     
     public MarginalTreeTest() {
     }
@@ -61,7 +60,7 @@ public class MarginalTreeTest {
         };
         for (int r=0; r<arg.getRecombinations().size(); r++) {
             Recombination recomb = arg.getRecombinations().get(r);
-            assertTrue(UtilMethods.treesEquivalent(arg.getMarginalTree(recomb, null),
+            assertTrue(treesEquivalent(arg.getMarginalTree(recomb, null),
                     new TreeParser(correctNewickStrings[r], false, true, false, 0), 1e-15));
         }
     }
