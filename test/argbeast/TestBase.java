@@ -29,10 +29,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Base class for ARGBEAST unit tests.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class TestBase {
+public abstract class TestBase {
     
     /**
      * @return An Alignment object containing primate data for unit tests.

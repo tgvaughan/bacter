@@ -504,7 +504,7 @@ public class RecombinationGraph extends Tree {
      * @param str
      */
     public void fromString(String str) {
-
+        
         // Extract clonal frame and recombination components of string
         Pattern cfPattern = Pattern.compile("^[^\\(]*(\\(.*)$");
         Matcher cfMatcher = cfPattern.matcher(str);
@@ -529,6 +529,8 @@ public class RecombinationGraph extends Tree {
         Matcher recombMatcher = recombPattern.matcher(str);
         
         // Process recombinations
+        recombs.clear();
+        recombs.add(null);
         
         while(recombMatcher.find()) {
             String [] elements = recombMatcher.group(1).split(",");
@@ -553,6 +555,35 @@ public class RecombinationGraph extends Tree {
     @Override
     public void fromXML(final org.w3c.dom.Node node) {
         fromString(node.getTextContent());
+    }
+
+    @Override
+    public RecombinationGraph copy() {
+        RecombinationGraph arg = new RecombinationGraph();
+        
+        arg.setID(getID());
+        
+        arg.index = index;
+        arg.root = root.copy();
+        arg.nodeCount = nodeCount;
+        arg.internalNodeCount = internalNodeCount;
+        arg.leafNodeCount = leafNodeCount;
+        
+        arg.recombs = Lists.newArrayList();
+        arg.storedRecombs = Lists.newArrayList();
+        
+        for (Recombination recomb : recombs) {
+            if (recomb == null)
+                arg.recombs.add(null);
+            else
+                arg.recombs.add(recomb.getCopy());
+        }
+        arg.sequenceLength = sequenceLength;
+        
+        cfEventList = Lists.newArrayList();
+        cfEventListDirty = true;
+
+        return arg;
     }
     
     /**
@@ -751,6 +782,14 @@ public class RecombinationGraph extends Tree {
         return marginalTree;
     }
     
+    /**
+     * Method used by getMarginalTree() to traverse marginal tree and build
+     * new BEAST tree matching this.
+     * 
+     * @param recomb
+     * @param node
+     * @return root of matching marginal tree w.r.t. recomb below node.
+     */
     private Node getMarginalTreeTraverse(Recombination recomb, Node node) {
         Node margNode = new Node();
         margNode.setHeight(getMarginalNodeHeight(node, recomb));
