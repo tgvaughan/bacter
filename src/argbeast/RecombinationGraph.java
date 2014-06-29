@@ -20,6 +20,7 @@ import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.core.StateNode;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -584,6 +585,45 @@ public class RecombinationGraph extends Tree {
         cfEventListDirty = true;
 
         return arg;
+    }
+
+    @Override
+    public void assignFrom(StateNode other) {
+        super.assignFrom(other);
+        
+        RecombinationGraph arg = (RecombinationGraph)other;
+        
+        recombs.clear();
+        for (Recombination recomb : arg.recombs) {
+            if (recomb == null)
+                recombs.add(null);
+            else
+                recombs.add(recomb.getCopy());
+        }
+        sequenceLength = arg.sequenceLength;
+        
+        cfEventList = Lists.newArrayList();
+        cfEventListDirty = true;
+    }
+    
+    @Override
+    public void assignFromFragile(StateNode other) {
+        super.assignFromFragile(other);
+        
+        RecombinationGraph arg = (RecombinationGraph)other;
+
+        recombs.clear();
+        storedRecombs.clear();
+        for (Recombination recomb : arg.recombs) {
+            if (recomb == null)
+                recombs.add(null);
+            else
+                recombs.add(recomb.getCopy());
+        }
+        sequenceLength = arg.sequenceLength;
+        
+        cfEventList = Lists.newArrayList();
+        cfEventListDirty = true;
     }
     
     /**
