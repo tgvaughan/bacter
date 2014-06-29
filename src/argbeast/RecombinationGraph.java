@@ -587,23 +587,31 @@ public class RecombinationGraph extends Tree {
         return arg;
     }
 
+    /**
+     * Use another StateNode to configure this ARG.  If the other StateNode
+     * is merely a tree, only the clonal frame is configured.
+     * 
+     * @param other StateNode used to configure ARG
+     */
     @Override
     public void assignFrom(StateNode other) {
         super.assignFrom(other);
         
-        RecombinationGraph arg = (RecombinationGraph)other;
+        if (other instanceof RecombinationGraph) {
+            RecombinationGraph arg = (RecombinationGraph)other;
         
-        recombs.clear();
-        for (Recombination recomb : arg.recombs) {
-            if (recomb == null)
-                recombs.add(null);
-            else
-                recombs.add(recomb.getCopy());
+            recombs.clear();
+            for (Recombination recomb : arg.recombs) {
+                if (recomb == null)
+                    recombs.add(null);
+                else
+                    recombs.add(recomb.getCopy());
+            }
+            sequenceLength = arg.sequenceLength;
+        
+            cfEventList = Lists.newArrayList();
+            cfEventListDirty = true;
         }
-        sequenceLength = arg.sequenceLength;
-        
-        cfEventList = Lists.newArrayList();
-        cfEventListDirty = true;
     }
     
     @Override
