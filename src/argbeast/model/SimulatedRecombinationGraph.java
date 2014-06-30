@@ -116,12 +116,19 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         }
         m_taxonset.setValue(taxonSet, this);
         
+        // Need to do this here as Tree.processTraits(), which is called
+        // by hasDateTrait() and hence simulateClonalFrame(), expects a
+        // tree with nodes.
+        super.initAndValidate();
+        
         if (clonalFrameInput.get() == null)
             simulateClonalFrame();
         else
             assignFromWithoutID(clonalFrameInput.get());
         
-        super.initAndValidate();
+        // Need to do this here as this sets the tree object that the nodes
+        // point to, so without it they point to the dummy tree created by
+        // super.initAndValidate().
         initArrays();
         
         // Generate recombinations
@@ -204,8 +211,8 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
             leaf.setNr(i);
             leaf.setID(taxonSet.asStringList().get(i));
                         
-            if (timeTraitSet != null)
-                leaf.setHeight(timeTraitSet.getValue(i));
+            if (hasDateTrait())
+                leaf.setHeight(getDateTrait().getValue(i));
             else
                 leaf.setHeight(0.0);
             
