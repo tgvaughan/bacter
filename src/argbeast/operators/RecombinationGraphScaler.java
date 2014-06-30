@@ -18,7 +18,6 @@
 package argbeast.operators;
 
 import argbeast.Recombination;
-import argbeast.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -33,24 +32,30 @@ import java.util.List;
  */
 @Description("Scaling operator for recombination graphs.")
 public class RecombinationGraphScaler extends RecombinationGraphOperator {
-    
+
     public Input<List<RealParameter>> parametersInput = new In<List<RealParameter>>(
             "parameter", "Parameter to scale with ARG.")
-            .setDefault(new ArrayList<RealParameter>());
+            .setDefault(new ArrayList<>());
 
     public Input<List<RealParameter>> parametersInverseInput = new In<List<RealParameter>>(
             "parameterInverse", "Parameter to scale inversely with ARG.")
-            .setDefault(new ArrayList<RealParameter>());
+            .setDefault(new ArrayList<>());
     
     public Input<Double> scaleParamInput = new In<Double>("scaleFactor",
             "Scale factor tuning parameter.  Must be < 1.").setRequired();
     
+    public Input<Boolean> rootOnlyInput = new In<Boolean>(
+            "rootOnly", "Scale root node and connections which attach directly "
+                    + "below and above the root only.").setDefault(false);
+    
     private double scaleParam;
+    private boolean rootOnly;
     
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
         scaleParam = scaleParamInput.get();
+        rootOnly = rootOnlyInput.get();
     }
     
     @Override
@@ -64,9 +69,14 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
         double f = scaleParam + Randomizer.nextDouble()*(1.0/scaleParam - scaleParam);
         
         // Scale clonal frame:
-        for (Node node : arg.getInternalNodes()) {
-            node.setHeight(node.getHeight()*f);
+        if (rootOnly) {
+            arg.getRoot().setHeight(arg.getRoot().getHeight()*f);
             count += 1;
+        } else {
+            for (Node node : arg.getInternalNodes()) {
+                node.setHeight(node.getHeight()*f);
+                count += 1;
+            }
         }
         
         // Scale recombinant edges:
@@ -74,25 +84,40 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
             if (recomb == null)
                 continue;
             
-            recomb.setHeight1(recomb.getHeight1()*f);
-            recomb.setHeight2(recomb.getHeight2()*f);
-            count += 2;
+            if (!rootOnly || recomb.getNode1().getParent().isRoot()) {
+                recomb.setHeight1(recomb.getHeight1()*f);
+                count += 1;
+            }
+            
+            if (!rootOnly || recomb.getNode2().isRoot() || recomb.getNode2().getParent().isRoot()) {
+                recomb.setHeight2(recomb.getHeight2()*f);
+                count += 1;
+            }
             
             if (recomb.getHeight1()<recomb.getNode1().getHeight()
-                    || recomb.getHeight2()<recomb.getNode2().getHeight())
+                    || recomb.getHeight2()<recomb.getNode2().getHeight()
+                    || recomb.getHeight1()>recomb.getHeight2())
                 return Double.NEGATIVE_INFINITY;
         }
         
         // Check for illegal node heights:
-        for (Node node : arg.getExternalNodes()) {
-            if (node.getHeight()>node.getParent().getHeight())
-                return Double.NEGATIVE_INFINITY;
+        if (rootOnly) {
+            for (Node node : arg.getRoot().getChildren()) {
+                if (node.getHeight()>node.getParent().getHeight())
+                    return Double.NEGATIVE_INFINITY;
+            }
+        } else {
+            for (Node node : arg.getExternalNodes()) {
+                if (node.getHeight()>node.getParent().getHeight())
+                    return Double.NEGATIVE_INFINITY;
+            }
         }
         
         // Scale parameters
         
         for (RealParameter param : parametersInput.get()) {
             try {
+                param.startEditing(null);
                 param.scale(f);
             } catch (Exception e) {
                 
@@ -106,6 +131,7 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
         
         for (RealParameter paramInv : parametersInverseInput.get()) {
             try {
+                paramInv.startEditing(null);
                 paramInv.scale(1.0/f);
             } catch (Exception e) {
                 
