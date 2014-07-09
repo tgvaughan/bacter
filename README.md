@@ -1,18 +1,18 @@
-ARGBEAST
-========
+BACTER
+======
 
-ARGBEAST is a [BEAST 2](http://beast2.org) package which facilitates
+BACTER is a [BEAST 2](http://beast2.org) package which facilitates
 inference of a (restricted kind of) ancestral recombination graph
 (ARG) and related parameters from a sequence alignment.  It is
 inspired by
 [Didelot et al.'s 2010 Genetics paper](http://www.genetics.org/content/186/4/1435)
 and is currently under heavy development.  Check back soon!
 
-[![Build Status](https://travis-ci.org/CompEvol/ARGBEAST.svg?branch=master)](https://travis-ci.org/CompEvol/ARGBEAST)
+[![Build Status](https://travis-ci.org/CompEvol/BACTER.svg?branch=master)](https://travis-ci.org/CompEvol/BACTER)
 
 
-Road map for ARGBEAST development
----------------------------------
+Road map for BACTER development
+-------------------------------
 
 - [x] ARG state node
 - [x] ARG likelihood

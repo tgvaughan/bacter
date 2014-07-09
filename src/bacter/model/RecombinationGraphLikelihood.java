@@ -1,0 +1,353 @@
+/*
+ * Copyright (C) 2013 Tim Vaughan <tgvaughan@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package bacter.model;
+
+import bacter.Recombination;
+import bacter.RecombinationGraph;
+import beast.core.Description;
+import beast.core.Distribution;
+import beast.core.Input;
+import beast.core.State;
+import beast.evolution.alignment.Alignment;
+import beast.evolution.likelihood.BeerLikelihoodCore;
+import beast.evolution.likelihood.BeerLikelihoodCore4;
+import beast.evolution.likelihood.LikelihoodCore;
+import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.sitemodel.SiteModelInterface;
+import beast.evolution.substitutionmodel.SubstitutionModel;
+import beast.evolution.tree.Node;
+import com.google.common.collect.LinkedHashMultiset;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multiset;
+import feast.input.In;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
+/**
+ * @author Tim Vaughan <tgvaughan@gmail.com>
+ */
+@Description("Probability of sequence data given recombination graph.")
+public class RecombinationGraphLikelihood extends Distribution {
+    
+    public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
+            "arg", "Recombination graph.").setRequired();
+    
+    public Input<Alignment> alignmentInput = new In<Alignment>(
+            "data", "Sequence data to evaluate probability of.").setRequired();
+    
+    public Input<SiteModelInterface> siteModelInput = new In<SiteModelInterface>(
+            "siteModel", "Site model for evolution of alignment.").setRequired();
+
+    RecombinationGraph arg;
+    SiteModel.Base siteModel;
+    SubstitutionModel.Base substitutionModel;
+    Alignment alignment;
+    
+    Map<Recombination,LikelihoodCore> likelihoodCores;
+    
+    Map<Recombination, Multiset<int[]>> patterns;
+    Map<Recombination, double[]> patternLogLikelihoods;
+    Map<Recombination, double[]> rootPartials;
+    Map<Recombination, List<Integer>> constantPatterns;
+    
+    int nStates;
+    
+    int count = 0;
+    
+    /**
+     * Memory for transition probabilities.
+     */
+    double [] probabilities;
+    
+    @Override
+    public void initAndValidate() throws Exception {
+        
+        arg = argInput.get();
+        alignment = alignmentInput.get();
+        siteModel = (SiteModel.Base) siteModelInput.get();
+        substitutionModel = (SubstitutionModel.Base) siteModel.getSubstitutionModel();
+        
+        nStates = alignment.getMaxStateCount();
+
+        // Initialize patterns
+        patterns = Maps.newHashMap();
+        patternLogLikelihoods = Maps.newHashMap();
+        rootPartials = Maps.newHashMap();
+        constantPatterns = Maps.newHashMap();
+        updatePatterns();
+        
+        // Initialise cores        
+        likelihoodCores = Maps.newHashMap();
+        updateCores();
+        
+        // Allocate transition probability memory:
+        // (Only the first nStates*nStates elements are usually used.)
+        probabilities = new double[(nStates+1)*(nStates+1)];
+    }
+    
+    
+    @Override
+    public double calculateLogP() {
+        
+        count += 1;
+        
+        logP = 0.0;
+        
+        updatePatterns();
+        updateCores();
+        
+        for (Recombination recomb : arg.getRecombinations()) {
+            traverse(arg.getMarginalRoot(recomb), recomb);
+            
+            int i=0;
+            for (int[] pattern : patterns.get(recomb).elementSet()) {
+                logP += patternLogLikelihoods.get(recomb)[i]
+                        *patterns.get(recomb).count(pattern);
+                i += 1;
+            }
+        }
+        
+        return logP;
+    }
+    
+    
+    /**
+     * Ensure pattern counts are up to date.
+     */
+    private void updatePatterns() {
+
+        patterns.clear();
+        patternLogLikelihoods.clear();
+        rootPartials.clear();
+        
+        Multiset<int[]> cfPatSet = LinkedHashMultiset.create();
+
+        int j=0;
+        for (Recombination recomb : arg.getRecombinations()) {
+            if (recomb == null)
+                continue; // Skip clonal frame
+            
+            while (j < recomb.getStartSite()) {
+                int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
+                cfPatSet.add(pat);
+                j += 1;
+            }
+            
+            Multiset<int[]> recombPatSet = LinkedHashMultiset.create();
+            
+            while (j <= recomb.getEndSite()) {                
+                int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
+                recombPatSet.add(pat);
+                j += 1;
+            }
+            
+            patterns.put(recomb, recombPatSet);
+            patternLogLikelihoods.put(recomb,
+                    new double[recombPatSet.elementSet().size()]);
+            rootPartials.put(recomb,
+                    new double[recombPatSet.elementSet().size()*nStates]);
+        }
+        
+        while (j<alignmentInput.get().getSiteCount()) {
+            
+            int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
+            cfPatSet.add(pat);
+            j += 1;
+        }
+
+        patterns.put(null, cfPatSet);
+        patternLogLikelihoods.put(null,
+                new double[cfPatSet.elementSet().size()]);
+        rootPartials.put(null,
+                    new double[cfPatSet.elementSet().size()*nStates]);
+        
+        // Record lists of constant patterns:
+        constantPatterns.clear();
+        for (Recombination recomb: arg.getRecombinations()) {
+            List<Integer> constantPatternList = Lists.newArrayList();
+            
+            int patternIdx = 0;
+            for (int[] pattern : patterns.get(recomb).elementSet()) {
+                boolean isConstant = true;
+                for (int i=1; i<pattern.length; i++)
+                    if (pattern[i] != pattern[0]) {
+                        isConstant = false;
+                        break;
+                    }
+                
+                if (isConstant && !alignment.getDataType().isAmbiguousState(pattern[0]))
+                    constantPatternList.add(patternIdx*nStates + pattern[0]);
+                
+                patternIdx += 1;
+            }
+            
+            constantPatterns.put(recomb, constantPatternList);
+        }
+        
+        // DEBUG
+//        for (Recombination recomb : arg.getRecombinations()) {
+//            System.out.print(patterns.get(recomb).elementSet().size()
+//                    + " unique patterns of " + patterns.get(recomb).size()
+//                    + " sites");
+//            if (recomb == null)
+//                System.out.println(" in clonal frame");
+//            else
+//                System.out.println(" in recombined region");
+//        }
+    }
+    
+    
+    /**
+     * Initialize likelihood cores.
+     */
+    private void updateCores() {
+        
+        //likelihoodCores.keySet().retainAll(arg.getRecombinations());
+        likelihoodCores.clear();
+        
+        for (Recombination recomb : arg.getRecombinations()) {
+            
+            LikelihoodCore likelihoodCore;
+            if (!likelihoodCores.keySet().contains(recomb)) {
+                if (nStates==4)
+                    likelihoodCore = new BeerLikelihoodCore4();
+                else
+                    likelihoodCore = new BeerLikelihoodCore(nStates);
+                
+                likelihoodCores.put(recomb, likelihoodCore);
+            } else
+                likelihoodCore = likelihoodCores.get(recomb);
+            
+            likelihoodCore.initialize(
+                arg.getNodeCount(),
+                patterns.get(recomb).elementSet().size(),
+                siteModel.getCategoryCount(),
+                true, false);
+            setStates(likelihoodCore, patterns.get(recomb));
+            
+            int intNodeCount = arg.getNodeCount()/2;
+            for (int i=0; i<intNodeCount; i++)
+                likelihoodCore.createNodePartials(intNodeCount+1+i);
+        }
+    }
+    
+    
+    /**
+     * Set leaf states in a likelihood core.
+     * 
+     * @param lhc
+     * @param patterns 
+     */
+    void setStates(LikelihoodCore lhc, Multiset<int[]> patterns) {
+        
+        for (Node node : arg.getExternalNodes()) {
+            int[] states = new int[patterns.size()];
+            int taxon = alignment.getTaxonIndex(node.getID());
+            int i=0;
+            for (int [] pattern : patterns.elementSet()) {
+                int code = pattern[taxon];
+                int[] statesForCode = alignment.getDataType().getStatesForCode(code);
+                if (statesForCode.length==1)
+                    states[i] = statesForCode[0];
+                else
+                    states[i] = code; // Causes ambiguous states to be ignored.
+                
+                i += 1;
+            }
+            lhc.setNodeStates(node.getNr(), states);
+        }
+    }
+    
+    
+    /**
+     * Traverse a marginal tree, computing partial likelihoods on the way.
+     * 
+     * @param node Tree node
+     * @param recomb Recombination object.  Null selects the clonal frame.
+     */
+    void traverse(Node node, Recombination recomb) {
+
+        LikelihoodCore lhc = likelihoodCores.get(recomb);
+        
+        if (!arg.isNodeMarginalRoot(node, recomb)) {
+            lhc.setNodeMatrixForUpdate(node.getNr());
+            for (int i=0; i<siteModel.getCategoryCount(); i++) {
+                double jointBranchRate = siteModel.getRateForCategory(i, node);
+                double parentHeight = arg.getMarginalNodeHeight(
+                        arg.getMarginalParent(node, recomb), recomb);
+                double nodeHeight = arg.getMarginalNodeHeight(node, recomb);
+                substitutionModel.getTransitionProbabilities(
+                        node,
+                        parentHeight,
+                        nodeHeight,
+                        jointBranchRate,
+                        probabilities);
+                lhc.setNodeMatrix(node.getNr(), i, probabilities);
+            }
+        }
+        
+        if (!arg.isNodeMarginalLeaf(node, recomb)) {
+            
+            // LikelihoodCore only supports binary trees.
+            List<Node> children = arg.getMarginalChildren(node, recomb);
+            traverse(children.get(0), recomb);
+            traverse(children.get(1), recomb);
+            
+            lhc.setNodePartialsForUpdate(node.getNr());
+            lhc.setNodeStatesForUpdate(node.getNr());
+            lhc.calculatePartials(children.get(0).getNr(),
+                    children.get(1).getNr(), node.getNr());
+            
+            if (arg.isNodeMarginalRoot(node, recomb)) {
+                double [] frequencies = substitutionModel.getFrequencies();
+                double [] proportions = siteModel.getCategoryProportions(node);
+                lhc.integratePartials(node.getNr(), proportions,
+                        rootPartials.get(recomb));
+                
+                for (int idx : constantPatterns.get(recomb)) {
+                    rootPartials.get(recomb)[idx]
+                            += siteModel.getProportionInvariant();
+                }
+                
+                lhc.calculateLogLikelihoods(rootPartials.get(recomb),
+                        frequencies, patternLogLikelihoods.get(recomb));
+            }
+        }
+    }
+    
+    
+    @Override
+    public List<String> getArguments() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<String> getConditions() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void sample(State state, Random random) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+}
