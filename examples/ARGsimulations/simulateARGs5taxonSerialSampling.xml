@@ -2,11 +2,9 @@
        namespace='beast.evolution.tree
                   :beast.evolution.alignment
                   :beast.evolution.tree.coalescent
-                  :argbeast
-                  :argbeast.model
-                  :argbeast.util'>
-
-
+                  :bacter
+                  :bacter.model
+                  :bacter.util'>
 
   <run spec="RecombinationGraphSimulator" nSims="100000">
       <simARG spec='SimulatedRecombinationGraph' id="arg"

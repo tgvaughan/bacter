@@ -1,5 +1,9 @@
 <beast version='2.0'
-       namespace='beast.evolution.tree.coalescent:argbeast:argbeast.model:argbeast.operators:argbeast.util'>
+       namespace='beast.evolution.tree.coalescent
+                  :bacter
+                  :bacter.model
+                  :bacter.operators
+                  :bacter.util'>
   
     <run spec="RecombinationGraphSimulator" nSims="100000">
          <simARG spec="SimulatedRecombinationGraph" id="arg"

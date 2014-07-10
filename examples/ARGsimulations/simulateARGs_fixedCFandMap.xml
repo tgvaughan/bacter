@@ -1,8 +1,10 @@
 <beast version='2.0'
        namespace='beast.evolution.tree.coalescent
-                 :argbeast:argbeast.model
-                 :argbeast.operators
-                 :argbeast.util:beast.util
+                 :bacter
+                 :bacter.model
+                 :bacter.operators
+                 :bacter.util
+                 :beast.util
                  :beast.core.parameter'>
   
     <run spec="RecombinationGraphSimulator" nSims="10000">

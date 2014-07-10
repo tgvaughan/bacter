@@ -9,10 +9,10 @@
                  :beast.evolution.tree.coalescent
 		 :beast.math.distributions
                  :beast.util
-                 :argbeast
-                 :argbeast.model
-                 :argbeast.operators
-                 :argbeast.util'>
+                 :bacter
+                 :bacter.model
+                 :bacter.operators
+                 :bacter.util'>
 
 
   <!-- Simulated ARG (Truth) -->  

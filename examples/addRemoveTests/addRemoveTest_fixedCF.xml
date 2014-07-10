@@ -4,10 +4,10 @@
                  :beast.core.parameter
                  :beast.evolution.tree.coalescent
                  :beast.util
-                 :argbeast
-                 :argbeast.model
-                 :argbeast.operators
-                 :argbeast.util'>
+                 :bacter
+                 :bacter.model
+                 :bacter.operators
+                 :bacter.util'>
 
   
   <input spec='SimulatedRecombinationGraph' id='arg'
