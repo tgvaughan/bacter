@@ -105,7 +105,9 @@ plotConvertedSiteTrace <- function(filename, seqLen, maxStates=400, maxSites=200
 
     # Plot
     p <- ggplot(d, aes(x=states, y=sites, fill=converted)) + geom_raster()
-    p <- p + scale_fill_manual(name="Converted", values=c("orange","brown"))
+    p <- p + scale_fill_manual(name="Converted",
+                               values=c("orange","brown"),
+                               guide=guide_legend(reverse=TRUE))
     p <- p + xlab("MCMC steps") + ylab("Site")
     p <- p + ggtitle("Converted region trace")
     
