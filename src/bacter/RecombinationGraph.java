@@ -156,14 +156,11 @@ public class RecombinationGraph extends Tree {
     
     /**
      * Add recombination to graph, ensuring recombination list
-     * remains sorted.  Additionally, performs check to ensure that
-     * specified conversion region does not overlap with existing regions,
-     * returning false if it does and true otherwise.
+     * remains sorted.
      * 
      * @param recomb 
-     * @return true if recombination was successfully added, false otherwise.
      */
-    public boolean addRecombination(Recombination recomb) {
+    public void addRecombination(Recombination recomb) {
         startEditing();
         
         recomb.setRecombinationGraph(this);
@@ -174,16 +171,6 @@ public class RecombinationGraph extends Tree {
                 break;
         
         recombs.add(i, recomb);
-        
-        // Check validity of converted region wrt adjacent regions.
-        
-        if (i<recombs.size()-1 && recomb.endSite>recombs.get(i+1).startSite-2)
-            return false;
-        
-        if (i>1 && recomb.startSite<recombs.get(i-1).endSite+2)
-            return false;
-        
-        return true;
     }
     
     /**
@@ -247,203 +234,7 @@ public class RecombinationGraph extends Tree {
         return count;
     }
 
-    /**
-     * Determine whether given recombination changes tree topology.  If this
-     * is false, the question of which child belongs to which parent and
-     * visa versa is the same as for the clonal frame.  This is the case
-     * whenever
-     * 
-     * 1. node2 is the same as node1
-     * 2. node2 is the parent of node1
-     * 3. node2 is the sibling of node1
-     * 
-     * It is also trivially true when recomb is null, representing the clonal
-     * frame.
-     * 
-     * @param recomb
-     * @return true if the recombination changes the tree topology
-     */
-    public boolean recombChangesTopology(Recombination recomb) {
-        boolean topologyUnchanged =
-                recomb == null
-                || recomb.getNode2() == recomb.getNode1()
-                || recomb.getNode2() == recomb.getNode1().getParent()
-                || recomb.getNode1().getParent().getChildren().contains(recomb.getNode2());
-        
-        return !topologyUnchanged;
-    }
-    
-    /**
-     * Retrieve root for marginal tree defined by recomb.  There are two main
-     * special cases to handle here.
-     * 
-     * 1. Parent of node1 is the root.  In this case, the old root is going
-     * to be shifted because the lineage originally leading to it is being
-     * removed. In this case the root simply becomes the sibling of node1.
-     * 
-     * 2. node2 is the root.  In this case, the old root becomes a child of
-     * the new root (parent of node1).
-     * 
-     * @param recomb
-     * @return root node
-     */
-    public Node getMarginalRoot(Recombination recomb) {
-        if (recombChangesTopology(recomb)) {
-
-            Node node1parent = recomb.getNode1().getParent();
-            if (node1parent.isRoot()) {
-                if (node1parent.getLeft() == recomb.getNode1())
-                    return node1parent.getRight();
-                else
-                    return node1parent.getLeft();
-            }
-            
-            if (recomb.getNode2().isRoot()) {
-                return recomb.getNode1().getParent();
-            }
-        }
-        
-        return getRoot();        
-    }
-    
-    /**
-     * Retrieve parent of node in marginal tree defined by recomb.
-     * 
-     * 1. node is node1 or node2. In this case, the shifted node (node1's
-     * parent) is the marginal parent.
-     * 
-     * 2. 1 doesn't apply and node's parent is node1's parent in the clonal
-     * frame.  In this case, node1's grandparent is the marginal parent
-     * 
-     * 3. 1 doesn't apply and node is node1's clonal frame parent. In this
-     * case, the parent is node2's parent in the clonal frame.
-     * 
-     * @param node
-     * @param recomb
-     * @return node parent
-     */
-    public Node getMarginalParent(Node node, Recombination recomb) {
-        if (recombChangesTopology(recomb)) {
-            if (node == recomb.getNode1() || node == recomb.getNode2())
-                return recomb.getNode1().getParent();
-                        
-            if (node.getParent() == recomb.getNode1().getParent())
-                return node.getParent().getParent();
-            
-            if (node == recomb.getNode1().getParent())
-                return recomb.getNode2().getParent();
-        }
-        
-        return node.getParent();
-    }
-    
-    /**
-     * Retrieve children of node in marginal tree defined by recomb.
-     * 
-     * @param node
-     * @param recomb
-     * @return node children
-     */
-    public List<Node> getMarginalChildren(Node node, Recombination recomb) {
-        if (recombChangesTopology(recomb)) {
-            List<Node> children = new ArrayList<Node>();
-            Node node1parent = recomb.getNode1().getParent();
-            
-            if (node == node1parent) {
-                
-                children.add(recomb.getNode1());
-                children.add(recomb.getNode2());
-                
-            } else {
-                
-                children.addAll(node.getChildren());
-                
-                if (children.contains(node1parent)) {
-                    Node node1sibling;
-                    if (node1parent.getLeft() == recomb.getNode1())
-                        node1sibling = node1parent.getRight();
-                    else
-                        node1sibling = node1parent.getLeft();
-                    
-                    children.set(children.indexOf(node1parent), node1sibling);
-                }
-                
-                if (children.contains(recomb.getNode2()))
-                    children.set(children.indexOf(recomb.getNode2()), node1parent);
-            }
-            
-            return children;
-            
-        } else
-            return node.getChildren();
-    }
-
-    /**
-     * Height of node in marginal tree defined by recomb.  There
-     * is only one node whose height is potentially different: the parent of
-     * node1.  All other nodes retain their clonal frame heights.
-     * 
-     * A special case is where the recombinant edge reconnects to the
-     * same edge of the clonal frame.  Such edges do *not* alter the
-     * marginal genealogy, and have no effect on the height of node1's parent.
-     * 
-     * 
-     * @param node
-     * @param recomb
-     * @return node height
-     */
-    public double getMarginalNodeHeight(Node node, Recombination recomb) {
-        if (recomb != null
-                && node == recomb.getNode1().getParent()
-                && recomb.getNode2() != recomb.getNode1())
-            return recomb.getHeight2();
-        else
-            return node.getHeight();
-    }
-    
-    /**
-     * Length of edge between node and parent in marginal tree defined
-     * by recomb.
-     * 
-     * @param node
-     * @param recomb
-     * @return edge length (zero if node is root of marginal tree)
-     */
-    public double getMarginalBranchLength(Node node, Recombination recomb) {
-        if (!isNodeMarginalRoot(node, recomb)) {
-            Node parent = getMarginalParent(node, recomb);
-            return getMarginalNodeHeight(parent,recomb)
-                    -getMarginalNodeHeight(node, recomb);
-        }
-        else 
-            return 0.0;
-    }
-    
-    /**
-     * Determine whether node is root of marginal tree defined by recomb.
-     * 
-     * @param node
-     * @param recomb
-     * @return true if node is marginal root, false otherwise.
-     */
-    public boolean isNodeMarginalRoot(Node node, Recombination recomb) {
-        return getMarginalParent(node, recomb)==null;
-    }
-
-    /**
-     * Determine whether node is leaf in marginal tree defined by recomb.
-     * Just here for completeness - all marginal trees share the
-     * same leaves.
-     * 
-     * @param node
-     * @param recomb
-     * @return true if node is leaf, false otherwise.
-     */
-    public boolean isNodeMarginalLeaf(Node node, Recombination recomb) {
-        return node.isLeaf();
-    }
-    
-    /**
+     /**
      * Check validity of recombinations.  Useful for probability densities
      * over the ARG to decide whether to return 0 based on an unphysical
      * state.
@@ -452,21 +243,14 @@ public class RecombinationGraph extends Tree {
      */
     public boolean isValid() {
         for (int ridx=1; ridx<recombs.size(); ridx++) {
-            
             if (!recombs.get(ridx).isValid())
                 return false;
             
-            if (ridx>1) {
-                if (recombs.get(ridx-1).getEndSite()>recombs.get(ridx).getStartSite()-2)
-                    return false;
-            } else {
-                if (recombs.get(ridx).startSite<0)
-                    return false;
-            }
-            
-            if (ridx==recombs.size()-1)
-                if (recombs.get(ridx).getEndSite()>getSequenceLength()-1)
-                    return false;
+            if (recombs.get(ridx).getStartSite()<0
+                    || recombs.get(ridx).getStartSite()>=getSequenceLength()
+                    || recombs.get(ridx).getEndSite()<0
+                    || recombs.get(ridx).getEndSite()>=getSequenceLength())
+                return false;
         }
         
         return true;
@@ -746,110 +530,6 @@ public class RecombinationGraph extends Tree {
         sb.insert(cursor, node.getNr() + ":" + thisLength);
         
         return sb.toString();
-    }
-    
-    
-    /**
-     * Obtain Newick representation of marginal genealogy corresponding to
-     * given recombination.
-     * 
-     * @param recomb Recombination object (null represents clonal frame)
-     * @return Newick string
-     */
-    public String getMarginalNewick(Recombination recomb) {
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append(marginalNewickTraverse(getMarginalRoot(recomb), recomb));
-        sb.append(";");
-
-        return sb.toString();
-    }
-    
-    /**
-     * Generate Newick representation of marginal subtree below node
-     * corresponding to given recombination.  Used only by getMarginalNewick().
-     * 
-     * @param node Node determining subtree
-     * @param recomb Recombination resulting in marginal tree
-     * @return Newick string
-     */
-    private String marginalNewickTraverse(Node node, Recombination recomb) {
-        StringBuilder sb = new StringBuilder();
-        
-        if (!isNodeMarginalLeaf(node, recomb)) {
-            sb.append("(");
-            List<Node> children = getMarginalChildren(node, recomb);
-            sb.append(marginalNewickTraverse(children.get(0), recomb));
-            sb.append(",");
-            sb.append(marginalNewickTraverse(children.get(1), recomb));
-            sb.append(")");
-        }
-        
-        sb.append(node.getNr());
-        
-        sb.append(":");
-        if (isNodeMarginalRoot(node, recomb))
-            sb.append("0.0");
-        else
-            sb.append(getMarginalBranchLength(node, recomb));
-        
-        return sb.toString();
-    }
-    
-    /**
-     * Construct a completely new BEAST tree object representing a single
-     * marginal tree.  If an alignment is specified (either through the
-     * alignment argument or the alignment input), the leaf nodes of the
-     * generated tree are associated with the taxa in that alignment.
-     * 
-     * @param recomb Recombination corresponding to marginal tree
-     * @param alignment Alignment with which to associate tree (may be null)
-     * @return Marginal tree
-     * @throws java.lang.Exception
-     */
-    public Tree getMarginalTree(Recombination recomb, Alignment alignment) throws Exception {
-        Node marginalRoot = getMarginalTreeTraverse(recomb,
-                getMarginalRoot(recomb));
-        
-        // Ensure numbers are set correctly
-        int nextNr = getLeafNodeCount();
-        for (Node margNode : marginalRoot.getAllChildNodes())
-            if (!margNode.isLeaf() && !margNode.isRoot())
-                margNode.setNr(nextNr++);
-        marginalRoot.setNr(nextNr);
-
-        // Associate leaves with taxa if alignment available
-        
-        Taxon[] taxonArray = new Taxon[getLeafNodeCount()];
-        for (Node margLeaf : marginalRoot.getAllLeafNodes())
-            taxonArray[margLeaf.getNr()] = new Taxon(margLeaf.getID());
-        
-        Tree marginalTree = new Tree(marginalRoot);
-        marginalTree.m_taxonset.setValue(new TaxonSet(Arrays.asList(taxonArray)), marginalTree);
-        
-        return marginalTree;
-    }
-    
-    /**
-     * Method used by getMarginalTree() to traverse marginal tree and build
-     * new BEAST tree matching this.
-     * 
-     * @param recomb
-     * @param node
-     * @return root of matching marginal tree w.r.t. recomb below node.
-     */
-    private Node getMarginalTreeTraverse(Recombination recomb, Node node) {
-        Node margNode = new Node();
-        margNode.setHeight(getMarginalNodeHeight(node, recomb));
-        for (Node child : getMarginalChildren(node, recomb))
-            margNode.addChild(getMarginalTreeTraverse(recomb, child));
-        
-        if (node.isLeaf()) {
-            margNode.setNr(node.getNr());
-            margNode.setID(node.getID());
-        }
-        
-        return margNode;
     }
     
 
