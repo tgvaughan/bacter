@@ -17,8 +17,8 @@
 
 package bacter;
 
-import bacter.RecombinationGraph;
-import bacter.Recombination;
+import bacter.ConversionGraph;
+import bacter.Conversion;
 import beast.util.TreeParser;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class MarginalTreeTest extends TestBase {
     @Test
     public void test() throws Exception {
 
-        // Recombination graph
+        // Conversion graph
         String str = "[&2,2759,0.3260126313706676,10,2808,0.42839862922656696] "
                 + "[&10,6692,0.3381366423491633,2,6693,0.5683827224649434] "
                 + "[&10,8069,0.2807615297583804,14,8160,0.3415740002783274] "
@@ -49,7 +49,7 @@ public class MarginalTreeTest extends TestBase {
                 + "15:0.02875407002742475)16:0.21838173019409446)17:1.1073878800617445,"
                 + "2:1.7030807429425328)18:0.0";
         
-        RecombinationGraph arg = new RecombinationGraph();
+        ConversionGraph arg = new ConversionGraph();
         arg.initByName("fromString", str, "sequenceLength", 10000);
         
         // Test all marginals against truth
@@ -60,8 +60,8 @@ public class MarginalTreeTest extends TestBase {
             "(((((0:0.04916909893812016,1:0.04916909893812016)10:0.29240490134020725,(((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.1095596268069634)17:0.006983062380941707,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:1.325769610255839,2:1.7030807429425328)18:0.0",
             "(((0:0.04916909893812016,1:0.04916909893812016)10:0.5465237639426681,(((((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:0.21838173019409446)17:1.1073878800617445,2:1.7030807429425328)18:0.0"
         };
-        for (int r=0; r<arg.getRecombinations().size(); r++) {
-            Recombination recomb = arg.getRecombinations().get(r);
+        for (int r=0; r<arg.getConversions().size(); r++) {
+            Conversion recomb = arg.getConversions().get(r);
             assertTrue(treesEquivalent(arg.getMarginalTree(recomb, null),
                     new TreeParser(correctNewickStrings[r], false, true, false, 0), 1e-15));
         }

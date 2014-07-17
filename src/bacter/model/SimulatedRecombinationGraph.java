@@ -17,8 +17,8 @@
 
 package bacter.model;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.StateNode;
@@ -48,7 +48,7 @@ import java.util.List;
  */
 @Description("Simulates an ARG - can be used for chain initialization or for "
         + "sampler validation.")
-public class SimulatedRecombinationGraph extends RecombinationGraph implements StateNodeInitialiser {
+public class SimulatedRecombinationGraph extends ConversionGraph implements StateNodeInitialiser {
 
     public Input<Double> rhoInput = new In<Double>("rho",
             "Recombination rate parameter.").setRequired();
@@ -147,12 +147,12 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                     throw new IllegalArgumentException(
                             "Map site index pairs i,j must satisfy j>=i.");
                 
-                Recombination recomb = new Recombination();
+                Conversion recomb = new Conversion();
                 recomb.setStartSite(mapInput.get().getValue(i*2));
                 recomb.setEndSite(mapInput.get().getValue(i*2 + 1));
                 
                 associateRecombinationWithCF(recomb);
-                addRecombination(recomb);
+                addConversion(recomb);
             }
         }
         
@@ -166,7 +166,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
             nexusBuilder.append((new TreesBlock() {
                 @Override
                 public String getTreeString(Tree tree) {
-                    return ((RecombinationGraph)tree).getExtendedNewick(true);
+                    return ((ConversionGraph)tree).getExtendedNewick(true);
                 }
             }).addTree(this, "simulatedARG"));
             
@@ -181,8 +181,8 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
                 public List<String> getBlockLines() {
                     List<String> lines = new ArrayList<String>();
                     lines.add("clonalframe " + root.toShortNewick(true));
-                    for (int r = 1; r <= getNRecombs(); r++) {
-                        Recombination recomb = getRecombinations().get(r);
+                    for (int r = 1; r <= getNConvs(); r++) {
+                        Conversion recomb = getConversions().get(r);
                         lines.add("conversion node1=" + recomb.getNode1().getNr()
                         + " node2=" + recomb.getNode2().getNr()
                         + " site1=" + recomb.getStartSite()
@@ -297,12 +297,12 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         
         int l; // next available convertible locus
         if (Randomizer.nextDouble()>p0cf) {
-            Recombination recomb = new Recombination();
+            Conversion recomb = new Conversion();
             recomb.setStartSite(0);
             int tractEndSite = (int)Randomizer.nextGeometric(pTractEnd);
             recomb.setEndSite(Math.min(tractEndSite, getSequenceLength()-1));
             associateRecombinationWithCF(recomb);
-            addRecombination(recomb);
+            addConversion(recomb);
             
             l = tractEndSite + 2;
         } else
@@ -317,14 +317,14 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
             if (l>=getSequenceLength())
                 break;
             
-            Recombination recomb = new Recombination();
+            Conversion recomb = new Conversion();
 
             recomb.setStartSite(l);
             l += Randomizer.nextGeometric(pTractEnd);
             recomb.setEndSite(Math.min(l, getSequenceLength()-1));
 
             associateRecombinationWithCF(recomb);
-            addRecombination(recomb);
+            addConversion(recomb);
             
             // The next site at which a conversion can begin
             l += 2;
@@ -340,7 +340,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
      * 
      * @param recomb recombination to associate
      */
-    private void associateRecombinationWithCF(Recombination recomb) {
+    private void associateRecombinationWithCF(Conversion recomb) {
     
         List<Event> eventList = getCFEvents();
 

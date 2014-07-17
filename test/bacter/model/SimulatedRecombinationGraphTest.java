@@ -18,7 +18,7 @@
 package bacter.model;
 
 import bacter.model.SimulatedRecombinationGraph;
-import bacter.Recombination;
+import bacter.Conversion;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -84,9 +84,9 @@ public class SimulatedRecombinationGraphTest extends TestBase {
                     "populationModel", popFunc,
                     "alignment", alignment);
 
-            meanNRecomb += rgs.getNRecombs();
+            meanNRecomb += rgs.getNConvs();
             meanCoalTime += rgs.getRoot().getHeight();
-            for (Recombination recomb : rgs.getRecombinations()) {
+            for (Conversion recomb : rgs.getConversions()) {
                 if (recomb == null)
                     continue;
                 

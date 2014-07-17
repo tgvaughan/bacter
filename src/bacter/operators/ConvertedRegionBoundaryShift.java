@@ -17,7 +17,8 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
@@ -41,13 +42,13 @@ public class ConvertedRegionBoundaryShift extends RecombinationGraphOperator {
     @Override
     public double proposal() {
         
-        if (arg.getNRecombs()<1)
+        if (arg.getNConvs()<1)
             return Double.NEGATIVE_INFINITY;
         
         // Select random recombination and region edge:
-        int z = Randomizer.nextInt(arg.getNRecombs()*2);
+        int z = Randomizer.nextInt(arg.getNConvs()*2);
         int ridx = z/2 + 1;
-        Recombination recomb = arg.getRecombinations().get(ridx);
+        Conversion recomb = arg.getConversions().get(ridx);
         boolean moveStart = (z%2 == 0);
         
         int currentLocus, minLocus, maxLocus;
@@ -56,15 +57,15 @@ public class ConvertedRegionBoundaryShift extends RecombinationGraphOperator {
             maxLocus = recomb.getEndSite();
             
             if (ridx>1)
-                minLocus = arg.getRecombinations().get(ridx-1).getEndSite() + 2;
+                minLocus = arg.getConversions().get(ridx-1).getEndSite() + 2;
             else
                 minLocus = 0;
         } else {
             currentLocus = recomb.getEndSite();
             minLocus = recomb.getStartSite();
             
-            if (ridx<arg.getNRecombs())
-                maxLocus = arg.getRecombinations().get(ridx+1).getStartSite() - 2;
+            if (ridx<arg.getNConvs())
+                maxLocus = arg.getConversions().get(ridx+1).getStartSite() - 2;
             else
                 maxLocus = arg.getSequenceLength()-1;
         }

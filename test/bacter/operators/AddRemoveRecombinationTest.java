@@ -18,7 +18,7 @@
 package bacter.operators;
 
 import bacter.operators.AddRemoveRecombination;
-import bacter.Recombination;
+import bacter.Conversion;
 import bacter.model.SimulatedRecombinationGraph;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
@@ -62,7 +62,7 @@ public class AddRemoveRecombinationTest {
         
         // Loop until a valid proposal is made
         double logP1;
-        List<Recombination> oldRecombs;
+        List<Conversion> oldRecombs;
         do {
             operator.initByName(
                     "weight", 1.0,
@@ -72,7 +72,7 @@ public class AddRemoveRecombinationTest {
                     "populationModel", popFunc);
             
             oldRecombs = Lists.newArrayList(
-                    arg.getRecombinations());
+                    arg.getConversions());
         
             logP1 = operator.drawNewRecomb();
         } while (Double.isInfinite(logP1));
@@ -80,8 +80,8 @@ public class AddRemoveRecombinationTest {
         System.out.println("logP1 = " + logP1);
         
         // Identify new recomination
-        Recombination newRecomb = null;
-        for (Recombination recomb : arg.getRecombinations()) {
+        Conversion newRecomb = null;
+        for (Conversion recomb : arg.getConversions()) {
             if (!oldRecombs.contains(recomb))
                 newRecomb = recomb;
         }

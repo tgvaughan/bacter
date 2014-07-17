@@ -26,11 +26,11 @@ import beast.evolution.tree.Node;
  * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class Recombination {
+public class Conversion {
     
-    protected RecombinationGraph arg;
+    protected ConversionGraph arg;
     
-    public Recombination() { }
+    public Conversion() { }
     
     /**
      * Construct new recombination with specified properties.
@@ -41,7 +41,7 @@ public class Recombination {
      * @param startSite
      * @param endSite
      */
-    public Recombination(Node node1, double height1, Node node2, double height2,
+    public Conversion(Node node1, double height1, Node node2, double height2,
             int startSite, int endSite) {
         this.node1 = node1;
         this.node2 = node2;
@@ -228,7 +228,7 @@ public class Recombination {
      * Assign recombination graph.
      * @param arg 
      */
-    public void setRecombinationGraph(RecombinationGraph arg) {
+    public void setRecombinationGraph(ConversionGraph arg) {
         this.arg = arg;
     }
     
@@ -244,10 +244,10 @@ public class Recombination {
      * Obtain new recombination with exactly the same
      * field values as this one.
      *
-     * @return copy of Recombination object
+     * @return copy of Conversion object
      */
-    public Recombination getCopy() {
-        Recombination copy = new Recombination();
+    public Conversion getCopy() {
+        Conversion copy = new Conversion();
         copy.arg = arg;
         copy.startSite = startSite;
         copy.endSite = endSite;
@@ -260,16 +260,16 @@ public class Recombination {
     }
 
     /**
-     * Returns true if obj is a Recombination object that represents an
-     * identical recombination to this.
+     * Returns true if obj is a Conversion object that represents an
+ identical recombination to this.
      * 
      * @param obj
      * @return true if recombinations are equivalent
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Recombination) {
-            Recombination otherRecomb = (Recombination)obj;
+        if (obj instanceof Conversion) {
+            Conversion otherRecomb = (Conversion)obj;
             return arg == otherRecomb.arg
                 && startSite == otherRecomb.startSite
                 && endSite == otherRecomb.endSite

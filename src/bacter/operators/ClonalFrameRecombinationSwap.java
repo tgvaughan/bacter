@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
+import bacter.Conversion;
 import beast.core.Description;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
@@ -37,12 +37,12 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
     public double proposal() {
         double logHR = 0.0;
 
-        if (arg.getNRecombs()==0 || getGapCount()==0)
+        if (arg.getNConvs()==0 || getGapCount()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Choose recombination
-        int ridx = Randomizer.nextInt(arg.getNRecombs())+1;
-        Recombination recomb = arg.getRecombinations().get(ridx);
+        int ridx = Randomizer.nextInt(arg.getNConvs())+1;
+        Conversion recomb = arg.getConversions().get(ridx);
 
         if (recomb.getNode1()==recomb.getNode2())
             return Double.NEGATIVE_INFINITY;
@@ -64,14 +64,14 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
     private int getGapCount() {
         int count = 0;
 
-        if (arg.getNRecombs()>0 && arg.getRecombinations().get(1).getStartSite()>0)
+        if (arg.getNConvs()>0 && arg.getConversions().get(1).getStartSite()>0)
             count += 1;
         
-        if (arg.getNRecombs()>1)
-            count += arg.getNRecombs()-1;
+        if (arg.getNConvs()>1)
+            count += arg.getNConvs()-1;
         
-        if (arg.getNRecombs() == 0
-                || arg.getRecombinations().get(arg.getNRecombs()).getEndSite()<arg.getSequenceLength()-1)
+        if (arg.getNConvs() == 0
+                || arg.getConversions().get(arg.getNConvs()).getEndSite()<arg.getSequenceLength()-1)
             count += 1;
         
         return count;
@@ -83,7 +83,7 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
      * @param recomb selected recombination
      * @return log probability of new state
      */
-    protected double performSwap(Recombination recomb) {
+    protected double performSwap(Conversion recomb) {
         double logP = 0.0;
         
         // Choose unconverted (clonal frame) fragment:
@@ -98,7 +98,7 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
                 : floating.getLeft();
         
         // Create recombination corresponding to original clonal frame:
-        Recombination oldCFrecomb = new Recombination();
+        Conversion oldCFrecomb = new Conversion();
         oldCFrecomb.setNode1(pivot);
         oldCFrecomb.setHeight1(recomb.getHeight1());
         if (recomb.getNode2()==sister)
@@ -147,11 +147,11 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
         List<Integer> startSites = Lists.newArrayList();
         List<Integer> endSites = Lists.newArrayList();
 
-        while (arg.getRecombinations().size()>1) {
-            Recombination thisRecomb = arg.getRecombinations().get(arg.getNRecombs());
+        while (arg.getConversions().size()>1) {
+            Conversion thisRecomb = arg.getConversions().get(arg.getNConvs());
             startSites.add(thisRecomb.getStartSite());
             endSites.add(thisRecomb.getEndSite());
-            arg.deleteRecombination(arg.getRecombinations().get(arg.getNRecombs()));
+            arg.deleteConversion(arg.getConversions().get(arg.getNConvs()));
         }
         
         Collections.reverse(startSites);
@@ -162,48 +162,48 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
         
         int gapIdx = 0;
         if (startSites.get(0)>0) {
-            Recombination newRecomb;
+            Conversion newRecomb;
 
             if (chosenGapIdx==0) {
                 newRecomb = oldCFrecomb;
             } else {
-                newRecomb = new Recombination();
+                newRecomb = new Conversion();
                 logP += attachEdge(newRecomb);                
             }
             
             newRecomb.setStartSite(0);
             newRecomb.setEndSite(startSites.get(0)-1);
-            arg.addRecombination(newRecomb);
+            arg.addConversion(newRecomb);
             
             gapIdx += 1;
         }
         
         for (int i=0; i<startSites.size()-1; i++) {
-            Recombination newRecomb;
+            Conversion newRecomb;
             if (chosenGapIdx==gapIdx) {
                 newRecomb = oldCFrecomb;
             } else {
-                newRecomb = new Recombination();
+                newRecomb = new Conversion();
                 logP += attachEdge(newRecomb);
             }
             newRecomb.setStartSite(endSites.get(i)+1);
             newRecomb.setEndSite(startSites.get(i+1)-1);
-            arg.addRecombination(newRecomb);
+            arg.addConversion(newRecomb);
             
             gapIdx += 1;
         }
         
         if (endSites.get(endSites.size()-1)<arg.getSequenceLength()-1) {
-            Recombination newRecomb;
+            Conversion newRecomb;
             if (chosenGapIdx==gapIdx) {
                 newRecomb = oldCFrecomb;
             } else {
-                newRecomb = new Recombination();
+                newRecomb = new Conversion();
                 logP += attachEdge(newRecomb);
             }
             newRecomb.setStartSite(endSites.get(endSites.size()-1)+1);
             newRecomb.setEndSite(arg.getSequenceLength()-1);
-            arg.addRecombination(newRecomb);
+            arg.addConversion(newRecomb);
             
             gapIdx += 1;
         }
@@ -217,13 +217,13 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
      * @param recomb recombination chosen for forward move
      * @return log of reverse move probability.
      */
-    protected double getReverseMoveProb(Recombination recomb) {
+    protected double getReverseMoveProb(Conversion recomb) {
         double logP = 0.0;
 
         // Probability of drawing existing recombinant edges in x from
         // the clonal frame in x'.  (This excludes the conversion corresponding
         // to the chosen gap in x'.)
-        for (Recombination thisRecomb : arg.getRecombinations()) {
+        for (Conversion thisRecomb : arg.getConversions()) {
             if (thisRecomb == null || thisRecomb == recomb)
                 continue;
             

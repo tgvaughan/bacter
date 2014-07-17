@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
+import bacter.Conversion;
 import beast.core.Description;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
@@ -34,13 +34,13 @@ public class ConvertedRegionSwap extends RecombinationGraphOperator {
     @Override
     public double proposal() {
         
-        if (arg.getNRecombs()<2)
+        if (arg.getNConvs()<2)
             return Double.NEGATIVE_INFINITY;
 
         // Select a random pair of recombinations
-        int[] idx = Randomizer.shuffled(arg.getNRecombs());
-        Recombination recomb1 = arg.getRecombinations().get(idx[0]+1);
-        Recombination recomb2 = arg.getRecombinations().get(idx[1]+1);
+        int[] idx = Randomizer.shuffled(arg.getNConvs());
+        Conversion recomb1 = arg.getConversions().get(idx[0]+1);
+        Conversion recomb2 = arg.getConversions().get(idx[1]+1);
         
         // Switch edges corresponding to recombinations.  (Can't switch
         // loci, as this would break ordering constraint.)

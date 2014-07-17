@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
+import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
@@ -55,13 +55,13 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
     double splitProposal() {
         double logHR = 0.0;
         
-        if (arg.getNRecombs()==0)
+        if (arg.getNConvs()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Select recombination
-        Recombination recomb = arg.getRecombinations()
-                .get(Randomizer.nextInt(arg.getNRecombs())+1);
-        logHR -= Math.log(1.0/arg.getNRecombs());
+        Conversion recomb = arg.getConversions()
+                .get(Randomizer.nextInt(arg.getNConvs())+1);
+        logHR -= Math.log(1.0/arg.getNConvs());
         
         if (recomb.getSiteCount()<3)
             return Double.NEGATIVE_INFINITY;
@@ -105,17 +105,17 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         recomb.setEndSite(s);
         
         // Create new recombination
-        Recombination newRecomb = new Recombination();
+        Conversion newRecomb = new Conversion();
         newRecomb.setStartSite(s + gap + 2);
         newRecomb.setEndSite(origEnd);
         newRecomb.setNode1(recomb.getNode1());
         newRecomb.setNode2(recomb.getNode2());
         newRecomb.setHeight1(depHeight);
         newRecomb.setHeight2(arrHeight);
-        arg.addRecombination(newRecomb);
+        arg.addConversion(newRecomb);
         
         // Include probability of reverse (merge) move in HR:
-        logHR += Math.log(1.0/((double)(arg.getNRecombs()-1)));
+        logHR += Math.log(1.0/((double)(arg.getNConvs()-1)));
         
         return logHR;
     }
@@ -123,15 +123,15 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
     double mergeProposal() {
         double logHR = 0.0;
         
-        if (arg.getNRecombs()<2)
+        if (arg.getNConvs()<2)
             return Double.NEGATIVE_INFINITY;
         
         // Select a random pair of adjacent (on alignment) regions
-        int r1idx = Randomizer.nextInt(arg.getNRecombs()-1) + 1;
+        int r1idx = Randomizer.nextInt(arg.getNConvs()-1) + 1;
         int r2idx = r1idx + 1;
-        Recombination recomb1 = arg.getRecombinations().get(r1idx);
-        Recombination recomb2 = arg.getRecombinations().get(r2idx);
-        logHR -= Math.log(1.0/((double)(arg.getNRecombs()-1)));
+        Conversion recomb1 = arg.getConversions().get(r1idx);
+        Conversion recomb2 = arg.getConversions().get(r2idx);
+        logHR -= Math.log(1.0/((double)(arg.getNConvs()-1)));
         
         // Ensure a split operator could have generated this pair
         if (recomb1.getNode1() != recomb2.getNode1()
@@ -160,10 +160,10 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         recomb1.setEndSite(recomb2.getEndSite());
         
         // Remove the right-most recombination
-        arg.deleteRecombination(recomb2);
+        arg.deleteConversion(recomb2);
         
         // Include probability of reverse (split) move in HR:
-        logHR += Math.log(1.0/arg.getNRecombs())
+        logHR += Math.log(1.0/arg.getNConvs())
                 + Math.log(1.0/((double)(recomb1.getSiteCount()-2)))
                 + gap*Math.log(1.0-gapRate) + Math.log(gapRate)
                 + Math.log(1.0/(depRange*arrRange));

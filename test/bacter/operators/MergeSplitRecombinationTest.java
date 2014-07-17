@@ -18,8 +18,8 @@
 package bacter.operators;
 
 import bacter.operators.MergeSplitRecombination;
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
@@ -50,7 +50,7 @@ public class MergeSplitRecombinationTest {
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
         TreeParser clonalFrame = new TreeParser("((0:0.5,1:0.5)3:0.2,2:0.7)4:0.0");
-        RecombinationGraph arg = new RecombinationGraph();
+        ConversionGraph arg = new ConversionGraph();
         arg.assignFrom(clonalFrame);
         arg.initByName("sequenceLength", 10000);
         
@@ -58,14 +58,14 @@ public class MergeSplitRecombinationTest {
         state.initByName("stateNode", arg);
         state.initialise();
 
-        Recombination recomb = new Recombination();
+        Conversion recomb = new Conversion();
         recomb.setStartSite(200);
         recomb.setEndSite(500);
         recomb.setNode1(arg.getNode(0));
         recomb.setNode2(arg.getNode(1));
         recomb.setHeight1(0.1);
         recomb.setHeight2(0.4);
-        arg.addRecombination(recomb);
+        arg.addConversion(recomb);
 
         state.store(0);
         

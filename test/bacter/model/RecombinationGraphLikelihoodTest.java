@@ -16,11 +16,11 @@
  */
 package bacter.model;
 
-import bacter.model.RecombinationGraphLikelihood;
+import bacter.model.ConversionGraphLikelihood;
 import bacter.model.SimulatedAlignment;
 import bacter.model.SimulatedRecombinationGraph;
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -52,8 +52,8 @@ public class RecombinationGraphLikelihoodTest extends TestBase {
 
         Alignment alignment = getAlignment();
         
-        // RecombinationGraph
-        RecombinationGraph arg = new RecombinationGraph();
+        // ConversionGraph
+        ConversionGraph arg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
@@ -71,7 +71,7 @@ public class RecombinationGraphLikelihoodTest extends TestBase {
         
         // Likelihood
         
-        RecombinationGraphLikelihood argLikelihood = new RecombinationGraphLikelihood();
+        ConversionGraphLikelihood argLikelihood = new ConversionGraphLikelihood();
         argLikelihood.initByName(
                 "data", alignment,
                 "arg", arg,
@@ -94,9 +94,9 @@ public class RecombinationGraphLikelihoodTest extends TestBase {
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination recomb1 = new Recombination(node1, height1, node2, height2,
+        Conversion recomb1 = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb1);
+        arg.addConversion(recomb1);
         
         logP = argLikelihood.calculateLogP();
         logPtrue = slowLikelihood(arg, alignment, siteModel);
@@ -113,9 +113,9 @@ public class RecombinationGraphLikelihoodTest extends TestBase {
         height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         startLocus = 250;
         endLocus = 300;
-        Recombination recomb2 = new Recombination(node1, height1, node2, height2,
+        Conversion recomb2 = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb2);
+        arg.addConversion(recomb2);
         
         logP = argLikelihood.calculateLogP();
         logPtrue = slowLikelihood(arg, alignment, siteModel);
@@ -132,7 +132,7 @@ public class RecombinationGraphLikelihoodTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        RecombinationGraph arg = new SimulatedRecombinationGraph();
+        ConversionGraph arg = new SimulatedRecombinationGraph();
         arg.initByName(
                 "rho", 5.0,
                 "delta", 1000.0,
@@ -159,7 +159,7 @@ public class RecombinationGraphLikelihoodTest extends TestBase {
                 "useNexus", true);
         
         // Calculate likelihood:
-        RecombinationGraphLikelihood argLikelihood = new RecombinationGraphLikelihood();
+        ConversionGraphLikelihood argLikelihood = new ConversionGraphLikelihood();
         argLikelihood.initByName(
                 "data", alignment,
                 "arg", arg,
@@ -187,11 +187,11 @@ public class RecombinationGraphLikelihoodTest extends TestBase {
      * @return
      * @throws Exception 
      */
-    private double slowLikelihood(RecombinationGraph arg, Alignment alignment,
+    private double slowLikelihood(ConversionGraph arg, Alignment alignment,
             SiteModel siteModel) throws Exception {
 
         double logP = 0.0;
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             Alignment margAlign = createMarginalAlignment(alignment, arg, recomb);
             TreeLikelihood treeLikelihood = new TreeLikelihood();
             treeLikelihood.initByName(

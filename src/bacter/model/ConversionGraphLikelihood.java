@@ -16,8 +16,8 @@
  */
 package bacter.model;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -47,9 +47,9 @@ import java.util.Set;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Probability of sequence data given recombination graph.")
-public class RecombinationGraphLikelihood extends Distribution {
+public class ConversionGraphLikelihood extends Distribution {
     
-    public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
+    public Input<ConversionGraph> argInput = new In<ConversionGraph>(
             "arg", "Recombination graph.").setRequired();
     
     public Input<Alignment> alignmentInput = new In<Alignment>(
@@ -58,17 +58,17 @@ public class RecombinationGraphLikelihood extends Distribution {
     public Input<SiteModelInterface> siteModelInput = new In<SiteModelInterface>(
             "siteModel", "Site model for evolution of alignment.").setRequired();
 
-    RecombinationGraph arg;
+    ConversionGraph arg;
     SiteModel.Base siteModel;
     SubstitutionModel.Base substitutionModel;
     Alignment alignment;
     
-    Map<Recombination,LikelihoodCore> likelihoodCores;
+    Map<Conversion,LikelihoodCore> likelihoodCores;
     
-    Map<Recombination, Multiset<int[]>> patterns;
-    Map<Recombination, double[]> patternLogLikelihoods;
-    Map<Recombination, double[]> rootPartials;
-    Map<Recombination, List<Integer>> constantPatterns;
+    Map<Conversion, Multiset<int[]>> patterns;
+    Map<Conversion, double[]> patternLogLikelihoods;
+    Map<Conversion, double[]> rootPartials;
+    Map<Conversion, List<Integer>> constantPatterns;
     
     int nStates;
     
@@ -116,7 +116,7 @@ public class RecombinationGraphLikelihood extends Distribution {
         updatePatterns();
         updateCores();
         
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             traverse(arg.getMarginalRoot(recomb), recomb);
             
             int i=0;
@@ -143,7 +143,7 @@ public class RecombinationGraphLikelihood extends Distribution {
         Multiset<int[]> cfPatSet = LinkedHashMultiset.create();
 
         int j=0;
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             if (recomb == null)
                 continue; // Skip clonal frame
             
@@ -183,7 +183,7 @@ public class RecombinationGraphLikelihood extends Distribution {
         
         // Record lists of constant patterns:
         constantPatterns.clear();
-        for (Recombination recomb: arg.getRecombinations()) {
+        for (Conversion recomb: arg.getConversions()) {
             List<Integer> constantPatternList = Lists.newArrayList();
             
             int patternIdx = 0;
@@ -205,7 +205,7 @@ public class RecombinationGraphLikelihood extends Distribution {
         }
         
         // DEBUG
-//        for (Recombination recomb : arg.getRecombinations()) {
+//        for (Conversion recomb : arg.getConversions()) {
 //            System.out.print(patterns.get(recomb).elementSet().size()
 //                    + " unique patterns of " + patterns.get(recomb).size()
 //                    + " sites");
@@ -222,10 +222,10 @@ public class RecombinationGraphLikelihood extends Distribution {
      */
     private void updateCores() {
         
-        //likelihoodCores.keySet().retainAll(arg.getRecombinations());
+        //likelihoodCores.keySet().retainAll(arg.getConversions());
         likelihoodCores.clear();
         
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             
             LikelihoodCore likelihoodCore;
             if (!likelihoodCores.keySet().contains(recomb)) {
@@ -283,9 +283,9 @@ public class RecombinationGraphLikelihood extends Distribution {
      * Traverse a marginal tree, computing partial likelihoods on the way.
      * 
      * @param node Tree node
-     * @param recomb Recombination object.  Null selects the clonal frame.
+     * @param recomb Conversion object.  Null selects the clonal frame.
      */
-    void traverse(Node node, Recombination recomb) {
+    void traverse(Node node, Conversion recomb) {
 
         LikelihoodCore lhc = likelihoodCores.get(recomb);
         

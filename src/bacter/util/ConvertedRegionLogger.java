@@ -17,8 +17,8 @@
 
 package bacter.util;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
@@ -32,7 +32,7 @@ import java.io.PrintStream;
 @Description("")
 public class ConvertedRegionLogger extends BEASTObject implements Loggable {
 
-    public Input<RecombinationGraph> argInput = new Input<RecombinationGraph>(
+    public Input<ConversionGraph> argInput = new Input<ConversionGraph>(
             "arg", "Recombination graph", Validate.REQUIRED);
 
     @Override
@@ -40,7 +40,7 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
     
     @Override
     public void init(PrintStream out) throws Exception {
-        final RecombinationGraph arg = argInput.get();
+        final ConversionGraph arg = argInput.get();
         if (getID() == null || getID().matches("\\s*")) {
             out.print(arg.getID() + ".converted\t");
         } else {
@@ -51,16 +51,16 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
     @Override
     public void log(int nSample, PrintStream out) {
         
-        if (argInput.get().getNRecombs()==0) {
+        if (argInput.get().getNConvs()==0) {
             out.print("NA\t");
             return;
         }
         
-        for (int r=1; r<=argInput.get().getNRecombs(); r++) {
+        for (int r=1; r<=argInput.get().getNConvs(); r++) {
             if (r>1)
                 out.print(",");
 
-            Recombination recomb = argInput.get().getRecombinations().get(r);
+            Conversion recomb = argInput.get().getConversions().get(r);
             out.print(recomb.getStartSite() + ":" + recomb.getEndSite());
         }
         out.print("\t");

@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Description("Simulates an ARG - can be used for chain initialization or for "
         + "sampler validation.")
-public class RecombinationGraphSimulator extends beast.core.Runnable {
+public class ConversionGraphSimulator extends beast.core.Runnable {
 
     public Input<SimulatedRecombinationGraph> simARGInput =
             new In<SimulatedRecombinationGraph>("simARG",

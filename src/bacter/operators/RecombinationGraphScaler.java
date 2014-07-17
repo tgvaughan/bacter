@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
+import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -80,7 +80,7 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
         }
         
         // Scale recombinant edges:
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             if (recomb == null)
                 continue;
             

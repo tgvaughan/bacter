@@ -17,8 +17,8 @@
 
 package bacter.model;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
@@ -44,7 +44,7 @@ import java.util.List;
 @Description("An alignment produced by simulating sequence evolution down an ARG.")
 public class SimulatedAlignment extends Alignment {
     
-    public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
+    public Input<ConversionGraph> argInput = new In<ConversionGraph>(
             "arg",
             "Recombination graph down which to simulate evolution.")
             .setRequired();
@@ -60,7 +60,7 @@ public class SimulatedAlignment extends Alignment {
     public Input<Boolean> useNexusInput = new In<Boolean>("useNexus",
             "Use Nexus format to write alignment file.").setDefault(false);
     
-    private RecombinationGraph arg;
+    private ConversionGraph arg;
     private SiteModel siteModel;
     private DataType dataType;
     
@@ -111,7 +111,7 @@ public class SimulatedAlignment extends Alignment {
         
         int[][] alignment = new int[nTaxa][arg.getSequenceLength()];
         
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             int thisLength;
             if (recomb==null)
                 thisLength = arg.getClonalFrameSiteCount();
@@ -158,14 +158,14 @@ public class SimulatedAlignment extends Alignment {
      * Traverse a marginal tree simulating a region of the sequence alignment
      * down it.
      * 
-     * @param recomb  Recombination identifying the marginal tree
+     * @param recomb  Conversion identifying the marginal tree
      * @param node Node of the marginal tree
      * @param parentSequence Sequence at the parent node in the marginal tree
      * @param categories Mapping from sites to categories
      * @param transitionProbs
      * @param regionAlignment 
      */
-    private void traverse(Recombination recomb, Node node,
+    private void traverse(Conversion recomb, Node node,
             int[] parentSequence,
             int[] categories, double[][] transitionProbs,
             int[][] regionAlignment) {
@@ -225,7 +225,7 @@ public class SimulatedAlignment extends Alignment {
      * @param recomb 
      */
     private void copyToAlignment(int[][] alignment, int[][] regionAlignment,
-            Recombination recomb) {
+            Conversion recomb) {
         
         int nTaxa = alignment.length;
         
@@ -234,8 +234,8 @@ public class SimulatedAlignment extends Alignment {
             int ridx=0;
             int sidx=0;
             int jidx=0;
-            while (ridx<arg.getNRecombs()) {
-                Recombination nextRecomb = arg.getRecombinations().get(ridx+1);
+            while (ridx<arg.getNConvs()) {
+                Conversion nextRecomb = arg.getConversions().get(ridx+1);
                 int nextStart = (int)nextRecomb.getStartSite();
                 if (nextStart>sidx) {
                     for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {

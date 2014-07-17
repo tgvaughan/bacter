@@ -17,7 +17,7 @@
 
 package bacter.util;
 
-import bacter.RecombinationGraph;
+import bacter.ConversionGraph;
 import beast.core.CalculationNode;
 import beast.core.Description;
 import beast.core.Input;
@@ -31,7 +31,7 @@ import java.io.PrintStream;
 @Description("Logs clonal frame corresponding to recombination graph.")
 public class ClonalFrameLogger extends CalculationNode implements Loggable {
 
-    public Input<RecombinationGraph> argInput = new Input<RecombinationGraph>(
+    public Input<ConversionGraph> argInput = new Input<ConversionGraph>(
             "arg", "Recombination graph whose clonal frame you want to log.",
             Validate.REQUIRED);
 
@@ -45,7 +45,7 @@ public class ClonalFrameLogger extends CalculationNode implements Loggable {
 
     @Override
     public void log(int nSample, PrintStream out) {
-        RecombinationGraph arg = argInput.get();
+        ConversionGraph arg = argInput.get();
 
         out.print("tree STATE_" + nSample + " = ");
         out.print(arg.getRoot().toSortedNewick(new int[1], false) + ";");

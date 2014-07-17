@@ -47,12 +47,12 @@ import java.util.regex.Pattern;
 @Citation("Tim Vaughan, Alexei Drummod and Nigel French, "
         + "'Phylogenetic inference for bacteria in BEAST 2'. "
         + "In preparation.")
-public class RecombinationGraph extends Tree {
+public class ConversionGraph extends Tree {
     
     /**
-     * Unlike Trees, Recombination graphs require an alignment (or at least
-     * the length of an alignment) to be specified so that the regions of
-     * the alignment affected by recombination events can be recorded.
+     * Unlike Trees, Conversion graphs require an alignment (or at least
+ the length of an alignment) to be specified so that the regions of
+ the alignment affected by recombination events can be recorded.
      */
     public Input<Alignment> alignmentInput = In.create("alignment",
             "Sequence alignment corresponding to graph.");
@@ -70,8 +70,8 @@ public class RecombinationGraph extends Tree {
     /**
      * List of recombinations on graph.
      */
-    protected List<Recombination> recombs;
-    protected List<Recombination> storedRecombs;
+    protected List<Conversion> convs;
+    protected List<Conversion> storedConvs;
     
     /**
      * Class of events types on clonal frame.
@@ -126,9 +126,9 @@ public class RecombinationGraph extends Tree {
     @Override
     public void initAndValidate() throws Exception {
 
-        recombs = Lists.newArrayList();
-        storedRecombs = Lists.newArrayList();
-        recombs.add(null); // Represents the clonal frame.
+        convs = Lists.newArrayList();
+        storedConvs = Lists.newArrayList();
+        convs.add(null); // Represents the clonal frame.
         
         if (alignmentInput.get() != null)
             sequenceLength = alignmentInput.get().getSiteCount();
@@ -158,32 +158,32 @@ public class RecombinationGraph extends Tree {
      * Add recombination to graph, ensuring recombination list
      * remains sorted.
      * 
-     * @param recomb 
+     * @param conv 
      */
-    public void addRecombination(Recombination recomb) {
+    public void addConversion(Conversion conv) {
         startEditing();
         
-        recomb.setRecombinationGraph(this);
+        conv.setRecombinationGraph(this);
         
         int i;
-        for (i=1; i<recombs.size(); i++)
-            if (recombs.get(i).startSite>recomb.startSite)
+        for (i=1; i<convs.size(); i++)
+            if (convs.get(i).startSite>conv.startSite)
                 break;
         
-        recombs.add(i, recomb);
+        convs.add(i, conv);
     }
     
     /**
      * Remove recombination from graph.
      * 
-     * @param recomb recombination to remove.
+     * @param conv recombination to remove.
      */
-    public void deleteRecombination(Recombination recomb) {
+    public void deleteConversion(Conversion conv) {
         startEditing();
         
-        if (recomb == null)
+        if (conv == null)
             throw new IllegalArgumentException("Cannot delete the clonal frame!");
-        recombs.remove(recomb);
+        convs.remove(conv);
     }
     
     /**
@@ -191,8 +191,8 @@ public class RecombinationGraph extends Tree {
      * 
      * @return List of recombinations.
      */
-    public List<Recombination> getRecombinations() {
-        return recombs;
+    public List<Conversion> getConversions() {
+        return convs;
     }
 
     /**
@@ -200,8 +200,8 @@ public class RecombinationGraph extends Tree {
      * 
      * @return Number of recombinations.
      */
-    public int getNRecombs() {
-        return recombs.size()-1;
+    public int getNConvs() {
+        return convs.size()-1;
     }
     
     /**
@@ -225,7 +225,7 @@ public class RecombinationGraph extends Tree {
      */
     public int getClonalFrameSiteCount() {
         int count = getSequenceLength();
-        for (Recombination recomb : recombs) {
+        for (Conversion recomb : convs) {
             if (recomb == null)
                 continue;
             
@@ -242,14 +242,14 @@ public class RecombinationGraph extends Tree {
      * @return true if all recombinations are valid w.r.t. clonal frame.
      */
     public boolean isValid() {
-        for (int ridx=1; ridx<recombs.size(); ridx++) {
-            if (!recombs.get(ridx).isValid())
+        for (int ridx=1; ridx<convs.size(); ridx++) {
+            if (!convs.get(ridx).isValid())
                 return false;
             
-            if (recombs.get(ridx).getStartSite()<0
-                    || recombs.get(ridx).getStartSite()>=getSequenceLength()
-                    || recombs.get(ridx).getEndSite()<0
-                    || recombs.get(ridx).getEndSite()>=getSequenceLength())
+            if (convs.get(ridx).getStartSite()<0
+                    || convs.get(ridx).getStartSite()>=getSequenceLength()
+                    || convs.get(ridx).getEndSite()<0
+                    || convs.get(ridx).getEndSite()>=getSequenceLength())
                 return false;
         }
         
@@ -260,16 +260,16 @@ public class RecombinationGraph extends Tree {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         
-        for (Recombination recomb : getRecombinations()) {
-            if (recomb == null)
+        for (Conversion conv : getConversions()) {
+            if (conv == null)
                 continue;
             sb.append(String.format("[&%d,%d,%s,%d,%d,%s] ",
-                    recomb.node1.getNr(),
-                    recomb.startSite,
-                    String.valueOf(recomb.height1),
-                    recomb.node2.getNr(),
-                    recomb.endSite,
-                    String.valueOf(recomb.height2)));
+                    conv.node1.getNr(),
+                    conv.startSite,
+                    String.valueOf(conv.height1),
+                    conv.node2.getNr(),
+                    conv.endSite,
+                    String.valueOf(conv.height2)));
         }
         sb.append(super.toString());
         
@@ -305,20 +305,20 @@ public class RecombinationGraph extends Tree {
             parser.offsetInput.setValue(0, parser);
             setRoot(parser.parseNewick(sNewick));
         } catch (Exception ex) {
-            Logger.getLogger(RecombinationGraph.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConversionGraph.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         initArrays();
         
-        Pattern recombPattern = Pattern.compile("\\[&([^]]*)]");
-        Matcher recombMatcher = recombPattern.matcher(str);
+        Pattern convPattern = Pattern.compile("\\[&([^]]*)]");
+        Matcher convMatcher = convPattern.matcher(str);
         
         // Process recombinations
-        recombs.clear();
-        recombs.add(null);
+        convs.clear();
+        convs.add(null);
         
-        while(recombMatcher.find()) {
-            String [] elements = recombMatcher.group(1).split(",");
+        while(convMatcher.find()) {
+            String [] elements = convMatcher.group(1).split(",");
             
             Node node1 = getNode(Integer.parseInt(elements[0]));
             int startLocus = Integer.parseInt(elements[1]);
@@ -328,12 +328,12 @@ public class RecombinationGraph extends Tree {
             int endLocus = Integer.parseInt(elements[4]);
             double height2 = Double.parseDouble(elements[5]);
 
-            Recombination recomb = new Recombination(
+            Conversion recomb = new Conversion(
                     node1, height1,
                     node2, height2,
                     startLocus, endLocus);
             
-            addRecombination(recomb);
+            addConversion(recomb);
         }
     }
     
@@ -343,8 +343,8 @@ public class RecombinationGraph extends Tree {
     }
 
     @Override
-    public RecombinationGraph copy() {
-        RecombinationGraph arg = new RecombinationGraph();
+    public ConversionGraph copy() {
+        ConversionGraph arg = new ConversionGraph();
         
         arg.setID(getID());
         
@@ -354,14 +354,14 @@ public class RecombinationGraph extends Tree {
         arg.internalNodeCount = internalNodeCount;
         arg.leafNodeCount = leafNodeCount;
         
-        arg.recombs = Lists.newArrayList();
-        arg.storedRecombs = Lists.newArrayList();
+        arg.convs = Lists.newArrayList();
+        arg.storedConvs = Lists.newArrayList();
         
-        for (Recombination recomb : recombs) {
+        for (Conversion recomb : convs) {
             if (recomb == null)
-                arg.recombs.add(null);
+                arg.convs.add(null);
             else
-                arg.recombs.add(recomb.getCopy());
+                arg.convs.add(recomb.getCopy());
         }
         arg.sequenceLength = sequenceLength;
         
@@ -381,15 +381,15 @@ public class RecombinationGraph extends Tree {
     public void assignFrom(StateNode other) {
         super.assignFrom(other);
         
-        if (other instanceof RecombinationGraph) {
-            RecombinationGraph arg = (RecombinationGraph)other;
+        if (other instanceof ConversionGraph) {
+            ConversionGraph arg = (ConversionGraph)other;
         
-            recombs.clear();
-            for (Recombination recomb : arg.recombs) {
+            convs.clear();
+            for (Conversion recomb : arg.convs) {
                 if (recomb == null)
-                    recombs.add(null);
+                    convs.add(null);
                 else
-                    recombs.add(recomb.getCopy());
+                    convs.add(recomb.getCopy());
             }
             sequenceLength = arg.sequenceLength;
         
@@ -402,15 +402,15 @@ public class RecombinationGraph extends Tree {
     public void assignFromFragile(StateNode other) {
         super.assignFromFragile(other);
         
-        RecombinationGraph arg = (RecombinationGraph)other;
+        ConversionGraph arg = (ConversionGraph)other;
 
-        recombs.clear();
-        storedRecombs.clear();
-        for (Recombination recomb : arg.recombs) {
+        convs.clear();
+        storedConvs.clear();
+        for (Conversion recomb : arg.convs) {
             if (recomb == null)
-                recombs.add(null);
+                convs.add(null);
             else
-                recombs.add(recomb.getCopy());
+                convs.add(recomb.getCopy());
         }
         sequenceLength = arg.sequenceLength;
         
@@ -442,16 +442,16 @@ public class RecombinationGraph extends Tree {
         class Event {
             boolean isArrival;
             double time;
-            Recombination recomb;
+            Conversion recomb;
             
-            public Event(boolean isArrival, double time, Recombination recomb) {
+            public Event(boolean isArrival, double time, Conversion recomb) {
                 this.isArrival = isArrival;
                 this.time = time;
                 this.recomb = recomb;
             }
         }
         List<Event> events = new ArrayList<Event>();
-        for (Recombination recomb : recombs) {
+        for (Conversion recomb : convs) {
             if (recomb == null)
                 continue;
             
@@ -493,17 +493,17 @@ public class RecombinationGraph extends Tree {
             if (event.isArrival) {
                 String meta = !includeRegionInfo ? ""
                         : String.format("[&recomb=%d, region={%d,%d}]",
-                                recombs.indexOf(event.recomb),
+                                convs.indexOf(event.recomb),
                                 event.recomb.getStartSite(),
                                 event.recomb.getEndSite());
 
-                sb.insert(cursor, "(,#" + recombs.indexOf(event.recomb)
+                sb.insert(cursor, "(,#" + convs.indexOf(event.recomb)
                         + meta
                         + ":" + (event.recomb.height2-event.recomb.height1)
                         + "):" + thisLength);
                 cursor += 1;
             } else {
-                sb.insert(cursor, "()#" + recombs.indexOf(event.recomb)
+                sb.insert(cursor, "()#" + convs.indexOf(event.recomb)
                         + ":" + thisLength);
                 cursor += 1;
             }
@@ -597,13 +597,13 @@ public class RecombinationGraph extends Tree {
     protected void store () {
         super.store();
         
-        storedRecombs.clear();
+        storedConvs.clear();
 
-        for (Recombination recomb : recombs) {
+        for (Conversion recomb : convs) {
             if (recomb == null)
-                storedRecombs.add(null);
+                storedConvs.add(null);
             else {
-                Recombination recombCopy = new Recombination();
+                Conversion recombCopy = new Conversion();
                 
                 recombCopy.setStartSite(recomb.getStartSite());
                 recombCopy.setEndSite(recomb.getEndSite());
@@ -615,7 +615,7 @@ public class RecombinationGraph extends Tree {
 
                 recombCopy.setRecombinationGraph(this);
                 
-                storedRecombs.add(recombCopy);
+                storedConvs.add(recombCopy);
             }
         }
     }
@@ -624,9 +624,9 @@ public class RecombinationGraph extends Tree {
     public void restore() {
         super.restore();
         
-        List<Recombination> tmp = storedRecombs;
-        storedRecombs = recombs;
-        recombs = tmp;
+        List<Conversion> tmp = storedConvs;
+        storedConvs = convs;
+        convs = tmp;
         
         cfEventListDirty = true;
     }
@@ -674,7 +674,7 @@ public class RecombinationGraph extends Tree {
     
     @Override
     public void log(int nSample, PrintStream out) {
-        RecombinationGraph arg = (RecombinationGraph) getCurrent();
+        ConversionGraph arg = (ConversionGraph) getCurrent();
         
         out.print(String.format("\ttree STATE_%d = [&R] %s",
                 nSample, arg.getExtendedNewick(true)));

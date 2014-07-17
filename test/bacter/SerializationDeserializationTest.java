@@ -16,8 +16,8 @@
  */
 package bacter;
 
-import bacter.RecombinationGraph;
-import bacter.Recombination;
+import bacter.ConversionGraph;
+import bacter.Conversion;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
@@ -32,7 +32,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 /**
- * Tests the toString() and fromXML() methods of RecombinationGraph.
+ * Tests the toString() and fromXML() methods of ConversionGraph.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
@@ -45,8 +45,8 @@ public class SerializationDeserializationTest extends TestBase {
         
         Alignment alignment = getAlignment();
         
-        // RecombinationGraph
-        RecombinationGraph arg = new RecombinationGraph();
+        // ConversionGraph
+        ConversionGraph arg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
@@ -62,9 +62,9 @@ public class SerializationDeserializationTest extends TestBase {
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination recomb1 = new Recombination(node1, height1, node2, height2,
+        Conversion recomb1 = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb1);
+        arg.addConversion(recomb1);
         
         //Add recombination event 2
         node1 = arg.getExternalNodes().get(0);
@@ -73,9 +73,9 @@ public class SerializationDeserializationTest extends TestBase {
         height2 = node2.getHeight() + 1.0;
         startLocus = 300;
         endLocus = 400;
-        Recombination recomb2 = new Recombination(node1, height1, node2, height2,
+        Conversion recomb2 = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb2);
+        arg.addConversion(recomb2);
         
         // Write ARG out to XML string
         String xmlStr = arg.toXML();
@@ -88,13 +88,13 @@ public class SerializationDeserializationTest extends TestBase {
         org.w3c.dom.Node docNode = nodes.item(0);
         
         // Read ARG back in from DOM
-        RecombinationGraph argNew = new RecombinationGraph();
+        ConversionGraph argNew = new ConversionGraph();
         argNew.assignFrom(tree);
         argNew.initByName("alignment", alignment);
         argNew.fromXML(docNode);
         
         // Check that new ARG matches old
-        Recombination newRecomb1 = argNew.getRecombinations().get(1);
+        Conversion newRecomb1 = argNew.getConversions().get(1);
         assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
@@ -102,7 +102,7 @@ public class SerializationDeserializationTest extends TestBase {
         assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
         assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
-        Recombination newRecomb2 = argNew.getRecombinations().get(2);
+        Conversion newRecomb2 = argNew.getConversions().get(2);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
@@ -119,8 +119,8 @@ public class SerializationDeserializationTest extends TestBase {
 
         Alignment alignment = getAlignment();
         
-        // RecombinationGraph
-        RecombinationGraph arg = new RecombinationGraph();
+        // ConversionGraph
+        ConversionGraph arg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
@@ -136,9 +136,9 @@ public class SerializationDeserializationTest extends TestBase {
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination recomb1 = new Recombination(node1, height1, node2, height2,
+        Conversion recomb1 = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb1);
+        arg.addConversion(recomb1);
         
         //Add recombination event 2
         node1 = arg.getExternalNodes().get(0);
@@ -147,19 +147,19 @@ public class SerializationDeserializationTest extends TestBase {
         height2 = node2.getHeight() + 1.0;
         startLocus = 300;
         endLocus = 400;
-        Recombination recomb2 = new Recombination(node1, height1, node2, height2,
+        Conversion recomb2 = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(recomb2);
+        arg.addConversion(recomb2);
         
         // Write ARG out to string
         String argString = arg.toString();
         
         // Read ARG back in from string
-        RecombinationGraph argNew = new RecombinationGraph();
+        ConversionGraph argNew = new ConversionGraph();
         argNew.initByName("alignment", alignment, "fromString", argString);
         
         // Check that new ARG matches old
-        Recombination newRecomb1 = argNew.getRecombinations().get(1);
+        Conversion newRecomb1 = argNew.getConversions().get(1);
         assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
@@ -167,7 +167,7 @@ public class SerializationDeserializationTest extends TestBase {
         assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
         assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
-        Recombination newRecomb2 = argNew.getRecombinations().get(2);
+        Conversion newRecomb2 = argNew.getConversions().get(2);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);

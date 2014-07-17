@@ -17,8 +17,8 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
@@ -34,12 +34,12 @@ public class RecombinantEdgeHop extends RecombinationGraphOperator {
     @Override
     public double proposal() {
 
-        if (arg.getNRecombs()==0)
+        if (arg.getNConvs()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Select recombination at random
-        Recombination recomb = arg.getRecombinations().get(
-                Randomizer.nextInt(arg.getNRecombs())+1);
+        Conversion recomb = arg.getConversions().get(
+                Randomizer.nextInt(arg.getNConvs())+1);
         
         // Choose whether to move departure or arrival point
         boolean moveDeparture;

@@ -17,8 +17,8 @@
 
 package bacter.util;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.CalculationNode;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -31,11 +31,11 @@ import java.io.PrintStream;
  */
 public class RecombinationGraphStatsLogger extends CalculationNode implements Loggable {
 
-    public Input<RecombinationGraph> argInput = new Input <RecombinationGraph>(
+    public Input<ConversionGraph> argInput = new Input <ConversionGraph>(
             "arg", "Recombination graph to calculate summary statistics from.",
             Validate.REQUIRED);
     
-    private RecombinationGraph arg;
+    private ConversionGraph arg;
     
     @Override
     public void initAndValidate() {
@@ -48,19 +48,19 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
      * @param arg
      * @return mean length, or NaN if ARG has no recombinant edges.
      */
-    public static double getMeanTractLength(RecombinationGraph arg) {
+    public static double getMeanTractLength(ConversionGraph arg) {
         
-        if (arg.getNRecombs()<1)
+        if (arg.getNConvs()<1)
             return Double.NaN;
         
         double mean = 0;
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             if (recomb == null)
                 continue;
             
             mean += recomb.getEndSite()-recomb.getStartSite()+1;
         }
-        mean /= arg.getNRecombs();
+        mean /= arg.getNConvs();
         
         return mean;
     }
@@ -72,17 +72,17 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
      * @param arg
      * @return mean count, or NaN if ARG has less than 2 conversions
      */
-    public static double getMeanInterTractLength(RecombinationGraph arg) {
+    public static double getMeanInterTractLength(ConversionGraph arg) {
         
-        if (arg.getNRecombs()<2)
+        if (arg.getNConvs()<2)
             return Double.NaN;
         
         double mean = 0;
-        for (int ridx=1; ridx<arg.getNRecombs(); ridx++) {
-            mean += arg.getRecombinations().get(ridx+1).getStartSite()
-                    - arg.getRecombinations().get(ridx).getEndSite() - 1;
+        for (int ridx=1; ridx<arg.getNConvs(); ridx++) {
+            mean += arg.getConversions().get(ridx+1).getStartSite()
+                    - arg.getConversions().get(ridx).getEndSite() - 1;
         }
-        mean /= arg.getNRecombs()-1;
+        mean /= arg.getNConvs()-1;
         
         return mean;
     }
@@ -93,19 +93,19 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
      * @param arg
      * @return mean length, or NaN if ARG has no recombinant edges
      */
-    public static double getMeanEdgeLength(RecombinationGraph arg) {
+    public static double getMeanEdgeLength(ConversionGraph arg) {
         
-        if (arg.getNRecombs()<1)
+        if (arg.getNConvs()<1)
             return Double.NaN;
         
         double mean = 0.0;
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             if (recomb == null)
                 continue;
             
             mean += recomb.getHeight2()-recomb.getHeight1();
         }
-        mean /= arg.getNRecombs();
+        mean /= arg.getNConvs();
         
         return mean;
     }
@@ -117,18 +117,18 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
      * @param arg
      * @return mean height, or NaN if ARG has no recombinant edges
      */
-    public static double getMeanDepartureHeight(RecombinationGraph arg) {
-        if (arg.getNRecombs()<1)
+    public static double getMeanDepartureHeight(ConversionGraph arg) {
+        if (arg.getNConvs()<1)
             return Double.NaN;
         
         double mean = 0.0;
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             if (recomb == null)
                 continue;
             
             mean += recomb.getHeight1();
         }
-        mean /= arg.getNRecombs();
+        mean /= arg.getNConvs();
         
         return mean;
     }
@@ -152,7 +152,7 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
     public void log(int nSample, PrintStream out) {
         out.print(arg.getRoot().getHeight() + "\t"
                 + arg.getClonalFrameLength() + "\t"
-                + arg.getNRecombs() + "\t"
+                + arg.getNConvs() + "\t"
                 + RecombinationGraphStatsLogger.getMeanTractLength(arg) + "\t"
                 + RecombinationGraphStatsLogger.getMeanInterTractLength(arg) + "\t"
                 + RecombinationGraphStatsLogger.getMeanEdgeLength(arg) + "\t"

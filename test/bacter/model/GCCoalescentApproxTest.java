@@ -17,8 +17,8 @@
 package bacter.model;
 
 import bacter.model.GCCoalescentApprox;
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -62,8 +62,8 @@ public class GCCoalescentApproxTest extends TestBase {
         
         Alignment alignment = getAlignment();
         
-        // RecombinationGraph
-        RecombinationGraph arg = new RecombinationGraph();
+        // ConversionGraph
+        ConversionGraph arg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
@@ -108,9 +108,9 @@ public class GCCoalescentApproxTest extends TestBase {
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Recombination newRecomb = new Recombination(node1, height1, node2, height2,
+        Conversion newRecomb = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addRecombination(newRecomb);
+        arg.addConversion(newRecomb);
 
         // Test converted region probability when one recombination exists
         logP = coalescent.calculateConvertedRegionMapLogP();

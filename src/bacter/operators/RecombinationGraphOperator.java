@@ -17,23 +17,23 @@
 
 package bacter.operators;
 
-import bacter.RecombinationGraph;
+import bacter.ConversionGraph;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.evolution.tree.Node;
 import feast.input.In;
 
 /**
- * Abstract class of operators which act on the RecombinationGraph state.
+ * Abstract class of operators which act on the ConversionGraph state.
  * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public abstract class RecombinationGraphOperator extends Operator {
     
-    public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
+    public Input<ConversionGraph> argInput = new In<ConversionGraph>(
             "arg", "Ancestral recombination graph.").setRequired();
     
-    protected RecombinationGraph arg;
+    protected ConversionGraph arg;
 
     @Override
     public void initAndValidate() throws Exception {

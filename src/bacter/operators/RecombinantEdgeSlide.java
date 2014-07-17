@@ -17,8 +17,8 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
@@ -52,12 +52,12 @@ public class RecombinantEdgeSlide extends RecombinationGraphOperator {
         
         double logHR = 0.0;
         
-        if (arg.getNRecombs()==0)
+        if (arg.getNConvs()==0)
             return Double.NEGATIVE_INFINITY;
 
         // Select edge at random:
-        Recombination recomb = arg.getRecombinations().get(
-                Randomizer.nextInt(arg.getNRecombs())+1);
+        Conversion recomb = arg.getConversions().get(
+                Randomizer.nextInt(arg.getNConvs())+1);
         
         // Decide whether to move departure or arrival point
         boolean moveDeparture = Randomizer.nextBoolean();

@@ -19,8 +19,8 @@ package bacter.model;
 
 import bacter.model.SimulatedAlignment;
 import bacter.model.SimulatedRecombinationGraph;
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -46,7 +46,7 @@ public class SimulatedAlignmentTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        RecombinationGraph arg = new SimulatedRecombinationGraph();
+        ConversionGraph arg = new SimulatedRecombinationGraph();
         arg.initByName(
                 "rho", 5.0/10000,
                 "delta", 1000.0,
@@ -75,7 +75,7 @@ public class SimulatedAlignmentTest extends TestBase {
 
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             Alignment margAlign = createMarginalAlignment(alignment, arg, recomb);
             
             ClusterTree upgmaTree = new ClusterTree();

@@ -16,8 +16,8 @@
  */
 package bacter.model;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -31,9 +31,9 @@ import java.util.Random;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Appoximation to the coalescent with gene conversion.")
-public class GCCoalescentApprox extends RecombinationGraphDistribution {
+public class GCCoalescentApprox extends ConversionGraphDistribution {
     
-    public Input<RecombinationGraph> argInput = new In<RecombinationGraph>(
+    public Input<ConversionGraph> argInput = new In<ConversionGraph>(
             "arg", "Recombination graph.").setRequired();
     
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
@@ -45,7 +45,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
     
-    RecombinationGraph arg;
+    ConversionGraph arg;
     PopulationFunction popFunc;
     int sequenceLength;
     
@@ -68,7 +68,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
         
         logP = 0.0;
         
-        for (Recombination recomb : arg.getRecombinations()) {
+        for (Conversion recomb : arg.getConversions()) {
             if (recomb == null)
                 logP += calculateClonalFrameLogP();
             else
@@ -87,7 +87,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
      */
     public double calculateClonalFrameLogP() {
         
-        List<RecombinationGraph.Event> events = arg.getCFEvents();
+        List<ConversionGraph.Event> events = arg.getCFEvents();
         
         double thisLogP = 0.0;
         
@@ -99,7 +99,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
             int k = events.get(i).getLineageCount();
             thisLogP += -0.5*k*(k-1)*intervalArea;
             
-            if (events.get(i+1).getType()==RecombinationGraph.EventType.COALESCENCE)
+            if (events.get(i+1).getType()==ConversionGraph.EventType.COALESCENCE)
                 thisLogP += Math.log(1.0/popFunc.getPopSize(timeB));
         }
         
@@ -111,9 +111,9 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
      * @param recomb
      * @return log(P)
      */
-    public double calculateRecombinantLogP(Recombination recomb) {
+    public double calculateRecombinantLogP(Conversion recomb) {
         
-        List<RecombinationGraph.Event> events = arg.getCFEvents();
+        List<ConversionGraph.Event> events = arg.getCFEvents();
         
         // Probability density of location of recombinant edge start
         double thisLogP = Math.log(1.0/arg.getClonalFrameLength());
@@ -151,7 +151,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
         
         double thisLogP = 0.0;
         
-        List<Recombination> recombs = arg.getRecombinations();
+        List<Conversion> recombs = arg.getConversions();
         
         double rho = rhoInput.get().getValue();
         double pTractEnd = 1.0/deltaInput.get().getValue();
@@ -163,7 +163,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
         // Probability that sequence begins in the clonal frame:
         double pStartCF = 1.0/(pRec/pTractEnd + 1.0);
         
-        if (arg.getNRecombs()==0){
+        if (arg.getNConvs()==0){
             // Probability of no recombinations
             thisLogP += Math.log(pStartCF) 
                     + (sequenceLength-1)*Math.log(1.0-pRec);
@@ -180,7 +180,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
             
             // Contribution from remaining recomb regions and adjacent CF regions
             for (int ridx=1; ridx<recombs.size(); ridx++) {
-                Recombination recomb = recombs.get(ridx);
+                Conversion recomb = recombs.get(ridx);
                 
                 thisLogP += Math.log(pRec)
                         + (recomb.getEndSite() - recomb.getStartSite())*Math.log(1.0-pTractEnd);

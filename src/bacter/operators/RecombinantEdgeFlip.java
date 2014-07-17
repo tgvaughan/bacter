@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
+import bacter.Conversion;
 import beast.core.Description;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
@@ -33,11 +33,11 @@ public class RecombinantEdgeFlip extends RecombinationGraphOperator {
     @Override
     public double proposal() {
 
-        if (arg.getNRecombs()==0)
+        if (arg.getNConvs()==0)
             return Double.NEGATIVE_INFINITY;
         
-        Recombination recomb = arg.getRecombinations().get(
-                Randomizer.nextInt(arg.getNRecombs())+1);
+        Conversion recomb = arg.getConversions().get(
+                Randomizer.nextInt(arg.getNConvs())+1);
         
         Node node1 = recomb.getNode1();
         Node node2 = recomb.getNode2();

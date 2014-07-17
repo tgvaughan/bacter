@@ -22,6 +22,6 @@ import beast.core.Distribution;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public abstract class RecombinationGraphDistribution extends Distribution {
+public abstract class ConversionGraphDistribution extends Distribution {
     
 }

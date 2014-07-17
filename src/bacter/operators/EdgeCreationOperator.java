@@ -17,8 +17,8 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.PopulationFunction;
@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Abstract class of ARG operators that use the clonal origin model as the
- * basis for adding new recombinant edges to an existing RecombinationGraph.
+ basis for adding new recombinant edges to an existing ConversionGraph.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
@@ -54,11 +54,11 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
      * @param recomb
      * @return log probability density of chosen attachment.
      */
-    public double attachEdge(Recombination recomb) {
+    public double attachEdge(Conversion recomb) {
         
         double logP = 0.0;
         
-        List<RecombinationGraph.Event> eventList = arg.getCFEvents();
+        List<ConversionGraph.Event> eventList = arg.getCFEvents();
         
         // Select departure point
         double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
@@ -89,7 +89,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
      * @param recomb
      * @return log probability density
      */
-    public double getEdgeAttachmentProb(Recombination recomb) {
+    public double getEdgeAttachmentProb(Conversion recomb) {
         double logP = 0.0;
         
         logP += Math.log(1.0/arg.getClonalFrameLength());
@@ -105,10 +105,10 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
      * @param recomb recombination to modify
      * @return log probability density of coalescent point chosen.
      */
-    public double coalesceEdge(Recombination recomb) {
+    public double coalesceEdge(Conversion recomb) {
         double logP = 0.0;
         
-        List<RecombinationGraph.Event> events = arg.getCFEvents();
+        List<ConversionGraph.Event> events = arg.getCFEvents();
         
         // Locate event immediately below departure point
         int startIdx = 0;
@@ -121,7 +121,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         // Determine arrival point in real time
         for (int i=startIdx; i<events.size(); i++) {
             
-            RecombinationGraph.Event event = events.get(i);
+            ConversionGraph.Event event = events.get(i);
             
             double t = Math.max(recomb.getHeight1(), event.getHeight());
         
@@ -171,10 +171,10 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
      * @param recomb
      * @return log probability density
      */
-    public double getEdgeCoalescenceProb(Recombination recomb) {
+    public double getEdgeCoalescenceProb(Conversion recomb) {
         double logP = 0.0;
         
-        List<RecombinationGraph.Event> events = arg.getCFEvents();
+        List<ConversionGraph.Event> events = arg.getCFEvents();
         
         // Find event immediately below departure point
         int startIdx = 0;

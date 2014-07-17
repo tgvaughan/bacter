@@ -16,7 +16,7 @@
  */
 package bacter.operators;
 
-import bacter.Recombination;
+import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -52,7 +52,7 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
             
             // Add
             
-            logHGF += Math.log(1.0/(arg.getNRecombs()+1));
+            logHGF += Math.log(1.0/(arg.getNConvs()+1));
             
             try {
                 logHGF -= drawNewRecomb();
@@ -67,19 +67,19 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
             
             // Remove
             
-            if (arg.getNRecombs()==0)
+            if (arg.getNConvs()==0)
                 return Double.NEGATIVE_INFINITY;
             
             // Select recombination to remove:
-            Recombination recomb = arg.getRecombinations().get(
-                    Randomizer.nextInt(arg.getNRecombs())+1);
+            Conversion recomb = arg.getConversions().get(
+                    Randomizer.nextInt(arg.getNConvs())+1);
             
             // Calculate HGF
             logHGF += getRecombProb(recomb);
-            logHGF -= Math.log(1.0/arg.getNRecombs());
+            logHGF -= Math.log(1.0/arg.getNConvs());
             
             // Remove recombination
-            arg.deleteRecombination(recomb);
+            arg.deleteConversion(recomb);
 
         }
 
@@ -96,7 +96,7 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
     public double drawNewRecomb() throws ProposalFailed {
         double logP = 0;
 
-        Recombination newRecomb = new Recombination();
+        Conversion newRecomb = new Conversion();
         
         logP += attachEdge(newRecomb);
         
@@ -112,8 +112,8 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);
         
-        for (int ridx=0; ridx<arg.getNRecombs(); ridx++) {
-            Recombination recomb = arg.getRecombinations().get(ridx+1);
+        for (int ridx=0; ridx<arg.getNConvs(); ridx++) {
+            Conversion recomb = arg.getConversions().get(ridx+1);
             
             if (z<recomb.getStartSite()-1)
                 break;
@@ -130,7 +130,7 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
                         
         newRecomb.setEndSite(newRecomb.getStartSite()+convertedLength);
 
-        if (!arg.addRecombination(newRecomb))
+        if (!arg.addConversion(newRecomb))
             throw new ProposalFailed();
         
         return logP;
@@ -143,7 +143,7 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
      * @param recomb
      * @return log of proposal density
      */
-    public double getRecombProb(Recombination recomb) {
+    public double getRecombProb(Conversion recomb) {
         double logP = 0;
         
         logP += getEdgeAttachmentProb(recomb);
@@ -168,12 +168,12 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
      * @param skip recombination to skip (may be null)
      * @return convertible site count
      */
-    private int getConvertibleSiteCount(Recombination skip) {
+    private int getConvertibleSiteCount(Conversion skip) {
         int count = 0;
         
         int l=0;
-        for (int ridx=1; ridx<=arg.getNRecombs(); ridx++) {
-            Recombination recomb = arg.getRecombinations().get(ridx);
+        for (int ridx=1; ridx<=arg.getNConvs(); ridx++) {
+            Conversion recomb = arg.getConversions().get(ridx);
             if (recomb == skip)
                 continue;
             

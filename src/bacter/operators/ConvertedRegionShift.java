@@ -17,8 +17,8 @@
 
 package bacter.operators;
 
-import bacter.Recombination;
-import bacter.RecombinationGraph;
+import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
@@ -42,11 +42,11 @@ public class ConvertedRegionShift extends RecombinationGraphOperator {
     @Override
     public double proposal() {
         
-        if (arg.getNRecombs()<1)
+        if (arg.getNConvs()<1)
             return Double.NEGATIVE_INFINITY;
         
-        int ridx = Randomizer.nextInt(arg.getNRecombs()) + 1;
-        Recombination recomb = arg.getRecombinations().get(ridx);
+        int ridx = Randomizer.nextInt(arg.getNConvs()) + 1;
+        Conversion recomb = arg.getConversions().get(ridx);
         
         int radius = (int)Math.round(argInput.get().getSequenceLength()
                 *apertureSizeInput.get())/2;
@@ -55,8 +55,8 @@ public class ConvertedRegionShift extends RecombinationGraphOperator {
         
         if (delta>0) {
             int maxDelta;
-            if (ridx<arg.getNRecombs())
-                maxDelta = arg.getRecombinations().get(ridx+1).getStartSite() - 2
+            if (ridx<arg.getNConvs())
+                maxDelta = arg.getConversions().get(ridx+1).getStartSite() - 2
                         - recomb.getEndSite();
             else
                 maxDelta = arg.getSequenceLength() - 1 - recomb.getEndSite();
@@ -66,7 +66,7 @@ public class ConvertedRegionShift extends RecombinationGraphOperator {
         } else {
             int minDelta;
             if (ridx>1)
-                minDelta = arg.getRecombinations().get(ridx-1).getEndSite() + 2
+                minDelta = arg.getConversions().get(ridx-1).getEndSite() + 2
                         - recomb.getStartSite();
             else
                 minDelta = 0 - recomb.getStartSite();

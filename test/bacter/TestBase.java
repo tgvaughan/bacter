@@ -17,8 +17,8 @@
 
 package bacter;
 
-import bacter.RecombinationGraph;
-import bacter.Recombination;
+import bacter.ConversionGraph;
+import bacter.Conversion;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
@@ -71,7 +71,7 @@ public abstract class TestBase {
      * @throws Exception 
      */
     public Alignment createMarginalAlignment(Alignment alignment,
-            RecombinationGraph arg, Recombination recomb) throws Exception {
+            ConversionGraph arg, Conversion recomb) throws Exception {
         List<Sequence> sequences = Lists.newArrayList();
 
         for (int leafIdx=0; leafIdx<alignment.getNrTaxa(); leafIdx++) {
@@ -82,12 +82,12 @@ public abstract class TestBase {
                 
                 // Portions of CF sequence before each converted region
                 int i=0;
-                for (int r=0; r<arg.getNRecombs(); r++) {
-                    while (i<arg.getRecombinations().get(r+1).getStartSite()) {
+                for (int r=0; r<arg.getNConvs(); r++) {
+                    while (i<arg.getConversions().get(r+1).getStartSite()) {
                         stateSequence.add(alignment.getCounts().get(leafIdx).get(i));
                         i += 1;
                     }
-                    i=arg.getRecombinations().get(r+1).getEndSite()+1;
+                    i=arg.getConversions().get(r+1).getEndSite()+1;
                 }
                 
                 // Any remaining CF sequence
