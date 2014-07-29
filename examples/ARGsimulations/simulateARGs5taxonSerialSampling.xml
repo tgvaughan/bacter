@@ -8,7 +8,7 @@
 
   <run spec="RecombinationGraphSimulator" nSims="100000">
       <simARG spec='SimulatedRecombinationGraph' id="arg"
-         rho="5.0" delta="50.0" sequenceLength="10000">
+         rho="0.0005" delta="50.0" sequenceLength="10000">
           <populationModel spec="ConstantPopulation" popSize="1.0"/>
           <trait spec='TraitSet' id="timeTrait" traitname="date-backward">
             <taxa spec='TaxonSet'>

@@ -13,7 +13,7 @@
 
   
   <input spec='SimulatedRecombinationGraph' id='arg'
-         rho="5.0" delta="50.0" sequenceLength="10000" nTaxa="5">
+         rho="0.0005" delta="50.0" sequenceLength="10000" nTaxa="5">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
   </input>
 
@@ -27,7 +27,7 @@
     
     <distribution spec="CompoundDistribution" id="posterior">
         <distribution spec='GCCoalescentApprox' id="argPrior">
-            <rho spec='RealParameter' value="5.0" id="rho" estimate="false"/>
+            <rho spec='RealParameter' value="0.0005" id="rho" estimate="false"/>
             <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
             <arg idref="arg"/>
             <populationModel idref="popFunc"/>

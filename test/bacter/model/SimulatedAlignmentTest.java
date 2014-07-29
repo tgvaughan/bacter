@@ -48,7 +48,7 @@ public class SimulatedAlignmentTest extends TestBase {
         
         RecombinationGraph arg = new SimulatedRecombinationGraph();
         arg.initByName(
-                "rho", 5.0,
+                "rho", 5.0/10000,
                 "delta", 1000.0,
                 "populationModel", popFunc,
                 "nTaxa", 5,

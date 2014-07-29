@@ -88,7 +88,7 @@ public class GCCoalescentApproxTest extends TestBase {
         coalescent.initByName(
                 "arg", arg,
                 "populationModel", popFunction,
-                "rho", new RealParameter("1"),
+                "rho", new RealParameter(Double.toString(1.0/898)),
                 "delta", new RealParameter("10"));
         
         // Test converted region probability when no recombinations exist

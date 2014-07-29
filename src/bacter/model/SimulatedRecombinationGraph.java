@@ -287,7 +287,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
      */
     private void generateRecombinations() {
         
-        double pRec = 0.5*rho*getClonalFrameLength()/getSequenceLength();
+        double pRec = 0.5*rho*getClonalFrameLength();
         double pTractEnd = 1.0/delta;
         double p0cf = 1.0/(1.0 + pRec*delta);
         

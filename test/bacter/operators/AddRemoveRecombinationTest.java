@@ -51,7 +51,7 @@ public class AddRemoveRecombinationTest {
         
         SimulatedRecombinationGraph arg = new SimulatedRecombinationGraph();
         arg.initByName(
-                "rho", 1.0,
+                "rho", 1.0/10000,
                 "delta", 50.0,
                 "sequenceLength", 10000,
                 "nTaxa", 10,
@@ -67,7 +67,7 @@ public class AddRemoveRecombinationTest {
             operator.initByName(
                     "weight", 1.0,
                     "arg", arg,
-                    "rho", new RealParameter("1.0"),
+                    "rho", new RealParameter(Double.toString(1.0/10000)),
                     "delta", new RealParameter("50.0"),
                     "populationModel", popFunc);
             

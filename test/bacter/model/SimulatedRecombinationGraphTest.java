@@ -79,7 +79,7 @@ public class SimulatedRecombinationGraphTest extends TestBase {
         
         for (int i=0; i<nIter; i++) {
             rgs.initByName(
-                    "rho", 1.0,
+                    "rho", 1.0/length,
                     "delta", 50.0,
                     "populationModel", popFunc,
                     "alignment", alignment);
