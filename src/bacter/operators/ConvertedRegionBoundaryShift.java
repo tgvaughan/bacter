@@ -18,7 +18,6 @@
 package bacter.operators;
 
 import bacter.Recombination;
-import bacter.RecombinationGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
