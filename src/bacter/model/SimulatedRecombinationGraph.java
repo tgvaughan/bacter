@@ -287,7 +287,7 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
      */
     private void generateRecombinations() {
         
-        double pRec = 0.5*rho*getClonalFrameLength();
+        double pRec = 1.0 - Math.exp(-0.5*rho*getClonalFrameLength());
         double pTractEnd = 1.0/delta;
         double p0cf = 1.0/(1.0 + pRec*delta);
         
@@ -299,12 +299,12 @@ public class SimulatedRecombinationGraph extends RecombinationGraph implements S
         if (Randomizer.nextDouble()>p0cf) {
             Recombination recomb = new Recombination();
             recomb.setStartSite(0);
-            int tractLength = (int)Randomizer.nextGeometric(pTractEnd);
-            recomb.setEndSite(Math.min(tractLength, getSequenceLength()-1));
+            int tractEndSite = (int)Randomizer.nextGeometric(pTractEnd);
+            recomb.setEndSite(Math.min(tractEndSite, getSequenceLength()-1));
             associateRecombinationWithCF(recomb);
             addRecombination(recomb);
             
-            l = tractLength + 1;
+            l = tractEndSite + 2;
         } else
             l = 1;
         

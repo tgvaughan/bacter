@@ -158,7 +158,7 @@ public class GCCoalescentApprox extends RecombinationGraphDistribution {
         double cfLength = arg.getClonalFrameLength();
         
         // Probability of recombination per site along sequence
-        double pRec = 0.5*rho*cfLength;
+        double pRec = 1.0 - Math.exp(-0.5*rho*cfLength);
         
         // Probability that sequence begins in the clonal frame:
         double pStartCF = 1.0/(pRec/pTractEnd + 1.0);

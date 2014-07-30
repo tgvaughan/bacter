@@ -40,7 +40,7 @@ public class RecombinationGraphSimulator extends beast.core.Runnable {
     
     public Input<List<Logger>> loggersInput = new In<List<Logger>>("logger",
             "Logger used to write results to screen or disk.")
-            .setDefault(new ArrayList<Logger>());    
+            .setDefault(new ArrayList<>());    
     
     @Override
     public void initAndValidate() { }
