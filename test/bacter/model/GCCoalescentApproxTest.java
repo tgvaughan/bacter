@@ -93,7 +93,7 @@ public class GCCoalescentApproxTest extends TestBase {
         
         // Test converted region probability when no recombinations exist
         double logP = coalescent.calculateConvertedRegionMapLogP();
-        double logPtrue = -0.6574230251814153;
+        double logPtrue = -0.6571848219155827; //-0.6574230251814153;
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         
         // Coalescent probability when no recombinations exist
@@ -114,7 +114,7 @@ public class GCCoalescentApproxTest extends TestBase {
 
         // Test converted region probability when one recombination exists
         logP = coalescent.calculateConvertedRegionMapLogP();
-        logPtrue = -20.652012260825202;
+        logPtrue = -20.652163126784558;//-20.652012260825202;
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         
         // Test coalescent probability when one recombination exists
