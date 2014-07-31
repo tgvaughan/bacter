@@ -1,3 +1,5 @@
+package bacter.operators;
+
 
 import bacter.Recombination;
 import bacter.operators.RecombinationGraphOperator;
