@@ -18,6 +18,7 @@ package bacter.model;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.MarginalTree;
 import bacter.Region;
 import beast.core.Description;
 import beast.core.Distribution;
@@ -115,13 +116,13 @@ public class ConversionGraphLikelihood extends Distribution {
         updatePatterns();
         updateCores();
         
-        for (Conversion recomb : arg.getConversions()) {
-            traverse(arg.getMarginalRoot(recomb), recomb);
+        for (Set<Conversion> convSet : patterns.keySet()) {
+            traverse(new MarginalTree(arg, convSet).getRoot(), convSet);
             
             int i=0;
-            for (int[] pattern : patterns.get(recomb).elementSet()) {
-                logP += patternLogLikelihoods.get(recomb)[i]
-                        *patterns.get(recomb).count(pattern);
+            for (int[] pattern : patterns.get(convSet).elementSet()) {
+                logP += patternLogLikelihoods.get(convSet)[i]
+                        *patterns.get(convSet).count(pattern);
                 i += 1;
             }
         }
@@ -252,17 +253,16 @@ public class ConversionGraphLikelihood extends Distribution {
      * @param node Tree node
      * @param recomb Conversion object.  Null selects the clonal frame.
      */
-    void traverse(Node node, Conversion recomb) {
+    void traverse(Node node, Set<Conversion> convSet) {
 
-        LikelihoodCore lhc = likelihoodCores.get(recomb);
+        LikelihoodCore lhc = likelihoodCores.get(convSet);
         
-        if (!arg.isNodeMarginalRoot(node, recomb)) {
+        if (!node.isRoot()) {
             lhc.setNodeMatrixForUpdate(node.getNr());
             for (int i=0; i<siteModel.getCategoryCount(); i++) {
                 double jointBranchRate = siteModel.getRateForCategory(i, node);
-                double parentHeight = arg.getMarginalNodeHeight(
-                        arg.getMarginalParent(node, recomb), recomb);
-                double nodeHeight = arg.getMarginalNodeHeight(node, recomb);
+                double parentHeight = node.getParent().getHeight();
+                double nodeHeight = node.getHeight();
                 substitutionModel.getTransitionProbabilities(
                         node,
                         parentHeight,
@@ -273,31 +273,31 @@ public class ConversionGraphLikelihood extends Distribution {
             }
         }
         
-        if (!arg.isNodeMarginalLeaf(node, recomb)) {
+        if (!node.isLeaf()) {
             
             // LikelihoodCore only supports binary trees.
-            List<Node> children = arg.getMarginalChildren(node, recomb);
-            traverse(children.get(0), recomb);
-            traverse(children.get(1), recomb);
+            List<Node> children = node.getChildren();
+            traverse(children.get(0), convSet);
+            traverse(children.get(1), convSet);
             
             lhc.setNodePartialsForUpdate(node.getNr());
             lhc.setNodeStatesForUpdate(node.getNr());
             lhc.calculatePartials(children.get(0).getNr(),
                     children.get(1).getNr(), node.getNr());
             
-            if (arg.isNodeMarginalRoot(node, recomb)) {
+            if (node.isRoot()) {
                 double [] frequencies = substitutionModel.getFrequencies();
                 double [] proportions = siteModel.getCategoryProportions(node);
                 lhc.integratePartials(node.getNr(), proportions,
-                        rootPartials.get(recomb));
+                        rootPartials.get(convSet));
                 
-                for (int idx : constantPatterns.get(recomb)) {
-                    rootPartials.get(recomb)[idx]
+                for (int idx : constantPatterns.get(convSet)) {
+                    rootPartials.get(convSet)[idx]
                             += siteModel.getProportionInvariant();
                 }
                 
-                lhc.calculateLogLikelihoods(rootPartials.get(recomb),
-                        frequencies, patternLogLikelihoods.get(recomb));
+                lhc.calculateLogLikelihoods(rootPartials.get(convSet),
+                        frequencies, patternLogLikelihoods.get(convSet));
             }
         }
     }

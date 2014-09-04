@@ -534,7 +534,7 @@ public class ConversionGraph extends Tree {
                 this.recomb = recomb;
             }
         }
-        List<Event> events = new ArrayList<Event>();
+        List<Event> events = new ArrayList<>();
         for (Conversion recomb : convs) {
             if (recomb.node1 == node)
                 events.add(new Event(false, recomb.getHeight1(), recomb));
@@ -543,14 +543,11 @@ public class ConversionGraph extends Tree {
         }
         
         // Sort events from oldest to youngest.
-        Collections.sort(events, new Comparator<Event>() {
-            @Override
-            public int compare(Event e1, Event e2) {
-                if (e1.time>e2.time)
-                    return -1;
-                else
-                    return 1;
-            }
+        Collections.sort(events, (Event e1, Event e2) -> {
+            if (e1.time>e2.time)
+                return -1;
+            else
+                return 1;
         });
 
         // Process events.
@@ -643,17 +640,14 @@ public class ConversionGraph extends Tree {
         }
         
         // Sort events in increasing order of their times
-        Collections.sort(cfEventList, new Comparator<Event>() {
-            @Override
-            public int compare(Event o1, Event o2) {
-                if (o1.t<o2.t)
-                    return -1;
-                
-                if (o2.t<o1.t)
-                    return 1;
-                
-                return 0;
-            }
+        Collections.sort(cfEventList, (Event o1, Event o2) -> {
+            if (o1.t<o2.t)
+                return -1;
+            
+            if (o2.t<o1.t)
+                return 1;
+            
+            return 0;
         });
         
         // Compute lineage counts:

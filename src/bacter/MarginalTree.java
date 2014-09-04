@@ -18,6 +18,7 @@
 package bacter;
 
 import beast.evolution.tree.Node;
+import java.util.Set;
 
 /**
  * Light-weight Tree object representing marginal tree.
@@ -35,4 +36,12 @@ public class MarginalTree {
 	public MarginalTree(Node marginalRoot) {
 		this.marginalRoot = marginalRoot;
 	}
+
+    public MarginalTree(ConversionGraph acg, Region region) {
+        this(acg, region.activeConversions);
+    }
+
+    public MarginalTree(ConversionGraph acg, Set<Conversion> convSet) {
+        
+    }
 }
