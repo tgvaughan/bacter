@@ -18,6 +18,7 @@ package bacter.model;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.Region;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -30,14 +31,12 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import feast.input.In;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -63,12 +62,12 @@ public class ConversionGraphLikelihood extends Distribution {
     SubstitutionModel.Base substitutionModel;
     Alignment alignment;
     
-    Map<Conversion,LikelihoodCore> likelihoodCores;
+    Map<Set<Conversion>, LikelihoodCore> likelihoodCores;
     
-    Map<Conversion, Multiset<int[]>> patterns;
-    Map<Conversion, double[]> patternLogLikelihoods;
-    Map<Conversion, double[]> rootPartials;
-    Map<Conversion, List<Integer>> constantPatterns;
+    Map<Set<Conversion>, Multiset<int[]>> patterns;
+    Map<Set<Conversion>, double[]> patternLogLikelihoods;
+    Map<Set<Conversion>, double[]> rootPartials;
+    Map<Set<Conversion>, List<Integer>> constantPatterns;
     
     int nStates;
     
@@ -140,54 +139,34 @@ public class ConversionGraphLikelihood extends Distribution {
         patternLogLikelihoods.clear();
         rootPartials.clear();
         
-        Multiset<int[]> cfPatSet = LinkedHashMultiset.create();
+        for (Region region : arg.getRegions()) {
 
-        int j=0;
-        for (Conversion recomb : arg.getConversions()) {
-            if (recomb == null)
-                continue; // Skip clonal frame
-            
-            while (j < recomb.getStartSite()) {
-                int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
-                cfPatSet.add(pat);
-                j += 1;
+            Multiset<int[]> patSet;
+            if (patterns.containsKey(region.activeConversions))
+                patSet = patterns.get(region.activeConversions);
+            else {
+                patSet = LinkedHashMultiset.create();
+                patterns.put(region.activeConversions, patSet);
             }
-            
-            Multiset<int[]> recombPatSet = LinkedHashMultiset.create();
-            
-            while (j <= recomb.getEndSite()) {                
+
+            for (int j=region.leftBoundary; j<region.rightBoundary; j++) {
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
-                recombPatSet.add(pat);
-                j += 1;
+                patSet.add(pat);
             }
-            
-            patterns.put(recomb, recombPatSet);
-            patternLogLikelihoods.put(recomb,
-                    new double[recombPatSet.elementSet().size()]);
-            rootPartials.put(recomb,
-                    new double[recombPatSet.elementSet().size()*nStates]);
-        }
-        
-        while (j<alignmentInput.get().getSiteCount()) {
-            
-            int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
-            cfPatSet.add(pat);
-            j += 1;
         }
 
-        patterns.put(null, cfPatSet);
-        patternLogLikelihoods.put(null,
-                new double[cfPatSet.elementSet().size()]);
-        rootPartials.put(null,
-                    new double[cfPatSet.elementSet().size()*nStates]);
-        
-        // Record lists of constant patterns:
+        // Allocate memory for likelihoods and partials, and construct list
+        // of constant patterns.
         constantPatterns.clear();
-        for (Conversion recomb: arg.getConversions()) {
+        for (Set<Conversion> convSet : patterns.keySet()) {
+            Multiset<int[]> patSet = patterns.get(convSet);
+            patternLogLikelihoods.put(convSet, new double[patSet.elementSet().size()]);
+            rootPartials.put(convSet, new double[patSet.elementSet().size()*nStates]);
+
             List<Integer> constantPatternList = Lists.newArrayList();
             
             int patternIdx = 0;
-            for (int[] pattern : patterns.get(recomb).elementSet()) {
+            for (int[] pattern : patterns.get(convSet).elementSet()) {
                 boolean isConstant = true;
                 for (int i=1; i<pattern.length; i++)
                     if (pattern[i] != pattern[0]) {
@@ -201,19 +180,8 @@ public class ConversionGraphLikelihood extends Distribution {
                 patternIdx += 1;
             }
             
-            constantPatterns.put(recomb, constantPatternList);
-        }
-        
-        // DEBUG
-//        for (Conversion recomb : arg.getConversions()) {
-//            System.out.print(patterns.get(recomb).elementSet().size()
-//                    + " unique patterns of " + patterns.get(recomb).size()
-//                    + " sites");
-//            if (recomb == null)
-//                System.out.println(" in clonal frame");
-//            else
-//                System.out.println(" in recombined region");
-//        }
+            constantPatterns.put(convSet, constantPatternList);
+       }
     }
     
     
@@ -222,28 +190,27 @@ public class ConversionGraphLikelihood extends Distribution {
      */
     private void updateCores() {
         
-        //likelihoodCores.keySet().retainAll(arg.getConversions());
         likelihoodCores.clear();
         
-        for (Conversion recomb : arg.getConversions()) {
+        for (Set<Conversion> convSet : patterns.keySet()) {
             
             LikelihoodCore likelihoodCore;
-            if (!likelihoodCores.keySet().contains(recomb)) {
+            if (!likelihoodCores.keySet().contains(convSet)) {
                 if (nStates==4)
                     likelihoodCore = new BeerLikelihoodCore4();
                 else
                     likelihoodCore = new BeerLikelihoodCore(nStates);
                 
-                likelihoodCores.put(recomb, likelihoodCore);
+                likelihoodCores.put(convSet, likelihoodCore);
             } else
-                likelihoodCore = likelihoodCores.get(recomb);
+                likelihoodCore = likelihoodCores.get(convSet);
             
             likelihoodCore.initialize(
                 arg.getNodeCount(),
-                patterns.get(recomb).elementSet().size(),
+                patterns.get(convSet).elementSet().size(),
                 siteModel.getCategoryCount(),
                 true, false);
-            setStates(likelihoodCore, patterns.get(recomb));
+            setStates(likelihoodCore, patterns.get(convSet));
             
             int intNodeCount = arg.getNodeCount()/2;
             for (int i=0; i<intNodeCount; i++)
