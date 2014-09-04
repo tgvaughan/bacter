@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.operators.AddRemoveRecombination;
+import bacter.operators.AddRemoveConversion;
 import bacter.Conversion;
 import bacter.model.SimulatedRecombinationGraph;
 import beast.core.parameter.RealParameter;
@@ -58,7 +58,7 @@ public class AddRemoveRecombinationTest {
                 "populationModel", popFunc);
         
 
-        AddRemoveRecombination operator = new AddRemoveRecombination();
+        AddRemoveConversion operator = new AddRemoveConversion();
         
         // Loop until a valid proposal is made
         double logP1;

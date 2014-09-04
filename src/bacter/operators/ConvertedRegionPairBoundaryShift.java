@@ -1,8 +1,7 @@
 package bacter.operators;
 
 
-import bacter.Recombination;
-import bacter.operators.RecombinationGraphOperator;
+import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
@@ -43,13 +42,13 @@ public class ConvertedRegionPairBoundaryShift extends RecombinationGraphOperator
     
     @Override
     public double proposal() {
-        if (arg.getNRecombs()<2)
+        if (arg.getNConvs()<2)
             return Double.NEGATIVE_INFINITY;
         
         // Select random recombination to be left of pair:
-        int ridx = Randomizer.nextInt(arg.getNRecombs()-1) + 1;
-        Recombination leftRecomb = arg.getRecombinations().get(ridx);
-        Recombination rightRecomb = arg.getRecombinations().get(ridx+1);
+        int ridx = Randomizer.nextInt(arg.getNConvs()-1) + 1;
+        Conversion leftRecomb = arg.getConversions().get(ridx);
+        Conversion rightRecomb = arg.getConversions().get(ridx+1);
         
         int radius = (int)Math.round(arg.getSequenceLength()
                 *apertureSizeInput.get())/2;

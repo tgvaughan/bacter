@@ -28,13 +28,17 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import feast.input.In;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -72,6 +76,12 @@ public class ConversionGraph extends Tree {
      */
     protected List<Conversion> convs;
     protected List<Conversion> storedConvs;
+
+    /**
+     * List of contiguous regions sharing a common history.
+     */
+    protected List<Region> regionList;
+    protected boolean regionListDirty;
     
     /**
      * Class of events types on clonal frame.
@@ -128,7 +138,6 @@ public class ConversionGraph extends Tree {
 
         convs = Lists.newArrayList();
         storedConvs = Lists.newArrayList();
-        convs.add(null); // Represents the clonal frame.
         
         if (alignmentInput.get() != null)
             sequenceLength = alignmentInput.get().getSiteCount();
@@ -141,6 +150,9 @@ public class ConversionGraph extends Tree {
         
         cfEventList = Lists.newArrayList();
         cfEventListDirty = true;
+
+        regionList = Lists.newArrayList();
+        regionListDirty = true;
         
         super.initAndValidate();
     }
@@ -158,7 +170,7 @@ public class ConversionGraph extends Tree {
      * Add recombination to graph, ensuring recombination list
      * remains sorted.
      * 
-     * @param conv 
+     * @param conv
      */
     public void addConversion(Conversion conv) {
         startEditing();
@@ -181,8 +193,6 @@ public class ConversionGraph extends Tree {
     public void deleteConversion(Conversion conv) {
         startEditing();
         
-        if (conv == null)
-            throw new IllegalArgumentException("Cannot delete the clonal frame!");
         convs.remove(conv);
     }
     
@@ -201,7 +211,87 @@ public class ConversionGraph extends Tree {
      * @return Number of recombinations.
      */
     public int getNConvs() {
-        return convs.size()-1;
+        return convs.size();
+    }
+
+    /**
+     * Get list of 
+     * @return 
+     */
+    public List<Region> getRegions() {
+	    updateRegionList();
+
+        return regionList;
+    }
+
+    /**
+     * Assemble list of regions of contiguous sites that possess a single
+     * marginal tree.
+     */
+    public void updateRegionList() {
+        if (!regionListDirty)
+            return;
+        
+        regionList.clear();
+
+        List<Conversion> convOrderedByStart = Lists.newArrayList();
+        convOrderedByStart.addAll(convs);
+        convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
+
+        List<Conversion> convOrderedByEnd = Lists.newArrayList();
+        convOrderedByEnd.addAll(convs);
+        convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
+
+        Set <Conversion> activeConversions = Sets.newHashSet();
+
+        Region currentRegion = new Region();
+        currentRegion.leftBoundary = 0;
+
+        while (!convOrderedByStart.isEmpty() && !convOrderedByEnd.isEmpty()) {
+
+            int nextConvStartBoundary = Integer.MAX_VALUE;
+            if (!convOrderedByStart.isEmpty())
+                nextConvStartBoundary = convOrderedByStart.get(0).startSite;
+
+            int nextConvEndBoundary = -1;
+            if (!convOrderedByEnd.isEmpty())
+                nextConvEndBoundary = convOrderedByEnd.get(0).endSite+1;
+
+            if (nextConvStartBoundary<nextConvEndBoundary) {
+                if (nextConvStartBoundary != currentRegion.leftBoundary) {
+                    currentRegion.rightBoundary = nextConvStartBoundary;
+                    regionList.add(currentRegion);
+                    currentRegion = new Region();
+                    currentRegion.leftBoundary = nextConvStartBoundary;
+                }
+
+                activeConversions.add(convOrderedByStart.get(0));
+                currentRegion.activeConversions.add(convOrderedByStart.get(0));
+                convOrderedByStart.remove(0);
+
+            } else {
+                if (nextConvEndBoundary != currentRegion.leftBoundary) {
+                    currentRegion.rightBoundary = nextConvEndBoundary;
+                    regionList.add(currentRegion);
+                    currentRegion = new Region();
+                    currentRegion.leftBoundary = nextConvEndBoundary;
+                }
+
+                activeConversions.remove(convOrderedByEnd.get(0));
+                currentRegion.activeConversions.remove(convOrderedByEnd.get(0));
+                convOrderedByEnd.remove(0);
+            }
+        }
+
+        if (currentRegion.leftBoundary<getSequenceLength()) {
+            if (!currentRegion.isClonalFrame())
+                throw new RuntimeException("Error updating region list!");
+
+            currentRegion.rightBoundary = getSequenceLength();
+            regionList.add(currentRegion);
+        }
+
+        regionListDirty = false;
     }
     
     /**
@@ -224,13 +314,13 @@ public class ConversionGraph extends Tree {
      * @return CF site count
      */
     public int getClonalFrameSiteCount() {
-        int count = getSequenceLength();
-        for (Conversion recomb : convs) {
-            if (recomb == null)
-                continue;
-            
-            count -= recomb.getEndSite()-recomb.getStartSite() + 1;
+        int count = 0;
+
+        for (Region region : getRegions()) {
+            if (region.isClonalFrame())
+                count += region.leftBoundary - region.rightBoundary;
         }
+
         return count;
     }
 
@@ -261,8 +351,6 @@ public class ConversionGraph extends Tree {
         StringBuilder sb = new StringBuilder();
         
         for (Conversion conv : getConversions()) {
-            if (conv == null)
-                continue;
             sb.append(String.format("[&%d,%d,%s,%d,%d,%s] ",
                     conv.node1.getNr(),
                     conv.startSite,
@@ -315,7 +403,6 @@ public class ConversionGraph extends Tree {
         
         // Process recombinations
         convs.clear();
-        convs.add(null);
         
         while(convMatcher.find()) {
             String [] elements = convMatcher.group(1).split(",");
@@ -358,10 +445,7 @@ public class ConversionGraph extends Tree {
         arg.storedConvs = Lists.newArrayList();
         
         for (Conversion recomb : convs) {
-            if (recomb == null)
-                arg.convs.add(null);
-            else
-                arg.convs.add(recomb.getCopy());
+		arg.convs.add(recomb.getCopy());
         }
         arg.sequenceLength = sequenceLength;
         
@@ -452,9 +536,6 @@ public class ConversionGraph extends Tree {
         }
         List<Event> events = new ArrayList<Event>();
         for (Conversion recomb : convs) {
-            if (recomb == null)
-                continue;
-            
             if (recomb.node1 == node)
                 events.add(new Event(false, recomb.getHeight1(), recomb));
             if (recomb.node2 == node)
@@ -600,23 +681,19 @@ public class ConversionGraph extends Tree {
         storedConvs.clear();
 
         for (Conversion recomb : convs) {
-            if (recomb == null)
-                storedConvs.add(null);
-            else {
-                Conversion recombCopy = new Conversion();
-                
-                recombCopy.setStartSite(recomb.getStartSite());
-                recombCopy.setEndSite(recomb.getEndSite());
-                recombCopy.setHeight1(recomb.getHeight1());
-                recombCopy.setHeight2(recomb.getHeight2());
-                
-                recombCopy.setNode1(m_storedNodes[recomb.getNode1().getNr()]);
-                recombCopy.setNode2(m_storedNodes[recomb.getNode2().getNr()]);
+			Conversion recombCopy = new Conversion();
+	
+			recombCopy.setStartSite(recomb.getStartSite());
+			recombCopy.setEndSite(recomb.getEndSite());
+			recombCopy.setHeight1(recomb.getHeight1());
+			recombCopy.setHeight2(recomb.getHeight2());
+			
+			recombCopy.setNode1(m_storedNodes[recomb.getNode1().getNr()]);
+			recombCopy.setNode2(m_storedNodes[recomb.getNode2().getNr()]);
 
-                recombCopy.setRecombinationGraph(this);
-                
-                storedConvs.add(recombCopy);
-            }
+			recombCopy.setRecombinationGraph(this);
+			
+			storedConvs.add(recombCopy);
         }
     }
     
@@ -627,8 +704,9 @@ public class ConversionGraph extends Tree {
         List<Conversion> tmp = storedConvs;
         storedConvs = convs;
         convs = tmp;
-        
+
         cfEventListDirty = true;
+        regionListDirty = true;
     }
 
     
@@ -639,12 +717,14 @@ public class ConversionGraph extends Tree {
         if (state != null)
             startEditing(null);
         cfEventListDirty = true;
+        regionListDirty = true;
     }
     
     @Override
     public void startEditing(Operator operator) {
         super.startEditing(operator);
         cfEventListDirty = true;
+        regionListDirty = true;
     }
     
     /*

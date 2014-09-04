@@ -14,22 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package bacter;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Represents a contiguous region in which a single set of conversions is active.
- * 
+ * Represents a contiguous region in which a single set of conversions is
+ * active.
+ *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class Region {
-   public int startSite, endSite;
-   public Set<Conversion> activeConversions;
-   
-   public Region() {
-       activeConversions = new HashSet<>();
-   }
+
+    public int leftBoundary, rightBoundary;
+    public Set<Conversion> activeConversions;
+
+    public Region() {
+        activeConversions = new HashSet<>();
+    }
+
+    public boolean isClonalFrame() {
+        return activeConversions.isEmpty();
+    }
 }

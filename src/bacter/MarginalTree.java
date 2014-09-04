@@ -32,4 +32,7 @@ public class MarginalTree {
         return marginalRoot;
     }
 
+	public MarginalTree(Node marginalRoot) {
+		this.marginalRoot = marginalRoot;
+	}
 }

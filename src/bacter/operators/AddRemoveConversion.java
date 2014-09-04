@@ -26,8 +26,8 @@ import feast.input.In;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Operator which adds and removes recombinations to/from an ARG.")
-public class AddRemoveRecombination extends EdgeCreationOperator {
+@Description("Operator which adds and removes conversions to/from an ARG.")
+public class AddRemoveConversion extends EdgeCreationOperator {
     
     public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
             "Recombination rate parameter.").setRequired();
@@ -37,7 +37,7 @@ public class AddRemoveRecombination extends EdgeCreationOperator {
     
     private class ProposalFailed extends Exception { };
     
-    public AddRemoveRecombination() { };
+    public AddRemoveConversion() { };
     
     @Override
     public void initAndValidate() throws Exception {
