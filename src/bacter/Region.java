@@ -38,28 +38,4 @@ public class Region {
     public boolean isClonalFrame() {
         return activeConversions.isEmpty();
     }
-
-    /**
-     * Tests for equivalence between the set of conversions corresponding to
-     * this region and the set in the argument. I.e. returns true if the
-     * marginal trees will be the same.
-     * 
-     * @param obj
-     * @return 
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Region) {
-            Region region = (Region)obj;
-            return region.activeConversions.equals(this.activeConversions);
-        } else
-            return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 79 * hash + Objects.hashCode(this.activeConversions);
-        return hash;
-    }
 }

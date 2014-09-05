@@ -18,6 +18,10 @@
 package bacter;
 
 import beast.evolution.tree.Node;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,6 +46,50 @@ public class MarginalTree {
     }
 
     public MarginalTree(ConversionGraph acg, Set<Conversion> convSet) {
-        
+        Set<Node> activeCFlineages = Sets.newHashSet();
+        List<Node> inactiveCFlineages = Lists.newArrayList(acg.getExternalNodes());
+
+        Set<Conversion> activeConversionLineages = Sets.newHashSet();
+
+        inactiveCFlineages.sort((Node o1, Node o2) -> {
+            if (o1.getHeight()<o2.getHeight())
+                return -1;
+            if (o1.getHeight()>o2.getHeight())
+                return 1;
+            return 0;
+        });
+
+        while (!inactiveCFlineages.isEmpty() &&
+            activeCFlineages.size() + activeConversionLineages.size() > 1) {
+
+            Conversion nextConversionStart = null;
+            for (Conversion conv : convSet) {
+                if (activeCFlineages.contains(conv.node1) &&
+                    (nextConversionStart == null || conv.height1 < nextConversionStart.height1)) {
+                    nextConversionStart = conv;
+                }
+            }
+
+            Conversion nextConversionEnd = null;
+            for (Conversion conv : convSet) {
+                if (nextConversionEnd == null || conv.height2 < nextConversionEnd.height2) {
+                    nextConversionEnd = conv;
+                }
+            }
+
+            Node nextCFCoalescentNode = null;
+            for (Node node : activeCFlineages) {
+                if (nextCFCoalescentNode == null
+                    || (!node.isRoot()
+                    && node.getParent().getHeight() < nextCFCoalescentNode.getParent().getHeight())) {
+                    nextCFCoalescentNode = node;
+                }
+            }
+
+            Node nextActivationNode = null;
+            if (!inactiveCFlineages.isEmpty())
+                nextActivationNode = inactiveCFlineages.get(0);
+
+        }
     }
 }

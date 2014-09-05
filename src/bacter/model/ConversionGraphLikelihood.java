@@ -32,7 +32,6 @@ import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
