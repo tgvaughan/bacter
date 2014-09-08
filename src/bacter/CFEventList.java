@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Maintains an ordered list of events which make up the clonal frame.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
@@ -36,7 +37,7 @@ public class CFEventList {
     /**
      * Class of events on clonal frame.
      */
-    public class Event {
+    public static class Event {
         EventType type;
         double t;
         int lineages;

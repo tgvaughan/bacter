@@ -20,7 +20,6 @@ package bacter;
 import beast.evolution.tree.Node;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -33,16 +32,6 @@ public class MarginalTree {
 
     Node marginalRoot;
 
-    public enum EventType { CF_LEAF, CF_COALESCENCE, CONV_DEPART, CONV_ARRIVE };
-    private static class ACGEvent {
-        public double time;
-        public EventType type;
-        public Node node;
-        public Conversion conversion;
-    }
-
-    List<ACGEvent> eventList;
-    
     public Node getRoot() {
         return marginalRoot;
     }
