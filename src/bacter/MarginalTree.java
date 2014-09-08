@@ -46,8 +46,35 @@ public class MarginalTree {
 
     public MarginalTree(ConversionGraph acg, Set<Conversion> convSet) {
         Set<Node> activeCFlineages = Sets.newHashSet();
-        List<Node> inactiveCFlineages = Lists.newArrayList(acg.getExternalNodes());
+        List<Node> inactiveCFlineages = Lists.newArrayList();
         Set<Conversion> activeConversionLineages = Sets.newHashSet();
 
+        // Populate inactiveCFlineages with copies of CF leaf nodes.
+        for (Node leaf : acg.getExternalNodes()) {
+            Node leafCopy = new Node();
+            leafCopy.setHeight(leaf.getHeight());
+            leafCopy.setID(leaf.getID());
+            leafCopy.setNr(leaf.getNr());
+
+            inactiveCFlineages.add(leafCopy);
+        }
+
+        for (ACGEventList.Event event : acg.getACGEvents()) {
+
+            switch (event.getType()) {
+                case CF_COALESCENCE:
+                    break;
+                case CF_LEAF:
+                    break;
+                case CONV_DEPART:
+                    break;
+                case CONV_ARRIVE:
+                    break;
+                default:
+                    // Null type
+                    break;
+            }
+            
+        }
     }
 }
