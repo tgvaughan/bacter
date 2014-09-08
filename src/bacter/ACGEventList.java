@@ -18,6 +18,8 @@
 package bacter;
 
 import beast.evolution.tree.Node;
+import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -64,17 +66,17 @@ public class ACGEventList {
     /**
      * Event list.
      */
-    List<Event> events; 
+    private final List<Event> events; 
 
     /**
      * Event list dirty flag.
      */
-    boolean dirty;
+    private boolean dirty;
 
     /**
      * Ancestral conversion graph this list belongs to.
      */
-    ConversionGraph acg;
+    private final ConversionGraph acg;
 
     /**
      * Construct a new event list for the given ACG.  There should only
@@ -85,6 +87,7 @@ public class ACGEventList {
      */
     public ACGEventList(ConversionGraph acg) {
         this.acg = acg;
+        events = new ArrayList<>();
         dirty = true;
     }
 
@@ -93,7 +96,7 @@ public class ACGEventList {
      * 
      * @return ACG event list.
      */
-    public List<Event> getACGEventList() {
+    public List<Event> getACGEvents() {
         updateEvents();
 
         return events;

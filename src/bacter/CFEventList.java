@@ -18,7 +18,7 @@
 package bacter;
 
 import beast.evolution.tree.Node;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -86,7 +86,7 @@ public class CFEventList {
     public CFEventList(ConversionGraph acg) {
         this.acg = acg;
         
-        events = Lists.newArrayList();
+        events = new ArrayList<>();
         dirty = true;
     }
 

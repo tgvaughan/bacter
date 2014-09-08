@@ -72,12 +72,11 @@ public class ConversionGraph extends Tree {
     protected List<Conversion> storedConvs;
 
     /**
-     * List of contiguous regions sharing a common history.
+     * Event and region lists.
      */
-    protected List<Region> regionList;
-    protected boolean regionListDirty;
-    
+    protected RegionList regionList;
     protected CFEventList cfEventList;
+    protected ACGEventList acgEventList;
     
     @Override
     public void initAndValidate() throws Exception {
@@ -94,10 +93,9 @@ public class ConversionGraph extends Tree {
             fromString(fromStringInput.get());
         }
 
-        regionList = Lists.newArrayList();
-        regionListDirty = true;
-
+        regionList = new RegionList(this);
         cfEventList = new CFEventList(this);
+        acgEventList = new ACGEventList(this);
         
         super.initAndValidate();
     }
@@ -160,83 +158,34 @@ public class ConversionGraph extends Tree {
     }
 
     /**
-     * Get list of 
-     * @return 
+     * Get list of contiguous regions having fixed marginal trees. 
+     * 
+     * @return list of regions
      */
     public List<Region> getRegions() {
-	    updateRegionList();
-
-        return regionList;
+        return regionList.getRegions();
     }
 
     /**
-     * Assemble list of regions of contiguous sites that possess a single
-     * marginal tree.
+     * Obtain ordered list of events that make up the clonal frame.  Used
+     * for ARG probability density calculations and for various state proposal
+     * operators.
+     * 
+     * @return List of events.
      */
-    public void updateRegionList() {
-        if (!regionListDirty)
-            return;
-        
-        regionList.clear();
+    public List<CFEventList.Event> getCFEvents() {
+        return cfEventList.getCFEvents();
+    }
 
-        List<Conversion> convOrderedByStart = Lists.newArrayList();
-        convOrderedByStart.addAll(convs);
-        convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
-
-        List<Conversion> convOrderedByEnd = Lists.newArrayList();
-        convOrderedByEnd.addAll(convs);
-        convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
-
-        Set <Conversion> activeConversions = Sets.newHashSet();
-
-        Region currentRegion = new Region();
-        currentRegion.leftBoundary = 0;
-
-        while (!convOrderedByStart.isEmpty() && !convOrderedByEnd.isEmpty()) {
-
-            int nextConvStartBoundary = Integer.MAX_VALUE;
-            if (!convOrderedByStart.isEmpty())
-                nextConvStartBoundary = convOrderedByStart.get(0).startSite;
-
-            int nextConvEndBoundary = -1;
-            if (!convOrderedByEnd.isEmpty())
-                nextConvEndBoundary = convOrderedByEnd.get(0).endSite+1;
-
-            if (nextConvStartBoundary<nextConvEndBoundary) {
-                if (nextConvStartBoundary != currentRegion.leftBoundary) {
-                    currentRegion.rightBoundary = nextConvStartBoundary;
-                    regionList.add(currentRegion);
-                    currentRegion = new Region();
-                    currentRegion.leftBoundary = nextConvStartBoundary;
-                }
-
-                activeConversions.add(convOrderedByStart.get(0));
-                currentRegion.activeConversions.add(convOrderedByStart.get(0));
-                convOrderedByStart.remove(0);
-
-            } else {
-                if (nextConvEndBoundary != currentRegion.leftBoundary) {
-                    currentRegion.rightBoundary = nextConvEndBoundary;
-                    regionList.add(currentRegion);
-                    currentRegion = new Region();
-                    currentRegion.leftBoundary = nextConvEndBoundary;
-                }
-
-                activeConversions.remove(convOrderedByEnd.get(0));
-                currentRegion.activeConversions.remove(convOrderedByEnd.get(0));
-                convOrderedByEnd.remove(0);
-            }
-        }
-
-        if (currentRegion.leftBoundary<getSequenceLength()) {
-            if (!currentRegion.isClonalFrame())
-                throw new RuntimeException("Error updating region list!");
-
-            currentRegion.rightBoundary = getSequenceLength();
-            regionList.add(currentRegion);
-        }
-
-        regionListDirty = false;
+    /**
+     * Obtain ordered list of events that make up the clonal frame.  Used
+     * for ARG probability density calculations and for various state proposal
+     * operators.
+     * 
+     * @return List of events.
+     */
+    public List<ACGEventList.Event> getACGEvents() {
+        return acgEventList.getACGEvents();
     }
     
     /**
@@ -422,6 +371,14 @@ public class ConversionGraph extends Tree {
             if (cfEventList == null)
                 cfEventList = new CFEventList(this);
             cfEventList.makeDirty();
+
+            if (acgEventList == null)
+                acgEventList = new ACGEventList(this);
+            acgEventList.makeDirty();
+
+            if (regionList == null)
+                regionList = new RegionList(this);
+            regionList.makeDirty();
         }
     }
     
@@ -444,6 +401,14 @@ public class ConversionGraph extends Tree {
         if (cfEventList == null)
             cfEventList = new CFEventList(null);
         cfEventList.makeDirty();
+
+        if (acgEventList == null)
+            acgEventList = new ACGEventList(this);
+        acgEventList.makeDirty();
+        
+        if (regionList == null)
+            regionList = new RegionList(this);
+        regionList.makeDirty();
     }
     
     /**
@@ -553,18 +518,7 @@ public class ConversionGraph extends Tree {
         
         return sb.toString();
     }
-    
 
-    /**
-     * Obtain ordered list of events that make up the clonal frame.  Used
-     * for ARG probability density calculations and for various state proposal
-     * operators.
-     * 
-     * @return List of events.
-     */
-    public List<CFEventList.Event> getCFEvents() {
-        return cfEventList.getCFEvents();
-    }
 
     
     /*
@@ -603,7 +557,8 @@ public class ConversionGraph extends Tree {
         convs = tmp;
 
         cfEventList.makeDirty();
-        regionListDirty = true;
+        acgEventList.makeDirty();
+        regionList.makeDirty();
     }
 
     
@@ -614,14 +569,16 @@ public class ConversionGraph extends Tree {
         if (state != null)
             startEditing(null);
         cfEventList.makeDirty();
-        regionListDirty = true;
+        acgEventList.makeDirty();
+        regionList.makeDirty();
     }
     
     @Override
     public void startEditing(Operator operator) {
         super.startEditing(operator);
         cfEventList.makeDirty();
-        regionListDirty = true;
+        acgEventList.makeDirty();
+        regionList.makeDirty();
     }
     
     /*
