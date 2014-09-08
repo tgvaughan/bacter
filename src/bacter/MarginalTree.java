@@ -32,6 +32,16 @@ import java.util.Set;
 public class MarginalTree {
 
     Node marginalRoot;
+
+    public enum EventType { CF_LEAF, CF_COALESCENCE, CONV_DEPART, CONV_ARRIVE };
+    private static class ACGEvent {
+        public double time;
+        public EventType type;
+        public Node node;
+        public Conversion conversion;
+    }
+
+    List<ACGEvent> eventList;
     
     public Node getRoot() {
         return marginalRoot;

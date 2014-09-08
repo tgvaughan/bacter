@@ -77,55 +77,7 @@ public class ConversionGraph extends Tree {
     protected List<Region> regionList;
     protected boolean regionListDirty;
     
-    /**
-     * Class of events types on clonal frame.
-     */
-    public enum EventType {COALESCENCE, SAMPLE };
-
-    /**
-     * Class of events on clonal frame.
-     */
-    public class Event {
-        EventType type;
-        double t;
-        int lineages;
-        
-        public Event(Node node) {
-            if (node.isLeaf())
-                type = EventType.SAMPLE;
-            else
-                type = EventType.COALESCENCE;
-            
-            t = node.getHeight();
-        }
-        
-        public double getHeight() {
-            return t;
-        }
-        
-        public EventType getType() {
-            return type;
-        }
-        
-        /**
-         * @return number of lineages _above_ this event.
-         */
-        public int getLineageCount() {
-            return lineages;
-        }
-        
-        @Override
-        public String toString() {
-            return "t: " + t + ", k: " + lineages + ", type: " + type;
-        }
-    }
-    
-    /**
-     * List of events on clonal frame.
-     */
-    protected List<Event> cfEventList;
-    protected boolean cfEventListDirty;
-    
+    protected CFEventList cfEventList;
     
     @Override
     public void initAndValidate() throws Exception {
@@ -141,12 +93,11 @@ public class ConversionGraph extends Tree {
         if (fromStringInput.get() != null) {
             fromString(fromStringInput.get());
         }
-        
-        cfEventList = Lists.newArrayList();
-        cfEventListDirty = true;
 
         regionList = Lists.newArrayList();
         regionListDirty = true;
+
+        cfEventList = new CFEventList(this);
         
         super.initAndValidate();
     }
@@ -443,9 +394,6 @@ public class ConversionGraph extends Tree {
         }
         arg.sequenceLength = sequenceLength;
         
-        cfEventList = Lists.newArrayList();
-        cfEventListDirty = true;
-
         return arg;
     }
 
@@ -471,8 +419,9 @@ public class ConversionGraph extends Tree {
             }
             sequenceLength = arg.sequenceLength;
         
-            cfEventList = Lists.newArrayList();
-            cfEventListDirty = true;
+            if (cfEventList == null)
+                cfEventList = new CFEventList(this);
+            cfEventList.makeDirty();
         }
     }
     
@@ -492,8 +441,9 @@ public class ConversionGraph extends Tree {
         }
         sequenceLength = arg.sequenceLength;
         
-        cfEventList = Lists.newArrayList();
-        cfEventListDirty = true;
+        if (cfEventList == null)
+            cfEventList = new CFEventList(null);
+        cfEventList.makeDirty();
     }
     
     /**
@@ -612,51 +562,10 @@ public class ConversionGraph extends Tree {
      * 
      * @return List of events.
      */
-    public List<Event> getCFEvents() {
-        updateEvents();
-        
-        return cfEventList;
+    public List<CFEventList.Event> getCFEvents() {
+        return cfEventList.getCFEvents();
     }
-    /**
-     * Assemble sorted list of events on clonal frame and a map from nodes
-     * to these events.
-     */
-    public void updateEvents() {
-        if (!cfEventListDirty)
-            return;
-        
-        cfEventList.clear();
-        
-        // Create event list
-        for (Node node : getNodesAsArray()) {
-            Event event = new Event(node);
-            cfEventList.add(event);
-        }
-        
-        // Sort events in increasing order of their times
-        Collections.sort(cfEventList, (Event o1, Event o2) -> {
-            if (o1.t<o2.t)
-                return -1;
-            
-            if (o2.t<o1.t)
-                return 1;
-            
-            return 0;
-        });
-        
-        // Compute lineage counts:
-        int k=0;
-        for (Event event : cfEventList) {
-            if (event.type == EventType.SAMPLE)
-                k += 1;
-            else
-                k -= 1;
-            
-            event.lineages = k;
-        }
-        
-        cfEventListDirty = false;
-    }
+
     
     /*
     * StateNode implementation
@@ -693,7 +602,7 @@ public class ConversionGraph extends Tree {
         storedConvs = convs;
         convs = tmp;
 
-        cfEventListDirty = true;
+        cfEventList.makeDirty();
         regionListDirty = true;
     }
 
@@ -704,14 +613,14 @@ public class ConversionGraph extends Tree {
     public void startEditing() {
         if (state != null)
             startEditing(null);
-        cfEventListDirty = true;
+        cfEventList.makeDirty();
         regionListDirty = true;
     }
     
     @Override
     public void startEditing(Operator operator) {
         super.startEditing(operator);
-        cfEventListDirty = true;
+        cfEventList.makeDirty();
         regionListDirty = true;
     }
     
