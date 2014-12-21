@@ -48,7 +48,7 @@ import java.util.List;
  */
 @Description("Simulates an ARG - can be used for chain initialization or for "
         + "sampler validation.")
-public class SimulatedRecombinationGraph extends ConversionGraph implements StateNodeInitialiser {
+public class SimulatedRecombinationGraph extends ConversionGraph {
 
     public Input<Double> rhoInput = new In<Double>("rho",
             "Recombination rate parameter.").setRequired();
