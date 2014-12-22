@@ -10,9 +10,29 @@ and is currently under heavy development.  Check back soon!
 
 [![Build Status](https://travis-ci.org/CompEvol/BACTER.svg?branch=master)](https://travis-ci.org/CompEvol/BACTER)
 
+Development news
+----------------
 
-Road map for BACTER development
--------------------------------
+An initial version of BACTER is functional and reliably infers ARGs from
+data simulated under a restricted ClonalOrigin-style model which assumes
+that each site is affected by at most one conversion event.  However, we
+are finding that this model is too restrictive for application to real data.
+
+Therefore, we are currently in the process of lifting this restriction.
+
+
+New development road map
+------------------------
+
+- [ ] Update ARG state node
+- [ ] Update existing ARG density, likelihood and simulation code to
+       work with the new state
+- [ ] ARG simulator for new model (allow for model misspec analysis)
+- [ ] ARG density under new model
+
+
+Old road map (legacy)
+---------------------
 
 - [x] ARG state node
 - [x] ARG likelihood
