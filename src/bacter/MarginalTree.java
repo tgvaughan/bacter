@@ -65,6 +65,7 @@ public class MarginalTree {
 
                 case CF_COALESCENCE:
                     if (activeCFlineages.containsKey(event.getNode().getLeft())
+
                         && activeCFlineages.containsKey(event.getNode().getRight())) {
                         Node marginalNode = new Node();
                         Node marginalLeft = activeCFlineages.get(event.getNode().getLeft());
@@ -77,25 +78,56 @@ public class MarginalTree {
                         activeCFlineages.remove(event.getNode().getLeft());
                         activeCFlineages.remove(event.getNode().getRight());
                         activeCFlineages.put(event.getNode(), marginalNode);
+
                     } else {
+
                         if (activeCFlineages.containsKey(event.getNode().getLeft())) {
                             Node marginalNode = activeCFlineages.get(event.getNode().getLeft());
                             activeCFlineages.remove(event.getNode().getLeft());
                             activeCFlineages.put(event.getNode(), marginalNode);
+                            break;
                         }
 
                         if (activeCFlineages.containsKey(event.getNode().getRight())) {
                             Node marginalNode = activeCFlineages.get(event.getNode().getRight());
                             activeCFlineages.remove(event.getNode().getRight());
                             activeCFlineages.put(event.getNode(), marginalNode);
+                            break;
                         }
                     }
                     break;
 
                 case CONV_DEPART:
+                    if (activeCFlineages.containsKey(event.getConversion().getNode1())) {
+                        Node marginalNode = activeCFlineages.get(event.getConversion().getNode1());
+                        activeCFlineages.remove(event.getConversion().getNode1());
+                        activeConversions.put(event.getConversion(), marginalNode);
+                    }
                     break;
 
                 case CONV_ARRIVE:
+                    if (activeCFlineages.containsKey(event.getConversion().getNode2())
+
+                        && activeConversions.containsKey(event.getConversion())) {
+                        Node marginalNode = new Node();
+                        Node marginalLeft = activeCFlineages.get(event.getConversion().getNode2());
+                        Node marginalRight = activeConversions.get(event.getConversion());
+
+                        marginalNode.setHeight(event.getTime());
+                        marginalNode.addChild(marginalLeft);
+                        marginalNode.addChild(marginalRight);
+
+                        activeConversions.remove(event.getConversion());
+                        activeCFlineages.put(event.getConversion().getNode2(), marginalNode);
+
+                    } else {
+
+                        if (activeConversions.containsKey(event.getConversion())) {
+                            Node marginalNode = activeConversions.get(event.getConversion());
+                            activeConversions.remove(event.getConversion());
+                            activeCFlineages.put(event.getConversion().getNode2(), marginalNode);
+                        }
+                    }
                     break;
                 default:
                     // Null type
