@@ -19,8 +19,11 @@ package bacter;
 
 import beast.evolution.tree.Node;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -45,29 +48,53 @@ public class MarginalTree {
     }
 
     public MarginalTree(ConversionGraph acg, Set<Conversion> convSet) {
-        Set<Node> activeCFlineages = Sets.newHashSet();
-        List<Node> inactiveCFlineages = Lists.newArrayList();
-        Set<Conversion> activeConversionLineages = Sets.newHashSet();
 
-        // Populate inactiveCFlineages with copies of CF leaf nodes.
-        for (Node leaf : acg.getExternalNodes()) {
-            Node leafCopy = new Node();
-            leafCopy.setHeight(leaf.getHeight());
-            leafCopy.setID(leaf.getID());
-            leafCopy.setNr(leaf.getNr());
-
-            inactiveCFlineages.add(leafCopy);
-        }
+        Map<Conversion, Node> activeConversions = new HashMap<>();
+        Map<Node, Node> activeCFlineages = new HashMap<>();
 
         for (ACGEventList.Event event : acg.getACGEvents()) {
 
             switch (event.getType()) {
-                case CF_COALESCENCE:
-                    break;
                 case CF_LEAF:
+                    Node marginalLeaf = new Node();
+                    marginalLeaf.setHeight(event.getTime());
+                    marginalLeaf.setID(event.getNode().getID());
+                    marginalLeaf.setNr(event.getNode().getNr());
+                    activeCFlineages.put(event.getNode(), marginalLeaf);
                     break;
+
+                case CF_COALESCENCE:
+                    if (activeCFlineages.containsKey(event.getNode().getLeft())
+                        && activeCFlineages.containsKey(event.getNode().getRight())) {
+                        Node marginalNode = new Node();
+                        Node marginalLeft = activeCFlineages.get(event.getNode().getLeft());
+                        Node marginalRight = activeCFlineages.get(event.getNode().getRight());
+
+                        marginalNode.setHeight(event.getTime());
+                        marginalNode.addChild(marginalLeft);
+                        marginalNode.addChild(marginalRight);
+
+                        activeCFlineages.remove(event.getNode().getLeft());
+                        activeCFlineages.remove(event.getNode().getRight());
+                        activeCFlineages.put(event.getNode(), marginalNode);
+                    } else {
+                        if (activeCFlineages.containsKey(event.getNode().getLeft())) {
+                            Node marginalNode = activeCFlineages.get(event.getNode().getLeft());
+                            activeCFlineages.remove(event.getNode().getLeft());
+                            activeCFlineages.put(event.getNode(), marginalNode);
+                        }
+
+                        if (activeCFlineages.containsKey(event.getNode().getRight())) {
+                            Node marginalNode = activeCFlineages.get(event.getNode().getRight());
+                            activeCFlineages.remove(event.getNode().getRight());
+                            activeCFlineages.put(event.getNode(), marginalNode);
+                        }
+                    }
+                    break;
+
                 case CONV_DEPART:
                     break;
+
                 case CONV_ARRIVE:
                     break;
                 default:

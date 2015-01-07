@@ -26,13 +26,11 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import feast.input.In;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -561,7 +559,7 @@ public class ConversionGraph extends Tree {
         regionList.makeDirty();
     }
 
-    
+
     /**
      * Mark statenode as dirty if it belongs to a state.
      */
