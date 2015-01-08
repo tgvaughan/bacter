@@ -17,8 +17,6 @@
 
 package bacter;
 
-import bacter.ConversionGraph;
-import bacter.Conversion;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
@@ -123,13 +121,27 @@ public abstract class TestBase {
      * @return 
      */
     public boolean treesEquivalent(Tree treeA, Tree treeB, double tolerance) {
+        return treesEquivalent(treeA.getRoot(), treeB.getRoot(), tolerance);
+    }
+
+    /**
+     * Tests whether trees below rootA and rootB are equivalent. That is,
+     * whether they have the same node heights (to within tolerance) and clade
+     * sets.
+     *
+     * @param rootA
+     * @param rootB
+     * @param tolerance
+     * @return
+     */
+    public boolean treesEquivalent(Node rootA, Node rootB, double tolerance) {
 
         // Early exit if trees are different sizes
-        if (treeA.getLeafNodeCount() != treeB.getLeafNodeCount())
+        if (rootA.getLeafNodeCount() != rootB.getLeafNodeCount())
             return false;
         
-        Map<Clade, Double> cladeHeightsA = getCladeHeights(treeA);
-        Map<Clade, Double> cladeHeightsB = getCladeHeights(treeB);
+        Map<Clade, Double> cladeHeightsA = getCladeHeights(rootA);
+        Map<Clade, Double> cladeHeightsB = getCladeHeights(rootB);
         
         if (!cladeHeightsA.keySet().containsAll(cladeHeightsB.keySet()))
             return false;
@@ -141,7 +153,7 @@ public abstract class TestBase {
         
         return true;
     }
-    
+
     /**
      * Method to test whether the topologies of two trees are equivalent.
      * 
@@ -150,13 +162,25 @@ public abstract class TestBase {
      * @return true iff topologies are equivalent.
      */
     public boolean topologiesEquivalent(Tree treeA, Tree treeB) {
+        return topologiesEquivalent(treeA.getRoot(), treeB.getRoot());
+    }
+
+    /**
+     * Method to test whether the topologies of two trees with the
+     * given root nodes are equivalent.
+     * 
+     * @param rootA
+     * @param rootB
+     * @return true iff topologies are equivalent.
+     */
+    public boolean topologiesEquivalent(Node rootA, Node rootB) {
         
         // Early exit if trees are different sizes
-        if (treeA.getLeafNodeCount() != treeB.getLeafNodeCount())
+        if (rootA.getLeafNodeCount() != rootB.getLeafNodeCount())
             return false;
         
-        Map<Clade, Double> cladeHeightsA = getCladeHeights(treeA);
-        Map<Clade, Double> cladeHeightsB = getCladeHeights(treeB);
+        Map<Clade, Double> cladeHeightsA = getCladeHeights(rootA);
+        Map<Clade, Double> cladeHeightsB = getCladeHeights(rootB);
         
         return cladeHeightsA.keySet().containsAll(cladeHeightsB.keySet());
     }
@@ -167,11 +191,13 @@ public abstract class TestBase {
      * @param tree
      * @return Map from clades to corresponding MRCA heights.
      */
-    private Map<Clade, Double> getCladeHeights(Tree tree) {
+    private Map<Clade, Double> getCladeHeights(Node root) {
         Map<Clade, Double> cladeHeights = new HashMap<>();
         
-        for (Node node : tree.getInternalNodes())
-            cladeHeights.put(new Clade(node), node.getHeight());
+        cladeHeights.put(new Clade(root), root.getHeight());
+        for (Node node : root.getAllChildNodes())
+            if (!node.isLeaf())
+                cladeHeights.put(new Clade(node), node.getHeight());
         
         return cladeHeights;
     }

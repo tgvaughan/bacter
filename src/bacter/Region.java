@@ -38,4 +38,18 @@ public class Region {
     public boolean isClonalFrame() {
         return activeConversions.isEmpty();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(leftBoundary).append("-").append(rightBoundary-1);
+        if (isClonalFrame())
+            sb.append(" (CF)");
+        else
+            sb.append(" (")
+                .append(activeConversions.size())
+                .append(" active conversions)");
+
+        return sb.toString();
+    }
 }

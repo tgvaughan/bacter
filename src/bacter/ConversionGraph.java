@@ -19,7 +19,6 @@ package bacter;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.Operator;
 import beast.core.StateNode;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;

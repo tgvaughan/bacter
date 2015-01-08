@@ -66,14 +66,16 @@ public class MarginalTreeTest extends TestBase {
         RegionList regionList = new RegionList(arg);
 
         for (Region region : regionList.getRegions()) {
-            System.out.println(region);
+            System.out.println(new MarginalTree(arg, region) + ";");
         }
 
         for (int r=0; r<arg.getConversions().size(); r++) {
             Conversion recomb = arg.getConversions().get(r);
             
-//            assertTrue(treesEquivalent(arg.getMarginalTree(recomb, null),
-//                    new TreeParser(correctNewickStrings[r], false, true, false, 0), 1e-15)); 
+            assertTrue(treesEquivalent(
+                new MarginalTree(arg, regionList.getRegions().get(r)).getRoot(),
+                new TreeParser(correctNewickStrings[r], false, true, false, 0).getRoot(),
+                1e-15)); 
         }
     }
 }

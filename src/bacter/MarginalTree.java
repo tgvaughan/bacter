@@ -94,6 +94,9 @@ public class MarginalTree {
                     break;
 
                 case CONV_DEPART:
+                    if (!convSet.contains(event.getConversion()))
+                        break;
+
                     if (activeCFlineages.containsKey(event.getConversion().getNode1())) {
                         Node marginalNode = activeCFlineages.get(event.getConversion().getNode1());
                         activeCFlineages.remove(event.getConversion().getNode1());
@@ -102,6 +105,9 @@ public class MarginalTree {
                     break;
 
                 case CONV_ARRIVE:
+                    if (!convSet.contains(event.getConversion()))
+                        break;
+
                     if (activeCFlineages.containsKey(event.getConversion().getNode2())
 
                         && activeConversions.containsKey(event.getConversion())) {
