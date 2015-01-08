@@ -119,7 +119,7 @@ public class ConversionGraph extends Tree {
         conv.setRecombinationGraph(this);
         
         int i;
-        for (i=1; i<convs.size(); i++)
+        for (i=0; i<convs.size(); i++)
             if (convs.get(i).startSite>conv.startSite)
                 break;
         
@@ -566,19 +566,17 @@ public class ConversionGraph extends Tree {
     public void startEditing() {
         if (state != null)
             startEditing(null);
-        cfEventList.makeDirty();
-        acgEventList.makeDirty();
-        regionList.makeDirty();
+
+        if (cfEventList != null)
+            cfEventList.makeDirty();
+
+        if (acgEventList != null)
+            acgEventList.makeDirty();
+
+        if (regionList != null)
+            regionList.makeDirty();
     }
-    
-    @Override
-    public void startEditing(Operator operator) {
-        super.startEditing(operator);
-        cfEventList.makeDirty();
-        acgEventList.makeDirty();
-        regionList.makeDirty();
-    }
-    
+   
     /*
      * Loggable implementation.
      */

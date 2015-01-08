@@ -129,7 +129,14 @@ public class MarginalTree {
                     // Null type
                     break;
             }
-            
+
+            // A single active CF lineage should remain:
+            marginalRoot = activeCFlineages.get(acg.getRoot());
         }
+    }
+
+    @Override
+    public String toString() {
+        return marginalRoot.toString();
     }
 }

@@ -91,7 +91,7 @@ public class RegionList {
         Region currentRegion = new Region();
         currentRegion.leftBoundary = 0;
 
-        while (!convOrderedByStart.isEmpty() && !convOrderedByEnd.isEmpty()) {
+        while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
             int nextConvStartBoundary = Integer.MAX_VALUE;
             if (!convOrderedByStart.isEmpty())
