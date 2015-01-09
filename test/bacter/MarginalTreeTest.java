@@ -49,7 +49,7 @@ public class MarginalTreeTest extends TestBase {
         
         ConversionGraph arg = new ConversionGraph();
         arg.initByName("fromString", str, "sequenceLength", 10000);
-        System.out.println(arg.getExtendedNewick(true));
+        //System.out.println(arg.getExtendedNewick(true));
         
         // Test all marginals against truth
         // (I have eyeballed each of these trees and claim that they are correct.)
@@ -67,14 +67,15 @@ public class MarginalTreeTest extends TestBase {
 
         RegionList regionList = new RegionList(arg);
 
-        for (Region region : regionList.getRegions()) {
-            System.out.println(new MarginalTree(arg, region) + ";");
-        }
-
         for (int r=0; r<arg.getConversions().size(); r++) {
-            assertTrue(treesEquivalent(
-                new MarginalTree(arg, regionList.getRegions().get(r)).getRoot(),
-                new TreeParser(correctNewickStrings[r], false, true, false, 0).getRoot(),
+            MarginalTree marginalTree = new MarginalTree(arg,
+                regionList.getRegions().get(r));
+
+            //System.out.println(marginalTree + ";");
+
+            assertTrue(treesEquivalent(marginalTree.getRoot(),
+                new TreeParser(correctNewickStrings[r],
+                    false, true, false, 0).getRoot(),
                 1e-15)); 
         }
     }
@@ -97,25 +98,32 @@ public class MarginalTreeTest extends TestBase {
         
         ConversionGraph arg = new ConversionGraph();
         arg.initByName("fromString", str, "sequenceLength", 10000);
-        System.out.println(arg.getExtendedNewick(true));
+        //System.out.println(arg.getExtendedNewick(true));
         
         // Test all marginals against truth
         // (I have eyeballed each of these trees and claim that they are correct.)
-//        String[] correctNewickStrings = { };
+        String[] correctNewickStrings = {
+            "(((0:0.04916909893812016,1:0.04916909893812016)0:0.5465237639426681,(((((3:0.07561592852503529,6:0.07561592852503529)0:0.1461919778724432,8:0.2218079063974785)0:0.010206467073885506,9:0.232014373471364)0:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)0:0.24109003330994971)0:0.028754070027424694,4:0.3773111326866938)0:0.21838173019409446)0:1.1073878800617445,2:1.7030807429425328)0:0.0",
+            "(((0:0.04916909893812016,1:0.04916909893812016)0:0.3792295302884468,2:0.42839862922656696)0:0.1672942336542213,(((((3:0.07561592852503529,6:0.07561592852503529)0:0.1461919778724432,8:0.2218079063974785)0:0.010206467073885506,9:0.232014373471364)0:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)0:0.24109003330994971)0:0.028754070027424694,4:0.3773111326866938)0:0.21838173019409446)0:0.0",
+            "((2:0.5956928628807883,(((((3:0.07561592852503529,6:0.07561592852503529)0:0.1461919778724432,8:0.2218079063974785)0:0.010206467073885506,9:0.232014373471364)0:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)0:0.24109003330994971)0:0.028754070027424694,4:0.3773111326866938)0:0.21838173019409446)0:1.1073878800617445,(0:0.04916909893812016,1:0.04916909893812016)0:1.6539116440044126)0:0.0",
+            "(2:0.5956928628807883,((((((3:0.07561592852503529,6:0.07561592852503529)0:0.1461919778724432,8:0.2218079063974785)0:0.010206467073885506,9:0.232014373471364)0:0.1095596268069634,(0:0.04916909893812016,1:0.04916909893812016)0:0.29240490134020725)0:0.006983062380941707,(5:0.1074670293493194,7:0.1074670293493194)0:0.24109003330994971)0:0.028754070027424694,4:0.3773111326866938)0:0.21838173019409446)0:0.0",
+            "(((((((3:0.07561592852503529,6:0.07561592852503529)0:0.1461919778724432,8:0.2218079063974785)0:0.010206467073885506,9:0.232014373471364)0:0.1095596268069634,(0:0.04916909893812016,1:0.04916909893812016)0:0.29240490134020725)0:0.006983062380941707,(5:0.1074670293493194,7:0.1074670293493194)0:0.24109003330994971)0:0.028754070027424694,4:0.3773111326866938)0:1.325769610255839,2:1.7030807429425328)0:0.0",
+            "((((((3:0.07561592852503529,6:0.07561592852503529)0:0.1461919778724432,8:0.2218079063974785)0:0.010206467073885506,9:0.232014373471364)0:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)0:0.24109003330994971)0:0.028754070027424694,4:0.3773111326866938)0:1.325769610255839,(2:0.5683827224649434,(0:0.04916909893812016,1:0.04916909893812016)0:0.5192136235268232)0:1.1346980204775894)0:0.0",
+            "((((((3:0.07561592852503529,6:0.07561592852503529)0:0.1461919778724432,8:0.2218079063974785)0:0.010206467073885506,9:0.232014373471364)0:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)0:0.24109003330994971)0:0.028754070027424694,4:0.3773111326866938)0:1.325769610255839,(2:0.5683827224649434,(0:0.04916909893812016,1:0.04916909893812016)0:0.5192136235268232)0:1.1346980204775894)0:0.0",
+            "(((0:0.04916909893812016,1:0.04916909893812016)0:0.5465237639426681,(((((3:0.07561592852503529,6:0.07561592852503529)0:0.1461919778724432,8:0.2218079063974785)0:0.010206467073885506,9:0.232014373471364)0:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)0:0.24109003330994971)0:0.028754070027424694,4:0.3773111326866938)0:0.21838173019409446)0:1.1073878800617445,2:1.7030807429425328)0:0.0"
+        };
 
         RegionList regionList = new RegionList(arg);
 
-        for (Region region : regionList.getRegions()) {
-            System.out.println(region);
-            System.out.println(region.activeConversions);
-            System.out.println(new MarginalTree(arg, region) + ";");
-        }
-
         for (int r=0; r<arg.getConversions().size(); r++) {
-//            assertTrue(treesEquivalent(
-//                new MarginalTree(arg, regionList.getRegions().get(r)).getRoot(),
-//                new TreeParser(correctNewickStrings[r], false, true, false, 0).getRoot(),
-//                1e-15)); 
+            MarginalTree marginalTree = new MarginalTree(arg,
+                regionList.getRegions().get(r));
+
+            System.out.println(marginalTree + ";");
+
+            assertTrue(treesEquivalent(marginalTree.getRoot(),
+                new TreeParser(correctNewickStrings[r],
+                    false, true, false, 0).getRoot(), 1e-15)); 
         }
     }
 }

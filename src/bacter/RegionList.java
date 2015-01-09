@@ -88,51 +88,47 @@ public class RegionList {
 
         Set <Conversion> activeConversions = Sets.newHashSet();
 
-        Region currentRegion = new Region();
-        currentRegion.leftBoundary = 0;
+        int lastBoundary = 0;
 
-        while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
+        while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty())  {
 
-            int nextConvStartBoundary = Integer.MAX_VALUE;
+            int nextStart;
             if (!convOrderedByStart.isEmpty())
-                nextConvStartBoundary = convOrderedByStart.get(0).startSite;
+                nextStart = convOrderedByStart.get(0).getStartSite();
+            else
+                nextStart = Integer.MAX_VALUE;
 
-            int nextConvEndBoundary = -1;
+            int nextEnd;
             if (!convOrderedByEnd.isEmpty())
-                nextConvEndBoundary = convOrderedByEnd.get(0).endSite+1;
+                nextEnd = convOrderedByEnd.get(0).getEndSite() + 1;
+            else
+                nextEnd = Integer.MAX_VALUE;
 
-            if (nextConvStartBoundary<nextConvEndBoundary) {
-                if (nextConvStartBoundary != currentRegion.leftBoundary) {
-                    currentRegion.rightBoundary = nextConvStartBoundary;
-                    regions.add(currentRegion);
-                    currentRegion = new Region();
-                    currentRegion.leftBoundary = nextConvStartBoundary;
-                }
+            int nextBoundary = Math.min(nextStart, nextEnd);
+            if (nextBoundary > lastBoundary) {
+                Region region = new Region();
+                region.leftBoundary = lastBoundary;
+                region.rightBoundary = nextBoundary;
+                region.activeConversions.addAll(activeConversions);
+                regions.add(region);
+            }
 
+            if (nextStart < nextEnd) {
                 activeConversions.add(convOrderedByStart.get(0));
-                currentRegion.activeConversions.add(convOrderedByStart.get(0));
                 convOrderedByStart.remove(0);
-
+                lastBoundary = nextStart;
             } else {
-                if (nextConvEndBoundary != currentRegion.leftBoundary) {
-                    currentRegion.rightBoundary = nextConvEndBoundary;
-                    regions.add(currentRegion);
-                    currentRegion = new Region();
-                    currentRegion.leftBoundary = nextConvEndBoundary;
-                }
-
                 activeConversions.remove(convOrderedByEnd.get(0));
-                currentRegion.activeConversions.remove(convOrderedByEnd.get(0));
                 convOrderedByEnd.remove(0);
+                lastBoundary = nextEnd;
             }
         }
 
-        if (currentRegion.leftBoundary<acg.getSequenceLength()) {
-            if (!currentRegion.isClonalFrame())
-                throw new RuntimeException("Error updating region list!");
-
-            currentRegion.rightBoundary = acg.getSequenceLength();
-            regions.add(currentRegion);
+        if (lastBoundary<acg.getSequenceLength()) {
+            Region region = new Region();
+            region.leftBoundary = lastBoundary;
+            region.rightBoundary = acg.getSequenceLength();
+            regions.add(region);
         }
 
         dirty = false;
