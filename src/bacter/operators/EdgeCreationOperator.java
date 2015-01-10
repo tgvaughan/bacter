@@ -17,8 +17,8 @@
 
 package bacter.operators;
 
+import bacter.CFEventList;
 import bacter.Conversion;
-import bacter.ConversionGraph;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.PopulationFunction;
@@ -58,7 +58,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         
         double logP = 0.0;
         
-        List<ConversionGraph.Event> eventList = arg.getCFEvents();
+        List<CFEventList.Event> eventList = arg.getCFEvents();
         
         // Select departure point
         double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
@@ -108,7 +108,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
     public double coalesceEdge(Conversion recomb) {
         double logP = 0.0;
         
-        List<ConversionGraph.Event> events = arg.getCFEvents();
+        List<CFEventList.Event> events = arg.getCFEvents();
         
         // Locate event immediately below departure point
         int startIdx = 0;
@@ -121,7 +121,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         // Determine arrival point in real time
         for (int i=startIdx; i<events.size(); i++) {
             
-            ConversionGraph.Event event = events.get(i);
+            CFEventList.Event event = events.get(i);
             
             double t = Math.max(recomb.getHeight1(), event.getHeight());
         
@@ -174,7 +174,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
     public double getEdgeCoalescenceProb(Conversion recomb) {
         double logP = 0.0;
         
-        List<ConversionGraph.Event> events = arg.getCFEvents();
+        List<CFEventList.Event> events = arg.getCFEvents();
         
         // Find event immediately below departure point
         int startIdx = 0;

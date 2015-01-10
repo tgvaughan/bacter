@@ -17,12 +17,11 @@
 
 package bacter.model;
 
+import bacter.CFEventList;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.StateNode;
-import beast.core.StateNodeInitialiser;
 import beast.core.parameter.IntegerParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
@@ -34,13 +33,11 @@ import com.google.common.collect.Lists;
 import feast.input.In;
 import feast.nexus.NexusBlock;
 import feast.nexus.NexusBuilder;
-import feast.nexus.NexusWriter;
 import feast.nexus.TaxaBlock;
 import feast.nexus.TreesBlock;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -104,7 +101,7 @@ public class SimulatedRecombinationGraph extends ConversionGraph {
                 } else {
                     if (nTaxaInput.get() != null) {
                         nTaxa = nTaxaInput.get();
-                        List<Taxon> taxonList = new ArrayList<Taxon>();
+                        List<Taxon> taxonList = new ArrayList<>();
                         for (int i=0; i<nTaxa; i++)
                             taxonList.add(new Taxon("t" + i));
                         taxonSet = new TaxonSet(taxonList);
@@ -179,7 +176,7 @@ public class SimulatedRecombinationGraph extends ConversionGraph {
 
                 @Override
                 public List<String> getBlockLines() {
-                    List<String> lines = new ArrayList<String>();
+                    List<String> lines = new ArrayList<>();
                     lines.add("clonalframe " + root.toShortNewick(true));
                     for (int r = 1; r <= getNConvs(); r++) {
                         Conversion recomb = getConversions().get(r);
@@ -193,9 +190,9 @@ public class SimulatedRecombinationGraph extends ConversionGraph {
                 }
             });
             
-            PrintStream pstream = new PrintStream(outputFileNameInput.get());
-            nexusBuilder.write(pstream);
-            pstream.close();
+            try (PrintStream pstream = new PrintStream(outputFileNameInput.get())) {
+                nexusBuilder.write(pstream);
+            }
         }
     }
     
@@ -221,17 +218,14 @@ public class SimulatedRecombinationGraph extends ConversionGraph {
         
         // Create and sort list of inactive nodes
         List<Node> inactiveNodes = Lists.newArrayList(leafNodes);
-        Collections.sort(inactiveNodes, new Comparator<Node>() {
-            @Override
-            public int compare(Node n1, Node n2) {
-                if (n1.getHeight()<n2.getHeight())
-                    return -1;
-                
-                if (n2.getHeight()>n1.getHeight())
-                    return 1;
-                
-                return 0;
-            }
+        Collections.sort(inactiveNodes, (Node n1, Node n2) -> {
+            if (n1.getHeight()<n2.getHeight())
+                return -1;
+            
+            if (n2.getHeight()>n1.getHeight())
+                return 1;
+            
+            return 0;
         });
         
         List<Node> activeNodes = Lists.newArrayList();
@@ -342,14 +336,14 @@ public class SimulatedRecombinationGraph extends ConversionGraph {
      */
     private void associateRecombinationWithCF(Conversion recomb) {
     
-        List<Event> eventList = getCFEvents();
+        List<CFEventList.Event> eventList = getCFEvents();
 
         // Select departure point            
         double u = Randomizer.nextDouble()*getClonalFrameLength();
         
         boolean started = false;
         for (int eidx=0; eidx<eventList.size(); eidx++) {
-            Event event = eventList.get(eidx);
+            CFEventList.Event event = eventList.get(eidx);
 
             if (!started) {
                 
@@ -412,13 +406,4 @@ public class SimulatedRecombinationGraph extends ConversionGraph {
             }
         }
     }
-    
-    @Override
-    public void initStateNodes() throws Exception { }
-
-    @Override
-    public void getInitialisedStateNodes(List<StateNode> stateNodes) {
-        stateNodes.add(this);
-    }
-    
 }

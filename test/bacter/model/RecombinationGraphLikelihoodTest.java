@@ -16,25 +16,20 @@
  */
 package bacter.model;
 
-import bacter.model.ConversionGraphLikelihood;
-import bacter.model.SimulatedAlignment;
-import bacter.model.SimulatedRecombinationGraph;
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.MarginalTree;
+import bacter.Region;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.ClusterTree;
-import beast.util.Randomizer;
-import com.sun.corba.se.impl.orb.ParserTable;
-import java.util.ArrayList;
-import java.util.List;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -191,12 +186,13 @@ public class RecombinationGraphLikelihoodTest extends TestBase {
             SiteModel siteModel) throws Exception {
 
         double logP = 0.0;
-        for (Conversion recomb : arg.getConversions()) {
-            Alignment margAlign = createMarginalAlignment(alignment, arg, recomb);
+        for (Region region : arg.getRegions()) {
+            Alignment margAlign = createMarginalAlignment(alignment, arg, region);
+            Tree margTree = new Tree(new MarginalTree(arg, region).getRoot());
             TreeLikelihood treeLikelihood = new TreeLikelihood();
             treeLikelihood.initByName(
                     "data", margAlign,
-                    "tree", arg.getMarginalTree(recomb, margAlign),
+                    "tree", margTree,
                     "siteModel", siteModel);
             
             logP += treeLikelihood.calculateLogP();
