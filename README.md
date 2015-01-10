@@ -24,7 +24,7 @@ Therefore, we are currently in the process of lifting this restriction.
 New development road map
 ------------------------
 
-- [ ] Update ARG state node
+- [x] Update ARG state node
 - [ ] Update existing ARG density, likelihood and simulation code to
        work with the new state
 - [ ] ARG simulator for new model (allow for model misspec analysis)
