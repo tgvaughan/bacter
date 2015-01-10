@@ -16,6 +16,7 @@
  */
 package bacter.model;
 
+import bacter.CFEventList;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
@@ -87,7 +88,7 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
      */
     public double calculateClonalFrameLogP() {
         
-        List<ConversionGraph.Event> events = arg.getCFEvents();
+        List<CFEventList.Event> events = arg.getCFEvents();
         
         double thisLogP = 0.0;
         
@@ -99,7 +100,7 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
             int k = events.get(i).getLineageCount();
             thisLogP += -0.5*k*(k-1)*intervalArea;
             
-            if (events.get(i+1).getType()==ConversionGraph.EventType.COALESCENCE)
+            if (events.get(i+1).getType()==CFEventList.EventType.COALESCENCE)
                 thisLogP += Math.log(1.0/popFunc.getPopSize(timeB));
         }
         
@@ -113,7 +114,7 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
      */
     public double calculateRecombinantLogP(Conversion recomb) {
         
-        List<ConversionGraph.Event> events = arg.getCFEvents();
+        List<CFEventList.Event> events = arg.getCFEvents();
         
         // Probability density of location of recombinant edge start
         double thisLogP = Math.log(1.0/arg.getClonalFrameLength());
