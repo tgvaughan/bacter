@@ -171,16 +171,16 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
         } else {
             
             // Contribution from start of sequence up to first recomb region
-            if (recombs.get(1).getStartSite()>0) {
+            if (recombs.get(0).getStartSite()>0) {
                 thisLogP += Math.log(pStartCF)
-                        + (recombs.get(1).getStartSite()-1)*Math.log(1-pRec);
+                        + (recombs.get(0).getStartSite()-1)*Math.log(1-pRec);
             }  else {
                 thisLogP += Math.log(1.0-pStartCF)
                         - Math.log(pRec);
             }
             
             // Contribution from remaining recomb regions and adjacent CF regions
-            for (int ridx=1; ridx<recombs.size(); ridx++) {
+            for (int ridx=0; ridx<recombs.size(); ridx++) {
                 Conversion recomb = recombs.get(ridx);
                 
                 thisLogP += Math.log(pRec)

@@ -111,7 +111,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         logP += Math.log(1.0/convertableLength);
         
         for (int ridx=0; ridx<arg.getNConvs(); ridx++) {
-            Conversion recomb = arg.getConversions().get(ridx+1);
+            Conversion recomb = arg.getConversions().get(ridx);
             
             if (z<recomb.getStartSite()-1)
                 break;
@@ -170,7 +170,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         int count = 0;
         
         int l=0;
-        for (int ridx=1; ridx<=arg.getNConvs(); ridx++) {
+        for (int ridx=0; ridx<arg.getNConvs(); ridx++) {
             Conversion recomb = arg.getConversions().get(ridx);
             if (recomb == skip)
                 continue;
