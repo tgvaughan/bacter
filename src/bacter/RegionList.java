@@ -62,6 +62,17 @@ public class RegionList {
     }
 
     /**
+     * Retrieve number of regions in region list.
+     * 
+     * @return region count
+     */
+    public int getRegionCount() {
+        updateRegionList();
+
+        return regions.size();
+    }
+
+    /**
      * Mark the region list as dirty.
      */
     public void makeDirty() {

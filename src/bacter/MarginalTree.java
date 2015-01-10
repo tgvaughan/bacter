@@ -48,6 +48,8 @@ public class MarginalTree {
         Map<Conversion, Node> activeConversions = new HashMap<>();
         Map<Node, Node> activeCFlineages = new HashMap<>();
 
+        int nextNonLeafNr = acg.getLeafNodeCount();
+
         for (ACGEventList.Event event : acg.getACGEvents()) {
 
             switch (event.getType()) {
@@ -64,6 +66,7 @@ public class MarginalTree {
 
                         && activeCFlineages.containsKey(event.getNode().getRight())) {
                         Node marginalNode = new Node();
+                        marginalNode.setNr(nextNonLeafNr++);
                         Node marginalLeft = activeCFlineages.get(event.getNode().getLeft());
                         Node marginalRight = activeCFlineages.get(event.getNode().getRight());
 
@@ -112,6 +115,7 @@ public class MarginalTree {
 
                         && activeConversions.containsKey(event.getConversion())) {
                         Node marginalNode = new Node();
+                        marginalNode.setNr(nextNonLeafNr++);
                         Node marginalLeft = activeCFlineages.get(event.getConversion().getNode2());
                         Node marginalRight = activeConversions.get(event.getConversion());
 
