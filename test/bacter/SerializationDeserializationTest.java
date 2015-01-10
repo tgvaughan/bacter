@@ -16,15 +16,10 @@
  */
 package bacter;
 
-import bacter.ConversionGraph;
-import bacter.Conversion;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
 import beast.util.ClusterTree;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -94,7 +89,7 @@ public class SerializationDeserializationTest extends TestBase {
         argNew.fromXML(docNode);
         
         // Check that new ARG matches old
-        Conversion newRecomb1 = argNew.getConversions().get(1);
+        Conversion newRecomb1 = argNew.getConversions().get(0);
         assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
@@ -102,7 +97,7 @@ public class SerializationDeserializationTest extends TestBase {
         assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
         assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
-        Conversion newRecomb2 = argNew.getConversions().get(2);
+        Conversion newRecomb2 = argNew.getConversions().get(1);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
@@ -159,7 +154,7 @@ public class SerializationDeserializationTest extends TestBase {
         argNew.initByName("alignment", alignment, "fromString", argString);
         
         // Check that new ARG matches old
-        Conversion newRecomb1 = argNew.getConversions().get(1);
+        Conversion newRecomb1 = argNew.getConversions().get(0);
         assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
@@ -167,7 +162,7 @@ public class SerializationDeserializationTest extends TestBase {
         assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
         assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
-        Conversion newRecomb2 = argNew.getConversions().get(2);
+        Conversion newRecomb2 = argNew.getConversions().get(1);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
