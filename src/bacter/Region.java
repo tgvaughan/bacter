@@ -35,6 +35,10 @@ public class Region {
         activeConversions = new HashSet<>();
     }
 
+    public int getRegionLength() {
+        return rightBoundary - leftBoundary;
+    }
+
     public boolean isClonalFrame() {
         return activeConversions.isEmpty();
     }

@@ -19,6 +19,8 @@ package bacter.model;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.MarginalTree;
+import bacter.Region;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
@@ -111,12 +113,10 @@ public class SimulatedAlignment extends Alignment {
         
         int[][] alignment = new int[nTaxa][arg.getSequenceLength()];
         
-        for (Conversion recomb : arg.getConversions()) {
-            int thisLength;
-            if (recomb==null)
-                thisLength = arg.getClonalFrameSiteCount();
-            else
-                thisLength = recomb.getSiteCount();
+        for (Region region : arg.getRegions()) {
+            int thisLength = region.getRegionLength();
+
+            MarginalTree marginalTree = new MarginalTree(arg, region);
             
             int[] categories = new int[thisLength];
             for (int i=0; i<thisLength; i++)
@@ -124,9 +124,14 @@ public class SimulatedAlignment extends Alignment {
             
             int[][] regionAlignment = new int[nTaxa][thisLength];
             
-            Node thisRoot = arg.getMarginalRoot(recomb);
+            Node thisRoot = marginalTree.getRoot();
             
-            traverse(recomb, thisRoot, null,
+            int[] parentSequence = new int[region.getRegionLength()];
+            double[] frequencies = siteModel.getSubstitutionModel().getFrequencies();
+            for (int i=0; i<parentSequence.length; i++)
+                parentSequence[i] = Randomizer.randomChoicePDF(frequencies);
+
+            traverse(thisRoot, parentSequence,
                     categories, transitionProbs,
                     regionAlignment);
             
@@ -141,10 +146,9 @@ public class SimulatedAlignment extends Alignment {
                     }
                 }
             }
-            System.out.println(segsites + " segregating sites in region "
-                    + "corresponding to recomb " + recomb);
+            System.out.println(segsites + " segregating sites in region " + region);
             
-            copyToAlignment(alignment, regionAlignment, recomb);
+            copyToAlignment(alignment, regionAlignment, region);
         }
         
         for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
@@ -165,31 +169,17 @@ public class SimulatedAlignment extends Alignment {
      * @param transitionProbs
      * @param regionAlignment 
      */
-    private void traverse(Conversion recomb, Node node,
+    private void traverse(Node node,
             int[] parentSequence,
             int[] categories, double[][] transitionProbs,
             int[][] regionAlignment) {
         
-        // Draw random ancestral sequence if necessary
-        if (parentSequence == null) {
-            if (recomb == null)
-                parentSequence = new int[arg.getClonalFrameSiteCount()];
-            else
-                parentSequence = new int[recomb.getSiteCount()];
-            
-            double[] frequencies = siteModel.getSubstitutionModel().getFrequencies();
-            for (int i=0; i<parentSequence.length; i++)
-                parentSequence[i] = Randomizer.randomChoicePDF(frequencies);
-        }
-        
-        double nodeHeight = arg.getMarginalNodeHeight(node, recomb);
-        for (Node child : arg.getMarginalChildren(node, recomb)) {
-            double childHeight = arg.getMarginalNodeHeight(child, recomb);
+        for (Node child : node.getChildren()) {
 
             // Calculate transition probabilities
             for (int i=0; i<siteModel.getCategoryCount(); i++) {
                 siteModel.getSubstitutionModel().getTransitionProbabilities(
-                        child, nodeHeight, childHeight,
+                        child, node.getHeight(), child.getHeight(),
                         siteModel.getRateForCategory(i, child),
                         transitionProbs[i]);
             }
@@ -205,11 +195,11 @@ public class SimulatedAlignment extends Alignment {
                 childSequence[i] = Randomizer.randomChoicePDF(charProb);
             }
             
-            if (arg.isNodeMarginalLeaf(child, recomb)) {
+            if (child.isLeaf()) {
                 System.arraycopy(childSequence, 0,
                         regionAlignment[child.getNr()], 0, childSequence.length);
             } else {
-                traverse(recomb, child, childSequence,
+                traverse(child, childSequence,
                         categories, transitionProbs,
                         regionAlignment);
             }
@@ -225,43 +215,14 @@ public class SimulatedAlignment extends Alignment {
      * @param recomb 
      */
     private void copyToAlignment(int[][] alignment, int[][] regionAlignment,
-            Conversion recomb) {
+            Region region) {
         
         int nTaxa = alignment.length;
         
-        if (recomb==null) {
-                
-            int ridx=0;
-            int sidx=0;
-            int jidx=0;
-            while (ridx<arg.getNConvs()) {
-                Conversion nextRecomb = arg.getConversions().get(ridx+1);
-                int nextStart = (int)nextRecomb.getStartSite();
-                if (nextStart>sidx) {
-                    for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
-                        System.arraycopy(regionAlignment[leafIdx], jidx,
-                                alignment[leafIdx], sidx, nextStart-sidx);
-                    }
-                }
-                jidx += nextStart-sidx;
-                sidx = (int)nextRecomb.getEndSite()+1;
-                ridx += 1;
-            }
-            
-            if (sidx<arg.getSequenceLength()-1) {
-                for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
-                    System.arraycopy(regionAlignment[leafIdx], jidx,
-                            alignment[leafIdx], sidx,
-                            arg.getSequenceLength()-sidx);
-                }
-            }
-            
-        } else {
-            for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
-                System.arraycopy(regionAlignment[leafIdx], 0,
-                        alignment[leafIdx], (int)recomb.getStartSite(),
-                        recomb.getSiteCount());
-            }
+        for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
+            System.arraycopy(regionAlignment[leafIdx], 0,
+                    alignment[leafIdx], region.leftBoundary,
+                    region.getRegionLength());
         }
     }
     
