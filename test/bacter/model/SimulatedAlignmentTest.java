@@ -17,10 +17,9 @@
 
 package bacter.model;
 
-import bacter.model.SimulatedAlignment;
-import bacter.model.SimulatedRecombinationGraph;
-import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.MarginalTree;
+import bacter.Region;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
@@ -46,15 +45,15 @@ public class SimulatedAlignmentTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        ConversionGraph arg = new SimulatedRecombinationGraph();
-        arg.initByName(
+        ConversionGraph acg = new SimulatedRecombinationGraph();
+        acg.initByName(
                 "rho", 5.0/10000,
                 "delta", 1000.0,
                 "populationModel", popFunc,
                 "nTaxa", 5,
                 "sequenceLength", 10000);
         
-        System.out.println(arg);
+        System.out.println(acg);
 
         // Site model:
         JukesCantor jc = new JukesCantor();
@@ -67,7 +66,7 @@ public class SimulatedAlignmentTest extends TestBase {
         // Simulate alignment:
         SimulatedAlignment alignment = new SimulatedAlignment();
         alignment.initByName(
-                "arg", arg,
+                "arg", acg,
                 "siteModel", siteModel,
                 "outputFileName", "simulated_alignment.nexus",
                 "useNexus", true);
@@ -75,15 +74,16 @@ public class SimulatedAlignmentTest extends TestBase {
 
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
-        for (Conversion recomb : arg.getConversions()) {
-            Alignment margAlign = createMarginalAlignment(alignment, arg, recomb);
+        for (Region region : acg.getRegions()) {
+            Alignment margAlign = createMarginalAlignment(alignment, acg, region);
             
             ClusterTree upgmaTree = new ClusterTree();
             upgmaTree.initByName(
                     "clusterType", "upgma",
                     "taxa", margAlign);
 
-            assertTrue(topologiesEquivalent(arg.getMarginalTree(recomb, null), upgmaTree));
+            assertTrue(topologiesEquivalent(new MarginalTree(acg, region).getRoot(),
+                    upgmaTree.getRoot()));
         }
     }
     

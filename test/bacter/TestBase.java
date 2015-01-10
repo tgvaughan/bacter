@@ -64,41 +64,19 @@ public abstract class TestBase {
      * 
      * @param alignment
      * @param arg
-     * @param recomb
+     * @param region
      * @return
      * @throws Exception 
      */
     public Alignment createMarginalAlignment(Alignment alignment,
-            ConversionGraph arg, Conversion recomb) throws Exception {
+            ConversionGraph arg, Region region) throws Exception {
         List<Sequence> sequences = Lists.newArrayList();
 
-        for (int leafIdx=0; leafIdx<alignment.getNrTaxa(); leafIdx++) {
+        for (int leafIdx=0; leafIdx<alignment.getTaxonCount(); leafIdx++) {
             List<Integer> stateSequence;
             
-            if (recomb == null) {
-                stateSequence = Lists.newArrayList();
-                
-                // Portions of CF sequence before each converted region
-                int i=0;
-                for (int r=0; r<arg.getNConvs(); r++) {
-                    while (i<arg.getConversions().get(r+1).getStartSite()) {
-                        stateSequence.add(alignment.getCounts().get(leafIdx).get(i));
-                        i += 1;
-                    }
-                    i=arg.getConversions().get(r+1).getEndSite()+1;
-                }
-                
-                // Any remaining CF sequence
-                while (i<arg.getSequenceLength()) {
-                    stateSequence.add(alignment.getCounts().get(leafIdx).get(i));
-                    i += 1;
-                }
-
-            } else {
-
-                stateSequence = alignment.getCounts().get(leafIdx)
-                        .subList(recomb.getStartSite(), recomb.getEndSite()+1);
-            }
+            stateSequence = alignment.getCounts().get(leafIdx)
+                    .subList(region.leftBoundary, region.rightBoundary);
             
             sequences.add(new Sequence(alignment.getTaxaNames().get(leafIdx),
                     alignment.getDataType().state2string(stateSequence)));
