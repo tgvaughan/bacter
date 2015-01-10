@@ -35,8 +35,6 @@ public class AddRemoveConversion extends EdgeCreationOperator {
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
     
-    private class ProposalFailed extends Exception { };
-    
     public AddRemoveConversion() { };
     
     @Override
@@ -130,7 +128,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
                         
         newRecomb.setEndSite(newRecomb.getStartSite()+convertedLength);
 
-        if (!arg.addConversion(newRecomb))
+        if (!arg.isValid())
             throw new ProposalFailed();
         
         return logP;

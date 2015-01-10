@@ -26,7 +26,7 @@ New development road map
 
 - [x] Update ARG state node
 - [ ] Update existing ARG density, likelihood and simulation code to
-       work with the new state
+       work with the new state *IN PROGRESS*
 - [ ] ARG simulator for new model (allow for model misspec analysis)
 - [ ] ARG density under new model
 

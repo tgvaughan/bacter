@@ -35,6 +35,8 @@ public abstract class RecombinationGraphOperator extends Operator {
     
     protected ConversionGraph arg;
 
+    protected class ProposalFailed extends Exception { };
+
     @Override
     public void initAndValidate() throws Exception {
         arg = argInput.get();

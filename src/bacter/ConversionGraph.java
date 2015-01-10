@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Recombination graph based around the clonal frame.")
+@Description("Conversion graph based around the clonal frame.")
 @Citation("Tim Vaughan, Alexei Drummod and Nigel French, "
         + "'Phylogenetic inference for bacteria in BEAST 2'. "
         + "In preparation.")
@@ -165,7 +165,7 @@ public class ConversionGraph extends Tree {
 
     /**
      * Obtain ordered list of events that make up the clonal frame.  Used
-     * for ARG probability density calculations and for various state proposal
+     * for ACG probability density calculations and for various state proposal
      * operators.
      * 
      * @return List of events.
@@ -175,8 +175,8 @@ public class ConversionGraph extends Tree {
     }
 
     /**
-     * Obtain ordered list of events that make up the clonal frame.  Used
-     * for ARG probability density calculations and for various state proposal
+     * Obtain ordered list of events that make up the ACG.  Used
+     * for ACG probability density calculations and for various state proposal
      * operators.
      * 
      * @return List of events.
