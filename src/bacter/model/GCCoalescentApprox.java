@@ -34,8 +34,8 @@ import java.util.Random;
 @Description("Appoximation to the coalescent with gene conversion.")
 public class GCCoalescentApprox extends ConversionGraphDistribution {
     
-    public Input<ConversionGraph> argInput = new In<ConversionGraph>(
-            "arg", "Recombination graph.").setRequired();
+    public Input<ConversionGraph> acgInput = new In<ConversionGraph>(
+            "acg", "Conversion graph.").setRequired();
     
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "Population model.").setRequired();
@@ -46,7 +46,7 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
     
-    ConversionGraph arg;
+    ConversionGraph acg;
     PopulationFunction popFunc;
     int sequenceLength;
     
@@ -55,9 +55,9 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
     @Override
     public void initAndValidate() throws Exception {
 
-        arg = argInput.get();
+        acg = acgInput.get();
         
-        sequenceLength = arg.getSequenceLength();
+        sequenceLength = acg.getSequenceLength();
 
         popFunc = popFuncInput.get();
         
@@ -69,7 +69,7 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
         
         logP = 0.0;
         
-        for (Conversion recomb : arg.getConversions()) {
+        for (Conversion recomb : acg.getConversions()) {
             if (recomb == null)
                 logP += calculateClonalFrameLogP();
             else
@@ -88,7 +88,7 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
      */
     public double calculateClonalFrameLogP() {
         
-        List<CFEventList.Event> events = arg.getCFEvents();
+        List<CFEventList.Event> events = acg.getCFEvents();
         
         double thisLogP = 0.0;
         
@@ -114,10 +114,10 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
      */
     public double calculateRecombinantLogP(Conversion recomb) {
         
-        List<CFEventList.Event> events = arg.getCFEvents();
+        List<CFEventList.Event> events = acg.getCFEvents();
         
         // Probability density of location of recombinant edge start
-        double thisLogP = Math.log(1.0/arg.getClonalFrameLength());
+        double thisLogP = Math.log(1.0/acg.getClonalFrameLength());
 
         // Identify interval containing the start of the recombinant edge
         int startIdx = 0;
@@ -152,11 +152,11 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
         
         double thisLogP = 0.0;
         
-        List<Conversion> recombs = arg.getConversions();
+        List<Conversion> recombs = acg.getConversions();
         
         double rho = rhoInput.get().getValue();
         double pTractEnd = 1.0/deltaInput.get().getValue();
-        double cfLength = arg.getClonalFrameLength();
+        double cfLength = acg.getClonalFrameLength();
         
         // Probability of recombination per site along sequence
         double pRec = 1.0 - Math.exp(-0.5*rho*cfLength);
@@ -164,7 +164,7 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
         // Probability that sequence begins in the clonal frame:
         double pStartCF = 1.0/(pRec/pTractEnd + 1.0);
         
-        if (arg.getNConvs()==0){
+        if (acg.getNConvs()==0){
             // Probability of no recombinations
             thisLogP += Math.log(pStartCF) 
                     + (sequenceLength-1)*Math.log(1.0-pRec);

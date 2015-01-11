@@ -28,10 +28,10 @@ import feast.input.In;
  * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public abstract class RecombinationGraphOperator extends Operator {
+public abstract class ConversionGraphOperator extends Operator {
     
     public Input<ConversionGraph> argInput = new In<ConversionGraph>(
-            "arg", "Ancestral recombination graph.").setRequired();
+            "acg", "Ancestral conversion graph.").setRequired();
     
     protected ConversionGraph acg;
 

@@ -28,11 +28,11 @@ import java.io.PrintStream;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Logs clonal frame corresponding to recombination graph.")
+@Description("Logs clonal frame corresponding to conversion graph.")
 public class ClonalFrameLogger extends CalculationNode implements Loggable {
 
-    public Input<ConversionGraph> argInput = new Input<ConversionGraph>(
-            "arg", "Recombination graph whose clonal frame you want to log.",
+    public Input<ConversionGraph> acgInput = new Input<ConversionGraph>(
+            "acg", "Conversion graph whose clonal frame you want to log.",
             Validate.REQUIRED);
 
     @Override
@@ -40,12 +40,12 @@ public class ClonalFrameLogger extends CalculationNode implements Loggable {
     
     @Override
     public void init(PrintStream out) throws Exception {
-       argInput.get().init(out);
+       acgInput.get().init(out);
     }
 
     @Override
     public void log(int nSample, PrintStream out) {
-        ConversionGraph arg = argInput.get();
+        ConversionGraph arg = acgInput.get();
 
         out.print("tree STATE_" + nSample + " = ");
         out.print(arg.getRoot().toSortedNewick(new int[1], false) + ";");
@@ -53,7 +53,7 @@ public class ClonalFrameLogger extends CalculationNode implements Loggable {
 
     @Override
     public void close(PrintStream out) {
-        argInput.get().close(out);
+        acgInput.get().close(out);
     }
     
 }

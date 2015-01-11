@@ -32,15 +32,15 @@ import java.io.PrintStream;
 @Description("")
 public class ConvertedRegionLogger extends BEASTObject implements Loggable {
 
-    public Input<ConversionGraph> argInput = new Input<ConversionGraph>(
-            "arg", "Recombination graph", Validate.REQUIRED);
+    public Input<ConversionGraph> acgInput = new Input<>(
+            "acg", "Conversion graph", Validate.REQUIRED);
 
     @Override
     public void initAndValidate() { }
     
     @Override
     public void init(PrintStream out) throws Exception {
-        final ConversionGraph arg = argInput.get();
+        final ConversionGraph arg = acgInput.get();
         if (getID() == null || getID().matches("\\s*")) {
             out.print(arg.getID() + ".converted\t");
         } else {
@@ -51,16 +51,16 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
     @Override
     public void log(int nSample, PrintStream out) {
         
-        if (argInput.get().getNConvs()==0) {
+        if (acgInput.get().getNConvs()==0) {
             out.print("NA\t");
             return;
         }
         
-        for (int r=1; r<=argInput.get().getNConvs(); r++) {
-            if (r>1)
+        for (int r=0; r<acgInput.get().getNConvs(); r++) {
+            if (r>0)
                 out.print(",");
 
-            Conversion recomb = argInput.get().getConversions().get(r);
+            Conversion recomb = acgInput.get().getConversions().get(r);
             out.print(recomb.getStartSite() + ":" + recomb.getEndSite());
         }
         out.print("\t");

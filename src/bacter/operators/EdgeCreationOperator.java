@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
+public abstract class EdgeCreationOperator extends ConversionGraphOperator {
     
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "Model of population size through time.").setRequired();

@@ -45,7 +45,7 @@ public class SimulatedAlignmentTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        ConversionGraph acg = new SimulatedRecombinationGraph();
+        ConversionGraph acg = new SimulatedConversionGraph();
         acg.initByName(
                 "rho", 5.0/10000,
                 "delta", 1000.0,

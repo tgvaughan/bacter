@@ -31,7 +31,7 @@ import java.util.List;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Scaling operator for recombination graphs.")
-public class RecombinationGraphScaler extends RecombinationGraphOperator {
+public class ConversionGraphScaler extends ConversionGraphOperator {
 
     public Input<List<RealParameter>> parametersInput = new In<List<RealParameter>>(
             "parameter", "Parameter to scale with ARG.")

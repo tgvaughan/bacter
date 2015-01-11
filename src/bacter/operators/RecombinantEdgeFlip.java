@@ -28,7 +28,7 @@ import beast.util.Randomizer;
 @Description("Operator which reverses the nodes that an edge corresponds to "
         + "and the times at which it attaches to the clonal frame leaving "
         + "everything else unchanged.")
-public class RecombinantEdgeFlip extends RecombinationGraphOperator {
+public class RecombinantEdgeFlip extends ConversionGraphOperator {
 
     @Override
     public double proposal() {

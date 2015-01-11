@@ -31,8 +31,8 @@ import java.util.List;
         + "sampler validation.")
 public class ConversionGraphSimulator extends beast.core.Runnable {
 
-    public Input<SimulatedRecombinationGraph> simARGInput =
-            new In<SimulatedRecombinationGraph>("simARG",
+    public Input<SimulatedConversionGraph> simARGInput =
+            new In<SimulatedConversionGraph>("simARG",
                     "Simulated recombination graph.").setRequired();
 
     public Input<Integer> nSimsInput = new In<Integer>("nSims",

@@ -17,7 +17,7 @@
 
 package bacter.model;
 
-import bacter.model.SimulatedRecombinationGraph;
+import bacter.model.SimulatedConversionGraph;
 import bacter.Conversion;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
@@ -68,7 +68,7 @@ public class SimulatedRecombinationGraphTest extends TestBase {
                 "datatype", "nucleotide"
         );
         
-        SimulatedRecombinationGraph rgs = new SimulatedRecombinationGraph();
+        SimulatedConversionGraph rgs = new SimulatedConversionGraph();
         
         int nIter = 100000;
         double meanNRecomb = 0.0;

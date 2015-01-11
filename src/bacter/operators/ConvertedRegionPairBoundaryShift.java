@@ -30,7 +30,7 @@ import feast.input.In;
 @Description("Operator which selects a pair of adjacent regions and jointly "
         + "shifts the closest edge pair, keeping the distance between them "
         + "the same.")
-public class ConvertedRegionPairBoundaryShift extends RecombinationGraphOperator{
+public class ConvertedRegionPairBoundaryShift extends ConversionGraphOperator{
 
     public Input<Double> apertureSizeInput = new In<Double>(
             "apertureSize",

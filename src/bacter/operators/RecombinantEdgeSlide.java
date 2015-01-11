@@ -30,7 +30,7 @@ import feast.input.In;
  */
 @Description("Operator which moves connection points of recombinant edges "
         + "about on clonal frame.")
-public class RecombinantEdgeSlide extends RecombinationGraphOperator {
+public class RecombinantEdgeSlide extends ConversionGraphOperator {
 
     public Input<Double> scaleBoundInput = new In<Double>("scaleBound",
             "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "

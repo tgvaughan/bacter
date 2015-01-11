@@ -29,17 +29,17 @@ import java.io.PrintStream;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class RecombinationGraphStatsLogger extends CalculationNode implements Loggable {
+public class ConversionGraphStatsLogger extends CalculationNode implements Loggable {
 
-    public Input<ConversionGraph> argInput = new Input <ConversionGraph>(
-            "arg", "Recombination graph to calculate summary statistics from.",
+    public Input<ConversionGraph> acgInput = new Input <>(
+            "acg", "Conversion graph to calculate summary statistics from.",
             Validate.REQUIRED);
     
     private ConversionGraph arg;
     
     @Override
     public void initAndValidate() {
-        arg = argInput.get();
+        arg = acgInput.get();
     }
     
     /**
@@ -78,7 +78,7 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
             return Double.NaN;
         
         double mean = 0;
-        for (int ridx=1; ridx<arg.getNConvs(); ridx++) {
+        for (int ridx=0; ridx<arg.getNConvs()-1; ridx++) {
             mean += arg.getConversions().get(ridx+1).getStartSite()
                     - arg.getConversions().get(ridx).getEndSite() - 1;
         }
@@ -99,11 +99,11 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
             return Double.NaN;
         
         double mean = 0.0;
-        for (Conversion recomb : arg.getConversions()) {
-            if (recomb == null)
+        for (Conversion conv : arg.getConversions()) {
+            if (conv == null)
                 continue;
             
-            mean += recomb.getHeight2()-recomb.getHeight1();
+            mean += conv.getHeight2()-conv.getHeight1();
         }
         mean /= arg.getNConvs();
         
@@ -153,10 +153,10 @@ public class RecombinationGraphStatsLogger extends CalculationNode implements Lo
         out.print(arg.getRoot().getHeight() + "\t"
                 + arg.getClonalFrameLength() + "\t"
                 + arg.getNConvs() + "\t"
-                + RecombinationGraphStatsLogger.getMeanTractLength(arg) + "\t"
-                + RecombinationGraphStatsLogger.getMeanInterTractLength(arg) + "\t"
-                + RecombinationGraphStatsLogger.getMeanEdgeLength(arg) + "\t"
-                + RecombinationGraphStatsLogger.getMeanDepartureHeight(arg) + "\t");
+                + ConversionGraphStatsLogger.getMeanTractLength(arg) + "\t"
+                + ConversionGraphStatsLogger.getMeanInterTractLength(arg) + "\t"
+                + ConversionGraphStatsLogger.getMeanEdgeLength(arg) + "\t"
+                + ConversionGraphStatsLogger.getMeanDepartureHeight(arg) + "\t");
     }
 
     @Override

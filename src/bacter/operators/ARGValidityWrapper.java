@@ -25,7 +25,7 @@ import feast.input.In;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ARGValidityWrapper extends RecombinationGraphOperator {
+public class ARGValidityWrapper extends ConversionGraphOperator {
     
     public Input<Operator> operatorInput = new In<Operator>("operator",
             "Operator to follow validity check with.").setRequired();

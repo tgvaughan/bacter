@@ -127,7 +127,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        ConversionGraph arg = new SimulatedRecombinationGraph();
+        ConversionGraph arg = new SimulatedConversionGraph();
         arg.initByName(
                 "rho", 5.0,
                 "delta", 1000.0,

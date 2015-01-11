@@ -27,7 +27,7 @@ import beast.util.Randomizer;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Cause recombinant edge to hop between clonal frame edges.")
-public class RecombinantEdgeHop extends RecombinationGraphOperator {
+public class RecombinantEdgeHop extends ConversionGraphOperator {
 
     public RecombinantEdgeHop() { }
     

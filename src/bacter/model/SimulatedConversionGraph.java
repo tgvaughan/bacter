@@ -45,7 +45,7 @@ import java.util.List;
  */
 @Description("Simulates an ARG - can be used for chain initialization or for "
         + "sampler validation.")
-public class SimulatedRecombinationGraph extends ConversionGraph {
+public class SimulatedConversionGraph extends ConversionGraph {
 
     public Input<Double> rhoInput = new In<Double>("rho",
             "Recombination rate parameter.").setRequired();
@@ -78,7 +78,7 @@ public class SimulatedRecombinationGraph extends ConversionGraph {
     private int nTaxa;
     private TaxonSet taxonSet;
     
-    public SimulatedRecombinationGraph() { };
+    public SimulatedConversionGraph() { };
     
     @Override
     public void initAndValidate() throws Exception {

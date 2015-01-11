@@ -19,7 +19,7 @@ package bacter.operators;
 
 import bacter.operators.AddRemoveConversion;
 import bacter.Conversion;
-import bacter.model.SimulatedRecombinationGraph;
+import bacter.model.SimulatedConversionGraph;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;
@@ -49,7 +49,7 @@ public class AddRemoveConversionTest {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        SimulatedRecombinationGraph arg = new SimulatedRecombinationGraph();
+        SimulatedConversionGraph arg = new SimulatedConversionGraph();
         arg.initByName(
                 "rho", 1.0/10000,
                 "delta", 50.0,

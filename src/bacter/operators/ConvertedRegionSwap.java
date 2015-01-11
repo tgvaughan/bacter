@@ -27,7 +27,7 @@ import beast.util.Randomizer;
  */
 @Description("Selects a pair of conversion events and swaps the recombinations"
         + "they correspond to.")
-public class ConvertedRegionSwap extends RecombinationGraphOperator {
+public class ConvertedRegionSwap extends ConversionGraphOperator {
 
     public ConvertedRegionSwap() { }
     

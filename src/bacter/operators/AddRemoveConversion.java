@@ -70,7 +70,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Select conversion to remove:
             Conversion conv = acg.getConversions().get(
-                    Randomizer.nextInt(acg.getNConvs())+1);
+                    Randomizer.nextInt(acg.getNConvs()));
             
             // Calculate HGF
             logHGF += getConversionProb(conv);

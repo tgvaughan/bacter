@@ -28,7 +28,7 @@ import feast.input.In;
  */
 @Description("Operator which in one direction splits an existing recombination "
         + "in two and in the other merges two adjacent recombinations.")
-public class MergeSplitConversion extends RecombinationGraphOperator {
+public class MergeSplitConversion extends ConversionGraphOperator {
     
     public Input<Double> gapSizeInput = new In<Double>("expectedGapSize",
             "Expected gap size.").setDefault(10.0);
