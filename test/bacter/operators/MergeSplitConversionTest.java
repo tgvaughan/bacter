@@ -50,29 +50,29 @@ public class MergeSplitConversionTest {
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
         TreeParser clonalFrame = new TreeParser("((0:0.5,1:0.5)3:0.2,2:0.7)4:0.0");
-        ConversionGraph arg = new ConversionGraph();
-        arg.assignFrom(clonalFrame);
-        arg.initByName("sequenceLength", 10000);
+        ConversionGraph acg = new ConversionGraph();
+        acg.assignFrom(clonalFrame);
+        acg.initByName("sequenceLength", 10000);
         
         State state = new State();
-        state.initByName("stateNode", arg);
+        state.initByName("stateNode", acg);
         state.initialise();
 
         Conversion recomb = new Conversion();
         recomb.setStartSite(200);
         recomb.setEndSite(500);
-        recomb.setNode1(arg.getNode(0));
-        recomb.setNode2(arg.getNode(1));
+        recomb.setNode1(acg.getNode(0));
+        recomb.setNode2(acg.getNode(1));
         recomb.setHeight1(0.1);
         recomb.setHeight2(0.4);
-        arg.addConversion(recomb);
+        acg.addConversion(recomb);
 
         state.store(0);
         
         // Define operator
         MergeSplitConversion operator = new MergeSplitConversion();
         operator.initByName("weight", 1.0,
-                "arg", arg,
+                "acg", acg,
                 "expectedGapSize", "10");
 
         // Loop until a valid proposal is made                    
@@ -81,7 +81,7 @@ public class MergeSplitConversionTest {
             logP1 = operator.splitProposal();
             
             if (Double.isInfinite(logP1))
-                arg.restore();
+                acg.restore();
             
         } while(Double.isInfinite(logP1));
         

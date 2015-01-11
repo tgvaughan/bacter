@@ -63,14 +63,14 @@ public class GCCoalescentApproxTest extends TestBase {
         Alignment alignment = getAlignment();
         
         // ConversionGraph
-        ConversionGraph arg = new ConversionGraph();
+        ConversionGraph acg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
                 "taxa", alignment);
         
-        arg.assignFrom(tree);
-        arg.initByName("alignment", alignment);
+        acg.assignFrom(tree);
+        acg.initByName("alignment", alignment);
         
         // Site model:
         JukesCantor jc = new JukesCantor();
@@ -86,7 +86,7 @@ public class GCCoalescentApproxTest extends TestBase {
         // Coalescent
         GCCoalescentApprox coalescent = new GCCoalescentApprox();
         coalescent.initByName(
-                "arg", arg,
+                "acg", acg,
                 "populationModel", popFunction,
                 "rho", new RealParameter(Double.toString(1.0/898)),
                 "delta", new RealParameter("10"));
@@ -102,7 +102,7 @@ public class GCCoalescentApproxTest extends TestBase {
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         
         //Add a single recombination event
-        Node node1 = arg.getExternalNodes().get(0);
+        Node node1 = acg.getExternalNodes().get(0);
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
@@ -110,7 +110,7 @@ public class GCCoalescentApproxTest extends TestBase {
         int endLocus = 200;
         Conversion newRecomb = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus);
-        arg.addConversion(newRecomb);
+        acg.addConversion(newRecomb);
 
         // Test converted region probability when one recombination exists
         logP = coalescent.calculateConvertedRegionMapLogP();

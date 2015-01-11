@@ -49,8 +49,8 @@ public class AddRemoveConversionTest {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        SimulatedConversionGraph arg = new SimulatedConversionGraph();
-        arg.initByName(
+        SimulatedConversionGraph acg = new SimulatedConversionGraph();
+        acg.initByName(
                 "rho", 1.0/10000,
                 "delta", 50.0,
                 "sequenceLength", 10000,
@@ -66,13 +66,13 @@ public class AddRemoveConversionTest {
         do {
             operator.initByName(
                     "weight", 1.0,
-                    "arg", arg,
+                    "acg", acg,
                     "rho", new RealParameter(Double.toString(1.0/10000)),
                     "delta", new RealParameter("50.0"),
                     "populationModel", popFunc);
             
             oldRecombs = Lists.newArrayList(
-                    arg.getConversions());
+                    acg.getConversions());
         
             logP1 = operator.drawNewConversion();
         } while (Double.isInfinite(logP1));
@@ -81,7 +81,7 @@ public class AddRemoveConversionTest {
         
         // Identify new recomination
         Conversion newRecomb = null;
-        for (Conversion recomb : arg.getConversions()) {
+        for (Conversion recomb : acg.getConversions()) {
             if (!oldRecombs.contains(recomb))
                 newRecomb = recomb;
         }
