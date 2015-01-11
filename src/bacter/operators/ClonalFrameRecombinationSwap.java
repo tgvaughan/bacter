@@ -37,12 +37,12 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
     public double proposal() {
         double logHR = 0.0;
 
-        if (arg.getNConvs()==0 || getGapCount()==0)
+        if (acg.getNConvs()==0 || getGapCount()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Choose recombination
-        int ridx = Randomizer.nextInt(arg.getNConvs())+1;
-        Conversion recomb = arg.getConversions().get(ridx);
+        int ridx = Randomizer.nextInt(acg.getNConvs())+1;
+        Conversion recomb = acg.getConversions().get(ridx);
 
         if (recomb.getNode1()==recomb.getNode2())
             return Double.NEGATIVE_INFINITY;
@@ -64,14 +64,14 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
     private int getGapCount() {
         int count = 0;
 
-        if (arg.getNConvs()>0 && arg.getConversions().get(1).getStartSite()>0)
+        if (acg.getNConvs()>0 && acg.getConversions().get(1).getStartSite()>0)
             count += 1;
         
-        if (arg.getNConvs()>1)
-            count += arg.getNConvs()-1;
+        if (acg.getNConvs()>1)
+            count += acg.getNConvs()-1;
         
-        if (arg.getNConvs() == 0
-                || arg.getConversions().get(arg.getNConvs()).getEndSite()<arg.getSequenceLength()-1)
+        if (acg.getNConvs() == 0
+                || acg.getConversions().get(acg.getNConvs()).getEndSite()<acg.getSequenceLength()-1)
             count += 1;
         
         return count;
@@ -136,10 +136,10 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
         // Ensure any change of root is catered for
         
         if (floating.isRoot())
-            arg.setRoot(floating);
+            acg.setRoot(floating);
         
         if (sister.isRoot())
-            arg.setRoot(sister);
+            acg.setRoot(sister);
         
         // Record the site ranges the existing conversions apply to and
         // delete those conversions. (The CF now applies to those conversions.)
@@ -147,11 +147,11 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
         List<Integer> startSites = Lists.newArrayList();
         List<Integer> endSites = Lists.newArrayList();
 
-        while (arg.getConversions().size()>1) {
-            Conversion thisRecomb = arg.getConversions().get(arg.getNConvs());
+        while (acg.getConversions().size()>1) {
+            Conversion thisRecomb = acg.getConversions().get(acg.getNConvs());
             startSites.add(thisRecomb.getStartSite());
             endSites.add(thisRecomb.getEndSite());
-            arg.deleteConversion(arg.getConversions().get(arg.getNConvs()));
+            acg.deleteConversion(acg.getConversions().get(acg.getNConvs()));
         }
         
         Collections.reverse(startSites);
@@ -173,7 +173,7 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
             
             newRecomb.setStartSite(0);
             newRecomb.setEndSite(startSites.get(0)-1);
-            arg.addConversion(newRecomb);
+            acg.addConversion(newRecomb);
             
             gapIdx += 1;
         }
@@ -188,12 +188,12 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
             }
             newRecomb.setStartSite(endSites.get(i)+1);
             newRecomb.setEndSite(startSites.get(i+1)-1);
-            arg.addConversion(newRecomb);
+            acg.addConversion(newRecomb);
             
             gapIdx += 1;
         }
         
-        if (endSites.get(endSites.size()-1)<arg.getSequenceLength()-1) {
+        if (endSites.get(endSites.size()-1)<acg.getSequenceLength()-1) {
             Conversion newRecomb;
             if (chosenGapIdx==gapIdx) {
                 newRecomb = oldCFrecomb;
@@ -202,8 +202,8 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
                 logP += attachEdge(newRecomb);
             }
             newRecomb.setStartSite(endSites.get(endSites.size()-1)+1);
-            newRecomb.setEndSite(arg.getSequenceLength()-1);
-            arg.addConversion(newRecomb);
+            newRecomb.setEndSite(acg.getSequenceLength()-1);
+            acg.addConversion(newRecomb);
             
             gapIdx += 1;
         }
@@ -223,7 +223,7 @@ public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
         // Probability of drawing existing recombinant edges in x from
         // the clonal frame in x'.  (This excludes the conversion corresponding
         // to the chosen gap in x'.)
-        for (Conversion thisRecomb : arg.getConversions()) {
+        for (Conversion thisRecomb : acg.getConversions()) {
             if (thisRecomb == null || thisRecomb == recomb)
                 continue;
             

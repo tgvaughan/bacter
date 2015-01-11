@@ -33,11 +33,11 @@ public class RecombinantEdgeFlip extends RecombinationGraphOperator {
     @Override
     public double proposal() {
 
-        if (arg.getNConvs()==0)
+        if (acg.getNConvs()==0)
             return Double.NEGATIVE_INFINITY;
         
-        Conversion recomb = arg.getConversions().get(
-                Randomizer.nextInt(arg.getNConvs())+1);
+        Conversion recomb = acg.getConversions().get(
+                Randomizer.nextInt(acg.getNConvs())+1);
         
         Node node1 = recomb.getNode1();
         Node node2 = recomb.getNode2();

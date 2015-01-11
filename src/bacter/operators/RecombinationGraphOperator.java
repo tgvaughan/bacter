@@ -33,13 +33,13 @@ public abstract class RecombinationGraphOperator extends Operator {
     public Input<ConversionGraph> argInput = new In<ConversionGraph>(
             "arg", "Ancestral recombination graph.").setRequired();
     
-    protected ConversionGraph arg;
+    protected ConversionGraph acg;
 
     protected class ProposalFailed extends Exception { };
 
     @Override
     public void initAndValidate() throws Exception {
-        arg = argInput.get();
+        acg = argInput.get();
     }
     
     /**

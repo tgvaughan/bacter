@@ -34,13 +34,13 @@ public class ConvertedRegionSwap extends RecombinationGraphOperator {
     @Override
     public double proposal() {
         
-        if (arg.getNConvs()<2)
+        if (acg.getNConvs()<2)
             return Double.NEGATIVE_INFINITY;
 
         // Select a random pair of recombinations
-        int[] idx = Randomizer.shuffled(arg.getNConvs());
-        Conversion recomb1 = arg.getConversions().get(idx[0]+1);
-        Conversion recomb2 = arg.getConversions().get(idx[1]+1);
+        int[] idx = Randomizer.shuffled(acg.getNConvs());
+        Conversion recomb1 = acg.getConversions().get(idx[0]+1);
+        Conversion recomb2 = acg.getConversions().get(idx[1]+1);
         
         // Switch edges corresponding to recombinations.  (Can't switch
         // loci, as this would break ordering constraint.)

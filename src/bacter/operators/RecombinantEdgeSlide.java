@@ -52,12 +52,12 @@ public class RecombinantEdgeSlide extends RecombinationGraphOperator {
         
         double logHR = 0.0;
         
-        if (arg.getNConvs()==0)
+        if (acg.getNConvs()==0)
             return Double.NEGATIVE_INFINITY;
 
         // Select edge at random:
-        Conversion recomb = arg.getConversions().get(
-                Randomizer.nextInt(arg.getNConvs())+1);
+        Conversion recomb = acg.getConversions().get(
+                Randomizer.nextInt(acg.getNConvs())+1);
         
         // Decide whether to move departure or arrival point
         boolean moveDeparture = Randomizer.nextBoolean();
@@ -78,7 +78,7 @@ public class RecombinantEdgeSlide extends RecombinationGraphOperator {
         
         // Check for boundary violation
         if (moveDeparture) {
-            if (newHeight>recomb.getHeight2() || newHeight>arg.getRoot().getHeight())
+            if (newHeight>recomb.getHeight2() || newHeight>acg.getRoot().getHeight())
                 return Double.NEGATIVE_INFINITY;
         } else {
             if (newHeight<recomb.getHeight1())

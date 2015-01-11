@@ -34,12 +34,12 @@ public class RecombinantEdgeHop extends RecombinationGraphOperator {
     @Override
     public double proposal() {
 
-        if (arg.getNConvs()==0)
+        if (acg.getNConvs()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Select recombination at random
-        Conversion recomb = arg.getConversions().get(
-                Randomizer.nextInt(arg.getNConvs())+1);
+        Conversion recomb = acg.getConversions().get(
+                Randomizer.nextInt(acg.getNConvs())+1);
         
         // Choose whether to move departure or arrival point
         boolean moveDeparture;
@@ -49,10 +49,10 @@ public class RecombinantEdgeHop extends RecombinationGraphOperator {
             moveDeparture = Randomizer.nextBoolean();
         
         // Select new attachment point:
-        double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
+        double u = Randomizer.nextDouble()*acg.getClonalFrameLength();
         Node nodeBelow = null;
         double newHeight = -1;
-        for (Node node : arg.getNodesAsArray()) {
+        for (Node node : acg.getNodesAsArray()) {
             if (node.isRoot())
                 continue;
             

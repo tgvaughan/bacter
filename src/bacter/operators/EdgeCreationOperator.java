@@ -58,13 +58,13 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
         
         double logP = 0.0;
         
-        List<CFEventList.Event> eventList = arg.getCFEvents();
+        List<CFEventList.Event> eventList = acg.getCFEvents();
         
         // Select departure point
-        double u = Randomizer.nextDouble()*arg.getClonalFrameLength();
-        logP += Math.log(1.0/arg.getClonalFrameLength());
+        double u = Randomizer.nextDouble()*acg.getClonalFrameLength();
+        logP += Math.log(1.0/acg.getClonalFrameLength());
         
-        for (Node node : arg.getNodesAsArray()) {
+        for (Node node : acg.getNodesAsArray()) {
             if (node.isRoot())
                 continue;
             
@@ -92,7 +92,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
     public double getEdgeAttachmentProb(Conversion recomb) {
         double logP = 0.0;
         
-        logP += Math.log(1.0/arg.getClonalFrameLength());
+        logP += Math.log(1.0/acg.getClonalFrameLength());
         logP += getEdgeCoalescenceProb(recomb);
         
         return logP;
@@ -108,7 +108,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
     public double coalesceEdge(Conversion recomb) {
         double logP = 0.0;
         
-        List<CFEventList.Event> events = arg.getCFEvents();
+        List<CFEventList.Event> events = acg.getCFEvents();
         
         // Locate event immediately below departure point
         int startIdx = 0;
@@ -141,7 +141,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
                 
                 // Attach to random clonal frame lineage extant at this time
                 int z = Randomizer.nextInt(event.getLineageCount());
-                for (Node node : arg.getNodesAsArray()) {
+                for (Node node : acg.getNodesAsArray()) {
                     if (recomb.getHeight2()>node.getHeight() &&
                             (node.isRoot() || recomb.getHeight2()<node.getParent().getHeight())) {
                         if (z==0) {
@@ -174,7 +174,7 @@ public abstract class EdgeCreationOperator extends RecombinationGraphOperator {
     public double getEdgeCoalescenceProb(Conversion recomb) {
         double logP = 0.0;
         
-        List<CFEventList.Event> events = arg.getCFEvents();
+        List<CFEventList.Event> events = acg.getCFEvents();
         
         // Find event immediately below departure point
         int startIdx = 0;

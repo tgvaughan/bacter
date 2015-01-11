@@ -55,13 +55,13 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
     double splitProposal() {
         double logHR = 0.0;
         
-        if (arg.getNConvs()==0)
+        if (acg.getNConvs()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Select recombination
-        Conversion recomb = arg.getConversions()
-                .get(Randomizer.nextInt(arg.getNConvs())+1);
-        logHR -= Math.log(1.0/arg.getNConvs());
+        Conversion recomb = acg.getConversions()
+                .get(Randomizer.nextInt(acg.getNConvs())+1);
+        logHR -= Math.log(1.0/acg.getNConvs());
         
         if (recomb.getSiteCount()<3)
             return Double.NEGATIVE_INFINITY;
@@ -112,10 +112,10 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         newRecomb.setNode2(recomb.getNode2());
         newRecomb.setHeight1(depHeight);
         newRecomb.setHeight2(arrHeight);
-        arg.addConversion(newRecomb);
+        acg.addConversion(newRecomb);
         
         // Include probability of reverse (merge) move in HR:
-        logHR += Math.log(1.0/((double)(arg.getNConvs()-1)));
+        logHR += Math.log(1.0/((double)(acg.getNConvs()-1)));
         
         return logHR;
     }
@@ -123,15 +123,15 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
     double mergeProposal() {
         double logHR = 0.0;
         
-        if (arg.getNConvs()<2)
+        if (acg.getNConvs()<2)
             return Double.NEGATIVE_INFINITY;
         
         // Select a random pair of adjacent (on alignment) regions
-        int r1idx = Randomizer.nextInt(arg.getNConvs()-1) + 1;
+        int r1idx = Randomizer.nextInt(acg.getNConvs()-1) + 1;
         int r2idx = r1idx + 1;
-        Conversion recomb1 = arg.getConversions().get(r1idx);
-        Conversion recomb2 = arg.getConversions().get(r2idx);
-        logHR -= Math.log(1.0/((double)(arg.getNConvs()-1)));
+        Conversion recomb1 = acg.getConversions().get(r1idx);
+        Conversion recomb2 = acg.getConversions().get(r2idx);
+        logHR -= Math.log(1.0/((double)(acg.getNConvs()-1)));
         
         // Ensure a split operator could have generated this pair
         if (recomb1.getNode1() != recomb2.getNode1()
@@ -160,10 +160,10 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         recomb1.setEndSite(recomb2.getEndSite());
         
         // Remove the right-most recombination
-        arg.deleteConversion(recomb2);
+        acg.deleteConversion(recomb2);
         
         // Include probability of reverse (split) move in HR:
-        logHR += Math.log(1.0/arg.getNConvs())
+        logHR += Math.log(1.0/acg.getNConvs())
                 + Math.log(1.0/((double)(recomb1.getSiteCount()-2)))
                 + gap*Math.log(1.0-gapRate) + Math.log(gapRate)
                 + Math.log(1.0/(depRange*arrRange));

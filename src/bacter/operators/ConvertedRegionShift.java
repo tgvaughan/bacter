@@ -42,11 +42,11 @@ public class ConvertedRegionShift extends RecombinationGraphOperator {
     @Override
     public double proposal() {
         
-        if (arg.getNConvs()<1)
+        if (acg.getNConvs()<1)
             return Double.NEGATIVE_INFINITY;
         
-        int ridx = Randomizer.nextInt(arg.getNConvs()) + 1;
-        Conversion recomb = arg.getConversions().get(ridx);
+        int ridx = Randomizer.nextInt(acg.getNConvs()) + 1;
+        Conversion recomb = acg.getConversions().get(ridx);
         
         int radius = (int)Math.round(argInput.get().getSequenceLength()
                 *apertureSizeInput.get())/2;
@@ -55,18 +55,18 @@ public class ConvertedRegionShift extends RecombinationGraphOperator {
         
         if (delta>0) {
             int maxDelta;
-            if (ridx<arg.getNConvs())
-                maxDelta = arg.getConversions().get(ridx+1).getStartSite() - 2
+            if (ridx<acg.getNConvs())
+                maxDelta = acg.getConversions().get(ridx+1).getStartSite() - 2
                         - recomb.getEndSite();
             else
-                maxDelta = arg.getSequenceLength() - 1 - recomb.getEndSite();
+                maxDelta = acg.getSequenceLength() - 1 - recomb.getEndSite();
             
             if (delta>maxDelta)
                 return Double.NEGATIVE_INFINITY;
         } else {
             int minDelta;
             if (ridx>1)
-                minDelta = arg.getConversions().get(ridx-1).getEndSite() + 2
+                minDelta = acg.getConversions().get(ridx-1).getEndSite() + 2
                         - recomb.getStartSite();
             else
                 minDelta = 0 - recomb.getStartSite();

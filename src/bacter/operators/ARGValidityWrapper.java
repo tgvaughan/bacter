@@ -36,7 +36,7 @@ public class ARGValidityWrapper extends RecombinationGraphOperator {
     public double proposal() {
         double logP = operatorInput.get().proposal();
         
-        if (!arg.isValid())
+        if (!acg.isValid())
             return Double.NEGATIVE_INFINITY;
         
         return logP;

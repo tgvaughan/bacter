@@ -32,14 +32,14 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class AddRemoveRecombinationTest {
+public class AddRemoveConversionTest {
     
-    public AddRemoveRecombinationTest() { }
+    public AddRemoveConversionTest() { }
     
     /**
      * Tests that probability density of forward move calculated
-     * by drawNewRecomb() matches probability density of backward
-     * move calculated by getRecombProb().
+ by drawNewConversion() matches probability density of backward
+ move calculated by getConversionProb().
      * 
      * @throws Exception 
      */
@@ -74,7 +74,7 @@ public class AddRemoveRecombinationTest {
             oldRecombs = Lists.newArrayList(
                     arg.getConversions());
         
-            logP1 = operator.drawNewRecomb();
+            logP1 = operator.drawNewConversion();
         } while (Double.isInfinite(logP1));
         
         System.out.println("logP1 = " + logP1);
@@ -87,7 +87,7 @@ public class AddRemoveRecombinationTest {
         }
         assertNotNull(newRecomb);
         
-        double logP2 = operator.getRecombProb(newRecomb);
+        double logP2 = operator.getConversionProb(newRecomb);
         System.out.println("logP2 = " + logP2);
         
         assertTrue(Math.abs(logP1-logP2)<1e-10);

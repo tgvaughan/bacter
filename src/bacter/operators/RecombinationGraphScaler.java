@@ -70,17 +70,17 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
         
         // Scale clonal frame:
         if (rootOnly) {
-            arg.getRoot().setHeight(arg.getRoot().getHeight()*f);
+            acg.getRoot().setHeight(acg.getRoot().getHeight()*f);
             count += 1;
         } else {
-            for (Node node : arg.getInternalNodes()) {
+            for (Node node : acg.getInternalNodes()) {
                 node.setHeight(node.getHeight()*f);
                 count += 1;
             }
         }
         
         // Scale recombinant edges:
-        for (Conversion recomb : arg.getConversions()) {
+        for (Conversion recomb : acg.getConversions()) {
             if (recomb == null)
                 continue;
             
@@ -102,12 +102,12 @@ public class RecombinationGraphScaler extends RecombinationGraphOperator {
         
         // Check for illegal node heights:
         if (rootOnly) {
-            for (Node node : arg.getRoot().getChildren()) {
+            for (Node node : acg.getRoot().getChildren()) {
                 if (node.getHeight()>node.getParent().getHeight())
                     return Double.NEGATIVE_INFINITY;
             }
         } else {
-            for (Node node : arg.getExternalNodes()) {
+            for (Node node : acg.getExternalNodes()) {
                 if (node.getHeight()>node.getParent().getHeight())
                     return Double.NEGATIVE_INFINITY;
             }
