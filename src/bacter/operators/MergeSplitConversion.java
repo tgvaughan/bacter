@@ -28,14 +28,14 @@ import feast.input.In;
  */
 @Description("Operator which in one direction splits an existing recombination "
         + "in two and in the other merges two adjacent recombinations.")
-public class MergeSplitRecombination extends RecombinationGraphOperator {
+public class MergeSplitConversion extends RecombinationGraphOperator {
     
     public Input<Double> gapSizeInput = new In<Double>("expectedGapSize",
             "Expected gap size.").setDefault(10.0);
     
     private double gapRate;
     
-    public MergeSplitRecombination() { }
+    public MergeSplitConversion() { }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -60,7 +60,7 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
         
         // Select recombination
         Conversion recomb = acg.getConversions()
-                .get(Randomizer.nextInt(acg.getNConvs())+1);
+                .get(Randomizer.nextInt(acg.getNConvs()));
         logHR -= Math.log(1.0/acg.getNConvs());
         
         if (recomb.getSiteCount()<3)
@@ -127,7 +127,7 @@ public class MergeSplitRecombination extends RecombinationGraphOperator {
             return Double.NEGATIVE_INFINITY;
         
         // Select a random pair of adjacent (on alignment) regions
-        int r1idx = Randomizer.nextInt(acg.getNConvs()-1) + 1;
+        int r1idx = Randomizer.nextInt(acg.getNConvs()-1);
         int r2idx = r1idx + 1;
         Conversion recomb1 = acg.getConversions().get(r1idx);
         Conversion recomb2 = acg.getConversions().get(r2idx);

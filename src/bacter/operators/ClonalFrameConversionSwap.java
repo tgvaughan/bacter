@@ -31,7 +31,7 @@ import java.util.List;
 @Description("Operator which swaps the role of the clonal frame with that of "
         + "one of the marginal trees resulting from a conversion.  Note that "
         + "this move conserves the marginal trees themselves.")
-public class ClonalFrameRecombinationSwap extends EdgeCreationOperator {
+public class ClonalFrameConversionSwap extends EdgeCreationOperator {
 
     @Override
     public double proposal() {

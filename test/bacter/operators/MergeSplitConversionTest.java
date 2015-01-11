@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.operators.MergeSplitRecombination;
+import bacter.operators.MergeSplitConversion;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.State;
@@ -32,9 +32,9 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class MergeSplitRecombinationTest {
+public class MergeSplitConversionTest {
     
-    public MergeSplitRecombinationTest() { }
+    public MergeSplitConversionTest() { }
     
     /**
      * Tests that probability density of forward move calculated
@@ -70,7 +70,7 @@ public class MergeSplitRecombinationTest {
         state.store(0);
         
         // Define operator
-        MergeSplitRecombination operator = new MergeSplitRecombination();
+        MergeSplitConversion operator = new MergeSplitConversion();
         operator.initByName("weight", 1.0,
                 "arg", arg,
                 "expectedGapSize", "10");

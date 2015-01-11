@@ -38,9 +38,9 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class RecombinationGraphLikelihoodTest extends TestBase {
+public class ConversionGraphLikelihoodTest extends TestBase {
     
-    public RecombinationGraphLikelihoodTest() { }
+    public ConversionGraphLikelihoodTest() { }
     
     @Test
     public void testClonalFrameLikelihood() throws Exception {
