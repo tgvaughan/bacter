@@ -137,20 +137,20 @@ public class ConversionGraph extends Tree {
     }
     
     /**
-     * Retrieve list of recombinations.
+     * Retrieve list of conversions.
      * 
-     * @return List of recombinations.
+     * @return List of conversions.
      */
     public List<Conversion> getConversions() {
         return convs;
     }
 
     /**
-     * Obtain number of recombination events.
+     * Obtain number of conversion events.
      * 
-     * @return Number of recombinations.
+     * @return Number of conversions.
      */
-    public int getNConvs() {
+    public int getConvCount() {
         return convs.size();
     }
 
@@ -161,6 +161,22 @@ public class ConversionGraph extends Tree {
      */
     public List<Region> getRegions() {
         return regionList.getRegions();
+    }
+
+    /**
+     * Obtain number of contiguous single-tree regions.
+     * 
+     * @return Number of regions.
+     */
+    public int getRegionCount() {
+        return regionList.getRegions().size();
+    }
+
+    /**
+     * @return true if there is a region affected by two or more conversions
+     */
+    public boolean hasOverlaps() {
+        return regionList.hasOverlaps();
     }
 
     /**

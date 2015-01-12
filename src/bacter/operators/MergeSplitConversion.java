@@ -55,13 +55,13 @@ public class MergeSplitConversion extends ConversionGraphOperator {
     double splitProposal() {
         double logHR = 0.0;
         
-        if (acg.getNConvs()==0)
+        if (acg.getConvCount()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Select recombination
         Conversion recomb = acg.getConversions()
-                .get(Randomizer.nextInt(acg.getNConvs()));
-        logHR -= Math.log(1.0/acg.getNConvs());
+                .get(Randomizer.nextInt(acg.getConvCount()));
+        logHR -= Math.log(1.0/acg.getConvCount());
         
         if (recomb.getSiteCount()<3)
             return Double.NEGATIVE_INFINITY;
@@ -115,7 +115,7 @@ public class MergeSplitConversion extends ConversionGraphOperator {
         acg.addConversion(newRecomb);
         
         // Include probability of reverse (merge) move in HR:
-        logHR += Math.log(1.0/((double)(acg.getNConvs()-1)));
+        logHR += Math.log(1.0/((double)(acg.getConvCount()-1)));
         
         return logHR;
     }
@@ -123,15 +123,15 @@ public class MergeSplitConversion extends ConversionGraphOperator {
     double mergeProposal() {
         double logHR = 0.0;
         
-        if (acg.getNConvs()<2)
+        if (acg.getConvCount()<2)
             return Double.NEGATIVE_INFINITY;
         
         // Select a random pair of adjacent (on alignment) regions
-        int r1idx = Randomizer.nextInt(acg.getNConvs()-1);
+        int r1idx = Randomizer.nextInt(acg.getConvCount()-1);
         int r2idx = r1idx + 1;
         Conversion recomb1 = acg.getConversions().get(r1idx);
         Conversion recomb2 = acg.getConversions().get(r2idx);
-        logHR -= Math.log(1.0/((double)(acg.getNConvs()-1)));
+        logHR -= Math.log(1.0/((double)(acg.getConvCount()-1)));
         
         // Ensure a split operator could have generated this pair
         if (recomb1.getNode1() != recomb2.getNode1()
@@ -163,7 +163,7 @@ public class MergeSplitConversion extends ConversionGraphOperator {
         acg.deleteConversion(recomb2);
         
         // Include probability of reverse (split) move in HR:
-        logHR += Math.log(1.0/acg.getNConvs())
+        logHR += Math.log(1.0/acg.getConvCount())
                 + Math.log(1.0/((double)(recomb1.getSiteCount()-2)))
                 + gap*Math.log(1.0-gapRate) + Math.log(gapRate)
                 + Math.log(1.0/(depRange*arrRange));

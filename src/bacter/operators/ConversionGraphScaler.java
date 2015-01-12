@@ -81,8 +81,6 @@ public class ConversionGraphScaler extends ConversionGraphOperator {
         
         // Scale recombinant edges:
         for (Conversion recomb : acg.getConversions()) {
-            if (recomb == null)
-                continue;
             
             if (!rootOnly || recomb.getNode1().getParent().isRoot()) {
                 recomb.setHeight1(recomb.getHeight1()*f);

@@ -44,24 +44,24 @@ public class ReplaceConversion extends EdgeCreationOperator {
         if (Randomizer.nextBoolean()) {
             // Delete
 
-            if (acg.getNConvs()<2)
+            if (acg.getConvCount()<2)
                 return Double.NEGATIVE_INFINITY;
         
             boolean right = Randomizer.nextBoolean();
             int ridx, gapSize;
             if (right) {
-                ridx = Randomizer.nextInt(acg.getNConvs()-1) + 1;
+                ridx = Randomizer.nextInt(acg.getConvCount()-1) + 1;
                 gapSize = acg.getConversions().get(ridx+1).getStartSite()
                         - acg.getConversions().get(ridx).getEndSite() - 1;
             } else {
-                ridx = Randomizer.nextInt(acg.getNConvs()-1) + 2;
+                ridx = Randomizer.nextInt(acg.getConvCount()-1) + 2;
                 gapSize = acg.getConversions().get(ridx).getStartSite()
                         - acg.getConversions().get(ridx-1).getEndSite() - 1;
             }
             
             Conversion recomb = acg.getConversions().get(ridx);
             
-            logP -= Math.log(1.0/(acg.getNConvs()-1));
+            logP -= Math.log(1.0/(acg.getConvCount()-1));
             
             if (right) {
                 logP += getEdgeAttachmentProb(acg.getConversions().get(ridx+1));
@@ -76,20 +76,20 @@ public class ReplaceConversion extends EdgeCreationOperator {
                 acg.deleteConversion(acg.getConversions().get(ridx-1));
             }
             
-            logP += Math.log(1.0/acg.getNConvs())
+            logP += Math.log(1.0/acg.getConvCount())
                     + Math.log(1.0/(recomb.getEndSite()-recomb.getStartSite()-1))
                     + (gapSize-1)*Math.log(1.0-pRec) + Math.log(pRec);
             
         } else {
             // Add
             
-            if (acg.getNConvs()<1)
+            if (acg.getConvCount()<1)
                 return Double.NEGATIVE_INFINITY;
             
             boolean right = Randomizer.nextBoolean();
-            int ridx = Randomizer.nextInt(acg.getNConvs()) + 1;
+            int ridx = Randomizer.nextInt(acg.getConvCount()) + 1;
             
-            logP -= Math.log(1.0/acg.getNConvs());
+            logP -= Math.log(1.0/acg.getConvCount());
             
             Conversion recomb = acg.getConversions().get(ridx);
             
@@ -122,7 +122,7 @@ public class ReplaceConversion extends EdgeCreationOperator {
             
             acg.addConversion(newConv);
             
-            logP += Math.log(1.0/(acg.getNConvs()-1));
+            logP += Math.log(1.0/(acg.getConvCount()-1));
         }
         
         return logP;

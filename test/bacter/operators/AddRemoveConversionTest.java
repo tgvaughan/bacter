@@ -17,7 +17,6 @@
 
 package bacter.operators;
 
-import bacter.operators.AddRemoveConversion;
 import bacter.Conversion;
 import bacter.model.SimulatedConversionGraph;
 import beast.core.parameter.RealParameter;

@@ -73,6 +73,20 @@ public class RegionList {
     }
 
     /**
+     * @return true if there is a region affected by 2 or more conversions
+     */
+    public boolean hasOverlaps() {
+        updateRegionList();
+
+        for (Region region : regions) {
+            if (region.activeConversions.size()>1)
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Mark the region list as dirty.
      */
     public void makeDirty() {

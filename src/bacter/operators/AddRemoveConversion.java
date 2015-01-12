@@ -50,7 +50,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Add
             
-            logHGF += Math.log(1.0/(acg.getNConvs()+1));
+            logHGF += Math.log(1.0/(acg.getConvCount()+1));
             
             try {
                 logHGF -= drawNewConversion();
@@ -65,16 +65,16 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Remove
             
-            if (acg.getNConvs()==0)
+            if (acg.getConvCount()==0)
                 return Double.NEGATIVE_INFINITY;
             
             // Select conversion to remove:
             Conversion conv = acg.getConversions().get(
-                    Randomizer.nextInt(acg.getNConvs()));
+                    Randomizer.nextInt(acg.getConvCount()));
             
             // Calculate HGF
             logHGF += getConversionProb(conv);
-            logHGF -= Math.log(1.0/acg.getNConvs());
+            logHGF -= Math.log(1.0/acg.getConvCount());
             
             // Remove conversion
             acg.deleteConversion(conv);
@@ -89,7 +89,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
      * new edge and converted region location.
      * 
      * @return log of proposal density 
-     * @throws bacter.operators.RecombinationGraphOperator.ProposalFailed 
+     * @throws bacter.operators.ConversionGraphOperator.ProposalFailed 
      */
     public double drawNewConversion() throws ProposalFailed {
         double logP = 0;
@@ -110,8 +110,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);
         
-        for (int ridx=0; ridx<acg.getNConvs(); ridx++) {
-            Conversion recomb = acg.getConversions().get(ridx);
+        for (Conversion recomb : acg.getConversions()) {
             
             if (z<recomb.getStartSite()-1)
                 break;
@@ -129,7 +128,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         newConversion.setEndSite(newConversion.getStartSite()+convertedLength);
         acg.addConversion(newConversion);
 
-        if (!acg.isValid())
+        // Abort if new conversion creates an overlap.
+        if (acg.hasOverlaps())
             throw new ProposalFailed();
         
         return logP;
@@ -171,7 +171,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         int count = 0;
         
         int l=0;
-        for (int ridx=0; ridx<acg.getNConvs(); ridx++) {
+        for (int ridx=0; ridx<acg.getConvCount(); ridx++) {
             Conversion recomb = acg.getConversions().get(ridx);
             if (recomb == skip)
                 continue;

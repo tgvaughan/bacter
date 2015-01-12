@@ -51,12 +51,12 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
     @Override
     public void log(int nSample, PrintStream out) {
         
-        if (acgInput.get().getNConvs()==0) {
+        if (acgInput.get().getConvCount()==0) {
             out.print("NA\t");
             return;
         }
         
-        for (int r=0; r<acgInput.get().getNConvs(); r++) {
+        for (int r=0; r<acgInput.get().getConvCount(); r++) {
             if (r>0)
                 out.print(",");
 

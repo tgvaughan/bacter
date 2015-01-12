@@ -42,10 +42,10 @@ public class ConvertedRegionShift extends ConversionGraphOperator {
     @Override
     public double proposal() {
         
-        if (acg.getNConvs()<1)
+        if (acg.getConvCount()<1)
             return Double.NEGATIVE_INFINITY;
         
-        int ridx = Randomizer.nextInt(acg.getNConvs()) + 1;
+        int ridx = Randomizer.nextInt(acg.getConvCount()) + 1;
         Conversion recomb = acg.getConversions().get(ridx);
         
         int radius = (int)Math.round(argInput.get().getSequenceLength()
@@ -55,7 +55,7 @@ public class ConvertedRegionShift extends ConversionGraphOperator {
         
         if (delta>0) {
             int maxDelta;
-            if (ridx<acg.getNConvs())
+            if (ridx<acg.getConvCount())
                 maxDelta = acg.getConversions().get(ridx+1).getStartSite() - 2
                         - recomb.getEndSite();
             else

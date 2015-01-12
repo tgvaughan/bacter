@@ -16,21 +16,16 @@
  */
 package bacter.model;
 
-import bacter.model.GCCoalescentApprox;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.evolution.tree.coalescent.TreeIntervals;
 import beast.util.ClusterTree;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

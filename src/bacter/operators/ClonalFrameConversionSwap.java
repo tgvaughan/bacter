@@ -37,11 +37,11 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
     public double proposal() {
         double logHR = 0.0;
 
-        if (acg.getNConvs()==0 || getGapCount()==0)
+        if (acg.getConvCount()==0 || getGapCount()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Choose recombination
-        int ridx = Randomizer.nextInt(acg.getNConvs())+1;
+        int ridx = Randomizer.nextInt(acg.getConvCount())+1;
         Conversion recomb = acg.getConversions().get(ridx);
 
         if (recomb.getNode1()==recomb.getNode2())
@@ -64,14 +64,14 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
     private int getGapCount() {
         int count = 0;
 
-        if (acg.getNConvs()>0 && acg.getConversions().get(1).getStartSite()>0)
+        if (acg.getConvCount()>0 && acg.getConversions().get(1).getStartSite()>0)
             count += 1;
         
-        if (acg.getNConvs()>1)
-            count += acg.getNConvs()-1;
+        if (acg.getConvCount()>1)
+            count += acg.getConvCount()-1;
         
-        if (acg.getNConvs() == 0
-                || acg.getConversions().get(acg.getNConvs()).getEndSite()<acg.getSequenceLength()-1)
+        if (acg.getConvCount() == 0
+                || acg.getConversions().get(acg.getConvCount()).getEndSite()<acg.getSequenceLength()-1)
             count += 1;
         
         return count;
@@ -148,10 +148,10 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
         List<Integer> endSites = Lists.newArrayList();
 
         while (acg.getConversions().size()>1) {
-            Conversion thisRecomb = acg.getConversions().get(acg.getNConvs());
+            Conversion thisRecomb = acg.getConversions().get(acg.getConvCount());
             startSites.add(thisRecomb.getStartSite());
             endSites.add(thisRecomb.getEndSite());
-            acg.deleteConversion(acg.getConversions().get(acg.getNConvs()));
+            acg.deleteConversion(acg.getConversions().get(acg.getConvCount()));
         }
         
         Collections.reverse(startSites);

@@ -34,11 +34,11 @@ public class ConvertedRegionSwap extends ConversionGraphOperator {
     @Override
     public double proposal() {
         
-        if (acg.getNConvs()<2)
+        if (acg.getConvCount()<2)
             return Double.NEGATIVE_INFINITY;
 
         // Select a random pair of recombinations
-        int[] idx = Randomizer.shuffled(acg.getNConvs());
+        int[] idx = Randomizer.shuffled(acg.getConvCount());
         Conversion recomb1 = acg.getConversions().get(idx[0]+1);
         Conversion recomb2 = acg.getConversions().get(idx[1]+1);
         

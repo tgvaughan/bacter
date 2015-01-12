@@ -52,12 +52,12 @@ public class RecombinantEdgeSlide extends ConversionGraphOperator {
         
         double logHR = 0.0;
         
-        if (acg.getNConvs()==0)
+        if (acg.getConvCount()==0)
             return Double.NEGATIVE_INFINITY;
 
         // Select edge at random:
         Conversion recomb = acg.getConversions().get(
-                Randomizer.nextInt(acg.getNConvs())+1);
+                Randomizer.nextInt(acg.getConvCount())+1);
         
         // Decide whether to move departure or arrival point
         boolean moveDeparture = Randomizer.nextBoolean();

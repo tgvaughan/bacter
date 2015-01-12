@@ -32,9 +32,9 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class SimulatedRecombinationGraphTest extends TestBase {
+public class SimulatedConversionGraphTest extends TestBase {
     
-    public SimulatedRecombinationGraphTest() {
+    public SimulatedConversionGraphTest() {
     }
 
     /**
@@ -84,7 +84,7 @@ public class SimulatedRecombinationGraphTest extends TestBase {
                     "populationModel", popFunc,
                     "alignment", alignment);
 
-            meanNRecomb += rgs.getNConvs();
+            meanNRecomb += rgs.getConvCount();
             meanCoalTime += rgs.getRoot().getHeight();
             for (Conversion recomb : rgs.getConversions()) {
                 if (recomb == null)

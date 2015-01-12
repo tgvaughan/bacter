@@ -152,7 +152,7 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
         
         double thisLogP = 0.0;
         
-        List<Conversion> recombs = acg.getConversions();
+        List<Conversion> conversions = acg.getConversions();
         
         double rho = rhoInput.get().getValue();
         double pTractEnd = 1.0/deltaInput.get().getValue();
@@ -164,31 +164,31 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
         // Probability that sequence begins in the clonal frame:
         double pStartCF = 1.0/(pRec/pTractEnd + 1.0);
         
-        if (acg.getNConvs()==0){
+        if (acg.getConvCount()==0){
             // Probability of no recombinations
             thisLogP += Math.log(pStartCF) 
                     + (sequenceLength-1)*Math.log(1.0-pRec);
         } else {
             
             // Contribution from start of sequence up to first recomb region
-            if (recombs.get(0).getStartSite()>0) {
+            if (conversions.get(0).getStartSite()>0) {
                 thisLogP += Math.log(pStartCF)
-                        + (recombs.get(0).getStartSite()-1)*Math.log(1-pRec);
+                        + (conversions.get(0).getStartSite()-1)*Math.log(1-pRec);
             }  else {
                 thisLogP += Math.log(1.0-pStartCF)
                         - Math.log(pRec);
             }
             
             // Contribution from remaining recomb regions and adjacent CF regions
-            for (int ridx=0; ridx<recombs.size(); ridx++) {
-                Conversion recomb = recombs.get(ridx);
+            for (int ridx=0; ridx<conversions.size(); ridx++) {
+                Conversion recomb = conversions.get(ridx);
                 
                 thisLogP += Math.log(pRec)
                         + (recomb.getEndSite() - recomb.getStartSite())*Math.log(1.0-pTractEnd);
                 
-                if (ridx<recombs.size()-1) {
+                if (ridx<conversions.size()-1) {
                     thisLogP += Math.log(pTractEnd)
-                            + (recombs.get(ridx+1).getStartSite()-recomb.getEndSite()-2)
+                            + (conversions.get(ridx+1).getStartSite()-recomb.getEndSite()-2)
                             *Math.log(1.0-pRec);
                 } else {
                     if (recomb.getEndSite()<sequenceLength-1) {

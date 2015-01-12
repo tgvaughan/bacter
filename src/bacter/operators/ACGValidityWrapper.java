@@ -25,12 +25,12 @@ import feast.input.In;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ARGValidityWrapper extends ConversionGraphOperator {
+public class ACGValidityWrapper extends ConversionGraphOperator {
     
     public Input<Operator> operatorInput = new In<Operator>("operator",
             "Operator to follow validity check with.").setRequired();
 
-    public ARGValidityWrapper() { }
+    public ACGValidityWrapper() { }
     
     @Override
     public double proposal() {

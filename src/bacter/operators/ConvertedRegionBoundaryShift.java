@@ -42,11 +42,11 @@ public class ConvertedRegionBoundaryShift extends ConversionGraphOperator {
     @Override
     public double proposal() {
         
-        if (acg.getNConvs()<1)
+        if (acg.getConvCount()<1)
             return Double.NEGATIVE_INFINITY;
         
         // Select random recombination and region edge:
-        int z = Randomizer.nextInt(acg.getNConvs()*2);
+        int z = Randomizer.nextInt(acg.getConvCount()*2);
         int ridx = z/2 + 1;
         Conversion recomb = acg.getConversions().get(ridx);
         boolean moveStart = (z%2 == 0);
@@ -64,7 +64,7 @@ public class ConvertedRegionBoundaryShift extends ConversionGraphOperator {
             currentLocus = recomb.getEndSite();
             minLocus = recomb.getStartSite();
             
-            if (ridx<acg.getNConvs())
+            if (ridx<acg.getConvCount())
                 maxLocus = acg.getConversions().get(ridx+1).getStartSite() - 2;
             else
                 maxLocus = acg.getSequenceLength()-1;

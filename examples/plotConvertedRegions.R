@@ -44,11 +44,11 @@ getTruth <- function(filename) {
 
 getSiteConversionProb <- function(df, seqLen) {
     res <- rep(0, seqLen)
-    for (i in 1:length(df$arg.converted)) {
-        res <-  res + getSiteConversionStatus(df$arg.converted[[i]], seqLen)
+    for (i in 1:length(df$acg.converted)) {
+        res <-  res + getSiteConversionStatus(df$acg.converted[[i]], seqLen)
     }
 
-    return (res/length(df$arg.converted))
+    return (res/length(df$acg.converted))
 }
 
 plotConversionProb <- function(filename, seqLen, truthFile=NA, burnin=0.1) {
@@ -79,7 +79,7 @@ plotConversionProb <- function(filename, seqLen, truthFile=NA, burnin=0.1) {
 plotConvertedSiteTrace <- function(filename, seqLen, maxStates=400, maxSites=200) {
     df <- read.table(filename, as.is=T, header=T)
 
-    Nstates <- length(df$arg.converted)
+    Nstates <- length(df$acg.converted)
     NstatesDS <- min(maxStates, Nstates)
     seqLenDS <- min(maxSites, seqLen)
 
@@ -90,7 +90,7 @@ plotConvertedSiteTrace <- function(filename, seqLen, maxStates=400, maxSites=200
     m <- matrix(ncol=length(sites), nrow=length(states))
     for (i in 1:length(states)) {
         state <- states[i]
-        row <-  getSiteConversionStatus(df$arg.converted[[state]], seqLen)
+        row <-  getSiteConversionStatus(df$acg.converted[[state]], seqLen)
         for (j in 1:length(sites)) {
             site <- sites[j]
             m[i,j] <- row[site]

@@ -50,7 +50,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      */
     public static double getMeanTractLength(ConversionGraph arg) {
         
-        if (arg.getNConvs()<1)
+        if (arg.getConvCount()<1)
             return Double.NaN;
         
         double mean = 0;
@@ -60,7 +60,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             
             mean += recomb.getEndSite()-recomb.getStartSite()+1;
         }
-        mean /= arg.getNConvs();
+        mean /= arg.getConvCount();
         
         return mean;
     }
@@ -74,15 +74,15 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      */
     public static double getMeanInterTractLength(ConversionGraph arg) {
         
-        if (arg.getNConvs()<2)
+        if (arg.getConvCount()<2)
             return Double.NaN;
         
         double mean = 0;
-        for (int ridx=0; ridx<arg.getNConvs()-1; ridx++) {
+        for (int ridx=0; ridx<arg.getConvCount()-1; ridx++) {
             mean += arg.getConversions().get(ridx+1).getStartSite()
                     - arg.getConversions().get(ridx).getEndSite() - 1;
         }
-        mean /= arg.getNConvs()-1;
+        mean /= arg.getConvCount()-1;
         
         return mean;
     }
@@ -95,7 +95,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      */
     public static double getMeanEdgeLength(ConversionGraph arg) {
         
-        if (arg.getNConvs()<1)
+        if (arg.getConvCount()<1)
             return Double.NaN;
         
         double mean = 0.0;
@@ -105,7 +105,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             
             mean += conv.getHeight2()-conv.getHeight1();
         }
-        mean /= arg.getNConvs();
+        mean /= arg.getConvCount();
         
         return mean;
     }
@@ -118,7 +118,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * @return mean height, or NaN if ARG has no recombinant edges
      */
     public static double getMeanDepartureHeight(ConversionGraph arg) {
-        if (arg.getNConvs()<1)
+        if (arg.getConvCount()<1)
             return Double.NaN;
         
         double mean = 0.0;
@@ -128,7 +128,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             
             mean += recomb.getHeight1();
         }
-        mean /= arg.getNConvs();
+        mean /= arg.getConvCount();
         
         return mean;
     }
@@ -152,7 +152,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
     public void log(int nSample, PrintStream out) {
         out.print(arg.getRoot().getHeight() + "\t"
                 + arg.getClonalFrameLength() + "\t"
-                + arg.getNConvs() + "\t"
+                + arg.getConvCount() + "\t"
                 + ConversionGraphStatsLogger.getMeanTractLength(arg) + "\t"
                 + ConversionGraphStatsLogger.getMeanInterTractLength(arg) + "\t"
                 + ConversionGraphStatsLogger.getMeanEdgeLength(arg) + "\t"

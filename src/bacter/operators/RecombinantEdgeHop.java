@@ -34,12 +34,12 @@ public class RecombinantEdgeHop extends ConversionGraphOperator {
     @Override
     public double proposal() {
 
-        if (acg.getNConvs()==0)
+        if (acg.getConvCount()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Select recombination at random
         Conversion recomb = acg.getConversions().get(
-                Randomizer.nextInt(acg.getNConvs())+1);
+                Randomizer.nextInt(acg.getConvCount())+1);
         
         // Choose whether to move departure or arrival point
         boolean moveDeparture;
