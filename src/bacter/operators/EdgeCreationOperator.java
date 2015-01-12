@@ -58,8 +58,6 @@ public abstract class EdgeCreationOperator extends ConversionGraphOperator {
         
         double logP = 0.0;
         
-        List<CFEventList.Event> eventList = acg.getCFEvents();
-        
         // Select departure point
         double u = Randomizer.nextDouble()*acg.getClonalFrameLength();
         logP += Math.log(1.0/acg.getClonalFrameLength());
