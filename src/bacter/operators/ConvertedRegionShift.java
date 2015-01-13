@@ -18,7 +18,6 @@
 package bacter.operators;
 
 import bacter.Conversion;
-import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
@@ -45,7 +44,7 @@ public class ConvertedRegionShift extends ConversionGraphOperator {
         if (acg.getConvCount()<1)
             return Double.NEGATIVE_INFINITY;
         
-        int ridx = Randomizer.nextInt(acg.getConvCount()) + 1;
+        int ridx = Randomizer.nextInt(acg.getConvCount());
         Conversion recomb = acg.getConversions().get(ridx);
         
         int radius = (int)Math.round(argInput.get().getSequenceLength()
@@ -55,7 +54,7 @@ public class ConvertedRegionShift extends ConversionGraphOperator {
         
         if (delta>0) {
             int maxDelta;
-            if (ridx<acg.getConvCount())
+            if (ridx<acg.getConvCount()-1)
                 maxDelta = acg.getConversions().get(ridx+1).getStartSite() - 2
                         - recomb.getEndSite();
             else
@@ -65,7 +64,7 @@ public class ConvertedRegionShift extends ConversionGraphOperator {
                 return Double.NEGATIVE_INFINITY;
         } else {
             int minDelta;
-            if (ridx>1)
+            if (ridx>0)
                 minDelta = acg.getConversions().get(ridx-1).getEndSite() + 2
                         - recomb.getStartSite();
             else
