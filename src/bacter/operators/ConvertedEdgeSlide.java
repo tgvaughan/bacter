@@ -18,7 +18,6 @@
 package bacter.operators;
 
 import bacter.Conversion;
-import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
@@ -30,7 +29,7 @@ import feast.input.In;
  */
 @Description("Operator which moves connection points of recombinant edges "
         + "about on clonal frame.")
-public class RecombinantEdgeSlide extends ConversionGraphOperator {
+public class ConvertedEdgeSlide extends ConversionGraphOperator {
 
     public Input<Double> scaleBoundInput = new In<Double>("scaleBound",
             "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "
@@ -38,7 +37,7 @@ public class RecombinantEdgeSlide extends ConversionGraphOperator {
 
     private double scaleMin, scaleMax;
 
-    public RecombinantEdgeSlide() { }
+    public ConvertedEdgeSlide() { }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -57,7 +56,7 @@ public class RecombinantEdgeSlide extends ConversionGraphOperator {
 
         // Select edge at random:
         Conversion recomb = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount())+1);
+                Randomizer.nextInt(acg.getConvCount()));
         
         // Decide whether to move departure or arrival point
         boolean moveDeparture = Randomizer.nextBoolean();
