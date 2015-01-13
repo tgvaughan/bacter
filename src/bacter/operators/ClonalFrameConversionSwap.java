@@ -41,7 +41,7 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
             return Double.NEGATIVE_INFINITY;
         
         // Choose recombination
-        int ridx = Randomizer.nextInt(acg.getConvCount())+1;
+        int ridx = Randomizer.nextInt(acg.getConvCount());
         Conversion recomb = acg.getConversions().get(ridx);
 
         if (recomb.getNode1()==recomb.getNode2())
@@ -64,14 +64,14 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
     private int getGapCount() {
         int count = 0;
 
-        if (acg.getConvCount()>0 && acg.getConversions().get(1).getStartSite()>0)
+        if (acg.getConvCount()>0 && acg.getConversions().get(0).getStartSite()>0)
             count += 1;
         
         if (acg.getConvCount()>1)
             count += acg.getConvCount()-1;
         
         if (acg.getConvCount() == 0
-                || acg.getConversions().get(acg.getConvCount()).getEndSite()<acg.getSequenceLength()-1)
+                || acg.getConversions().get(acg.getConvCount()-1).getEndSite()<acg.getSequenceLength()-1)
             count += 1;
         
         return count;
@@ -147,11 +147,11 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
         List<Integer> startSites = Lists.newArrayList();
         List<Integer> endSites = Lists.newArrayList();
 
-        while (acg.getConversions().size()>1) {
-            Conversion thisRecomb = acg.getConversions().get(acg.getConvCount());
+        while (acg.getConversions().size()>0) {
+            Conversion thisRecomb = acg.getConversions().get(acg.getConvCount()-1);
             startSites.add(thisRecomb.getStartSite());
             endSites.add(thisRecomb.getEndSite());
-            acg.deleteConversion(acg.getConversions().get(acg.getConvCount()));
+            acg.deleteConversion(acg.getConversions().get(acg.getConvCount()-1));
         }
         
         Collections.reverse(startSites);
@@ -224,7 +224,7 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
         // the clonal frame in x'.  (This excludes the conversion corresponding
         // to the chosen gap in x'.)
         for (Conversion thisRecomb : acg.getConversions()) {
-            if (thisRecomb == null || thisRecomb == recomb)
+            if (thisRecomb == recomb)
                 continue;
             
             logP += getEdgeAttachmentProb(thisRecomb);
