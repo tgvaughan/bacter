@@ -178,7 +178,7 @@ public class SimulatedConversionGraph extends ConversionGraph {
                 public List<String> getBlockLines() {
                     List<String> lines = new ArrayList<>();
                     lines.add("clonalframe " + root.toShortNewick(true));
-                    for (int r = 1; r <= getConvCount(); r++) {
+                    for (int r = 0; r < getConvCount(); r++) {
                         Conversion recomb = getConversions().get(r);
                         lines.add("conversion node1=" + recomb.getNode1().getNr()
                         + " node2=" + recomb.getNode2().getNr()

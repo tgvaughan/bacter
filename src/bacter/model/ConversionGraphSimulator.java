@@ -27,12 +27,12 @@ import java.util.List;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Simulates an ARG - can be used for chain initialization or for "
+@Description("Simulates an ACG - can be used for chain initialization or for "
         + "sampler validation.")
 public class ConversionGraphSimulator extends beast.core.Runnable {
 
-    public Input<SimulatedConversionGraph> simARGInput =
-            new In<SimulatedConversionGraph>("simARG",
+    public Input<SimulatedConversionGraph> simACGInput =
+            new In<SimulatedConversionGraph>("simACG",
                     "Simulated recombination graph.").setRequired();
 
     public Input<Integer> nSimsInput = new In<Integer>("nSims",
@@ -56,7 +56,7 @@ public class ConversionGraphSimulator extends beast.core.Runnable {
         for (int i=0; i<nSimsInput.get(); i++) {
             
             if (i>0)
-                simARGInput.get().initAndValidate();
+                simACGInput.get().initAndValidate();
             
             // Log state
             for (Logger logger : loggersInput.get()) {
