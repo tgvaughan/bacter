@@ -28,7 +28,7 @@ import beast.util.Randomizer;
 @Description("Operator which reverses the nodes that an edge corresponds to "
         + "and the times at which it attaches to the clonal frame leaving "
         + "everything else unchanged.")
-public class RecombinantEdgeFlip extends ConversionGraphOperator {
+public class ConvertedEdgeFlip extends ConversionGraphOperator {
 
     @Override
     public double proposal() {
@@ -37,7 +37,7 @@ public class RecombinantEdgeFlip extends ConversionGraphOperator {
             return Double.NEGATIVE_INFINITY;
         
         Conversion recomb = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount())+1);
+                Randomizer.nextInt(acg.getConvCount()));
         
         Node node1 = recomb.getNode1();
         Node node2 = recomb.getNode2();
