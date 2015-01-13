@@ -54,12 +54,9 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             return Double.NaN;
         
         double mean = 0;
-        for (Conversion recomb : arg.getConversions()) {
-            if (recomb == null)
-                continue;
-            
+        for (Conversion recomb : arg.getConversions())
             mean += recomb.getEndSite()-recomb.getStartSite()+1;
-        }
+
         mean /= arg.getConvCount();
         
         return mean;
@@ -99,12 +96,9 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             return Double.NaN;
         
         double mean = 0.0;
-        for (Conversion conv : arg.getConversions()) {
-            if (conv == null)
-                continue;
-            
+        for (Conversion conv : arg.getConversions())
             mean += conv.getHeight2()-conv.getHeight1();
-        }
+
         mean /= arg.getConvCount();
         
         return mean;
@@ -123,9 +117,6 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
         
         double mean = 0.0;
         for (Conversion recomb : arg.getConversions()) {
-            if (recomb == null)
-                continue;
-            
             mean += recomb.getHeight1();
         }
         mean /= arg.getConvCount();

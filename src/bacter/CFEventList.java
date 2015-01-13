@@ -75,13 +75,13 @@ public class CFEventList {
     /**
      * Ancestral conversion graph this list belongs to.
      */
-    protected ConversionGraph acg;
+    private final ConversionGraph acg;
 
     /**
      * List of events on clonal frame.
      */
-    protected List<Event> events;
-    protected boolean dirty;
+    private final List<Event> events;
+    private boolean dirty;
 
     public CFEventList(ConversionGraph acg) {
         this.acg = acg;

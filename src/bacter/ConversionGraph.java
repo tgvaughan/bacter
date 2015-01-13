@@ -174,13 +174,6 @@ public class ConversionGraph extends Tree {
     }
 
     /**
-     * @return true if there is a region affected by two or more conversions
-     */
-    public boolean hasOverlaps() {
-        return regionList.hasOverlaps();
-    }
-
-    /**
      * Obtain ordered list of events that make up the clonal frame.  Used
      * for ACG probability density calculations and for various state proposal
      * operators.

@@ -128,8 +128,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         newConversion.setEndSite(newConversion.getStartSite()+convertedLength);
         acg.addConversion(newConversion);
 
-        // Abort if new conversion creates an overlap.
-        if (acg.hasOverlaps())
+        // Abort if new conversion creates an invalid region map.
+        if (!regionMapIsValid())
             throw new ProposalFailed();
         
         return logP;

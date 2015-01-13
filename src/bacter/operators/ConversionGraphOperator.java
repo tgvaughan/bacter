@@ -17,7 +17,9 @@
 
 package bacter.operators;
 
+import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.Region;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.evolution.tree.Node;
@@ -54,5 +56,18 @@ public abstract class ConversionGraphOperator extends Operator {
             return parent.getRight();
         else
             return parent.getLeft();
+    }
+
+    /**
+     * @return true if region map is valid under the restricted CO model.
+     */
+    protected boolean regionMapIsValid() {
+        for (int c=0; c<acg.getConversions().size()-1; c++) {
+            Conversion thisConv = acg.getConversions().get(c);
+            Conversion nextConv = acg.getConversions().get(c+1);
+            if (nextConv.getStartSite()-thisConv.getEndSite()<2)
+                return false;
+        }
+        return true;
     }
 }
