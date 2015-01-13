@@ -12,7 +12,7 @@
                  :bacter.util'>
 
   
-  <input spec='SimulatedRecombinationGraph' id='arg'
+  <input spec='SimulatedConversionGraph' id='acg'
          rho="0.0001" delta="50.0" sequenceLength="10000" nTaxa="5">
       <populationModel spec='ConstantPopulation' popSize="1.0"/>
   </input>
@@ -22,15 +22,15 @@
 
   <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
-      <stateNode idref='arg'/>
+      <stateNode idref='acg'/>
     </state>
     
     <distribution spec="CompoundDistribution" id="posterior">
-        <distribution spec='GCCoalescentApprox' id="argPrior">
+        <distribution spec='GCCoalescentApprox' id="acgPrior">
             <rho spec='RealParameter' value="0.0001" id="rho" estimate="false"/>
             <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
-            <arg idref="arg"/>
-            <!--treeIntervals spec='TreeIntervals' tree='@arg'/-->
+            <acg idref="acg"/>
+            <!--treeIntervals spec='TreeIntervals' tree='@acg'/-->
             <!--populationModel spec="ConstantPopulation" popSize="15.0" id="popFunc"/-->
             <populationModel spec="ExponentialGrowth"
                              popSize="10.0" growthRate="0.1"
@@ -38,65 +38,65 @@
         </distribution>
     </distribution>
 
-    <operator id="addRemove" spec="AddRemoveRecombination" weight="1.0">
-        <arg idref="arg"/>
+    <operator id="addRemove" spec="AddRemoveConversion" weight="1.0">
+        <acg idref="acg"/>
         <rho idref="rho"/>
         <delta idref="delta"/>
         <populationModel idref="popFunc"/>
     </operator>
     
-    <operator id="scale" spec="RecombinationGraphScaler" weight="1.0"
+    <operator id="scale" spec="ConversionGraphScaler" weight="1.0"
               scaleFactor="0.8">
-        <arg idref="arg"/>
+        <acg idref="acg"/>
     </operator>
 
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1" id="uniform">
+    <operator spec='ACGValidityWrapper' acg="@acg" weight="1" id="uniform">
         <operator spec='Uniform' weight="10">
-            <tree idref="arg"/>
+            <tree idref="acg"/>
         </operator>
     </operator>
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1" id="STS">
+    <operator spec='ACGValidityWrapper' acg="@acg" weight="1" id="STS">
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1">
-            <tree idref="arg"/>
+            <tree idref="acg"/>
         </operator>
     </operator>
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1" id="STXnarrow">
+    <operator spec='ACGValidityWrapper' acg="@acg" weight="1" id="STXnarrow">
         <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
-            <tree idref="arg"/>
+            <tree idref="acg"/>
         </operator>
     </operator>
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1" id="STXwide">
+    <operator spec='ACGValidityWrapper' acg="@acg" weight="1" id="STXwide">
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
-            <tree idref="arg"/>
+            <tree idref="acg"/>
         </operator>
     </operator>
-    <operator spec='ARGValidityWrapper' arg="@arg" weight="1" id="WB">
+    <operator spec='ACGValidityWrapper' acg="@acg" weight="1" id="WB">
         <operator spec='WilsonBalding' weight="1">
-            <tree idref="arg"/>
+            <tree idref="acg"/>
         </operator>
     </operator>
 
     <logger logEvery="10000">
       <model idref='posterior'/>
       <log idref="posterior"/>
-      <log spec='TreeHeightLogger' tree="@arg"/>
+      <log spec='TreeHeightLogger' tree="@acg"/>
     </logger>
     
     <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
-       <log idref="arg"/>
+       <log idref="acg"/>
      </logger>
      
      <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
-         <log spec="ClonalFrameLogger" arg="@arg"/>
+         <log spec="ClonalFrameLogger" acg="@acg"/>
      </logger>
      
      <logger logEvery="100" fileName="$(filebase).converted">
          <log idref="posterior"/>
-         <log spec="ConvertedRegionLogger" arg="@arg"/>
+         <log spec="ConvertedRegionLogger" acg="@acg"/>
      </logger>
      
      <logger logEvery="100" fileName="$(filebase).stats">
-         <log spec="RecombinationGraphStatsLogger" arg="@arg"/>
+         <log spec="ConversionGraphStatsLogger" acg="@acg"/>
      </logger>
 
   </run>

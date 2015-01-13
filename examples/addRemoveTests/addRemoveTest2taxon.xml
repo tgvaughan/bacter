@@ -20,7 +20,7 @@
 
 
 
-  <run spec="MCMC" id="mcmc" chainLength="10000">
+  <run spec="MCMC" id="mcmc" chainLength="10000000">
     <state>
       <stateNode idref='acg'/>
     </state>
@@ -74,26 +74,26 @@
     </operator>
 -->
 
-    <logger logEvery="1">
+    <logger logEvery="10000">
       <model idref='posterior'/>
       <log idref="posterior"/>
       <log spec='TreeHeightLogger' tree="@acg"/>
     </logger>
     
-    <logger logEvery="1" fileName="$(filebase).trees" mode="tree">
+    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
        <log idref="acg"/>
      </logger>
      
-     <logger logEvery="1" fileName="$(filebase).cf" mode="tree">
+     <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
          <log spec="ClonalFrameLogger" acg="@acg"/>
      </logger>
      
-     <logger logEvery="1" fileName="$(filebase).converted">
+     <logger logEvery="1000" fileName="$(filebase).converted">
          <log idref="posterior"/>
          <log spec="ConvertedRegionLogger" acg="@acg"/>
      </logger>
      
-     <logger logEvery="1" fileName="$(filebase).stats">
+     <logger logEvery="100" fileName="$(filebase).stats">
          <log idref="posterior"/>
          <log spec="ConversionGraphStatsLogger" acg="@acg"/>
      </logger>
