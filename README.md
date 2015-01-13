@@ -28,7 +28,8 @@ Phase 1:
 - [x] Update ARG state node
 - [x] Update existing ARG density, likelihood and simulation code to
        work with the new state
-- [ ] Update operators to work with new state *IN PROGRESS*
+- [x] Update operators to work with new state
+- [ ] Reorganize packages so as to keep code specific to restricted model separate from new code.
 
 Phase 2:
 - [ ] ARG simulator for new model (allow for model misspec analysis)
