@@ -18,7 +18,6 @@
 package bacter.operators;
 
 import bacter.Conversion;
-import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
@@ -27,9 +26,9 @@ import beast.util.Randomizer;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Cause recombinant edge to hop between clonal frame edges.")
-public class RecombinantEdgeHop extends ConversionGraphOperator {
+public class ConvertedEdgeHop extends ConversionGraphOperator {
 
-    public RecombinantEdgeHop() { }
+    public ConvertedEdgeHop() { }
     
     @Override
     public double proposal() {
@@ -39,7 +38,7 @@ public class RecombinantEdgeHop extends ConversionGraphOperator {
         
         // Select recombination at random
         Conversion recomb = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount())+1);
+                Randomizer.nextInt(acg.getConvCount()));
         
         // Choose whether to move departure or arrival point
         boolean moveDeparture;
