@@ -39,8 +39,8 @@ public class ConvertedRegionSwap extends ConversionGraphOperator {
 
         // Select a random pair of recombinations
         int[] idx = Randomizer.shuffled(acg.getConvCount());
-        Conversion recomb1 = acg.getConversions().get(idx[0]+1);
-        Conversion recomb2 = acg.getConversions().get(idx[1]+1);
+        Conversion recomb1 = acg.getConversions().get(idx[0]);
+        Conversion recomb2 = acg.getConversions().get(idx[1]);
         
         // Switch edges corresponding to recombinations.  (Can't switch
         // loci, as this would break ordering constraint.)
