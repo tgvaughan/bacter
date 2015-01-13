@@ -46,7 +46,7 @@ public class ConvertedRegionPairBoundaryShift extends ConversionGraphOperator{
             return Double.NEGATIVE_INFINITY;
         
         // Select random recombination to be left of pair:
-        int ridx = Randomizer.nextInt(acg.getConvCount()-1) + 1;
+        int ridx = Randomizer.nextInt(acg.getConvCount()-1);
         Conversion leftRecomb = acg.getConversions().get(ridx);
         Conversion rightRecomb = acg.getConversions().get(ridx+1);
         
