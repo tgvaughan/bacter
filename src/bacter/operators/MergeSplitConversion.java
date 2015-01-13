@@ -58,42 +58,42 @@ public class MergeSplitConversion extends ConversionGraphOperator {
         if (acg.getConvCount()==0)
             return Double.NEGATIVE_INFINITY;
         
-        // Select recombination
-        Conversion recomb = acg.getConversions()
+        // Select conversion
+        Conversion conv = acg.getConversions()
                 .get(Randomizer.nextInt(acg.getConvCount()));
         logHR -= Math.log(1.0/acg.getConvCount());
         
-        if (recomb.getSiteCount()<3)
+        if (conv.getSiteCount()<3)
             return Double.NEGATIVE_INFINITY;
         
         // Record original end of region:
-        int origEnd = recomb.getEndSite();
+        int origEnd = conv.getEndSite();
         
         // Select split point:
-        int s = recomb.getStartSite()
-                + Randomizer.nextInt(recomb.getSiteCount()-2);
-        logHR -= Math.log(1.0/(double)(recomb.getSiteCount()-2));
+        int s = conv.getStartSite()
+                + Randomizer.nextInt(conv.getSiteCount()-2);
+        logHR -= Math.log(1.0/(double)(conv.getSiteCount()-2));
         
         // Select gap size
         int gap = (int)Randomizer.nextGeometric(gapRate);
         logHR -= gap*Math.log(1.0-gapRate) + Math.log(gapRate);
         
-        if (s + gap + 2 > recomb.getEndSite())
+        if (s + gap + 2 > conv.getEndSite())
             return Double.NEGATIVE_INFINITY;
         
         // Select new departure height
-        double depMin = recomb.getNode1().getHeight();
-        double depMax = recomb.getNode1().getParent().getHeight();
+        double depMin = conv.getNode1().getHeight();
+        double depMax = conv.getNode1().getParent().getHeight();
         double depHeight = depMin + (depMax-depMin)*Randomizer.nextDouble();
         logHR -= Math.log(1.0/(depMax-depMin));
         
         // Select new arrival height
-        double arrMin = recomb.getNode2().getHeight();
+        double arrMin = conv.getNode2().getHeight();
         double arrMax;
-        if (recomb.getNode2().isRoot())
-            arrMax = arrMin + 2.0*(recomb.getHeight2() - arrMin);
+        if (conv.getNode2().isRoot())
+            arrMax = arrMin + 2.0*(conv.getHeight2() - arrMin);
         else
-            arrMax = recomb.getNode2().getParent().getHeight();            
+            arrMax = conv.getNode2().getParent().getHeight();            
 
         double arrHeight = arrMin + (arrMax-arrMin)*Randomizer.nextDouble();
         logHR -= Math.log(1.0/(arrMax-arrMin));
@@ -102,14 +102,14 @@ public class MergeSplitConversion extends ConversionGraphOperator {
             return Double.NEGATIVE_INFINITY;
 
         // Update original recombination
-        recomb.setEndSite(s);
+        conv.setEndSite(s);
         
         // Create new recombination
         Conversion newRecomb = new Conversion();
         newRecomb.setStartSite(s + gap + 2);
         newRecomb.setEndSite(origEnd);
-        newRecomb.setNode1(recomb.getNode1());
-        newRecomb.setNode2(recomb.getNode2());
+        newRecomb.setNode1(conv.getNode1());
+        newRecomb.setNode2(conv.getNode2());
         newRecomb.setHeight1(depHeight);
         newRecomb.setHeight2(arrHeight);
         acg.addConversion(newRecomb);
