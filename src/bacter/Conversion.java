@@ -17,6 +17,7 @@
 package bacter;
 
 import beast.evolution.tree.Node;
+import java.util.Objects;
 
 /**
  * A class representing recombination events that are one-edge
@@ -237,7 +238,7 @@ public class Conversion {
      */
     public void startEditing() {
         if (arg != null)
-            arg.startEditing();
+            arg.startEditing(null);
     }
     
     /**
@@ -281,21 +282,16 @@ public class Conversion {
             return false;
     }
 
-    /**
-     * hashCode compatible with equals()
-     *
-     * @return hash
-     */
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + (this.arg != null ? this.arg.hashCode() : 0);
-        hash = 29 * hash + (this.node1 != null ? this.node1.hashCode() : 0);
-        hash = 29 * hash + (this.node2 != null ? this.node2.hashCode() : 0);
-        hash = 29 * hash + (int) (Double.doubleToLongBits(this.height1) ^ (Double.doubleToLongBits(this.height1) >>> 32));
-        hash = 29 * hash + (int) (Double.doubleToLongBits(this.height2) ^ (Double.doubleToLongBits(this.height2) >>> 32));
-        hash = 29 * hash + (int) (this.startSite ^ (this.startSite >>> 32));
-        hash = 29 * hash + (int) (this.endSite ^ (this.endSite >>> 32));
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this.arg);
+        hash = 67 * hash + Objects.hashCode(this.node1);
+        hash = 67 * hash + Objects.hashCode(this.node2);
+        hash = 67 * hash + (int) (Double.doubleToLongBits(this.height1) ^ (Double.doubleToLongBits(this.height1) >>> 32));
+        hash = 67 * hash + (int) (Double.doubleToLongBits(this.height2) ^ (Double.doubleToLongBits(this.height2) >>> 32));
+        hash = 67 * hash + this.startSite;
+        hash = 67 * hash + this.endSite;
         return hash;
     }
 

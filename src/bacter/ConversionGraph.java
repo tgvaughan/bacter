@@ -19,6 +19,7 @@ package bacter;
 import beast.core.Citation;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.Operator;
 import beast.core.StateNode;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
@@ -113,7 +114,7 @@ public class ConversionGraph extends Tree {
      * @param conv
      */
     public void addConversion(Conversion conv) {
-        startEditing();
+        startEditing(null);
         
         conv.setRecombinationGraph(this);
         
@@ -131,7 +132,7 @@ public class ConversionGraph extends Tree {
      * @param conv recombination to remove.
      */
     public void deleteConversion(Conversion conv) {
-        startEditing();
+        startEditing(null);
         
         convs.remove(conv);
     }
@@ -574,13 +575,10 @@ public class ConversionGraph extends Tree {
         regionList.makeDirty();
     }
 
-
-    /**
-     * Mark statenode as dirty if it belongs to a state.
-     */
-    public void startEditing() {
+    @Override
+    public void startEditing(Operator operator) {
         if (state != null)
-            startEditing(null);
+            super.startEditing(operator);
 
         if (cfEventList != null)
             cfEventList.makeDirty();
@@ -590,8 +588,8 @@ public class ConversionGraph extends Tree {
 
         if (regionList != null)
             regionList.makeDirty();
-    }
-   
+  }
+    
     /*
      * Loggable implementation.
      */

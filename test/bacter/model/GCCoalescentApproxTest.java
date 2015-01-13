@@ -116,5 +116,28 @@ public class GCCoalescentApproxTest extends TestBase {
         logP = coalescent.calculateRecombinantLogP(newRecomb);
         logPtrue = -3.004053776295126;
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+
+        //Add a second recombination event
+        node1 = acg.getExternalNodes().get(2);
+        node2 = node1.getParent();
+        height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
+        startLocus = 300;
+        endLocus = 350;
+        newRecomb = new Conversion(node1, height1, node2, height2,
+                startLocus, endLocus);
+        acg.addConversion(newRecomb);
+
+        // Test converted region probability when one recombination exists
+        logP = coalescent.calculateConvertedRegionMapLogP();
+        logPtrue = -35.41534572339701;
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+        
+        // Test coalescent probability when one recombination exists
+        logP = coalescent.calculateRecombinantLogP(newRecomb);
+        logPtrue = -2.9915099083457677;
+        assertTrue(relativeDiff(logP, logPtrue)<1e-15);
+
     }
+
 }
