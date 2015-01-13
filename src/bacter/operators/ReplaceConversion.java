@@ -50,11 +50,11 @@ public class ReplaceConversion extends EdgeCreationOperator {
             boolean right = Randomizer.nextBoolean();
             int ridx, gapSize;
             if (right) {
-                ridx = Randomizer.nextInt(acg.getConvCount()-1) + 1;
+                ridx = Randomizer.nextInt(acg.getConvCount()-1);
                 gapSize = acg.getConversions().get(ridx+1).getStartSite()
                         - acg.getConversions().get(ridx).getEndSite() - 1;
             } else {
-                ridx = Randomizer.nextInt(acg.getConvCount()-1) + 2;
+                ridx = Randomizer.nextInt(acg.getConvCount()-1) + 1;
                 gapSize = acg.getConversions().get(ridx).getStartSite()
                         - acg.getConversions().get(ridx-1).getEndSite() - 1;
             }
@@ -87,7 +87,7 @@ public class ReplaceConversion extends EdgeCreationOperator {
                 return Double.NEGATIVE_INFINITY;
             
             boolean right = Randomizer.nextBoolean();
-            int ridx = Randomizer.nextInt(acg.getConvCount()) + 1;
+            int ridx = Randomizer.nextInt(acg.getConvCount());
             
             logP -= Math.log(1.0/acg.getConvCount());
             
