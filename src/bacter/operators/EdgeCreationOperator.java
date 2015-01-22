@@ -17,6 +17,7 @@
 
 package bacter.operators;
 
+import bacter.operators.ConversionGraphOperator;
 import bacter.CFEventList;
 import bacter.Conversion;
 import beast.core.Input;

@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bacter.operators;
+package bacter.operators.restricted;
 
+import bacter.operators.EdgeCreationOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;

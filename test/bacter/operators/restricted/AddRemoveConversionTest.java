@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.operators;
+package bacter.operators.restricted;
 
+import bacter.operators.restricted.AddRemoveConversion;
 import bacter.Conversion;
 import bacter.model.SimulatedConversionGraph;
 import beast.core.parameter.RealParameter;

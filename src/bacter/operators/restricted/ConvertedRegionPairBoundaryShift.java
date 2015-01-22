@@ -1,6 +1,7 @@
-package bacter.operators;
+package bacter.operators.restricted;
 
 
+import bacter.operators.ConversionGraphOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;

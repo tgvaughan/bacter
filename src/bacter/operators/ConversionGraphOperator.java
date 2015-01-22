@@ -37,7 +37,9 @@ public abstract class ConversionGraphOperator extends Operator {
     
     protected ConversionGraph acg;
 
-    protected class ProposalFailed extends Exception { };
+    protected class ProposalFailed extends Exception {
+        public ProposalFailed() { }
+    };
 
     @Override
     public void initAndValidate() throws Exception {

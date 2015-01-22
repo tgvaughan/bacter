@@ -66,14 +66,19 @@ public class GCCoalescentApprox extends ConversionGraphDistribution {
     
     @Override
     public double calculateLogP() throws Exception {
-        
-        logP = calculateClonalFrameLogP();
-        
-        for (Conversion conv : acg.getConversions())
+
+        if (acg.isValid()) {
+            
+            logP = calculateClonalFrameLogP();
+            
+            for (Conversion conv : acg.getConversions())
                 logP += calculateRecombinantLogP(conv);
-        
-        logP += calculateConvertedRegionMapLogP();
-        
+            
+            logP += calculateConvertedRegionMapLogP();
+        } else {
+            logP = Double.NEGATIVE_INFINITY;
+        }
+            
         return logP;        
     }
 
