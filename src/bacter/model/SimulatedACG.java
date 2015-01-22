@@ -42,8 +42,8 @@ import java.util.List;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Simulates an ARG - can be used for chain initialization or for "
-        + "sampler validation.")
+@Description("Simulates an ARG under the full ClonalOrigin model - can be used"
+    + " for chain initialization or for sampler validation.")
 public class SimulatedACG extends ConversionGraph {
 
     public Input<Double> rhoInput = new In<Double>("rho",
@@ -248,29 +248,25 @@ public class SimulatedACG extends ConversionGraph {
     private void generateConversions() {
 
         // Draw number of conversions:
-        int Nconv = (int) Randomizer.nextPoisson(0.5*rho*
-                getClonalFrameLength()*getClonalFrameSiteCount());
+        int Nconv = (int) Randomizer.nextPoisson(rho*getClonalFrameLength()*
+            (getSequenceLength()+delta));
 
         // Generate conversions:
         for (int i=0; i<Nconv; i++) {
-           int site = Randomizer.nextInt(getSequenceLength());
-           int length = (int)Randomizer.nextGeometric(1.0/delta);
-           int startSite, endSite;
+            int startSite, endSite;
+            double u = Randomizer.nextDouble()*(delta + getSequenceLength());
+            if (Randomizer.nextDouble()<delta) {
+                startSite = 0;
+            } else {
+                startSite = (int)(u-delta);
+            }
+            endSite = startSite + (int)Randomizer.nextGeometric(1.0/delta);
+            endSite = Math.max(endSite, getSequenceLength()-1);
 
-           if (Randomizer.nextBoolean()) {
-               // Conversion extends to RIGHT of start:
-               startSite = site;
-               endSite = Math.min(startSite + length - 1, getSequenceLength()-1);
-           } else {
-               // Conversion extends to LEFT of start:
-               endSite = site;
-               startSite = Math.max(endSite - length + 1, 0);
-           }
-
-           Conversion conv = new Conversion();
-           conv.setStartSite(startSite);
-           conv.setEndSite(endSite);
-           associateConversionWithCF(conv);
+            Conversion conv = new Conversion();
+            conv.setStartSite(startSite);
+            conv.setEndSite(endSite);
+            associateConversionWithCF(conv);
         }
     }
     
