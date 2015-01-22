@@ -67,7 +67,7 @@ public class SimulatedAlignmentTest extends TestBase {
         // Simulate alignment:
         SimulatedAlignment alignment = new SimulatedAlignment();
         alignment.initByName(
-                "arg", acg,
+                "acg", acg,
                 "siteModel", siteModel,
                 "outputFileName", "simulated_alignment.nexus",
                 "useNexus", true);
