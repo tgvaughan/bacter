@@ -17,7 +17,7 @@
 
 package bacter.operators.restricted;
 
-import bacter.operators.ConversionGraphOperator;
+import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
@@ -30,7 +30,7 @@ import feast.input.In;
  */
 @Description("Operator which moves one edge of the alignment region affected "
         + "by a randomly-selected conversion event.")
-public class ConvertedRegionBoundaryShift extends ConversionGraphOperator {
+public class ConvertedRegionBoundaryShift extends ACGOperator {
 
     public Input<Double> apertureSizeInput = new In<Double>(
             "apertureSize",

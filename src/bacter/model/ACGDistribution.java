@@ -15,31 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.operators;
+package bacter.model;
 
-import beast.core.Input;
-import beast.core.Operator;
-import feast.input.In;
+import beast.core.Distribution;
 
 /**
- *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ACGValidityWrapper extends ACGOperator {
-    
-    public Input<Operator> operatorInput = new In<Operator>("operator",
-            "Operator to follow validity check with.").setRequired();
-
-    public ACGValidityWrapper() { }
-    
-    @Override
-    public double proposal() {
-        double logP = operatorInput.get().proposal();
-        
-        if (!acg.isValid())
-            return Double.NEGATIVE_INFINITY;
-        
-        return logP;
-    }
+public abstract class ACGDistribution extends Distribution {
     
 }

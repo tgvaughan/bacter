@@ -19,7 +19,7 @@ package bacter.operators.restricted;
 
 import bacter.operators.restricted.AddRemoveConversion;
 import bacter.Conversion;
-import bacter.model.restricted.SimulatedConversionGraph;
+import bacter.model.restricted.SimulatedRestrictedACG;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;
@@ -49,7 +49,7 @@ public class AddRemoveConversionTest {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        SimulatedConversionGraph acg = new SimulatedConversionGraph();
+        SimulatedRestrictedACG acg = new SimulatedRestrictedACG();
         acg.initByName(
                 "rho", 1.0/10000,
                 "delta", 50.0,

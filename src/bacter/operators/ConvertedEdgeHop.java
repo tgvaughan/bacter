@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.operators.ConversionGraphOperator;
+import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.evolution.tree.Node;
@@ -27,7 +27,7 @@ import beast.util.Randomizer;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Cause recombinant edge to hop between clonal frame edges.")
-public class ConvertedEdgeHop extends ConversionGraphOperator {
+public class ConvertedEdgeHop extends ACGOperator {
 
     public ConvertedEdgeHop() { }
     

@@ -16,7 +16,7 @@
  */
 package bacter.model;
 
-import bacter.model.restricted.GCCoalescentApprox;
+import bacter.model.restricted.RestrictedACGCoalescent;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.TestBase;
@@ -80,7 +80,7 @@ public class GCCoalescentApproxTest extends TestBase {
         popFunction.initByName("popSize", new RealParameter("15.0"));
         
         // Coalescent
-        GCCoalescentApprox coalescent = new GCCoalescentApprox();
+        RestrictedACGCoalescent coalescent = new RestrictedACGCoalescent();
         coalescent.initByName(
                 "acg", acg,
                 "populationModel", popFunction,

@@ -43,12 +43,12 @@ import java.util.List;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("An alignment produced by simulating sequence evolution down an ARG.")
+@Description("An alignment produced by simulating sequence evolution down an ACG.")
 public class SimulatedAlignment extends Alignment {
     
-    public Input<ConversionGraph> argInput = new In<ConversionGraph>(
-            "arg",
-            "Recombination graph down which to simulate evolution.")
+    public Input<ConversionGraph> acgInput = new In<ConversionGraph>(
+            "acg",
+            "Conversions graph down which to simulate evolution.")
             .setRequired();
     
     public Input<SiteModel> siteModelInput = new In<SiteModel>(
@@ -62,7 +62,7 @@ public class SimulatedAlignment extends Alignment {
     public Input<Boolean> useNexusInput = new In<Boolean>("useNexus",
             "Use Nexus format to write alignment file.").setDefault(false);
     
-    private ConversionGraph arg;
+    private ConversionGraph acg;
     private SiteModel siteModel;
     private DataType dataType;
     
@@ -73,7 +73,7 @@ public class SimulatedAlignment extends Alignment {
     @Override
     public void initAndValidate() throws Exception {
 
-        arg = argInput.get();
+        acg = acgInput.get();
         siteModel = siteModelInput.get();
 
         // We can't wait for Alignment.initAndValidate() to get the
@@ -90,7 +90,7 @@ public class SimulatedAlignment extends Alignment {
             PrintStream pstream = new PrintStream(outputFileNameInput.get());
             if (useNexusInput.get()) {
                 NexusBuilder nb = new NexusBuilder();
-                nb.append(new TaxaBlock(arg.getTaxonset()));
+                nb.append(new TaxaBlock(acg.getTaxonset()));
                 nb.append(new CharactersBlock(this));
                 nb.write(pstream);
             } else
@@ -102,8 +102,8 @@ public class SimulatedAlignment extends Alignment {
      * Perform actual sequence simulation.
      */
     private void simulate() throws Exception {
-        Node cfRoot = arg.getRoot();
-        int nTaxa = arg.getLeafNodeCount();
+        Node cfRoot = acg.getRoot();
+        int nTaxa = acg.getLeafNodeCount();
         
         double[] categoryProbs = siteModel.getCategoryProportions(cfRoot);
 
@@ -111,12 +111,12 @@ public class SimulatedAlignment extends Alignment {
         int nStates = dataType.getStateCount();
         double[][] transitionProbs = new double[nCategories][nStates*nStates];
         
-        int[][] alignment = new int[nTaxa][arg.getSequenceLength()];
+        int[][] alignment = new int[nTaxa][acg.getSequenceLength()];
         
-        for (Region region : arg.getRegions()) {
+        for (Region region : acg.getRegions()) {
             int thisLength = region.getRegionLength();
 
-            MarginalTree marginalTree = new MarginalTree(arg, region);
+            MarginalTree marginalTree = new MarginalTree(acg, region);
             
             int[] categories = new int[thisLength];
             for (int i=0; i<thisLength; i++)
@@ -153,7 +153,7 @@ public class SimulatedAlignment extends Alignment {
         
         for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
             String sSeq = dataType.state2string(alignment[leafIdx]);
-            String sTaxon = arg.getNode(leafIdx).getID();
+            String sTaxon = acg.getNode(leafIdx).getID();
             sequenceInput.setValue(new Sequence(sTaxon, sSeq), this);
         }
     }

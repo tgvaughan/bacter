@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.operators.ConversionGraphOperator;
+import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
@@ -30,7 +30,7 @@ import feast.input.In;
  */
 @Description("Operator which moves connection points of recombinant edges "
         + "about on clonal frame.")
-public class ConvertedEdgeSlide extends ConversionGraphOperator {
+public class ConvertedEdgeSlide extends ACGOperator {
 
     public Input<Double> scaleBoundInput = new In<Double>("scaleBound",
             "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "

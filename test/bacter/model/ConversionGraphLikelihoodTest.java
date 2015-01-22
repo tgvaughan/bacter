@@ -16,7 +16,7 @@
  */
 package bacter.model;
 
-import bacter.model.restricted.SimulatedConversionGraph;
+import bacter.model.restricted.SimulatedRestrictedACG;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.MarginalTree;
@@ -67,7 +67,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         
         // Likelihood
         
-        ConversionGraphLikelihood argLikelihood = new ConversionGraphLikelihood();
+        ACGLikelihood argLikelihood = new ACGLikelihood();
         argLikelihood.initByName(
                 "data", alignment,
                 "arg", arg,
@@ -128,7 +128,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        ConversionGraph arg = new SimulatedConversionGraph();
+        ConversionGraph arg = new SimulatedRestrictedACG();
         arg.initByName(
                 "rho", 5.0,
                 "delta", 1000.0,
@@ -155,7 +155,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
                 "useNexus", true);
         
         // Calculate likelihood:
-        ConversionGraphLikelihood argLikelihood = new ConversionGraphLikelihood();
+        ACGLikelihood argLikelihood = new ACGLikelihood();
         argLikelihood.initByName(
                 "data", alignment,
                 "arg", arg,

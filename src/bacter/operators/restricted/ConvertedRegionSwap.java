@@ -17,7 +17,7 @@
 
 package bacter.operators.restricted;
 
-import bacter.operators.ConversionGraphOperator;
+import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.evolution.tree.Node;
@@ -28,7 +28,7 @@ import beast.util.Randomizer;
  */
 @Description("Selects a pair of conversion events and swaps the recombinations"
         + "they correspond to.")
-public class ConvertedRegionSwap extends ConversionGraphOperator {
+public class ConvertedRegionSwap extends ACGOperator {
 
     public ConvertedRegionSwap() { }
     

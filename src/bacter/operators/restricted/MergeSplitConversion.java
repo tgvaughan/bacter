@@ -17,7 +17,7 @@
 
 package bacter.operators.restricted;
 
-import bacter.operators.ConversionGraphOperator;
+import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
@@ -29,7 +29,7 @@ import feast.input.In;
  */
 @Description("Operator which in one direction splits an existing recombination "
         + "in two and in the other merges two adjacent recombinations.")
-public class MergeSplitConversion extends ConversionGraphOperator {
+public class MergeSplitConversion extends ACGOperator {
     
     public Input<Double> gapSizeInput = new In<Double>("expectedGapSize",
             "Expected gap size.").setDefault(10.0);

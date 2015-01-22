@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.operators.ConversionGraphOperator;
+import bacter.operators.ACGOperator;
 import bacter.CFEventList;
 import bacter.Conversion;
 import beast.core.Input;
@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public abstract class EdgeCreationOperator extends ConversionGraphOperator {
+public abstract class EdgeCreationOperator extends ACGOperator {
     
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "Model of population size through time.").setRequired();

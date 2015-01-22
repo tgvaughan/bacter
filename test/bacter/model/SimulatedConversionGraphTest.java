@@ -17,7 +17,7 @@
 
 package bacter.model;
 
-import bacter.model.restricted.SimulatedConversionGraph;
+import bacter.model.restricted.SimulatedRestrictedACG;
 import bacter.Conversion;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
@@ -68,7 +68,7 @@ public class SimulatedConversionGraphTest extends TestBase {
                 "datatype", "nucleotide"
         );
         
-        SimulatedConversionGraph rgs = new SimulatedConversionGraph();
+        SimulatedRestrictedACG rgs = new SimulatedRestrictedACG();
         
         int nIter = 100000;
         double meanNRecomb = 0.0;

@@ -17,7 +17,7 @@
 
 package bacter.operators;
 
-import bacter.operators.ConversionGraphOperator;
+import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.evolution.tree.Node;
@@ -29,7 +29,7 @@ import beast.util.Randomizer;
 @Description("Operator which reverses the nodes that an edge corresponds to "
         + "and the times at which it attaches to the clonal frame leaving "
         + "everything else unchanged.")
-public class ConvertedEdgeFlip extends ConversionGraphOperator {
+public class ConvertedEdgeFlip extends ACGOperator {
 
     @Override
     public double proposal() {

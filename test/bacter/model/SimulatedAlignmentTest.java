@@ -17,7 +17,7 @@
 
 package bacter.model;
 
-import bacter.model.restricted.SimulatedConversionGraph;
+import bacter.model.restricted.SimulatedRestrictedACG;
 import bacter.ConversionGraph;
 import bacter.MarginalTree;
 import bacter.Region;
@@ -46,7 +46,7 @@ public class SimulatedAlignmentTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        ConversionGraph acg = new SimulatedConversionGraph();
+        ConversionGraph acg = new SimulatedRestrictedACG();
         acg.initByName(
                 "rho", 5.0/10000,
                 "delta", 1000.0,
