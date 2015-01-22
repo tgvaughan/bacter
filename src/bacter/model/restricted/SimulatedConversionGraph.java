@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.model;
+package bacter.model.restricted;
 
 import bacter.CFEventList;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
+import beast.core.parameter.IntegerParameter;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
@@ -47,7 +48,7 @@ import java.util.List;
 public class SimulatedConversionGraph extends ConversionGraph {
 
     public Input<Double> rhoInput = new In<Double>("rho",
-            "Conversion rate parameter.").setRequired();
+            "Recombination rate parameter.").setRequired();
     
     public Input<Double> deltaInput = new In<Double>("delta",
             "Tract length parameter.").setRequired();
@@ -61,7 +62,14 @@ public class SimulatedConversionGraph extends ConversionGraph {
     
     public Input<Tree> clonalFrameInput = In.create("clonalFrame",
             "Optional tree specifying fixed clonal frame.");
-
+    
+    public Input<IntegerParameter> mapInput = In.create(
+            "recombinationMap", "Optional sequence of integers specifying "
+                    + "sites affected by recombination events.  Fixes the "
+                    + "total number of recombination events and the sites "
+                    + "they affect, leaving only the clonal frame and "
+                    + "recombinant edges to be simulated.");
+    
     public Input<String> outputFileNameInput = In.create("outputFileName",
             "If provided, simulated ARG is additionally written to this file.");
 
@@ -121,7 +129,29 @@ public class SimulatedConversionGraph extends ConversionGraph {
         initArrays();
         
         // Generate recombinations
-        generateConversions();
+        if (mapInput.get() == null)
+            generateRecombinations();
+        else {
+            // Read recombination map directly from input
+            if (mapInput.get().getDimension()%2 != 0)
+                throw new IllegalArgumentException(
+                        "Map must contain an even number of site indices.");
+            
+            for (int i=0; i<mapInput.get().getDimension()/2; i++) {
+                int start = mapInput.get().getValue(i*2);
+                int end = mapInput.get().getValue(i*2 + 1);
+                if (end<start)
+                    throw new IllegalArgumentException(
+                            "Map site index pairs i,j must satisfy j>=i.");
+                
+                Conversion recomb = new Conversion();
+                recomb.setStartSite(mapInput.get().getValue(i*2));
+                recomb.setEndSite(mapInput.get().getValue(i*2 + 1));
+                
+                associateRecombinationWithCF(recomb);
+                addConversion(recomb);
+            }
+        }
         
         // Write output file
         if (outputFileNameInput.get() != null) {
@@ -159,13 +189,13 @@ public class SimulatedConversionGraph extends ConversionGraph {
                     return lines;
                 }
             });
-
+            
             try (PrintStream pstream = new PrintStream(outputFileNameInput.get())) {
                 nexusBuilder.write(pstream);
             }
         }
     }
-
+    
     /**
      * Use coalescent model to simulate clonal frame.
      */
@@ -245,32 +275,56 @@ public class SimulatedConversionGraph extends ConversionGraph {
         setRoot(activeNodes.get(0));
     }
     
-    private void generateConversions() {
+    /**
+     * Uses a discrete two-state Markov process to generate the list of
+     * converted segments along the sequence.
+     */
+    private void generateRecombinations() {
+        
+        double pRec = 1.0 - Math.exp(-0.5*rho*getClonalFrameLength());
+        double pTractEnd = 1.0/delta;
+        double p0cf = 1.0/(1.0 + pRec*delta);
+        
+        // Check for zero recombination rate (used sometimes for testing)
+        if (pRec==0.0)
+            return;
+        
+        int l; // next available convertible locus
+        if (Randomizer.nextDouble()>p0cf) {
+            Conversion recomb = new Conversion();
+            recomb.setStartSite(0);
+            int tractEndSite = (int)Randomizer.nextGeometric(pTractEnd);
+            recomb.setEndSite(Math.min(tractEndSite, getSequenceLength()-1));
+            associateRecombinationWithCF(recomb);
+            addConversion(recomb);
+            
+            l = tractEndSite + 2;
+        } else
+            l = 1;
+        
+        if (l>=getSequenceLength())
+            return;
+        
+        while (true) {
+            l += Randomizer.nextGeometric(pRec);
 
-        // Draw number of conversions:
-        int Nconv = (int) Randomizer.nextPoisson(0.5*rho*
-                getClonalFrameLength()*getClonalFrameSiteCount());
+            if (l>=getSequenceLength())
+                break;
+            
+            Conversion recomb = new Conversion();
 
-        // Generate conversions:
-        for (int i=0; i<Nconv; i++) {
-           int site = Randomizer.nextInt(getSequenceLength());
-           int length = (int)Randomizer.nextGeometric(1.0/delta);
-           int startSite, endSite;
+            recomb.setStartSite(l);
+            l += Randomizer.nextGeometric(pTractEnd);
+            recomb.setEndSite(Math.min(l, getSequenceLength()-1));
 
-           if (Randomizer.nextBoolean()) {
-               // Conversion extends to RIGHT of start:
-               startSite = site;
-               endSite = Math.min(startSite + length - 1, getSequenceLength()-1);
-           } else {
-               // Conversion extends to LEFT of start:
-               endSite = site;
-               startSite = Math.max(endSite - length + 1, 0);
-           }
-
-           Conversion conv = new Conversion();
-           conv.setStartSite(startSite);
-           conv.setEndSite(endSite);
-           associateConversionWithCF(conv);
+            associateRecombinationWithCF(recomb);
+            addConversion(recomb);
+            
+            // The next site at which a conversion can begin
+            l += 2;
+            
+            if (l>=getSequenceLength())
+                break;
         }
     }
     
@@ -280,7 +334,7 @@ public class SimulatedConversionGraph extends ConversionGraph {
      * 
      * @param recomb recombination to associate
      */
-    private void associateConversionWithCF(Conversion recomb) {
+    private void associateRecombinationWithCF(Conversion recomb) {
     
         List<CFEventList.Event> eventList = getCFEvents();
 

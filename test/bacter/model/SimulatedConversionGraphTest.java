@@ -17,7 +17,7 @@
 
 package bacter.model;
 
-import bacter.model.SimulatedConversionGraph;
+import bacter.model.restricted.SimulatedConversionGraph;
 import bacter.Conversion;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;

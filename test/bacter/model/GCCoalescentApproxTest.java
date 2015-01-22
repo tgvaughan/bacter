@@ -16,6 +16,7 @@
  */
 package bacter.model;
 
+import bacter.model.restricted.GCCoalescentApprox;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.TestBase;

@@ -19,7 +19,7 @@ package bacter.operators.restricted;
 
 import bacter.operators.restricted.AddRemoveConversion;
 import bacter.Conversion;
-import bacter.model.SimulatedConversionGraph;
+import bacter.model.restricted.SimulatedConversionGraph;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;
