@@ -69,7 +69,7 @@ public class ACGCoalescent extends ACGDistribution {
     public double calculateLogP() throws Exception {
 
         if (acg.isValid()) {
-            
+
             logP = calculateClonalFrameLogP();
 
             // Probability of conversion count:
@@ -78,14 +78,14 @@ public class ACGCoalescent extends ACGDistribution {
                 *(acg.getSequenceLength()+deltaInput.get().getValue());
             logP += -poissonMean + acg.getConvCount()*Math.log(poissonMean)
                 - GammaFunction.lnGamma(acg.getConvCount()+1);
-            
+
             for (Conversion conv : acg.getConversions())
                 logP += calculateConversionLogP(conv);
             
         } else {
             logP = Double.NEGATIVE_INFINITY;
         }
-            
+
         return logP;        
     }
 
@@ -148,6 +148,23 @@ public class ACGCoalescent extends ACGDistribution {
         
         // Probability of single coalescence event
         thisLogP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
+
+        // Probability of start site:
+        if (recomb.getStartSite()==0)
+            thisLogP += Math.log((deltaInput.get().getValue() + 1)
+                /(deltaInput.get().getValue() + acg.getSequenceLength()));
+        else
+            thisLogP += Math.log(1.0/(deltaInput.get().getValue()
+                + acg.getSequenceLength()));
+
+        // Probability of end site:
+        int length = recomb.getStartSite() - recomb.getEndSite() + 1;
+        double probEnd = (length-1)*Math.log(1.0-1.0/deltaInput.get().getValue())
+            + Math.log(1.0/deltaInput.get().getValue());
+        
+        // TODO: Include probability of going past the end:
+        //if (recomb.getEndSite() == acg.getSequenceLength()-1)
+        //    probEnd += 
         
         return thisLogP;
     }
