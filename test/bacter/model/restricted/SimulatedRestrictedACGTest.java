@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.model;
+package bacter.model.restricted;
 
-import bacter.model.restricted.SimulatedRestrictedACG;
 import bacter.Conversion;
 import bacter.TestBase;
 import beast.core.parameter.RealParameter;
@@ -32,9 +31,9 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class SimulatedConversionGraphTest extends TestBase {
+public class SimulatedRestrictedACGTest extends TestBase {
     
-    public SimulatedConversionGraphTest() {
+    public SimulatedRestrictedACGTest() {
     }
 
     /**

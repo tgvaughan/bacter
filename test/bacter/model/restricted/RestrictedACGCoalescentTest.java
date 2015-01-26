@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bacter.model;
+package bacter.model.restricted;
 
-import bacter.model.restricted.RestrictedACGCoalescent;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.TestBase;
@@ -36,9 +35,9 @@ import static org.junit.Assert.*;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class GCCoalescentApproxTest extends TestBase {
+public class RestrictedACGCoalescentTest extends TestBase {
     
-    public GCCoalescentApproxTest() {
+    public RestrictedACGCoalescentTest() {
     }
     
     /**
