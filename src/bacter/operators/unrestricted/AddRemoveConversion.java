@@ -113,7 +113,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         }
 
         endSite = startSite + (int)Randomizer.nextGeometric(1.0/deltaInput.get().getValue());
-        endSite = Math.max(endSite, acg.getSequenceLength()-1);
+        endSite = Math.min(endSite, acg.getSequenceLength()-1);
 
         // Probability of end site:
         int length = startSite - endSite + 1;

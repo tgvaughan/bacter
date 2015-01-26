@@ -47,7 +47,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * Obtain mean length of converted regions described by ACG.
      * 
      * @param acg
-     * @return mean length, or NaN if ACG has no recombinant edges.
+     * @return mean length, or NaN if ACG has no converted edges.
      */
     public static double getMeanTractLength(ConversionGraph acg) {
         
@@ -55,8 +55,8 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             return Double.NaN;
         
         double mean = 0;
-        for (Conversion recomb : acg.getConversions())
-            mean += recomb.getEndSite()-recomb.getStartSite()+1;
+        for (Conversion conv : acg.getConversions())
+            mean += conv.getEndSite()-conv.getStartSite()+1;
 
         mean /= acg.getConvCount();
         
@@ -117,10 +117,10 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
     }
 
     /**
-     * Obtain mean length of recombinant edges in ACG.
+     * Obtain mean length of converted edges in ACG.
      * 
      * @param acg
-     * @return mean length, or NaN if ACG has no recombinant edges
+     * @return mean length, or NaN if ACG has no converted edges
      */
     public static double getMeanEdgeLength(ConversionGraph acg) {
         
@@ -137,19 +137,19 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
     }
     
     /**
-     * Obtain mean height of point of departure of recombinant edges
+     * Obtain mean height of point of departure of converted edges
      * in ACG.
      * 
      * @param acg
-     * @return mean height, or NaN if ACG has no recombinant edges
+     * @return mean height, or NaN if ACG has no converted edges
      */
     public static double getMeanDepartureHeight(ConversionGraph acg) {
         if (acg.getConvCount()<1)
             return Double.NaN;
         
         double mean = 0.0;
-        for (Conversion recomb : acg.getConversions()) {
-            mean += recomb.getHeight1();
+        for (Conversion conv : acg.getConversions()) {
+            mean += conv.getHeight1();
         }
         mean /= acg.getConvCount();
         
