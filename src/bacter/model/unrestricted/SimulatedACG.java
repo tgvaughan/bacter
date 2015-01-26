@@ -255,18 +255,19 @@ public class SimulatedACG extends ConversionGraph {
         for (int i=0; i<Nconv; i++) {
             int startSite, endSite;
             double u = Randomizer.nextDouble()*(delta + getSequenceLength());
-            if (Randomizer.nextDouble()<delta) {
+            if (u<delta) {
                 startSite = 0;
             } else {
                 startSite = (int)(u-delta);
             }
             endSite = startSite + (int)Randomizer.nextGeometric(1.0/delta);
-            endSite = Math.max(endSite, getSequenceLength()-1);
+            endSite = Math.min(endSite, getSequenceLength()-1);
 
             Conversion conv = new Conversion();
             conv.setStartSite(startSite);
             conv.setEndSite(endSite);
             associateConversionWithCF(conv);
+            addConversion(conv);
         }
     }
     
@@ -274,9 +275,9 @@ public class SimulatedACG extends ConversionGraph {
      * Associates recombination with the clonal frame, selecting points of
      * departure and coalescence.
      * 
-     * @param recomb recombination to associate
+     * @param conv recombination to associate
      */
-    private void associateConversionWithCF(Conversion recomb) {
+    private void associateConversionWithCF(Conversion conv) {
     
         List<CFEventList.Event> eventList = getCFEvents();
 
@@ -298,8 +299,8 @@ public class SimulatedACG extends ConversionGraph {
                                 && node.getParent().getHeight()>event.getHeight()) {
                             
                             if (u<interval) {
-                                recomb.setNode1(node);
-                                recomb.setHeight1(event.getHeight() + u);
+                                conv.setNode1(node);
+                                conv.setHeight1(event.getHeight() + u);
                                 break;
                             } else
                                 u -= interval;
@@ -313,7 +314,7 @@ public class SimulatedACG extends ConversionGraph {
             }
             
             if (started) {
-                double t = Math.max(event.getHeight(), recomb.getHeight1());
+                double t = Math.max(event.getHeight(), conv.getHeight1());
 
                 double intervalArea;
                 if (eidx<eventList.size()-1) {
@@ -327,7 +328,7 @@ public class SimulatedACG extends ConversionGraph {
 
                     double tauEnd = popFunc.getIntensity(t) + u/event.getLineageCount();
                     double tEnd = popFunc.getInverseIntensity(tauEnd);
-                    recomb.setHeight2(tEnd);                    
+                    conv.setHeight2(tEnd);                    
                     
                     // Choose particular lineage to attach to
                     int nodeNumber = Randomizer.nextInt(event.getLineageCount());
@@ -336,7 +337,7 @@ public class SimulatedACG extends ConversionGraph {
                                 && (node.isRoot() || node.getParent().getHeight()>event.getHeight())) {
                             
                             if (nodeNumber == 0) {
-                                recomb.setNode2(node);
+                                conv.setNode2(node);
                                 break;
                             } else
                                 nodeNumber -= 1;

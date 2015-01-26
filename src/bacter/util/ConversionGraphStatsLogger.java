@@ -19,6 +19,7 @@ package bacter.util;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.Region;
 import beast.core.CalculationNode;
 import beast.core.Input;
 import beast.core.Input.Validate;
@@ -35,91 +36,122 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             "acg", "Conversion graph to calculate summary statistics from.",
             Validate.REQUIRED);
     
-    private ConversionGraph arg;
+    private ConversionGraph acg;
     
     @Override
     public void initAndValidate() {
-        arg = acgInput.get();
+        acg = acgInput.get();
     }
     
     /**
-     * Obtain mean length of converted regions described by ARG.
+     * Obtain mean length of converted regions described by ACG.
      * 
-     * @param arg
-     * @return mean length, or NaN if ARG has no recombinant edges.
+     * @param acg
+     * @return mean length, or NaN if ACG has no recombinant edges.
      */
-    public static double getMeanTractLength(ConversionGraph arg) {
+    public static double getMeanTractLength(ConversionGraph acg) {
         
-        if (arg.getConvCount()<1)
+        if (acg.getConvCount()<1)
             return Double.NaN;
         
         double mean = 0;
-        for (Conversion recomb : arg.getConversions())
+        for (Conversion recomb : acg.getConversions())
             mean += recomb.getEndSite()-recomb.getStartSite()+1;
 
-        mean /= arg.getConvCount();
+        mean /= acg.getConvCount();
         
         return mean;
     }
-    
+
     /**
-     * Obtain mean number of loci between converted regions described
-     * by ARG.
+     * Obtain mean length of contiguous regions having the same marginal
+     * tree.
      * 
-     * @param arg
-     * @return mean count, or NaN if ARG has less than 2 conversions
+     * @param acg
+     * @return mean length
      */
-    public static double getMeanInterTractLength(ConversionGraph arg) {
-        
-        if (arg.getConvCount()<2)
+    public static double getMeanRegionLength(ConversionGraph acg) {
+        double sum = 0.0;
+        for (Region region : acg.getRegions())
+            sum += region.getRegionLength();
+
+        return sum/acg.getRegionCount();
+    }
+
+    /**
+     * Obtain average position of conversion starts.
+     * 
+     * @param acg
+     * @return average site index or NaN if no conversions in ACG.
+     */
+    public static double getMeanStartSite(ConversionGraph acg) {
+        if (acg.getConvCount()<1)
             return Double.NaN;
-        
-        double mean = 0;
-        for (int ridx=0; ridx<arg.getConvCount()-1; ridx++) {
-            mean += arg.getConversions().get(ridx+1).getStartSite()
-                    - arg.getConversions().get(ridx).getEndSite() - 1;
-        }
-        mean /= arg.getConvCount()-1;
-        
+
+        double mean = 0.0;
+        for (Conversion conv : acg.getConversions())
+            mean += conv.getStartSite();
+
+        mean /= acg.getConvCount();
+
         return mean;
     }
-    
+
     /**
-     * Obtain mean length of recombinant edges in ARG.
+     * Obtain average position of conversion ends.
      * 
-     * @param arg
-     * @return mean length, or NaN if ARG has no recombinant edges
+     * @param acg
+     * @return average site index or NaN if no conversions in ACG.
      */
-    public static double getMeanEdgeLength(ConversionGraph arg) {
+    public static double getMeanEndSite(ConversionGraph acg) {
+        if (acg.getConvCount()<1)
+            return Double.NaN;
+
+        double mean = 0.0;
+        for (Conversion conv : acg.getConversions())
+            mean += conv.getEndSite();
+
+        mean /= acg.getConvCount();
+
+        return mean;
+    }
+
+    /**
+     * Obtain mean length of recombinant edges in ACG.
+     * 
+     * @param acg
+     * @return mean length, or NaN if ACG has no recombinant edges
+     */
+    public static double getMeanEdgeLength(ConversionGraph acg) {
         
-        if (arg.getConvCount()<1)
+        if (acg.getConvCount()<1)
             return Double.NaN;
         
         double mean = 0.0;
-        for (Conversion conv : arg.getConversions())
+        for (Conversion conv : acg.getConversions())
             mean += conv.getHeight2()-conv.getHeight1();
 
-        mean /= arg.getConvCount();
+        mean /= acg.getConvCount();
         
         return mean;
     }
     
     /**
      * Obtain mean height of point of departure of recombinant edges
-     * in ARG.
+     * in ACG.
      * 
-     * @param arg
-     * @return mean height, or NaN if ARG has no recombinant edges
+     * @param acg
+     * @return mean height, or NaN if ACG has no recombinant edges
      */
-    public static double getMeanDepartureHeight(ConversionGraph arg) {
-        if (arg.getConvCount()<1)
+    public static double getMeanDepartureHeight(ConversionGraph acg) {
+        if (acg.getConvCount()<1)
             return Double.NaN;
         
         double mean = 0.0;
-        for (Conversion recomb : arg.getConversions()) {
+        for (Conversion recomb : acg.getConversions()) {
             mean += recomb.getHeight1();
         }
-        mean /= arg.getConvCount();
+        mean /= acg.getConvCount();
         
         return mean;
     }
@@ -128,26 +160,30 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
     public void init(PrintStream out) throws Exception {
         String id = getID();
         if (id == null || id.matches("\\s*"))
-            id = arg.getID();
+            id = acg.getID();
 
         out.print(id + ".CFheight\t"
                 + id + ".CFlength\t"
                 + id + ".nRecomb\t"
                 + id + ".meanTractLength\t"
-                + id + ".meanInterTractLength\t"
+                + id + ".meanRegionLength\t"
+                + id + ".meanStartSite\t"
+                + id + ".meanEndSite\t"
                 + id + ".meanEdgeLength\t"
                 + id + ".meanDepartureHeight\t");
     }
 
     @Override
     public void log(int nSample, PrintStream out) {
-        out.print(arg.getRoot().getHeight() + "\t"
-                + arg.getClonalFrameLength() + "\t"
-                + arg.getConvCount() + "\t"
-                + ConversionGraphStatsLogger.getMeanTractLength(arg) + "\t"
-                + ConversionGraphStatsLogger.getMeanInterTractLength(arg) + "\t"
-                + ConversionGraphStatsLogger.getMeanEdgeLength(arg) + "\t"
-                + ConversionGraphStatsLogger.getMeanDepartureHeight(arg) + "\t");
+        out.print(acg.getRoot().getHeight() + "\t"
+                + acg.getClonalFrameLength() + "\t"
+                + acg.getConvCount() + "\t"
+                + ConversionGraphStatsLogger.getMeanTractLength(acg) + "\t"
+                + ConversionGraphStatsLogger.getMeanRegionLength(acg) + "\t"
+                + ConversionGraphStatsLogger.getMeanStartSite(acg) + "\t"
+                + ConversionGraphStatsLogger.getMeanEndSite(acg) + "\t"
+                + ConversionGraphStatsLogger.getMeanEdgeLength(acg) + "\t"
+                + ConversionGraphStatsLogger.getMeanDepartureHeight(acg) + "\t");
     }
 
     @Override

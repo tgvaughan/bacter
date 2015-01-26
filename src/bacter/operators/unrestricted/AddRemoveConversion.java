@@ -102,7 +102,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         // Draw location of converted region.  Currently draws start locus 
         int startSite, endSite;
         double u = Randomizer.nextDouble()*(deltaInput.get().getValue() + acg.getSequenceLength());
-        if (Randomizer.nextDouble()<deltaInput.get().getValue())
+        if (u<deltaInput.get().getValue())
             startSite = 0;
         else
             startSite = (int)(u-deltaInput.get().getValue());

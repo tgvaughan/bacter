@@ -17,7 +17,6 @@
 
 package bacter.operators.restricted;
 
-import bacter.operators.restricted.AddRemoveConversion;
 import bacter.Conversion;
 import bacter.model.restricted.SimulatedRestrictedACG;
 import beast.core.parameter.RealParameter;
