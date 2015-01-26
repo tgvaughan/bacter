@@ -111,10 +111,10 @@ public class RestrictedACGCoalescent extends ACGDistribution {
     
     /**
      * Compute probability of recombinant edges under conditional coalescent.
-     * @param recomb
+     * @param conv
      * @return log(P)
      */
-    public double calculateRecombinantLogP(Conversion recomb) {
+    public double calculateRecombinantLogP(Conversion conv) {
         
         List<CFEventList.Event> events = acg.getCFEvents();
         
@@ -123,25 +123,25 @@ public class RestrictedACGCoalescent extends ACGDistribution {
 
         // Identify interval containing the start of the recombinant edge
         int startIdx = 0;
-        while (events.get(startIdx+1).getHeight() < recomb.getHeight1())
+        while (events.get(startIdx+1).getHeight() < conv.getHeight1())
             startIdx += 1;
         
-        for (int i=startIdx; i<events.size() && events.get(i).getHeight()<recomb.getHeight2(); i++) {
+        for (int i=startIdx; i<events.size() && events.get(i).getHeight()<conv.getHeight2(); i++) {
             
-            double timeA = Math.max(events.get(i).getHeight(), recomb.getHeight1());
+            double timeA = Math.max(events.get(i).getHeight(), conv.getHeight1());
             
             double timeB;
             if (i<events.size()-1)
-                timeB = Math.min(recomb.getHeight2(), events.get(i+1).getHeight());
+                timeB = Math.min(conv.getHeight2(), events.get(i+1).getHeight());
             else
-                timeB = recomb.getHeight2();
+                timeB = conv.getHeight2();
             
             double intervalArea = popFunc.getIntegral(timeA, timeB);
             thisLogP += -events.get(i).getLineageCount()*intervalArea;
         }
         
         // Probability of single coalescence event
-        thisLogP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
+        thisLogP += Math.log(1.0/popFunc.getPopSize(conv.getHeight2()));
         
         return thisLogP;
     }

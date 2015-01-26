@@ -117,10 +117,10 @@ public class ACGCoalescent extends ACGDistribution {
     
     /**
      * Compute probability of recombinant edges under conditional coalescent.
-     * @param recomb
+     * @param conv
      * @return log(P)
      */
-    public double calculateConversionLogP(Conversion recomb) {
+    public double calculateConversionLogP(Conversion conv) {
         
         List<CFEventList.Event> events = acg.getCFEvents();
         
@@ -129,28 +129,28 @@ public class ACGCoalescent extends ACGDistribution {
 
         // Identify interval containing the start of the recombinant edge
         int startIdx = 0;
-        while (events.get(startIdx+1).getHeight() < recomb.getHeight1())
+        while (events.get(startIdx+1).getHeight() < conv.getHeight1())
             startIdx += 1;
         
-        for (int i=startIdx; i<events.size() && events.get(i).getHeight()<recomb.getHeight2(); i++) {
+        for (int i=startIdx; i<events.size() && events.get(i).getHeight()<conv.getHeight2(); i++) {
             
-            double timeA = Math.max(events.get(i).getHeight(), recomb.getHeight1());
+            double timeA = Math.max(events.get(i).getHeight(), conv.getHeight1());
             
             double timeB;
             if (i<events.size()-1)
-                timeB = Math.min(recomb.getHeight2(), events.get(i+1).getHeight());
+                timeB = Math.min(conv.getHeight2(), events.get(i+1).getHeight());
             else
-                timeB = recomb.getHeight2();
+                timeB = conv.getHeight2();
             
             double intervalArea = popFunc.getIntegral(timeA, timeB);
             thisLogP += -events.get(i).getLineageCount()*intervalArea;
         }
         
         // Probability of single coalescence event
-        thisLogP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
+        thisLogP += Math.log(1.0/popFunc.getPopSize(conv.getHeight2()));
 
         // Probability of start site:
-        if (recomb.getStartSite()==0)
+        if (conv.getStartSite()==0)
             thisLogP += Math.log((deltaInput.get().getValue() + 1)
                 /(deltaInput.get().getValue() + acg.getSequenceLength()));
         else
@@ -158,13 +158,16 @@ public class ACGCoalescent extends ACGDistribution {
                 + acg.getSequenceLength()));
 
         // Probability of end site:
-        int length = recomb.getStartSite() - recomb.getEndSite() + 1;
-        double probEnd = (length-1)*Math.log(1.0-1.0/deltaInput.get().getValue())
-            + Math.log(1.0/deltaInput.get().getValue());
+        int length = conv.getStartSite() - conv.getEndSite() + 1;
+        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(), length-1)
+            / deltaInput.get().getValue();
         
-        // TODO: Include probability of going past the end:
-        //if (recomb.getEndSite() == acg.getSequenceLength()-1)
-        //    probEnd += 
+        // Include probability of going past the end:
+        if (conv.getEndSite() == acg.getSequenceLength()-1)
+            probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
+                    acg.getSequenceLength()-conv.getStartSite());
+
+        thisLogP += Math.log(probEnd);
         
         return thisLogP;
     }
