@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bacter.model;
+package bacter.model.unrestricted;
 
 import bacter.CFEventList;
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.model.ACGDistribution;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;

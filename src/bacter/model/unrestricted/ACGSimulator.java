@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.model;
+package bacter.model.unrestricted;
 
 import beast.core.Description;
 import beast.core.Input;

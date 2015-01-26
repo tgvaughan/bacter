@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.model;
+package bacter.model.unrestricted;
 
 import bacter.CFEventList;
 import bacter.Conversion;
