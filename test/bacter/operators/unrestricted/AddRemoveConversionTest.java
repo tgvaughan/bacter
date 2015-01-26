@@ -61,7 +61,7 @@ public class AddRemoveConversionTest {
         
         // Loop until a valid proposal is made
         double logP1;
-        List<Conversion> oldRecombs;
+        List<Conversion> oldConversions;
         do {
             operator.initByName(
                     "weight", 1.0,
@@ -70,7 +70,7 @@ public class AddRemoveConversionTest {
                     "delta", new RealParameter("50.0"),
                     "populationModel", popFunc);
             
-            oldRecombs = Lists.newArrayList(
+            oldConversions = Lists.newArrayList(
                     acg.getConversions());
         
             logP1 = operator.drawNewConversion();
@@ -81,7 +81,7 @@ public class AddRemoveConversionTest {
         // Identify new recomination
         Conversion newRecomb = null;
         for (Conversion recomb : acg.getConversions()) {
-            if (!oldRecombs.contains(recomb))
+            if (!oldConversions.contains(recomb))
                 newRecomb = recomb;
         }
         assertNotNull(newRecomb);
