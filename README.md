@@ -32,9 +32,9 @@ Phase 1:
 - [x] Reorganize packages so as to keep code specific to restricted model separate from new code.
 
 Phase 2:
-- [ ] ARG simulator for new model (allow for model misspec analysis) *IN PROGRESS*
-- [ ] ARG density under new model
-- [ ] ARG operators for new model
+- [x] ARG simulator for new model (allow for model misspec analysis)
+- [x] ARG density under new model
+- [ ] ARG operators for new model *IN PROGRESS*
 
 
 Old road map (legacy)
