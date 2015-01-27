@@ -29,7 +29,7 @@ import java.util.Objects;
  */
 public class Conversion {
     
-    protected ConversionGraph arg;
+    protected ConversionGraph acg;
     
     public Conversion() { }
     
@@ -226,19 +226,19 @@ public class Conversion {
     }
     
     /**
-     * Assign recombination graph.
-     * @param arg 
+     * Assign conversion graph.
+     * @param acg 
      */
-    public void setRecombinationGraph(ConversionGraph arg) {
-        this.arg = arg;
+    public void setConversionGraph(ConversionGraph acg) {
+        this.acg = acg;
     }
     
     /**
      * Mark ARG statenode as dirty if available.
      */
     public void startEditing() {
-        if (arg != null)
-            arg.startEditing(null);
+        if (acg != null)
+            acg.startEditing(null);
     }
     
     /**
@@ -249,7 +249,7 @@ public class Conversion {
      */
     public Conversion getCopy() {
         Conversion copy = new Conversion();
-        copy.arg = arg;
+        copy.acg = acg;
         copy.startSite = startSite;
         copy.endSite = endSite;
         copy.node1 = node1;
@@ -271,7 +271,7 @@ public class Conversion {
     public boolean equals(Object obj) {
         if (obj instanceof Conversion) {
             Conversion otherRecomb = (Conversion)obj;
-            return arg == otherRecomb.arg
+            return acg == otherRecomb.acg
                 && startSite == otherRecomb.startSite
                 && endSite == otherRecomb.endSite
                 && node1 == otherRecomb.node1
@@ -285,7 +285,7 @@ public class Conversion {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 67 * hash + Objects.hashCode(this.arg);
+        hash = 67 * hash + Objects.hashCode(this.acg);
         hash = 67 * hash + Objects.hashCode(this.node1);
         hash = 67 * hash + Objects.hashCode(this.node2);
         hash = 67 * hash + (int) (Double.doubleToLongBits(this.height1) ^ (Double.doubleToLongBits(this.height1) >>> 32));

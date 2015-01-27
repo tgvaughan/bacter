@@ -116,7 +116,7 @@ public class ConversionGraph extends Tree {
     public void addConversion(Conversion conv) {
         startEditing(null);
         
-        conv.setRecombinationGraph(this);
+        conv.setConversionGraph(this);
         
         int i;
         for (i=0; i<convs.size(); i++)
@@ -539,20 +539,20 @@ public class ConversionGraph extends Tree {
         
         storedConvs.clear();
 
-        for (Conversion recomb : convs) {
-			Conversion recombCopy = new Conversion();
+        for (Conversion conv : convs) {
+			Conversion convCopy = new Conversion();
 	
-			recombCopy.setStartSite(recomb.getStartSite());
-			recombCopy.setEndSite(recomb.getEndSite());
-			recombCopy.setHeight1(recomb.getHeight1());
-			recombCopy.setHeight2(recomb.getHeight2());
+			convCopy.setStartSite(conv.getStartSite());
+			convCopy.setEndSite(conv.getEndSite());
+			convCopy.setHeight1(conv.getHeight1());
+			convCopy.setHeight2(conv.getHeight2());
 			
-			recombCopy.setNode1(m_storedNodes[recomb.getNode1().getNr()]);
-			recombCopy.setNode2(m_storedNodes[recomb.getNode2().getNr()]);
+			convCopy.setNode1(m_storedNodes[conv.getNode1().getNr()]);
+			convCopy.setNode2(m_storedNodes[conv.getNode2().getNr()]);
 
-			recombCopy.setRecombinationGraph(this);
+			convCopy.setConversionGraph(this);
 			
-			storedConvs.add(recombCopy);
+			storedConvs.add(convCopy);
         }
     }
     

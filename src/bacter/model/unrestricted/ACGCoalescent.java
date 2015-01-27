@@ -71,7 +71,8 @@ public class ACGCoalescent extends ACGDistribution {
 
         if (acg.isValid()) {
 
-            logP = calculateClonalFrameLogP();
+            //logP = calculateClonalFrameLogP();
+            logP = 0.0;
 
             // Probability of conversion count:
             double poissonMean = rhoInput.get().getValue()
@@ -80,8 +81,8 @@ public class ACGCoalescent extends ACGDistribution {
             logP += -poissonMean + acg.getConvCount()*Math.log(poissonMean)
                 - GammaFunction.lnGamma(acg.getConvCount()+1);
 
-            for (Conversion conv : acg.getConversions())
-                logP += calculateConversionLogP(conv);
+            //for (Conversion conv : acg.getConversions())
+            //    logP += calculateConversionLogP(conv);
             
         } else {
             logP = Double.NEGATIVE_INFINITY;

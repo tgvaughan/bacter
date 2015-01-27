@@ -53,11 +53,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             logHGF += Math.log(1.0/(acg.getConvCount()+1));
             
-            try {
-                logHGF -= drawNewConversion();
-            } catch (ProposalFailed ex) {
-                return Double.NEGATIVE_INFINITY;
-            }
+            //logHGF -= drawNewConversion();
+            drawNewConversion();
             
             if (!acg.isValid())
                 return Double.NEGATIVE_INFINITY;
@@ -74,7 +71,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
                     Randomizer.nextInt(acg.getConvCount()));
             
             // Calculate HGF
-            logHGF += getConversionProb(conv);
+            //logHGF += getConversionProb(conv);
             logHGF -= Math.log(1.0/acg.getConvCount());
             
             // Remove conversion
@@ -90,9 +87,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
      * new edge and converted region location.
      * 
      * @return log of proposal density 
-     * @throws bacter.operators.ACGOperator.ProposalFailed 
      */
-    public double drawNewConversion() throws ProposalFailed {
+    public double drawNewConversion() {
         double logP = 0;
 
         Conversion newConversion = new Conversion();
