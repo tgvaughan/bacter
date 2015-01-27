@@ -51,7 +51,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Add
             
-            logHGF += Math.log(1.0/(acg.getConvCount()+1));
+            //logHGF += Math.log(1.0/(acg.getConvCount()+1));
             
             //logHGF -= drawNewConversion();
             drawNewConversion();
@@ -72,7 +72,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Calculate HGF
             //logHGF += getConversionProb(conv);
-            logHGF -= Math.log(1.0/acg.getConvCount());
+            //logHGF -= Math.log(1.0/acg.getConvCount());
             
             // Remove conversion
             acg.deleteConversion(conv);
