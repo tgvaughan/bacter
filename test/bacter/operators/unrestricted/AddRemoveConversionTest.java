@@ -18,6 +18,7 @@
 package bacter.operators.unrestricted;
 
 import bacter.Conversion;
+import bacter.model.unrestricted.ACGCoalescent;
 import bacter.model.unrestricted.SimulatedACG;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
@@ -90,5 +91,56 @@ public class AddRemoveConversionTest {
         System.out.println("logP2 = " + logP2);
         
         assertTrue(Math.abs(logP1-logP2)<1e-10);
+    }
+
+    /**
+     * Tests whether probability of proposing a conversion lines up with
+     * conversion probability found in ACGCoalescent.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testProbability() throws Exception {
+
+        ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+        
+        SimulatedACG acg = new SimulatedACG();
+        acg.initByName(
+                "rho", 1.0/10000,
+                "delta", 50.0,
+                "sequenceLength", 10000,
+                "nTaxa", 10,
+                "populationModel", popFunc);
+        
+        RealParameter rho = new RealParameter(Double.toString(1.0/10000));
+        RealParameter delta = new RealParameter("50.0");
+
+        AddRemoveConversion operator = new AddRemoveConversion();
+        operator.initByName(
+            "weight", 1.0,
+            "acg", acg,
+            "rho", rho,
+            "delta", delta,
+            "populationModel", popFunc);
+
+        ACGCoalescent coal = new ACGCoalescent();
+        coal.initByName(
+            "acg", acg,
+            "populationModel", popFunc,
+            "rho", rho,
+            "delta", delta);
+        
+        double logP1 = 0.0;
+        double logP2 = 0.0;
+        for (Conversion conv : acg.getConversions()) {
+            logP1 += operator.getConversionProb(conv);
+            logP2 += coal.calculateConversionLogP(conv);
+        }
+
+        System.out.println("logP1 = " + logP1);
+        System.out.println("logP2 = " + logP2);
+
+        assertTrue(Math.abs(logP1-logP2)<1e-10);
+
     }
 }

@@ -24,6 +24,7 @@ import beast.core.CalculationNode;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Loggable;
+import beast.util.Randomizer;
 import java.io.PrintStream;
 
 /**
@@ -65,17 +66,24 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
 
     /**
      * Obtain mean length of contiguous regions having the same marginal
-     * tree.
+     * tree and being affected by at least 1 conversion.
      * 
      * @param acg
      * @return mean length
      */
     public static double getMeanRegionLength(ConversionGraph acg) {
         double sum = 0.0;
+        int count = 0;
         for (Region region : acg.getRegions())
-            sum += region.getRegionLength();
+            if (!region.isClonalFrame()) {
+                sum += region.getRegionLength();
+                count += 1;
+            }
 
-        return sum/acg.getRegionCount();
+        if (count == 0)
+            return Double.NaN;
+        else
+            return sum/count;
     }
 
     /**
@@ -95,6 +103,36 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
         mean /= acg.getConvCount();
 
         return mean;
+    }
+
+    /**
+     * Retrieve end site of randomly chosen conversion in ACG.  Used for
+     * assessing end site distribution.
+     * 
+     * @param acg
+     * @return end site index or NaN if no conversions
+     */
+    public static double getRandomEndSite(ConversionGraph acg) {
+        if (acg.getConvCount()<1)
+            return Double.NaN;
+        else
+            return acg.getConversions().get(
+                Randomizer.nextInt(acg.getConvCount())).getEndSite();
+    }
+
+    /**
+     * Retrieve starting site of randomly chosen conversion in ACG.  Used for
+     * assessing start site distribution.
+     * 
+     * @param acg
+     * @return start site index or NaN if no conversions
+     */
+    public static double getRandomStartSite(ConversionGraph acg) {
+        if (acg.getConvCount()<1)
+            return Double.NaN;
+        else
+            return acg.getConversions().get(
+                Randomizer.nextInt(acg.getConvCount())).getStartSite();
     }
 
     /**
@@ -169,6 +207,8 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
                 + id + ".meanRegionLength\t"
                 + id + ".meanStartSite\t"
                 + id + ".meanEndSite\t"
+                + id + ".randomStartSite\t"
+                + id + ".randomEndSite\t"
                 + id + ".meanEdgeLength\t"
                 + id + ".meanDepartureHeight\t");
     }
@@ -182,6 +222,8 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
                 + ConversionGraphStatsLogger.getMeanRegionLength(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanStartSite(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanEndSite(acg) + "\t"
+                + ConversionGraphStatsLogger.getRandomStartSite(acg) + "\t"
+                + ConversionGraphStatsLogger.getRandomEndSite(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanEdgeLength(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanDepartureHeight(acg) + "\t");
     }

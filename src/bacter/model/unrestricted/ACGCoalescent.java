@@ -159,8 +159,8 @@ public class ACGCoalescent extends ACGDistribution {
                 + acg.getSequenceLength()));
 
         // Probability of end site:
-        int length = conv.getStartSite() - conv.getEndSite() + 1;
-        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(), length-1)
+        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
+            conv.getEndSite() - conv.getStartSite())
             / deltaInput.get().getValue();
         
         // Include probability of going past the end:

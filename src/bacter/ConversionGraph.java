@@ -233,15 +233,16 @@ public class ConversionGraph extends Tree {
      * @return true if all recombinations are valid w.r.t. clonal frame.
      */
     public boolean isValid() {
-        for (int ridx=0; ridx<convs.size(); ridx++) {
-            if (!convs.get(ridx).isValid())
+        for (Conversion conv : convs) {
+            if (!conv.isValid()) {
                 return false;
-            
-            if (convs.get(ridx).getStartSite()<0
-                    || convs.get(ridx).getStartSite()>=getSequenceLength()
-                    || convs.get(ridx).getEndSite()<0
-                    || convs.get(ridx).getEndSite()>=getSequenceLength())
+            }
+            if (conv.getStartSite() < 0
+                || conv.getStartSite() >= getSequenceLength()
+                || conv.getEndSite() < 0
+                || conv.getEndSite() >= getSequenceLength()) {
                 return false;
+            }
         }
         
         return true;

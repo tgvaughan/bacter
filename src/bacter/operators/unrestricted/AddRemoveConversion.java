@@ -99,7 +99,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         
         logP += attachEdge(newConversion);
         
-        // Draw location of converted region.  Currently draws start locus 
+        // Draw location of converted region.
         int startSite, endSite;
         double u = Randomizer.nextDouble()*(deltaInput.get().getValue() + acg.getSequenceLength());
         if (u<deltaInput.get().getValue()) {
@@ -116,9 +116,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         endSite = Math.min(endSite, acg.getSequenceLength()-1);
 
         // Probability of end site:
-        int length = startSite - endSite + 1;
-        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(), length-1)
-            / deltaInput.get().getValue();
+        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
+            endSite-startSite)/ deltaInput.get().getValue();
         
         // Include probability of going past the end:
         if (endSite == acg.getSequenceLength()-1)
@@ -156,8 +155,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
                 + acg.getSequenceLength()));
 
         // Probability of end site:
-        int length = conv.getStartSite() - conv.getEndSite() + 1;
-        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(), length-1)
+        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
+            conv.getEndSite() - conv.getStartSite())
             / deltaInput.get().getValue();
         
         // Include probability of going past the end:
