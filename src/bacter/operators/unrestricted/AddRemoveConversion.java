@@ -51,10 +51,9 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Add
             
-            //logHGF += Math.log(1.0/(acg.getConvCount()+1));
+            logHGF += Math.log(1.0/(acg.getConvCount()+1));
             
-            //logHGF -= drawNewConversion();
-            drawNewConversion();
+            logHGF -= drawNewConversion();
             
             if (!acg.isValid())
                 return Double.NEGATIVE_INFINITY;
@@ -71,8 +70,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
                     Randomizer.nextInt(acg.getConvCount()));
             
             // Calculate HGF
-            //logHGF += getConversionProb(conv);
-            //logHGF -= Math.log(1.0/acg.getConvCount());
+            logHGF += getConversionProb(conv);
+            logHGF -= Math.log(1.0/acg.getConvCount());
             
             // Remove conversion
             acg.deleteConversion(conv);
