@@ -18,11 +18,14 @@ package bacter.operators.unrestricted;
 
 import bacter.operators.EdgeCreationOperator;
 import bacter.Conversion;
+import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
 import feast.input.In;
+import java.io.PrintStream;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -52,7 +55,6 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             // Add
             
             logHGF += Math.log(1.0/(acg.getConvCount()+1));
-            
             logHGF -= drawNewConversion();
             
             if (!acg.isValid())
@@ -162,5 +164,32 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         logP += Math.log(probEnd);
         
         return logP;
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        ConversionGraph acg = new ConversionGraph();
+        ConstantPopulation popFunc = new ConstantPopulation();
+
+
+        AddRemoveConversion operator = new AddRemoveConversion();
+        operator.initByName("weight", 1.0,
+            "acg", acg,
+            "populationModel", popFunc,
+            "rho", new RealParameter(Double.toString(1.0/10000.0)),
+            "delta", new RealParameter("50.0"));
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+
+        try (PrintStream ps = new PrintStream("out.txt")) {
+            for (int i=0; i<100000; i++) {
+                acg.initByName(
+                    "sequenceLength", 10000,
+                    "fromString", "(0:1.0,1:1.0)2:0.0;");
+                operator.drawNewConversion();
+                
+                ps.println(acg.getConversions().get(0).getStartSite() + " "
+                    + acg.getConversions().get(0).getStartSite());
+            }
+        }
     }
 }
