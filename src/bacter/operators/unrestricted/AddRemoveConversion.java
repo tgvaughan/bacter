@@ -57,9 +57,6 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             logHGF += Math.log(1.0/(acg.getConvCount()+1));
             logHGF -= drawNewConversion();
             
-            if (!acg.isValid())
-                return Double.NEGATIVE_INFINITY;
-            
         } else {
             
             // Remove
@@ -188,7 +185,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
                 operator.drawNewConversion();
                 
                 ps.println(acg.getConversions().get(0).getStartSite() + " "
-                    + acg.getConversions().get(0).getStartSite());
+                    + acg.getConversions().get(0).getEndSite());
             }
         }
     }
