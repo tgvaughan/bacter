@@ -57,19 +57,11 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
         if (moveStart) {
             currentLocus = recomb.getStartSite();
             maxLocus = recomb.getEndSite();
-            
-            if (ridx>0)
-                minLocus = acg.getConversions().get(ridx-1).getEndSite() + 2;
-            else
-                minLocus = 0;
+            minLocus = 0;
         } else {
             currentLocus = recomb.getEndSite();
             minLocus = recomb.getStartSite();
-            
-            if (ridx<acg.getConvCount()-1)
-                maxLocus = acg.getConversions().get(ridx+1).getStartSite() - 2;
-            else
-                maxLocus = acg.getSequenceLength()-1;
+            maxLocus = acg.getSequenceLength()-1;
         }
         
         int radius = (int)Math.round(argInput.get().getSequenceLength()
