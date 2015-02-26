@@ -17,7 +17,6 @@
 
 package bacter.operators.unrestricted;
 
-import bacter.operators.restricted.*;
 import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
@@ -46,38 +45,21 @@ public class ConvertedRegionShift extends ACGOperator {
         if (acg.getConvCount()<1)
             return Double.NEGATIVE_INFINITY;
         
-        int ridx = Randomizer.nextInt(acg.getConvCount());
-        Conversion recomb = acg.getConversions().get(ridx);
+        Conversion conv = acg.getConversions().get(Randomizer.nextInt(acg.getConvCount()));
         
         int radius = (int)Math.round(argInput.get().getSequenceLength()
-                *apertureSizeInput.get())/2;
+            *apertureSizeInput.get())/2;
 
         int delta = Randomizer.nextInt(radius*2 + 1) - radius;
         
-        if (delta>0) {
-            int maxDelta;
-            if (ridx<acg.getConvCount()-1)
-                maxDelta = acg.getConversions().get(ridx+1).getStartSite() - 2
-                        - recomb.getEndSite();
-            else
-                maxDelta = acg.getSequenceLength() - 1 - recomb.getEndSite();
-            
-            if (delta>maxDelta)
-                return Double.NEGATIVE_INFINITY;
-        } else {
-            int minDelta;
-            if (ridx>0)
-                minDelta = acg.getConversions().get(ridx-1).getEndSite() + 2
-                        - recomb.getStartSite();
-            else
-                minDelta = 0 - recomb.getStartSite();
-            
-            if (delta<minDelta)
-                return Double.NEGATIVE_INFINITY;
-        }
+        if (conv.getEndSite() + delta > acg.getSequenceLength() - 1)
+            return Double.NEGATIVE_INFINITY;
+
+        if (conv.getStartSite() + delta<0)
+            return Double.NEGATIVE_INFINITY;
         
-        recomb.setStartSite(recomb.getStartSite()+delta);
-        recomb.setEndSite(recomb.getEndSite()+delta);
+        conv.setStartSite(conv.getStartSite()+delta);
+        conv.setEndSite(conv.getEndSite()+delta);
         
         return 0.0;
     }
