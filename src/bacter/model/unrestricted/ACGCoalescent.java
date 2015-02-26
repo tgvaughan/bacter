@@ -77,11 +77,16 @@ public class ACGCoalescent extends ACGDistribution {
             double poissonMean = rhoInput.get().getValue()
                 *acg.getClonalFrameLength()
                 *(acg.getSequenceLength()+deltaInput.get().getValue());
-            logP += -poissonMean + acg.getConvCount()*Math.log(poissonMean)
-                - GammaFunction.lnGamma(acg.getConvCount()+1);
+            logP += -poissonMean + acg.getConvCount()*Math.log(poissonMean);
+            //    - GammaFunction.lnGamma(acg.getConvCount()+1);
 
             for (Conversion conv : acg.getConversions())
                 logP += calculateConversionLogP(conv);
+
+            // This N! takes into account the permutation invariance of
+            // the individual conversions, and cancels with the N! in the
+            // denominator of the Poissonian above.
+            // logP += GammaFunction.lnGamma(acg.getConvCount() + 1);
             
         } else {
             logP = Double.NEGATIVE_INFINITY;
@@ -122,11 +127,13 @@ public class ACGCoalescent extends ACGDistribution {
      * @return log(P)
      */
     public double calculateConversionLogP(Conversion conv) {
+
+        double thisLogP = 0.0;
         
         List<CFEventList.Event> events = acg.getCFEvents();
         
         // Probability density of location of recombinant edge start
-        double thisLogP = Math.log(1.0/acg.getClonalFrameLength());
+        thisLogP += Math.log(1.0/acg.getClonalFrameLength());
 
         // Identify interval containing the start of the recombinant edge
         int startIdx = 0;

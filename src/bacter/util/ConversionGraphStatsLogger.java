@@ -202,7 +202,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
 
         out.print(id + ".CFheight\t"
                 + id + ".CFlength\t"
-                + id + ".nRecomb\t"
+                + id + ".nConv\t"
                 + id + ".meanTractLength\t"
                 + id + ".meanRegionLength\t"
                 + id + ".meanStartSite\t"
