@@ -34,8 +34,10 @@ Phase 1:
 Phase 2:
 - [x] ARG simulator for new model (allow for model misspec analysis)
 - [x] ARG density under new model
-- [ ] ARG operators for new model *IN PROGRESS*
+- [x] ARG operators for new model
 
+Phase 3:
+- [ ] Inference from data simulated under full model *IN PROGRESS*
 
 Old road map (legacy)
 ---------------------
