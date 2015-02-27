@@ -17,7 +17,6 @@
 
 package bacter.model;
 
-import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.MarginalTree;
 import bacter.Region;
@@ -247,9 +246,9 @@ public class SimulatedAlignment extends Alignment {
                         break;
                     }
                     dataTypeDescList.add(thisDataType.getTypeDescription());
-                } catch (ClassNotFoundException e) {
-                } catch (InstantiationException e) {
-                } catch (IllegalAccessException e) {
+                } catch (ClassNotFoundException
+                    | InstantiationException
+                    | IllegalAccessException e) {
                 }
             }
             if (dataType == null) {
