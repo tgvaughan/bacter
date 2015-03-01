@@ -196,9 +196,9 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
     
     @Override
     public void init(PrintStream out) throws Exception {
-        String id = getID();
+        String id = acg.getID();
         if (id == null || id.matches("\\s*"))
-            id = acg.getID();
+            id = "acg";
 
         out.print(id + ".CFheight\t"
                 + id + ".CFlength\t"
