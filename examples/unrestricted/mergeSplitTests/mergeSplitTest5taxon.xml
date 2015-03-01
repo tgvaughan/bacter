@@ -41,9 +41,9 @@
             <populationModel idref="popFunc"/>
         </operator>
 
-        <!--operator id="mergeSplit" spec="MergeSplitConversion" weight="1.0">
+        <operator id="mergeSplit" spec="MergeSplitConversion" weight="1.0">
             <acg idref="acg"/>
-        </operator-->
+        </operator>
 
         <operator id="scale" spec="ACGScaler" weight="1.0"
             scaleFactor="0.8">
