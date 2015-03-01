@@ -57,7 +57,7 @@ public class MergeSplitConversion extends ACGOperator {
                 Randomizer.nextInt(acg.getConvCount()));
         } while (conv2 == conv1);
 
-        if (conv2.getNode1() != conv1.getNode1() || conv2.getNode2() != conv2.getNode2() || conv1.getNode2().isRoot())
+        if (conv2.getNode1() != conv1.getNode1() || conv2.getNode2() != conv1.getNode2())
             return Double.NEGATIVE_INFINITY;
 
         logP -= Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
@@ -68,11 +68,13 @@ public class MergeSplitConversion extends ACGOperator {
         int maxEnd = conv1.getEndSite() > conv2.getEndSite()
             ? conv1.getEndSite() : conv2.getEndSite();
 
+        logP += 2.0*Math.log(0.5/(maxEnd-minStart+1));
+
         logP += Math.log(1.0/conv1.getNode1().getLength());
 
         if (conv1.getNode2().isRoot()) {
             double lambda = 1.0/(conv1.getHeight2()-conv1.getNode2().getHeight());
-            logP += -lambda*(conv2.getHeight2()-conv2.getNode2().getHeight())
+            logP += -lambda*(conv2.getHeight2()-conv1.getNode2().getHeight())
                     + Math.log(lambda);
         } else {
             logP += Math.log(1.0/conv1.getNode2().getLength());
@@ -95,9 +97,6 @@ public class MergeSplitConversion extends ACGOperator {
         Conversion conv1 = acg.getConversions().get(
             Randomizer.nextInt(acg.getConvCount()));
 
-        if (conv1.getNode2().isRoot())
-            return Double.NEGATIVE_INFINITY;
-
         Conversion conv2 = new Conversion();
         conv2.setNode1(conv1.getNode1());
         conv2.setNode2(conv1.getNode2());
@@ -106,8 +105,6 @@ public class MergeSplitConversion extends ACGOperator {
 
         int m1 = Randomizer.nextInt(conv1.getSiteCount());
         int m2 = Randomizer.nextInt(conv1.getSiteCount());
-
-        logP -= 2.0*Math.log(1.0/(conv1.getSiteCount()));
         
         if (Randomizer.nextBoolean()) {
             s1 = conv1.getStartSite();
@@ -125,7 +122,7 @@ public class MergeSplitConversion extends ACGOperator {
             e2 = conv1.getEndSite();
         }
 
-        logP -= 2.0*Math.log(0.5);
+        logP -= 2.0*Math.log(0.5/(conv1.getSiteCount()));
 
         conv1.setStartSite(s1);
         conv1.setEndSite(e1);
