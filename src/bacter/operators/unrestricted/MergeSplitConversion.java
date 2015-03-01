@@ -73,6 +73,8 @@ public class MergeSplitConversion extends ACGOperator {
 
     private double splitProposal() {
 
+        double logP = 0.0;
+
         if (acg.getConvCount()<1)
             return Double.NEGATIVE_INFINITY;
 
@@ -80,11 +82,15 @@ public class MergeSplitConversion extends ACGOperator {
             Randomizer.nextInt(acg.getConvCount()));
 
         Conversion conv2 = new Conversion();
+        conv2.setNode1(conv1.getNode1());
+        conv2.setNode2(conv1.getNode2());
 
         int s1, s2, e1, e2;
 
-        int m1 = Randomizer.nextInt(conv1.getEndSite()-conv1.getStartSite());
-        int m2 = Randomizer.nextInt(conv1.getEndSite()-conv1.getStartSite());
+        int m1 = Randomizer.nextInt(conv1.getSiteCount());
+        int m2 = Randomizer.nextInt(conv1.getSiteCount());
+
+        logP -= 2.0*Math.log(1.0/(conv1.getSiteCount()));
         
         if (Randomizer.nextBoolean()) {
             s1 = conv1.getStartSite();
@@ -102,6 +108,8 @@ public class MergeSplitConversion extends ACGOperator {
             e2 = conv1.getEndSite();
         }
 
+        logP -= 2.0*Math.log(0.5);
+
         conv1.setStartSite(s1);
         conv1.setEndSite(e1);
 
@@ -111,15 +119,22 @@ public class MergeSplitConversion extends ACGOperator {
         conv2.setHeight1(conv1.getNode1().getHeight()
                 + Randomizer.nextDouble()*conv1.getNode1().getLength());
 
+        logP -= Math.log(1.0/conv1.getNode1().getLength());
+
         if (conv1.getNode2().isRoot()) {
+            double lambda = 1.0/(conv1.getHeight2()-conv1.getNode2().getHeight());
             conv2.setHeight1(conv1.getNode2().getHeight()
-            + Randomizer.nextExponential(1.0/(conv1.getHeight2()-conv1.getNode2().getHeight())));
+                    + Randomizer.nextExponential(lambda));
+            logP -= -lambda + Math.log(lambda);
         } else {
             conv2.setHeight2(conv1.getNode2().getHeight()
                     + Randomizer.nextDouble()*conv2.getNode1().getLength());
+            logP -= Math.log(1.0/conv1.getNode2().getLength());
         }
 
-        return 0.0;
+        acg.addConversion(conv2);
+
+        return logP;
     }
     
 }
