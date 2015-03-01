@@ -43,6 +43,8 @@ public class MergeSplitConversion extends ACGOperator {
 
     private double mergeProposal() {
 
+        double logP = 0.0;
+
         if (acg.getConvCount()<2)
             return Double.NEGATIVE_INFINITY;
 
@@ -58,17 +60,29 @@ public class MergeSplitConversion extends ACGOperator {
         if (conv2.getNode1() != conv1.getNode1() || conv2.getNode2() != conv2.getNode2())
             return Double.NEGATIVE_INFINITY;
 
+        logP -= Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
+
         int minStart = conv1.getStartSite() < conv2.getStartSite()
             ? conv1.getStartSite() : conv2.getStartSite();
 
         int maxEnd = conv1.getEndSite() > conv2.getEndSite()
             ? conv1.getEndSite() : conv2.getEndSite();
 
+        logP += Math.log(1.0/conv1.getNode1().getLength());
+
+        if (conv1.getNode2().isRoot()) {
+            double lambda = 1.0/(conv1.getHeight2()-conv1.getNode2().getHeight());
+            logP += -lambda*(conv2.getHeight2()-conv2.getNode2().getHeight())
+                    + Math.log(lambda);
+        } else {
+            logP += Math.log(1.0/conv1.getNode2().getLength());
+        }
+
         acg.deleteConversion(conv2);
         conv1.setStartSite(minStart);
         conv1.setStartSite(maxEnd);
 
-        return 0.0;
+        return logP;
     }
 
     private double splitProposal() {
@@ -125,7 +139,8 @@ public class MergeSplitConversion extends ACGOperator {
             double lambda = 1.0/(conv1.getHeight2()-conv1.getNode2().getHeight());
             conv2.setHeight1(conv1.getNode2().getHeight()
                     + Randomizer.nextExponential(lambda));
-            logP -= -lambda + Math.log(lambda);
+            logP -= -lambda*(conv2.getHeight2()-conv2.getNode2().getHeight())
+                    + Math.log(lambda);
         } else {
             conv2.setHeight2(conv1.getNode2().getHeight()
                     + Randomizer.nextDouble()*conv2.getNode1().getLength());
@@ -133,6 +148,8 @@ public class MergeSplitConversion extends ACGOperator {
         }
 
         acg.addConversion(conv2);
+
+        logP += Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
 
         return logP;
     }
