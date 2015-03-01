@@ -18,12 +18,16 @@ package bacter.operators.unrestricted;
 
 import bacter.Conversion;
 import bacter.operators.ACGOperator;
+import bacter.operators.EdgeCreationOperator;
 import beast.util.Randomizer;
 
 /**
  * Merge-split move for the unrestricted model.  The merge move selects
  * two conversions at random, deletes one of them and extends the converted
  * region of the other to include all of the sites (and more) of the other.
+ * 
+ * The operator only applies to conversions that attach to identical
+ * pairs of clonal frame edges.
  *
  * @author Tim Vaughan (tgvaughan@gmail.com)
  */
@@ -79,7 +83,41 @@ public class MergeSplitConversion extends ACGOperator {
 
         int s1, s2, e1, e2;
 
+        int m1 = Randomizer.nextInt(conv1.getEndSite()-conv1.getStartSite());
+        int m2 = Randomizer.nextInt(conv1.getEndSite()-conv1.getStartSite());
         
+        if (Randomizer.nextBoolean()) {
+            s1 = conv1.getStartSite();
+            s2 = m1;
+        } else {
+            s1 = m1;
+            s2 = conv1.getStartSite();
+        }
+
+        if (Randomizer.nextBoolean()) {
+            e1 = conv1.getEndSite();
+            e2 = m2;
+        } else {
+            e1 = m2;
+            e2 = conv1.getEndSite();
+        }
+
+        conv1.setStartSite(s1);
+        conv1.setEndSite(e1);
+
+        conv2.setStartSite(s2);
+        conv2.setEndSite(e2);
+
+        conv2.setHeight1(conv1.getNode1().getHeight()
+                + Randomizer.nextDouble()*conv1.getNode1().getLength());
+
+        if (conv1.getNode2().isRoot()) {
+            conv2.setHeight1(conv1.getNode2().getHeight()
+            + Randomizer.nextExponential(1.0/(conv1.getHeight2()-conv1.getNode2().getHeight())));
+        } else {
+            conv2.setHeight2(conv1.getNode2().getHeight()
+                    + Randomizer.nextDouble()*conv2.getNode1().getLength());
+        }
 
         return 0.0;
     }
