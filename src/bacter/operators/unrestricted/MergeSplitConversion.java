@@ -41,6 +41,11 @@ public class MergeSplitConversion extends ACGOperator {
             return splitProposal();
     }
 
+    /**
+     * Perform merge portion of merge/split move.
+     * 
+     * @return log of move HR
+     */
     private double mergeProposal() {
 
         double logP = 0.0;
@@ -84,18 +89,27 @@ public class MergeSplitConversion extends ACGOperator {
         conv1.setStartSite(minStart);
         conv1.setEndSite(maxEnd);
 
+        logP += Math.log(1.0/acg.getConvCount());
+
         return logP;
     }
 
+    /**
+     * Perform split component of merge/split move.
+     * 
+     * @return log of move HR
+     */
     private double splitProposal() {
 
         double logP = 0.0;
 
-        if (acg.getConvCount()<1)
+        if (acg.getConvCount() == 0)
             return Double.NEGATIVE_INFINITY;
 
         Conversion conv1 = acg.getConversions().get(
             Randomizer.nextInt(acg.getConvCount()));
+
+        logP -= Math.log(1.0/acg.getConvCount());
 
         if (conv1.getNode2().isRoot())
             return Double.NEGATIVE_INFINITY;
@@ -157,11 +171,6 @@ public class MergeSplitConversion extends ACGOperator {
             return Double.NEGATIVE_INFINITY;
 
         acg.addConversion(conv2);
-
-        if (!acg.isValid()) {
-            System.err.println("WTF!?");
-            System.exit(0);
-        }
 
         logP += Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
 
