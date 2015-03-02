@@ -48,7 +48,7 @@ public class MergeSplitConversion extends ACGOperator {
      */
     private double mergeProposal() {
 
-        double logP = 0.0;
+        double logHGF = 0.0;
 
         if (acg.getConvCount()<2)
             return Double.NEGATIVE_INFINITY;
@@ -62,10 +62,10 @@ public class MergeSplitConversion extends ACGOperator {
                 Randomizer.nextInt(acg.getConvCount()));
         } while (conv2 == conv1);
 
-        if (conv2.getNode1() != conv1.getNode1() || conv2.getNode2() != conv1.getNode2() || conv1.getNode2().isRoot())
+        if (conv2.getNode1() != conv1.getNode1() || conv2.getNode2() != conv1.getNode2())
             return Double.NEGATIVE_INFINITY;
 
-        logP -= Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
+        logHGF -= Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
 
         int minStart = conv1.getStartSite() < conv2.getStartSite()
             ? conv1.getStartSite() : conv2.getStartSite();
@@ -73,25 +73,25 @@ public class MergeSplitConversion extends ACGOperator {
         int maxEnd = conv1.getEndSite() > conv2.getEndSite()
             ? conv1.getEndSite() : conv2.getEndSite();
 
-        logP += 2.0*Math.log(0.5/(maxEnd-minStart+1));
+        logHGF += 2.0*Math.log(0.5/(maxEnd-minStart+1));
 
-        logP += Math.log(1.0/conv1.getNode1().getLength());
+        logHGF += Math.log(1.0/conv1.getNode1().getLength());
 
         if (conv1.getNode2().isRoot()) {
             double lambda = 1.0/(conv1.getHeight2()-conv1.getNode2().getHeight());
-            logP += -lambda*(conv2.getHeight2()-conv1.getNode2().getHeight())
+            logHGF += -lambda*(conv2.getHeight2()-conv1.getNode2().getHeight())
                     + Math.log(lambda);
         } else {
-            logP += Math.log(1.0/conv1.getNode2().getLength());
+            logHGF += Math.log(1.0/conv1.getNode2().getLength());
         }
 
         acg.deleteConversion(conv2);
         conv1.setStartSite(minStart);
         conv1.setEndSite(maxEnd);
 
-        logP += Math.log(1.0/acg.getConvCount());
+        logHGF += Math.log(1.0/acg.getConvCount());
 
-        return logP;
+        return logHGF;
     }
 
     /**
@@ -101,7 +101,7 @@ public class MergeSplitConversion extends ACGOperator {
      */
     private double splitProposal() {
 
-        double logP = 0.0;
+        double logHGF = 0.0;
 
         if (acg.getConvCount() == 0)
             return Double.NEGATIVE_INFINITY;
@@ -109,10 +109,7 @@ public class MergeSplitConversion extends ACGOperator {
         Conversion conv1 = acg.getConversions().get(
             Randomizer.nextInt(acg.getConvCount()));
 
-        logP -= Math.log(1.0/acg.getConvCount());
-
-        if (conv1.getNode2().isRoot())
-            return Double.NEGATIVE_INFINITY;
+        logHGF -= Math.log(1.0/acg.getConvCount());
 
         Conversion conv2 = new Conversion();
         conv2.setNode1(conv1.getNode1());
@@ -142,7 +139,7 @@ public class MergeSplitConversion extends ACGOperator {
         if (e1<s1 || e2<s2)
             return Double.NEGATIVE_INFINITY;
 
-        logP -= 2.0*Math.log(0.5/(conv1.getSiteCount()));
+        logHGF -= 2.0*Math.log(0.5/(conv1.getSiteCount()));
 
         conv1.setStartSite(s1);
         conv1.setEndSite(e1);
@@ -153,18 +150,18 @@ public class MergeSplitConversion extends ACGOperator {
         conv2.setHeight1(conv1.getNode1().getHeight()
                 + Randomizer.nextDouble()*conv1.getNode1().getLength());
 
-        logP -= Math.log(1.0/conv1.getNode1().getLength());
+        logHGF -= Math.log(1.0/conv1.getNode1().getLength());
 
         if (conv1.getNode2().isRoot()) {
             double lambda = 1.0/(conv1.getHeight2()-conv1.getNode2().getHeight());
             conv2.setHeight1(conv1.getNode2().getHeight()
                     + Randomizer.nextExponential(lambda));
-            logP -= -lambda*(conv2.getHeight2()-conv2.getNode2().getHeight())
+            logHGF -= -lambda*(conv2.getHeight2()-conv2.getNode2().getHeight())
                     + Math.log(lambda);
         } else {
             conv2.setHeight2(conv1.getNode2().getHeight()
                     + Randomizer.nextDouble()*conv1.getNode2().getLength());
-            logP -= Math.log(1.0/conv1.getNode2().getLength());
+            logHGF -= Math.log(1.0/conv1.getNode2().getLength());
         }
 
         if (conv2.getHeight2() < conv2.getHeight1())
@@ -172,9 +169,9 @@ public class MergeSplitConversion extends ACGOperator {
 
         acg.addConversion(conv2);
 
-        logP += Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
+        logHGF += Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
 
-        return logP;
+        return logHGF;
     }
     
 }
