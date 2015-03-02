@@ -121,6 +121,9 @@
     <operator id="CRBshift" spec="ConvertedRegionBoundaryShift" weight="1.0"
         acg="@acg" apertureSize="0.01" />
 
+    <operator id="mergeSplit" spec="MergeSplitConversion" weight="1.0"
+        acg="@acg" />
+
     <operator id="CEhop" spec="ConvertedEdgeHop" weight="1.0"
         acg="@acg" />
 
