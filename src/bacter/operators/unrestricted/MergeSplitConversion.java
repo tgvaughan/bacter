@@ -106,8 +106,8 @@ public class MergeSplitConversion extends ACGOperator {
 
         int s1, s2, e1, e2;
 
-        int m1 = Randomizer.nextInt(conv1.getSiteCount());
-        int m2 = Randomizer.nextInt(conv1.getSiteCount());
+        int m1 = conv1.getStartSite() + Randomizer.nextInt(conv1.getSiteCount());
+        int m2 = conv1.getStartSite() + Randomizer.nextInt(conv1.getSiteCount());
         
         if (Randomizer.nextBoolean()) {
             s1 = conv1.getStartSite();
@@ -124,6 +124,9 @@ public class MergeSplitConversion extends ACGOperator {
             e1 = m2;
             e2 = conv1.getEndSite();
         }
+
+        if (e1<s1 || e2<s2)
+            return Double.NEGATIVE_INFINITY;
 
         logP -= 2.0*Math.log(0.5/(conv1.getSiteCount()));
 
@@ -150,10 +153,15 @@ public class MergeSplitConversion extends ACGOperator {
             logP -= Math.log(1.0/conv1.getNode2().getLength());
         }
 
-        if (conv2.getHeight1() > conv2.getHeight2())
+        if (conv2.getHeight2() < conv2.getHeight1())
             return Double.NEGATIVE_INFINITY;
 
         acg.addConversion(conv2);
+
+        if (!acg.isValid()) {
+            System.err.println("WTF!?");
+            System.exit(0);
+        }
 
         logP += Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
 
