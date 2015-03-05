@@ -34,7 +34,10 @@ Phase 1:
 Phase 2:
 - [x] ARG simulator for new model (allow for model misspec analysis)
 - [x] ARG density under new model
-- [x] ARG operators for new model
+- [ ] ARG operators for new model
+    - [x] Add/remove
+    - [x] Merge/split
+    - [ ] CF/conversion swap *IN PROGRESS*
 
 Phase 3:
 - [ ] Inference from data simulated under full model *IN PROGRESS*
