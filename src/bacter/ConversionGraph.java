@@ -285,7 +285,7 @@ public class ConversionGraph extends Tree {
         Matcher cfMatcher = cfPattern.matcher(str);
         
         if (!cfMatcher.find())
-            throw new RuntimeException("Error parsing ARG state string.");
+            throw new RuntimeException("Error parsing ACG state string.");
         
         // Process clonal frame
         String sNewick = cfMatcher.group(cfMatcher.groupCount());

@@ -51,6 +51,10 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Conversion conv = acg.getConversions().get(
             Randomizer.nextInt(acg.getConvCount()));
 
+        // Skip invisible conversions:
+        if (conv.getNode1() == conv.getNode2())
+            return Double.NEGATIVE_INFINITY;
+
         logHGF -= Math.log(1.0/acg.getConvCount());
 
         // Abort if conversions attach to node1 above height1.
@@ -132,6 +136,10 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         // Choose attchment points:
         logHGF -= attachEdge(newConv);
 
+        // Skip invisible conversions:
+        if (newConv.getNode1() == newConv.getNode2())
+            return Double.NEGATIVE_INFINITY;
+
         // Check for conversions which attach above chosen point
         for (Conversion conv : acg.getConversions()) {
             if ((conv.getNode1() == newConv.getNode1()
@@ -192,6 +200,9 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
     }
 
     public static void main(String[] args) throws Exception {
+
+        Randomizer.setSeed(53);
+
         ConversionGraph acg = new ConversionGraph();
         ConstantPopulation popFunc = new ConstantPopulation();
 
@@ -207,9 +218,11 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         acg.initByName(
             "sequenceLength", 10000,
             "fromString", "(0:1.0,1:1.0)2:0.0;");
+//            "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
 
         System.out.println(acg.getExtendedNewick(true));
         operator.createConversion();
+        //operator.deleteConversion();
         System.out.println(acg.getExtendedNewick(true));
                 
     }
