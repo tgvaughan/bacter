@@ -46,13 +46,17 @@ public class ClonalFrameConversionSwap extends ACGOperator {
         Conversion conv = acg.getConversions().get(
             Randomizer.nextInt(acg.getConvCount()));
 
+        logHGF -= Math.log(1.0/acg.getConvCount());
+
         // Abort if conversions attach to node1 above height1.
         for (Conversion otherConv : acg.getConversions()) {
             if (otherConv == conv)
                 continue;
 
-            if ((otherConv.getNode1() == conv.getNode1() && otherConv.getHeight1() > conv.getHeight1())
-                || (otherConv.getNode2() == conv.getNode1() && otherConv.getHeight2()> conv.getHeight2()))
+            if ((otherConv.getNode1() == conv.getNode1()
+                && otherConv.getHeight1() > conv.getHeight1())
+                || (otherConv.getNode2() == conv.getNode1()
+                && otherConv.getHeight2()> conv.getHeight2()))
                 return Double.NEGATIVE_INFINITY;
         }
 
@@ -80,7 +84,7 @@ public class ClonalFrameConversionSwap extends ACGOperator {
         } else
             sister.setParent(null);
 
-        // Attach node1 to node2:
+        // Move conversions from node2 to parent
         parent.setHeight(conv.getHeight2());
 
         for (Conversion otherConv : acg.getConversions()) {
@@ -96,7 +100,16 @@ public class ClonalFrameConversionSwap extends ACGOperator {
                 otherConv.setNode2(parent);
         }
 
-        // TODO: finish attaching parent to conv.node2.
+        // Make final topology changes:
+        Node oldParent = conv.getNode2().getParent();
+        parent.addChild(conv.getNode2());
+        if (oldParent != null) {
+            oldParent.removeChild(conv.getNode2());
+            oldParent.addChild(parent);
+        }
+
+        // Remove conversion
+        acg.deleteConversion(conv);
 
         return logHGF;
     }

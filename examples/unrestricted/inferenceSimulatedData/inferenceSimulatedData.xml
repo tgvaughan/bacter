@@ -61,9 +61,11 @@
 
             <!-- ACG prior -->
 
-            <distribution spec='ACGCoalescent' id="acgPrior" rho="@rho" delta="@delta">
+            <distribution spec='ACGCoalescent' id="acgPrior"
+                          rho="@rho" delta="@delta">
                 <acg idref="acg"/>
-                <populationModel spec='ConstantPopulation' popSize='@popSize' id='popModel'/>
+                <populationModel spec='ConstantPopulation'
+                                 popSize='@popSize' id='popModel'/>
             </distribution>
 
             <!-- Parameter priors -->

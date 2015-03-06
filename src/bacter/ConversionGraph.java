@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  */
 @Description("Conversion graph based around the clonal frame.")
 @Citation("Tim Vaughan, Alexei Drummod and Nigel French, "
-        + "'Phylogenetic inference for bacteria in BEAST 2'. "
+        + "'Phylogenetic inference\n for bacteria in BEAST 2'. "
         + "In preparation.")
 public class ConversionGraph extends Tree {
     
