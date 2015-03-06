@@ -27,13 +27,13 @@ import feast.input.In;
 import java.util.List;
 
 /**
- * Abstract class of ARG operators that use the clonal origin model as the
- basis for adding new recombinant edges to an existing ConversionGraph.
+ * Abstract class of ACG operators that use the clonal origin model as the basis
+ * for adding new recombinant edges to an existing ConversionGraph.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public abstract class EdgeCreationOperator extends ACGOperator {
-    
+
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "Model of population size through time.").setRequired();
 

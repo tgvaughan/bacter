@@ -24,6 +24,9 @@ import beast.util.Randomizer;
 import feast.input.In;
 
 /**
+ * Abstract class of ACG operators that use the clonal origin model as the
+ * basis for adding new converted edges and their affected sites to an
+ * existing ConversionGraph.
  *
  * @author Tim Vaughan (tgvaughan@gmail.com)
  */
@@ -35,8 +38,8 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
     /**
      * Choose region to be affected by this conversion.
      * 
-     * @param conv
-     * @return 
+     * @param conv Conversion object where these sites are stored.
+     * @return log probability density of chosen attachment.
      */
     public double drawAffectedRegion(Conversion conv) {
         double logP = 0.0;
@@ -74,6 +77,13 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         return logP;
     }
     
+    /**
+     * Calculate probability of choosing region affected by the given
+     * conversion under the ClonalOrigin model.
+     * 
+     * @param conv
+     * @return log probability density
+     */
     public double getAffectedRegionProb(Conversion conv) {
         double logP = 0.0;
 

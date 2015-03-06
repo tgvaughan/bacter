@@ -109,6 +109,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             oldParent.addChild(parent);
         }
 
+        logHGF += getAffectedRegionProb(conv) + getEdgeAttachmentProb(conv);
+
         // Remove conversion
         acg.deleteConversion(conv);
 
@@ -121,36 +123,66 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Conversion newConv = new Conversion();
 
         // Choose affected sites:
+        logHGF -= drawAffectedRegion(newConv);
         
-
-        // Select a point at random from the clonal frame:
-        double u = Randomizer.nextDouble()*acg.getClonalFrameLength();
-        Node chosenNode = null;
-        double chosenHeight = 0.0;
-
-        for (Node node : acg.getNodesAsArray()) {
-            if (node.isRoot())
-                continue; // skip root
-
-            if (u<node.getLength()) {
-                chosenNode = node;
-                chosenHeight = node.getHeight() + u;
-            } else
-                u -= node.getLength();
-        }
-
-        if (chosenNode == null)
-            throw new IllegalStateException("Error: node selection loop fell through!");
+        // Choose attchment points:
+        logHGF -= attachEdge(newConv);
 
         // Check for conversions which attach above chosen point
         for (Conversion conv : acg.getConversions()) {
-            if ((conv.getNode1() == chosenNode && conv.getHeight1()>chosenHeight)
-                || (conv.getNode2() == chosenNode && conv.getHeight2()>chosenHeight))
+            if ((conv.getNode1() == newConv.getNode1()
+                && conv.getHeight1()>newConv.getHeight1())
+                || (conv.getNode2() == newConv.getNode1()
+                && conv.getHeight2()>newConv.getHeight1()))
                 return Double.NEGATIVE_INFINITY;
         }
 
-        // Choose another random p
+        Node parent = newConv.getNode1().getParent();
+        Node sister = getSibling(newConv.getNode1());
+        double newHeight2 = parent.getHeight();
 
+        for (Conversion conv : acg.getConversions()) {
+            if (conv.getNode1() == parent)
+                conv.setNode1(sister);
+
+            if (conv.getNode2() == parent)
+                conv.setNode2(sister);
+        }
+
+        parent.removeChild(sister);
+        if (!parent.isRoot()) {
+            Node grandParent = parent.getParent();
+            grandParent.removeChild(parent);
+            grandParent.addChild(sister);
+        }
+
+        parent.setHeight(newConv.getHeight2());
+        for (Conversion conv : acg.getConversions()) {
+            if ((conv.getNode1() == newConv.getNode2())
+                && (conv.getHeight1()>parent.getHeight()))
+                conv.setNode1(parent);
+
+            if ((conv.getNode2() == newConv.getNode2())
+                && (conv.getHeight2()>parent.getHeight()))
+                conv.setNode2(parent);
+        }
+
+        if (newConv.getNode2().isRoot()) {
+            parent.setParent(null);
+            acg.setRoot(parent);
+            parent.addChild(newConv.getNode2());
+        } else {
+            Node grandParent = newConv.getNode2().getParent();
+            grandParent.removeChild(newConv.getNode2());
+            grandParent.addChild(parent);
+        }
+
+        newConv.setNode2(sister);
+        newConv.setHeight2(newHeight2);
+
+        acg.addConversion(newConv);
+
+        logHGF += Math.log(1.0/acg.getConvCount());
 
         return logHGF;
     }
