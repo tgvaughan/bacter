@@ -17,10 +17,14 @@
 package bacter.operators.unrestricted;
 
 import bacter.Conversion;
+import bacter.ConversionGraph;
 import bacter.operators.ACGOperator;
 import bacter.operators.EdgeCreationOperator;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
+import java.io.PrintStream;
 
 /**
  * Operator which reversibly deletes a conversion, modifying the CF
@@ -185,6 +189,29 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         logHGF += Math.log(1.0/acg.getConvCount());
 
         return logHGF;
+    }
+
+    public static void main(String[] args) throws Exception {
+        ConversionGraph acg = new ConversionGraph();
+        ConstantPopulation popFunc = new ConstantPopulation();
+
+
+        ClonalFrameConversionSwap operator = new ClonalFrameConversionSwap();
+        operator.initByName(
+            "weight", 1.0,
+            "acg", acg,
+            "populationModel", popFunc,
+            "delta", new RealParameter("50.0"));
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+
+        acg.initByName(
+            "sequenceLength", 10000,
+            "fromString", "(0:1.0,1:1.0)2:0.0;");
+
+        System.out.println(acg.getExtendedNewick(true));
+        operator.createConversion();
+        System.out.println(acg.getExtendedNewick(true));
+                
     }
     
 }
