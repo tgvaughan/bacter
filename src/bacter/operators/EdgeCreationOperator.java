@@ -17,7 +17,6 @@
 
 package bacter.operators;
 
-import bacter.operators.ACGOperator;
 import bacter.CFEventList;
 import bacter.Conversion;
 import beast.core.Input;
@@ -46,16 +45,16 @@ public abstract class EdgeCreationOperator extends ACGOperator {
         
         popFunc = popFuncInput.get();
     }
-    
+
     /**
      * Attach chosen recombination to the clonal frame.  Note that only the
      * attachment points (nodes and heights) are set, the affected region of
      * the alignment is not modified.
      * 
-     * @param recomb
+     * @param conv
      * @return log probability density of chosen attachment.
      */
-    public double attachEdge(Conversion recomb) {
+    public double attachEdge(Conversion conv) {
         
         double logP = 0.0;
         
@@ -68,15 +67,15 @@ public abstract class EdgeCreationOperator extends ACGOperator {
                 continue;
             
             if (u<node.getLength()) {
-                recomb.setNode1(node);
-                recomb.setHeight1(node.getHeight() + u);
+                conv.setNode1(node);
+                conv.setHeight1(node.getHeight() + u);
                 break;
             } else
                 u -= node.getLength();
         }
         
         // Select arrival point
-        logP += coalesceEdge(recomb);
+        logP += coalesceEdge(conv);
         
         return logP;
     }
@@ -85,14 +84,14 @@ public abstract class EdgeCreationOperator extends ACGOperator {
      * Retrieve probability density for both attachment points of the given
      * recombinant edge.
      * 
-     * @param recomb
+     * @param conv
      * @return log probability density
      */
-    public double getEdgeAttachmentProb(Conversion recomb) {
+    public double getEdgeAttachmentProb(Conversion conv) {
         double logP = 0.0;
         
         logP += Math.log(1.0/acg.getClonalFrameLength());
-        logP += getEdgeCoalescenceProb(recomb);
+        logP += getEdgeCoalescenceProb(conv);
         
         return logP;
     }
@@ -101,17 +100,17 @@ public abstract class EdgeCreationOperator extends ACGOperator {
      * Take a recombination with an existing departure point and determine
      * the arrival point by allowing it to coalesce with the clonal frame.
      * 
-     * @param recomb recombination to modify
+     * @param conv recombination to modify
      * @return log probability density of coalescent point chosen.
      */
-    public double coalesceEdge(Conversion recomb) {
+    public double coalesceEdge(Conversion conv) {
         double logP = 0.0;
         
         List<CFEventList.Event> events = acg.getCFEvents();
         
         // Locate event immediately below departure point
         int startIdx = 0;
-        while (events.get(startIdx+1).getHeight()<recomb.getHeight1())
+        while (events.get(startIdx+1).getHeight()<conv.getHeight1())
             startIdx += 1;
                 
         // Choose edge length in dimensionless time.
@@ -122,7 +121,7 @@ public abstract class EdgeCreationOperator extends ACGOperator {
             
             CFEventList.Event event = events.get(i);
             
-            double t = Math.max(recomb.getHeight1(), event.getHeight());
+            double t = Math.max(conv.getHeight1(), event.getHeight());
         
             // Determine length of interval in dimensionless time
             double intervalArea;
@@ -135,23 +134,23 @@ public abstract class EdgeCreationOperator extends ACGOperator {
             if (u<intervalArea*event.getLineageCount()) {
                 
                 // Set arrival point in real time
-                recomb.setHeight2(popFunc.getInverseIntensity(
+                conv.setHeight2(popFunc.getInverseIntensity(
                         popFunc.getIntensity(t) + u/event.getLineageCount()));
                 
                 // Attach to random clonal frame lineage extant at this time
                 int z = Randomizer.nextInt(event.getLineageCount());
                 for (Node node : acg.getNodesAsArray()) {
-                    if (recomb.getHeight2()>node.getHeight() &&
-                            (node.isRoot() || recomb.getHeight2()<node.getParent().getHeight())) {
+                    if (conv.getHeight2()>node.getHeight() &&
+                            (node.isRoot() || conv.getHeight2()<node.getParent().getHeight())) {
                         if (z==0) {
-                            recomb.setNode2(node);
+                            conv.setNode2(node);
                             break;
                         } else
                             z -= 1;
                     }
                 }
 
-                logP += -u + Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
+                logP += -u + Math.log(1.0/popFunc.getPopSize(conv.getHeight2()));
                 break;
                 
             } else {
@@ -167,23 +166,23 @@ public abstract class EdgeCreationOperator extends ACGOperator {
      * Get probability density for the arrival time of the given recombinant
      * edge under ClonalOrigin's coalescent model.
      * 
-     * @param recomb
+     * @param conv
      * @return log probability density
      */
-    public double getEdgeCoalescenceProb(Conversion recomb) {
+    public double getEdgeCoalescenceProb(Conversion conv) {
         double logP = 0.0;
         
         List<CFEventList.Event> events = acg.getCFEvents();
         
         // Find event immediately below departure point
         int startIdx = 0;
-        while (events.get(startIdx+1).getHeight()<recomb.getHeight1())
+        while (events.get(startIdx+1).getHeight()<conv.getHeight1())
             startIdx += 1;
         
         // Compute probability of edge length and arrival
-        for (int i=startIdx; i<events.size() && events.get(i).getHeight()<recomb.getHeight2(); i++) {           
-            double t1 = Math.max(recomb.getHeight1(), events.get(i).getHeight());
-            double t2 = recomb.getHeight2();
+        for (int i=startIdx; i<events.size() && events.get(i).getHeight()<conv.getHeight2(); i++) {           
+            double t1 = Math.max(conv.getHeight1(), events.get(i).getHeight());
+            double t2 = conv.getHeight2();
             if (i<events.size()-1)
                 t2 = Math.min(t2, events.get(i+1).getHeight());
         
@@ -192,7 +191,7 @@ public abstract class EdgeCreationOperator extends ACGOperator {
         }
         
         // Probability of single coalescence event
-        logP += Math.log(1.0/popFunc.getPopSize(recomb.getHeight2()));
+        logP += Math.log(1.0/popFunc.getPopSize(conv.getHeight2()));
         
         return logP;
     }

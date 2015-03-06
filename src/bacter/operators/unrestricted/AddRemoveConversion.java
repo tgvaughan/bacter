@@ -16,7 +16,6 @@
  */
 package bacter.operators.unrestricted;
 
-import bacter.operators.EdgeCreationOperator;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
@@ -31,13 +30,10 @@ import java.io.PrintStream;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Operator which adds and removes conversions to/from an ACG.")
-public class AddRemoveConversion extends EdgeCreationOperator {
+public class AddRemoveConversion extends ConversionCreationOperator {
     
     public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
             "Conversion rate parameter.").setRequired();
-    
-    public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
-            "Tract length parameter.").setRequired();
     
     public AddRemoveConversion() { };
     
@@ -87,42 +83,9 @@ public class AddRemoveConversion extends EdgeCreationOperator {
      * @return log of proposal density 
      */
     public double drawNewConversion() {
-        double logP = 0;
-
         Conversion newConversion = new Conversion();
-        
-        logP += attachEdge(newConversion);
-        //attachEdge(newConversion);
-        
-        // Draw location of converted region.
-        int startSite, endSite;
-        double u = Randomizer.nextDouble()*(deltaInput.get().getValue() + acg.getSequenceLength());
-        if (u<deltaInput.get().getValue()) {
-            startSite = 0;
-            logP += Math.log(deltaInput.get().getValue()
-                /(deltaInput.get().getValue() + acg.getSequenceLength()));
-        } else {
-            startSite = (int)(u-deltaInput.get().getValue());
-            logP += Math.log(1.0/(deltaInput.get().getValue()
-                + acg.getSequenceLength()));
-        }
 
-        endSite = startSite + (int)Randomizer.nextGeometric(1.0/deltaInput.get().getValue());
-        endSite = Math.min(endSite, acg.getSequenceLength()-1);
-
-        // Probability of end site:
-        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
-            endSite-startSite)/ deltaInput.get().getValue();
-        
-        // Include probability of going past the end:
-        if (endSite == acg.getSequenceLength()-1)
-            probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength()-startSite);
-
-        logP += Math.log(probEnd);
-
-        newConversion.setStartSite(startSite);
-        newConversion.setEndSite(endSite);
+        double logP = attachEdge(newConversion) + drawAffectedRegion(newConversion);
 
         acg.addConversion(newConversion);
         
@@ -137,31 +100,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
      * @return log of proposal density
      */
     public double getConversionProb(Conversion conv) {
-        double logP = 0;
-        
-        logP += getEdgeAttachmentProb(conv);
-        
-        // Calculate probability of converted region.
-        if (conv.getStartSite()==0)
-            logP += Math.log((deltaInput.get().getValue() + 1)
-                /(deltaInput.get().getValue() + acg.getSequenceLength()));
-        else
-            logP += Math.log(1.0/(deltaInput.get().getValue()
-                + acg.getSequenceLength()));
-
-        // Probability of end site:
-        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
-            conv.getEndSite() - conv.getStartSite())
-            / deltaInput.get().getValue();
-        
-        // Include probability of going past the end:
-        if (conv.getEndSite() == acg.getSequenceLength()-1)
-            probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength()-conv.getStartSite());
-
-        logP += Math.log(probEnd);
-        
-        return logP;
+        return getEdgeAttachmentProb(conv) + getAffectedRegionProb(conv);
     }
 
     public static void main(String[] args) throws Exception {

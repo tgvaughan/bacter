@@ -18,6 +18,7 @@ package bacter.operators.unrestricted;
 
 import bacter.Conversion;
 import bacter.operators.ACGOperator;
+import bacter.operators.EdgeCreationOperator;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
@@ -27,7 +28,7 @@ import beast.util.Randomizer;
  *
  * @author Tim Vaughan (tgvaughan@gmail.com)
  */
-public class ClonalFrameConversionSwap extends ACGOperator {
+public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
     @Override
     public double proposal() {
@@ -117,6 +118,38 @@ public class ClonalFrameConversionSwap extends ACGOperator {
     public double createConversion() {
         double logHGF = 0.0;
 
+        Conversion newConv = new Conversion();
+
+        // Choose affected sites:
+        
+
+        // Select a point at random from the clonal frame:
+        double u = Randomizer.nextDouble()*acg.getClonalFrameLength();
+        Node chosenNode = null;
+        double chosenHeight = 0.0;
+
+        for (Node node : acg.getNodesAsArray()) {
+            if (node.isRoot())
+                continue; // skip root
+
+            if (u<node.getLength()) {
+                chosenNode = node;
+                chosenHeight = node.getHeight() + u;
+            } else
+                u -= node.getLength();
+        }
+
+        if (chosenNode == null)
+            throw new IllegalStateException("Error: node selection loop fell through!");
+
+        // Check for conversions which attach above chosen point
+        for (Conversion conv : acg.getConversions()) {
+            if ((conv.getNode1() == chosenNode && conv.getHeight1()>chosenHeight)
+                || (conv.getNode2() == chosenNode && conv.getHeight2()>chosenHeight))
+                return Double.NEGATIVE_INFINITY;
+        }
+
+        // Choose another random p
 
 
         return logHGF;
