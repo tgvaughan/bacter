@@ -105,11 +105,11 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
                 continue;
 
             if (otherConv.getNode1() == conv.getNode2()
-                && otherConv.getHeight1() > conv.getHeight2())
+                && otherConv.getHeight1() > parent.getHeight())
                 otherConv.setNode1(parent);
 
             if (otherConv.getNode2() == conv.getNode2()
-                && otherConv.getHeight2() > conv.getHeight2())
+                && otherConv.getHeight2() > parent.getHeight())
                 otherConv.setNode2(parent);
         }
 
@@ -178,6 +178,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             newConv.setNode2(sister);
 
         parent.setHeight(newConv.getHeight2());
+        newConv.setHeight2(newHeight2);
+
         for (Conversion conv : acg.getConversions()) {
             if ((conv.getNode1() == newConv.getNode2())
                 && (conv.getHeight1()>parent.getHeight()))
@@ -199,13 +201,9 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
 
 
-        /*
-        if (newConv.getNode2() == sister)
+        if (newConv.getHeight2()>parent.getHeight())
             newConv.setNode2(parent);
-        else
-            newConv.setNode2(sister);
-        */
-        newConv.setHeight2(newHeight2);
+
 
         acg.addConversion(newConv);
 
@@ -216,7 +214,7 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
     public static void main(String[] args) throws Exception {
 
-        Randomizer.setSeed(1);
+        //Randomizer.setSeed(1);
 
         ConversionGraph acg = new ConversionGraph();
         ConstantPopulation popFunc = new ConstantPopulation();
