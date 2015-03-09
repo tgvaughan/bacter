@@ -93,8 +93,12 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         if (conv.getNode2() == parent)
             conv.setNode2(sister);
 
-        // Move conversions from node2 to parent
+        // Swap heights of parent and height2
+        double oldParentHeight = parent.getHeight();
         parent.setHeight(conv.getHeight2());
+        conv.setHeight2(oldParentHeight);
+
+        // Move conversions from node2 to parent
 
         for (Conversion otherConv : acg.getConversions()) {
             if (otherConv == conv)
