@@ -18,14 +18,15 @@ package bacter.operators.unrestricted;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.model.unrestricted.SimulatedACG;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
 
 /**
- * Operator which reversibly deletes a conversion, modifying the CF
- * to match the marginal tree of the original conversion.
+ * Operator which reversibly deletes a conversion, modifying the CF to match the
+ * marginal tree of the original conversion.
  *
  * @author Tim Vaughan (tgvaughan@gmail.com)
  */
@@ -33,37 +34,42 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
     @Override
     public double proposal() {
-        if (Randomizer.nextBoolean())
+        if (Randomizer.nextBoolean()) {
             return deleteConversion();
-        else
+        } else {
             return createConversion();
+        }
     }
 
     public double deleteConversion() {
         double logHGF = 0.0;
 
-        if (acg.getConvCount()==0)
+        if (acg.getConvCount() == 0) {
             return Double.NEGATIVE_INFINITY;
+        }
 
         Conversion conv = acg.getConversions().get(
             Randomizer.nextInt(acg.getConvCount()));
 
         // Skip invisible conversions:
-        if (conv.getNode1() == conv.getNode2())
+        if (conv.getNode1() == conv.getNode2()) {
             return Double.NEGATIVE_INFINITY;
+        }
 
-        logHGF -= Math.log(1.0/acg.getConvCount());
+        logHGF -= Math.log(1.0 / acg.getConvCount());
 
         // Abort if conversions attach to node1 above height1.
         for (Conversion otherConv : acg.getConversions()) {
-            if (otherConv == conv)
+            if (otherConv == conv) {
                 continue;
+            }
 
             if ((otherConv.getNode1() == conv.getNode1()
                 && otherConv.getHeight1() > conv.getHeight1())
                 || (otherConv.getNode2() == conv.getNode1()
-                && otherConv.getHeight2()> conv.getHeight2()))
+                && otherConv.getHeight2() > conv.getHeight2())) {
                 return Double.NEGATIVE_INFINITY;
+            }
         }
 
         // Move all conversion attachments from parent to sister.
@@ -71,14 +77,17 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Node sister = getSibling(conv.getNode1());
 
         for (Conversion otherConv : acg.getConversions()) {
-            if (otherConv == conv)
+            if (otherConv == conv) {
                 continue;
+            }
 
-            if (otherConv.getNode1() == parent)
+            if (otherConv.getNode1() == parent) {
                 otherConv.setNode1(sister);
+            }
 
-            if (otherConv.getNode2() == parent)
+            if (otherConv.getNode2() == parent) {
                 otherConv.setNode2(sister);
+            }
         }
 
         // Detach node1 from parent:
@@ -87,11 +96,13 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             Node grandParent = parent.getParent();
             grandParent.removeChild(parent);
             grandParent.addChild(sister);
-        } else
+        } else {
             sister.setParent(null);
+        }
 
-        if (conv.getNode2() == parent)
+        if (conv.getNode2() == parent) {
             conv.setNode2(sister);
+        }
 
         // Swap heights of parent and height2
         double oldParentHeight = parent.getHeight();
@@ -99,18 +110,20 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         conv.setHeight2(oldParentHeight);
 
         // Move conversions from node2 to parent
-
         for (Conversion otherConv : acg.getConversions()) {
-            if (otherConv == conv)
+            if (otherConv == conv) {
                 continue;
+            }
 
             if (otherConv.getNode1() == conv.getNode2()
-                && otherConv.getHeight1() > parent.getHeight())
+                && otherConv.getHeight1() > parent.getHeight()) {
                 otherConv.setNode1(parent);
+            }
 
             if (otherConv.getNode2() == conv.getNode2()
-                && otherConv.getHeight2() > parent.getHeight())
+                && otherConv.getHeight2() > parent.getHeight()) {
                 otherConv.setNode2(parent);
+            }
         }
 
         // Make final topology changes:
@@ -136,21 +149,23 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         // Choose affected sites:
         logHGF -= drawAffectedRegion(newConv);
-        
+
         // Choose attchment points:
         logHGF -= attachEdge(newConv);
 
         // Skip invisible conversions:
-        if (newConv.getNode1() == newConv.getNode2())
+        if (newConv.getNode1() == newConv.getNode2()) {
             return Double.NEGATIVE_INFINITY;
+        }
 
         // Check for conversions which attach above chosen point
         for (Conversion conv : acg.getConversions()) {
             if ((conv.getNode1() == newConv.getNode1()
-                && conv.getHeight1()>newConv.getHeight1())
+                && conv.getHeight1() > newConv.getHeight1())
                 || (conv.getNode2() == newConv.getNode1()
-                && conv.getHeight2()>newConv.getHeight1()))
+                && conv.getHeight2() > newConv.getHeight1())) {
                 return Double.NEGATIVE_INFINITY;
+            }
         }
 
         Node parent = newConv.getNode1().getParent();
@@ -158,11 +173,13 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         double newHeight2 = parent.getHeight();
 
         for (Conversion conv : acg.getConversions()) {
-            if (conv.getNode1() == parent)
+            if (conv.getNode1() == parent) {
                 conv.setNode1(sister);
+            }
 
-            if (conv.getNode2() == parent)
+            if (conv.getNode2() == parent) {
                 conv.setNode2(sister);
+            }
         }
 
         parent.removeChild(sister);
@@ -174,50 +191,65 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             grandParent.addChild(sister);
         }
 
-        if (newConv.getNode2() == parent)
+        if (newConv.getNode2() == parent) {
             newConv.setNode2(sister);
+        }
 
         parent.setHeight(newConv.getHeight2());
         newConv.setHeight2(newHeight2);
 
         for (Conversion conv : acg.getConversions()) {
             if ((conv.getNode1() == newConv.getNode2())
-                && (conv.getHeight1()>parent.getHeight()))
+                && (conv.getHeight1() > parent.getHeight())) {
                 conv.setNode1(parent);
+            }
 
             if ((conv.getNode2() == newConv.getNode2())
-                && (conv.getHeight2()>parent.getHeight()))
+                && (conv.getHeight2() > parent.getHeight())) {
                 conv.setNode2(parent);
+            }
         }
 
         if (newConv.getNode2().isRoot()) {
             parent.setParent(null);
             acg.setRoot(parent);
-            parent.addChild(newConv.getNode2());
         } else {
             Node grandParent = newConv.getNode2().getParent();
             grandParent.removeChild(newConv.getNode2());
             grandParent.addChild(parent);
         }
+        parent.addChild(newConv.getNode2());
 
 
-        if (newConv.getHeight2()>parent.getHeight())
-            newConv.setNode2(parent);
-
+        newConv.setNode2(sister);
 
         acg.addConversion(newConv);
 
-        logHGF += Math.log(1.0/acg.getConvCount());
+        logHGF += Math.log(1.0 / acg.getConvCount());
 
         return logHGF;
     }
 
     public static void main(String[] args) throws Exception {
 
-        //Randomizer.setSeed(1);
+        Randomizer.setSeed(1);
+
+        ConstantPopulation popFunc = new ConstantPopulation();
+
+        /*SimulatedACG acg = new SimulatedACG();
+        acg.initByName(
+            "rho", 0.0001,
+            "delta", 500.0,
+            "populationModel", popFunc,
+            "nTaxa", 3,
+            "sequenceLength", 10000);
+            */
 
         ConversionGraph acg = new ConversionGraph();
-        ConstantPopulation popFunc = new ConstantPopulation();
+         acg.initByName(
+         "sequenceLength", 10000,
+         //            "fromString", "(0:1.0,1:1.0)2:0.0;");
+         "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
 
         ClonalFrameConversionSwap operator = new ClonalFrameConversionSwap();
         operator.initByName(
@@ -227,13 +259,9 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             "delta", new RealParameter("50.0"));
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        acg.initByName(
-            "sequenceLength", 10000,
-//            "fromString", "(0:1.0,1:1.0)2:0.0;");
-            "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
 
         double logHR1, logHR2;
-        
+
         System.out.println(acg.getExtendedNewick(true));
         do {
             logHR1 = operator.createConversion();
@@ -249,7 +277,7 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         System.out.println("logHR1 = " + logHR1);
         System.out.println("logHR2 = " + logHR2);
-                
+
     }
-    
+
 }
