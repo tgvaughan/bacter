@@ -174,6 +174,9 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             grandParent.addChild(sister);
         }
 
+        if (newConv.getNode2() == parent)
+            newConv.setNode2(sister);
+
         parent.setHeight(newConv.getHeight2());
         for (Conversion conv : acg.getConversions()) {
             if ((conv.getNode1() == newConv.getNode2())
@@ -195,10 +198,13 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             grandParent.addChild(parent);
         }
 
+
+        /*
         if (newConv.getNode2() == sister)
             newConv.setNode2(parent);
         else
             newConv.setNode2(sister);
+        */
         newConv.setHeight2(newHeight2);
 
         acg.addConversion(newConv);
@@ -210,11 +216,10 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
     public static void main(String[] args) throws Exception {
 
-        Randomizer.setSeed(53);
+        Randomizer.setSeed(1);
 
         ConversionGraph acg = new ConversionGraph();
         ConstantPopulation popFunc = new ConstantPopulation();
-
 
         ClonalFrameConversionSwap operator = new ClonalFrameConversionSwap();
         operator.initByName(
@@ -226,16 +231,26 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         acg.initByName(
             "sequenceLength", 10000,
-            "fromString", "(0:1.0,1:1.0)2:0.0;");
-//            "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
+//            "fromString", "(0:1.0,1:1.0)2:0.0;");
+            "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
+
+        double logHR1, logHR2;
+        
+        System.out.println(acg.getExtendedNewick(true));
+        do {
+            logHR1 = operator.createConversion();
+        } while (Double.isInfinite(logHR1));
 
         System.out.println(acg.getExtendedNewick(true));
-        double logHR1 = operator.createConversion();
+
+        do {
+            logHR2 = operator.deleteConversion();
+        } while (Double.isInfinite(logHR2));
+
+        System.out.println(acg.getExtendedNewick(true));
+
         System.out.println("logHR1 = " + logHR1);
-        System.out.println(acg.getExtendedNewick(true));
-        double logHR2 = operator.deleteConversion();
         System.out.println("logHR2 = " + logHR2);
-        System.out.println(acg.getExtendedNewick(true));
                 
     }
     
