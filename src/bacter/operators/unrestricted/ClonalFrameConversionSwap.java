@@ -18,13 +18,10 @@ package bacter.operators.unrestricted;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
-import bacter.operators.ACGOperator;
-import bacter.operators.EdgeCreationOperator;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
-import java.io.PrintStream;
 
 /**
  * Operator which reversibly deletes a conversion, modifying the CF
@@ -92,6 +89,9 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             grandParent.addChild(sister);
         } else
             sister.setParent(null);
+
+        if (conv.getNode2() == parent)
+            conv.setNode2(sister);
 
         // Move conversions from node2 to parent
         parent.setHeight(conv.getHeight2());
@@ -162,7 +162,9 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
 
         parent.removeChild(sister);
-        if (!parent.isRoot()) {
+        if (parent.isRoot()) {
+            sister.setParent(null);
+        } else {
             Node grandParent = parent.getParent();
             grandParent.removeChild(parent);
             grandParent.addChild(sister);
@@ -189,7 +191,10 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             grandParent.addChild(parent);
         }
 
-        newConv.setNode2(sister);
+        if (newConv.getNode2() == sister)
+            newConv.setNode2(parent);
+        else
+            newConv.setNode2(sister);
         newConv.setHeight2(newHeight2);
 
         acg.addConversion(newConv);
@@ -221,8 +226,11 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 //            "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
 
         System.out.println(acg.getExtendedNewick(true));
-        operator.createConversion();
-        //operator.deleteConversion();
+        double logHR1 = operator.createConversion();
+        System.out.println("logHR1 = " + logHR1);
+        System.out.println(acg.getExtendedNewick(true));
+        double logHR2 = operator.deleteConversion();
+        System.out.println("logHR2 = " + logHR2);
         System.out.println(acg.getExtendedNewick(true));
                 
     }
