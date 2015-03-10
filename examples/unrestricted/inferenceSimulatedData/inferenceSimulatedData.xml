@@ -18,7 +18,7 @@
     <!-- Simulated ACG (Truth) -->  
 
     <input spec='SimulatedACG' id='acgTruth'
-        rho="0.00015" delta="500.0" sequenceLength="10000" nTaxa="20"
+        rho="0.0003" delta="1000.0" sequenceLength="10000" nTaxa="20"
         outputFileName="simulated_acg.nexus">
         <populationModel spec='ConstantPopulation' popSize="1.0"/>
     </input>
@@ -36,12 +36,12 @@
     <run spec="MCMC" id="mcmc" chainLength="10000000">
         <state>
             <stateNode id="acg" spec='SimulatedACG'
-                alignment="@alignment" rho="0.0001" delta="500.0">
+                alignment="@alignment" rho="0" delta="500.0">
                 <populationModel spec='ConstantPopulation' popSize="5.0"/>
             </stateNode>
 
-            <stateNode id="rho" spec='RealParameter' value="0.00015" />
-            <stateNode id="delta" spec='RealParameter' value="500.0"/>
+            <stateNode id="rho" spec='RealParameter' value="0.0003" />
+            <stateNode id="delta" spec='RealParameter' value="1000.0"/>
             <stateNode id="popSize" spec='RealParameter' value="1.0"/>
             <stateNode id="mutationRate" spec='RealParameter' value="0.1"/>
         </state>

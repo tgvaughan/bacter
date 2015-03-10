@@ -235,15 +235,17 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Randomizer.setSeed(1);
 
         ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        /*SimulatedACG acg = new SimulatedACG();
+        /*
+        SimulatedACG acg = new SimulatedACG();
         acg.initByName(
             "rho", 0.0001,
             "delta", 500.0,
             "populationModel", popFunc,
             "nTaxa", 3,
             "sequenceLength", 10000);
-            */
+        */
 
         ConversionGraph acg = new ConversionGraph();
          acg.initByName(
@@ -257,8 +259,6 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             "acg", acg,
             "populationModel", popFunc,
             "delta", new RealParameter("50.0"));
-        popFunc.initByName("popSize", new RealParameter("1.0"));
-
 
         double logHR1, logHR2;
 
