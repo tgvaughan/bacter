@@ -142,6 +142,11 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         return logHGF;
     }
 
+    /**
+     * Replaces a portion of the clonal frame with a conversion.
+     * 
+     * @return  log Hastings-Green factor 
+     */
     public double createConversion() {
         double logHGF = 0.0;
 
@@ -171,6 +176,7 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Node parent = newConv.getNode1().getParent();
         Node sister = getSibling(newConv.getNode1());
         double newHeight2 = parent.getHeight();
+        Node newNode2 = sister;
 
         for (Conversion conv : acg.getConversions()) {
             if (conv.getNode1() == parent) {
@@ -197,19 +203,6 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
 
         parent.setHeight(newConv.getHeight2());
-        newConv.setHeight2(newHeight2);
-
-        for (Conversion conv : acg.getConversions()) {
-            if ((conv.getNode1() == newConv.getNode2())
-                && (conv.getHeight1() > parent.getHeight())) {
-                conv.setNode1(parent);
-            }
-
-            if ((conv.getNode2() == newConv.getNode2())
-                && (conv.getHeight2() > parent.getHeight())) {
-                conv.setNode2(parent);
-            }
-        }
 
         if (newConv.getNode2().isRoot()) {
             parent.setParent(null);
@@ -222,12 +215,21 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         parent.addChild(newConv.getNode2());
 
 
-        if (newConv.getHeight2()>parent.getHeight())
-            newConv.setNode2(parent);
-        else
-            newConv.setNode2(sister);
-
+        newConv.setHeight2(newHeight2);
+        newConv.setNode2(newNode2);
         acg.addConversion(newConv);
+
+        for (Conversion conv : acg.getConversions()) {
+            if ((conv.getNode1() == newConv.getNode2())
+                && (conv.getHeight1() > parent.getHeight())) {
+                conv.setNode1(parent);
+            }
+
+            if ((conv.getNode2() == newConv.getNode2())
+                && (conv.getHeight2() > parent.getHeight())) {
+                conv.setNode2(parent);
+            }
+        }
 
         logHGF += Math.log(1.0 / acg.getConvCount());
 
