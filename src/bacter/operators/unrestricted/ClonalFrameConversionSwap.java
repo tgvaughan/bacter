@@ -185,6 +185,7 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         parent.removeChild(sister);
         if (parent.isRoot()) {
             sister.setParent(null);
+            acg.setRoot(sister);
         } else {
             Node grandParent = parent.getParent();
             grandParent.removeChild(parent);
@@ -221,7 +222,10 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         parent.addChild(newConv.getNode2());
 
 
-        newConv.setNode2(sister);
+        if (newConv.getHeight2()>parent.getHeight())
+            newConv.setNode2(parent);
+        else
+            newConv.setNode2(sister);
 
         acg.addConversion(newConv);
 
@@ -237,21 +241,21 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        /*
         SimulatedACG acg = new SimulatedACG();
         acg.initByName(
             "rho", 0.0001,
             "delta", 500.0,
             "populationModel", popFunc,
-            "nTaxa", 3,
+            "nTaxa", 5,
             "sequenceLength", 10000);
-        */
 
+        /*
         ConversionGraph acg = new ConversionGraph();
          acg.initByName(
          "sequenceLength", 10000,
          //            "fromString", "(0:1.0,1:1.0)2:0.0;");
          "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
+        */
 
         ClonalFrameConversionSwap operator = new ClonalFrameConversionSwap();
         operator.initByName(
