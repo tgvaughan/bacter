@@ -201,7 +201,6 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         parent.removeChild(sister);
         if (parent.isRoot()) {
             sister.setParent(null);
-            acg.setRoot(sister);
         } else {
             Node grandParent = parent.getParent();
             grandParent.removeChild(parent);
@@ -213,7 +212,6 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         if (newConv.getNode2().isRoot()) {
             parent.setParent(null);
-            acg.setRoot(parent);
         } else {
             Node grandParent = newConv.getNode2().getParent();
             grandParent.removeChild(newConv.getNode2());
@@ -244,6 +242,16 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         acg.addConversion(newConv);
 
+        // Ensure root is correctly set:
+        // (Can only do this once the tree is stitched back together.)
+
+        if (sister.isRoot())
+            acg.setRoot(sister);
+
+        if (parent.isRoot())
+            acg.setRoot(parent);
+
+        // Include reverse move HGF contribution:
         logHGF += Math.log(1.0 / acg.getConvCount());
 
         return logHGF;
