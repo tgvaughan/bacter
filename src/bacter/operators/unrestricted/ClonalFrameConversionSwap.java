@@ -41,6 +41,11 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
     }
 
+    /**
+     * Replaces a conversion with a modification to the clonal frame.
+     * 
+     * @return log Hastings-Green factor
+     */
     public double deleteConversion() {
         double logHGF = 0.0;
 
@@ -144,8 +149,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
     /**
      * Replaces a portion of the clonal frame with a conversion.
-     * 
-     * @return  log Hastings-Green factor 
+     *
+     * @return log Hastings-Green factor
      */
     public double createConversion() {
         double logHGF = 0.0;
@@ -179,7 +184,6 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Node newNode2 = sister;
 
         // Detach parent from original location above sister
-
         for (Conversion conv : acg.getConversions()) {
             if (conv.getNode1() == parent) {
                 conv.setNode1(sister);
@@ -190,8 +194,9 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             }
         }
 
-        if (newConv.getNode2() == parent)
+        if (newConv.getNode2() == parent) {
             newConv.setNode2(sister);
+        }
 
         parent.removeChild(sister);
         if (parent.isRoot()) {
@@ -204,7 +209,6 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
 
         // Attach parent to new location above newConv.node2
-
         parent.setHeight(newConv.getHeight2());
 
         if (newConv.getNode2().isRoot()) {
@@ -216,7 +220,6 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             grandParent.addChild(parent);
         }
         parent.addChild(newConv.getNode2());
-
 
         for (Conversion conv : acg.getConversions()) {
             if ((conv.getNode1() == newConv.getNode2())
@@ -231,13 +234,13 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
 
         // Update newConv so that it replaces the original topology.
-
         newConv.setHeight2(newHeight2);
 
-        if (!newNode2.isRoot() && newNode2.getParent().getHeight()<newHeight2)
+        if (!newNode2.isRoot() && newNode2.getParent().getHeight() < newHeight2) {
             newConv.setNode2(newNode2.getParent());
-        else
+        } else {
             newConv.setNode2(newNode2);
+        }
 
         acg.addConversion(newConv);
 
@@ -249,7 +252,6 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
     public static void main(String[] args) throws Exception {
 
         //Randomizer.setSeed(7);
-
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
@@ -258,17 +260,16 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             "rho", 0.0001,
             "delta", 500.0,
             "populationModel", popFunc,
-            "nTaxa", 2,
+            "nTaxa", 10,
             "sequenceLength", 10000);
 
         /*
-        ConversionGraph acg = new ConversionGraph();
+         ConversionGraph acg = new ConversionGraph();
          acg.initByName(
          "sequenceLength", 10000,
          //            "fromString", "(0:1.0,1:1.0)2:0.0;");
          "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
-        */
-
+         */
         ClonalFrameConversionSwap operator = new ClonalFrameConversionSwap();
         operator.initByName(
             "weight", 1.0,
