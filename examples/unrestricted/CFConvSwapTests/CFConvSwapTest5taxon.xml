@@ -13,14 +13,11 @@
 
   
   <input spec='SimulatedACG' id='acg'
-         rho="0.0005" delta="50.0" sequenceLength="10000" nTaxa="2">
+         rho="0.0005" delta="50.0" sequenceLength="10000" nTaxa="5">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
   </input>
 
-
-
-
-  <run spec="MCMC" id="mcmc" chainLength="10000000">
+  <run spec="MCMC" id="mcmc" chainLength="100000000">
     <state>
       <stateNode idref='acg'/>
     </state>
@@ -78,13 +75,13 @@
         </operator>
     </operator>
 
-    <logger logEvery="10000">
+    <logger logEvery="100000">
       <model idref='posterior'/>
       <log idref="posterior"/>
       <log spec='TreeHeightLogger' tree="@acg"/>
     </logger>
     
-    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
+    <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
        <log idref="acg"/>
      </logger>
      
