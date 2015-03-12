@@ -17,7 +17,6 @@
 package bacter.operators.unrestricted;
 
 import bacter.Conversion;
-import bacter.ConversionGraph;
 import bacter.model.unrestricted.SimulatedACG;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;

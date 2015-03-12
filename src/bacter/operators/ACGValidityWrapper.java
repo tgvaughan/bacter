@@ -30,7 +30,17 @@ public class ACGValidityWrapper extends ACGOperator {
     public Input<Operator> operatorInput = new In<Operator>("operator",
             "Operator to follow validity check with.").setRequired();
 
-    public ACGValidityWrapper() { }
+    public ACGValidityWrapper() {
+        In.setOptional(m_pWeight);
+    }
+
+    @Override
+    public void initAndValidate() throws Exception {
+        m_pWeight.setValue(operatorInput.get().m_pWeight.get(), this);
+        super.initAndValidate();
+    }
+
+    
     
     @Override
     public double proposal() {
