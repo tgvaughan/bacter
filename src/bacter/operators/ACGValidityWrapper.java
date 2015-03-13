@@ -40,8 +40,6 @@ public class ACGValidityWrapper extends ACGOperator {
         super.initAndValidate();
     }
 
-    
-    
     @Override
     public double proposal() {
         double logP = operatorInput.get().proposal();
@@ -51,5 +49,5 @@ public class ACGValidityWrapper extends ACGOperator {
         
         return logP;
     }
-    
+
 }
