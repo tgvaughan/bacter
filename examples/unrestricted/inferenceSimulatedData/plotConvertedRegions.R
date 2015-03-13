@@ -57,10 +57,13 @@ getTruth <- function(filename) {
     return(data.frame(start=start, end=end, visible=visible, index=indices))
 }
 
-getTrueSiteConversionCount <- function(df, seqLen) {
+getTrueSiteConversionCount <- function(df, seqLen, includeInvisible=TRUE) {
     res <- rep(0, seqLen)
     for (i in 1:length(df$index)) {
-        range <- df$start[i]:df$end[i]
+        if (!includeInvisible && !df$visible[i])
+            next;
+
+        range <- (df$start[i]+1):(df$end[i]+1)
         res[range] <- res[range] + 1
     }
 
@@ -102,12 +105,24 @@ plotConversionProb <- function(filename, seqLen, truthFile=NA, burnin=0.1) {
 
 
 getSiteMeanConversionCount <- function(df, seqLen) {
-    res <- rep(0, seqLen)
-    for (i in 1:length(df$acg.converted)) {
-        res <-  res + getSiteConversionCount(df$acg.converted[[i]], seqLen)
+    N <- length(df$acg.converted)
+
+    mean <- rep(0, seqLen)
+    std <- rep(0, seqLen)
+    for (i in 1:N) {
+        count <- getSiteConversionCount(df$acg.converted[[i]], seqLen)
+        mean <-  mean + count
+        std <- std + count*count
     }
 
-    return (res/length(df$acg.converted))
+    mean <- mean/N
+    std <- sqrt(std/N - mean*mean)
+
+    res <- list()
+    res$mean <- mean
+    res$std <- std
+
+    return (res)
 }
 
 plotMeanConversionCount <- function(filename, seqLen, truthFile=NA, burnin=0.1) {
@@ -117,9 +132,13 @@ plotMeanConversionCount <- function(filename, seqLen, truthFile=NA, burnin=0.1) 
     
     siteCounts <- getSiteMeanConversionCount(df, seqLen)
 
-    countdf <- data.frame(site=1:seqLen, count=siteCounts)
+    countdf <- data.frame(site=1:seqLen, mean=siteCounts$mean, std=siteCounts$std)
 
-    p <- ggplot(countdf, aes(x=site, y=count)) + geom_line()
+    #return (countdf)
+
+    p <- ggplot(countdf, aes(x=site, y=mean, ymin=mean-std, ymax=mean+std))
+    p <- p + geom_ribbon(show_guide=T, alpha=0.5)
+    p <- p + geom_line()
     p <- p + scale_y_discrete()
     p <- p + xlab("Site") + ylab("Count")
     p <- p + ggtitle("Per-site mean conversion count")
@@ -128,10 +147,40 @@ plotMeanConversionCount <- function(filename, seqLen, truthFile=NA, burnin=0.1) 
         truth <- getTruth(truthFile)
         siteCountsTrue <- getTrueSiteConversionCount(truth, seqLen)
         trueCountDF <-  data.frame(site=1:seqLen, count=siteCountsTrue)
-        p <- p + geom_line(data=trueCountDF, mapping=aes(x=site, y=count), colour="red")
+        p <- p + geom_line(data=trueCountDF,
+                           mapping=aes(x=site, y=count, ymin=0, ymax=0), colour="red")
     }
     
     return(p)
+}
+
+plotConversionCounts <- function(filename, seqLen, truthFile=NA, burnin=0.1, includeInvisible=TRUE, ...) {
+    df <- read.table(filename, as.is=T, header=T)
+    N <- dim(df)[1]
+    df <- df[-(1:(round(burnin*N))),]
+
+    for (i in seq(1,dim(df)[1], by=ceiling(dim(df)[1]/1000))) {
+        count <- getSiteConversionCount(df$acg.converted[[i]], seqLen)
+
+        if (i==1) {
+            plot(1:seqLen, count, 'l', col=rgb(1,0,0,0.01),
+                 xlab='Site',
+                 ylab='Count',
+                 main="Conversion counts per site",
+                 ...)
+        } else {
+            lines(1:seqLen, count, 's', col=rgb(0,0,0,0.01))
+        }
+    }
+
+    if (!is.na(truthFile)) {
+        truth <- getTruth(truthFile)
+        siteCountsTrue <- getTrueSiteConversionCount(truth, seqLen, includeInvisible)
+        trueCountDF <-  data.frame(site=1:seqLen, count=siteCountsTrue)
+        lines(1:seqLen, siteCountsTrue, col=rgb(0.5,0,0), lwd=3)
+
+        legend('topleft', inset=0.05, c('Truth'), col=rgb(0.5,0,0), lty=1, lwd=3)
+    }
 }
 
 plotConvertedSiteTrace <- function(filename, seqLen, maxStates=400, maxSites=200) {
