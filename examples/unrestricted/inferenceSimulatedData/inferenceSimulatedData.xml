@@ -33,7 +33,7 @@
     </input>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <run spec="MCMC" id="mcmc" chainLength="10000">
         <state>
             <stateNode id="acg" spec='SimulatedACG'
                 alignment="@alignment" rho="0.0003" delta="1000.0">
@@ -137,6 +137,8 @@
 
     <operator id="CEslide" spec="ConvertedEdgeSlide" weight="1.0"
         acg="@acg" scaleBound="0.8" />
+
+    <operator id="CFUniform" spec='CFUniform' acg="@acg" weight="10"/>
 
     <operator id="Uniform" spec='ACGValidityWrapper' acg="@acg" weight="1">
         <operator spec='Uniform' weight="10">

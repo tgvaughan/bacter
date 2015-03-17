@@ -3,7 +3,7 @@
   
     <run spec="ACGSimulator" nSims="100000">
         <simACG spec="SimulatedACG" id="acg"
-                rho="0.001" delta="50.0" sequenceLength="10000"
+                rho="0.0005" delta="50.0" sequenceLength="10000"
                 nTaxa="2">
             <populationModel spec="ConstantPopulation" popSize="1.0"/>
         </simACG>
