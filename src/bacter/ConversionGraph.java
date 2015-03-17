@@ -582,7 +582,7 @@ public class ConversionGraph extends Tree {
 
         if (regionList != null)
             regionList.makeDirty();
-  }
+    }
     
     /*
      * Loggable implementation.

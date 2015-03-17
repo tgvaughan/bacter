@@ -164,6 +164,7 @@ plotConversionCounts <- function(filename, seqLen, truthFile=NA, burnin=0.1, inc
 
         if (i==1) {
             plot(1:seqLen, count, 'l', col=rgb(1,0,0,0.01),
+                 ylim=c(0, max(count)),
                  xlab='Site',
                  ylab='Count',
                  main="Conversion counts per site",
