@@ -17,11 +17,44 @@
 
 package bacter.model;
 
+import bacter.ConversionGraph;
 import beast.core.Distribution;
+import beast.core.Input;
+import feast.input.In;
 
 /**
+ * Abstract class of distributions over ConversionGraphs. Concrete
+ * implementations should override calculateACGLogP rather than
+ * calculateLogP.  This allows optional validity testing to be performed.
+ * 
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public abstract class ACGDistribution extends Distribution {
+
+    public Input<ConversionGraph> acgInput = new In<ConversionGraph>(
+            "acg", "Recombination graph.").setRequired();
+
+    public Input<Boolean> checkValidityInput = new In<Boolean>("checkValidity",
+            "Explicitly check validity of conversion graph.").setDefault(false);
+
+    protected ConversionGraph acg;
+
+    @Override
+    public void initAndValidate() throws Exception {
+        acg = acgInput.get();
+    }
+
+    @Override
+    public final double calculateLogP() throws Exception {
+        if (!acg.isValid()) {
+            logP = Double.NEGATIVE_INFINITY;
+        } else {
+            logP = calculateACGLogP();
+        }
+
+        return logP;
+    }
+
+    public abstract double calculateACGLogP();
     
 }

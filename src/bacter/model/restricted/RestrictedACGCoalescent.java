@@ -18,7 +18,6 @@ package bacter.model.restricted;
 
 import bacter.CFEventList;
 import bacter.Conversion;
-import bacter.ConversionGraph;
 import bacter.model.ACGDistribution;
 import beast.core.Description;
 import beast.core.Input;
@@ -35,9 +34,6 @@ import java.util.Random;
 @Description("Appoximation to the coalescent with gene conversion.")
 public class RestrictedACGCoalescent extends ACGDistribution {
     
-    public Input<ConversionGraph> acgInput = new In<ConversionGraph>(
-            "acg", "Conversion graph.").setRequired();
-    
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "Population model.").setRequired();
     
@@ -47,7 +43,6 @@ public class RestrictedACGCoalescent extends ACGDistribution {
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
     
-    ConversionGraph acg;
     PopulationFunction popFunc;
     int sequenceLength;
     
@@ -55,18 +50,15 @@ public class RestrictedACGCoalescent extends ACGDistribution {
     
     @Override
     public void initAndValidate() throws Exception {
-
-        acg = acgInput.get();
+        super.initAndValidate();
         
         sequenceLength = acg.getSequenceLength();
 
         popFunc = popFuncInput.get();
-        
-        super.initAndValidate();
     }
     
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateACGLogP() {
 
         if (acg.isValid()) {
             

@@ -112,8 +112,12 @@ public class CFSubtreeSlide extends ACGOperator {
             parent.setHeight(newHeight);
 
             for (Conversion conv : acg.getConversions()) {
-                if (conv.getNode1() == newSister && conv.getHeight1()>newHeight)
-                    conv.setNode1(parent);
+                if (conv.getNode1() == newSister && conv.getHeight1()>newHeight) {
+                    if (!parent.isRoot())
+                        conv.setNode1(parent);
+                    else
+                        return Double.NEGATIVE_INFINITY;
+                }
 
                 if (conv.getNode2() == newSister && conv.getHeight2()>newHeight)
                     conv.setNode2(parent);
@@ -121,6 +125,7 @@ public class CFSubtreeSlide extends ACGOperator {
                 
         } else {
 
+            System.out.println(acg.getExtendedNewick(true));
             
             // Disconnect <node,parent>
             if (parent.isRoot()) {
@@ -197,6 +202,10 @@ public class CFSubtreeSlide extends ACGOperator {
 
         }
 
+        if (delta<0)
+            return Double.NEGATIVE_INFINITY;
+
+        System.out.println(acg.getExtendedNewick(true));
         return logHGF;
     }
     

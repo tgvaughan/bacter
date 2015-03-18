@@ -33,7 +33,7 @@
     </input>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <run spec="MCMC" id="mcmc" chainLength="100000">
         <state>
             <stateNode id="acg" spec='SimulatedACG'
                 alignment="@alignment" rho="0.0003" delta="1000.0">
@@ -102,7 +102,7 @@
 
     <!-- ACG operators -->
 
-    <operator id="addRemove" spec="AddRemoveConversion" weight="1.0">
+    <operator id="addRemove" spec="AddRemoveConversion" weight="10.0">
         <acg idref="acg"/>
         <rho idref="rho"/>
         <delta idref="delta"/>
@@ -126,7 +126,7 @@
     <operator id="mergeSplit" spec="MergeSplitConversion" weight="1.0"
         acg="@acg" />
 
-    <operator id="cfConvSwap" spec="ClonalFrameConversionSwap" weight="1.0"
+    <operator id="cfConvSwap" spec="ClonalFrameConversionSwap" weight="10.0"
         delta="@delta" populationModel="@popModel" acg="@acg" />
 
     <operator id="CEhop" spec="ConvertedEdgeHop" weight="1.0"
@@ -140,29 +140,47 @@
 
     <operator id="CFUniform" spec='CFUniform' acg="@acg" weight="10"/>
 
-    <operator id="STS" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
+    <operator id="STS" spec='ACGValidityWrapper' acg="@acg">
+        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="0.1">
             <tree idref="acg"/>
         </operator>
     </operator>
 
-    <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
+    <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg">
+        <operator id='narrow' spec='Exchange' isNarrow='true' weight="10">
             <tree idref="acg"/>
         </operator>
     </operator>
 
-    <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
+    <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg">
+        <operator id='wide' spec='Exchange' isNarrow='false' weight="10">
             <tree idref="acg"/>
         </operator>
     </operator>
 
-    <operator id="WB" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator spec='WilsonBalding' weight="1">
+    <operator id="WB" spec='ACGValidityWrapper' acg="@acg">
+        <operator spec='WilsonBalding' weight="10">
             <tree idref="acg"/>
         </operator>
     </operator>
+
+    <!--
+    <operator id="STS" spec='SubtreeSlide' weight="5" gaussian="true" size="0.05">
+        <tree idref="acg"/>
+    </operator>
+
+    <operator id="STXnarrow" spec='Exchange' isNarrow='true' weight="10">
+        <tree idref="acg"/>
+    </operator>
+
+    <operator id='STXwide' spec='Exchange' isNarrow='false' weight="1">
+        <tree idref="acg"/>
+    </operator>
+
+    <operator id="WB" spec='WilsonBalding' weight="1">
+        <tree idref="acg"/>
+    </operator>
+    -->
 
     <!-- Output logging -->
 
@@ -186,13 +204,13 @@
         <log spec="ConversionGraphStatsLogger" acg="@acg"/>
     </logger>
 
-    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
+    <logger logEvery="100" fileName="$(filebase).trees" mode="tree">
         <log idref="acg"/>
     </logger>
 
-    <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
+    <!--logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
         <log spec="ClonalFrameLogger" acg="@acg"/>
-    </logger>
+    </logger-->
 
     <logger logEvery="100" fileName="$(filebase).converted">
         <model idref="posterior"/>

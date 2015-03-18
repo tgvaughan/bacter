@@ -17,11 +17,9 @@
 package bacter.model;
 
 import bacter.Conversion;
-import bacter.ConversionGraph;
 import bacter.MarginalTree;
 import bacter.Region;
 import beast.core.Description;
-import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
@@ -46,18 +44,14 @@ import java.util.Set;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Probability of sequence data given recombination graph.")
-public class ACGLikelihood extends Distribution {
-    
-    public Input<ConversionGraph> acgInput = new In<ConversionGraph>(
-            "acg", "Recombination graph.").setRequired();
-    
+public class ACGLikelihood extends ACGDistribution {
+
     public Input<Alignment> alignmentInput = new In<Alignment>(
             "data", "Sequence data to evaluate probability of.").setRequired();
     
     public Input<SiteModelInterface> siteModelInput = new In<SiteModelInterface>(
             "siteModel", "Site model for evolution of alignment.").setRequired();
 
-    ConversionGraph acg;
     SiteModel.Base siteModel;
     SubstitutionModel.Base substitutionModel;
     Alignment alignment;
@@ -80,6 +74,8 @@ public class ACGLikelihood extends Distribution {
     
     @Override
     public void initAndValidate() throws Exception {
+
+        super.initAndValidate();
         
         acg = acgInput.get();
         alignment = alignmentInput.get();
@@ -106,7 +102,7 @@ public class ACGLikelihood extends Distribution {
     
     
     @Override
-    public double calculateLogP() {
+    public double calculateACGLogP() {
         
         count += 1;
         
