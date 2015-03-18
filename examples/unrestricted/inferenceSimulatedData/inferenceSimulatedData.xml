@@ -33,7 +33,7 @@
     </input>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="10000">
+    <run spec="MCMC" id="mcmc" chainLength="10000000">
         <state>
             <stateNode id="acg" spec='SimulatedACG'
                 alignment="@alignment" rho="0.0003" delta="1000.0">
@@ -139,12 +139,6 @@
         acg="@acg" scaleBound="0.8" />
 
     <operator id="CFUniform" spec='CFUniform' acg="@acg" weight="10"/>
-
-    <operator id="Uniform" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator spec='Uniform' weight="10">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
 
     <operator id="STS" spec='ACGValidityWrapper' acg="@acg" weight="1">
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
