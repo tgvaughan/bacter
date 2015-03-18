@@ -72,4 +72,80 @@ public abstract class ACGOperator extends Operator {
         }
         return true;
     }
+
+    /**
+     * Disconnect edge <node, node.parent> from its sister and
+     * grandparent (if the grandparent exists), forming a new edge
+     * <sister, grandparent>. All conversions originally above node.parent
+     * are re-attached to sister.
+     * 
+     * @param node base of edge to detach.
+     */
+    protected void disconnectEdge(Node node) {
+
+        if (node.isRoot())
+            throw new IllegalArgumentException("Programmer error: "
+                    + "root argument passed to disconnectEdge().");
+
+        Node parent = node.getParent();
+        Node sister = getSibling(node);
+
+        if (parent.isRoot()) {
+            parent.removeChild(sister);
+            sister.setParent(null);
+            acg.setRoot(node);
+        } else {
+            Node grandParent = parent.getParent();
+            grandParent.removeChild(parent);
+            parent.setParent(null);
+            grandParent.addChild(sister);
+        }
+
+        for (Conversion conv : acg.getConversions()) {
+            if (conv.getNode1() == parent)
+                conv.setNode1(sister);
+
+            if (conv.getNode2() == parent)
+                conv.setNode2(sister);
+        }
+    }
+
+    /**
+     * Connect edge <node, node.parent> above destEdgeBase, forming new
+     * edge <destEdgeBase, node.parent> and <node.parent, destEdgeBase.parent>.
+     * All conversions above destEdgeBase that are older than destTime
+     * are transfered to the new edge above node.parent.
+     * 
+     * @param node base of edge to attach
+     * @param destEdgeBase base of edge to be bisected
+     * @param destTime height at which bisection will occur
+     */
+    protected void connectEdge(Node node, Node destEdgeBase, double destTime) {
+
+        if (node.isRoot())
+            throw new IllegalArgumentException("Programmer error: "
+                    + "root argument passed to connectEdge().");
+
+        Node parent = node.getParent();
+        
+        if (destEdgeBase.isRoot()) {
+            parent.addChild(destEdgeBase);
+            acg.setRoot(parent);
+        } else {
+            Node grandParent = destEdgeBase.getParent();
+            grandParent.removeChild(destEdgeBase);
+            grandParent.addChild(parent);
+            parent.addChild(destEdgeBase);
+        }
+
+        parent.setHeight(destTime);
+
+        for (Conversion conv : acg.getConversions()) {
+            if (conv.getNode1()==destEdgeBase && conv.getHeight1()>destTime)
+                conv.setNode1(parent);
+
+            if (conv.getNode2()==destEdgeBase && conv.getHeight2()>destTime)
+                conv.setNode2(parent);
+        }
+    }
 }
