@@ -92,7 +92,6 @@ public abstract class ACGOperator extends Operator {
         if (parent.isRoot()) {
             parent.removeChild(sister);
             sister.setParent(null);
-            acg.setRoot(node);
         } else {
             Node grandParent = parent.getParent();
             grandParent.removeChild(parent);
@@ -130,7 +129,6 @@ public abstract class ACGOperator extends Operator {
         
         if (destEdgeBase.isRoot()) {
             parent.addChild(destEdgeBase);
-            acg.setRoot(parent);
         } else {
             Node grandParent = destEdgeBase.getParent();
             grandParent.removeChild(destEdgeBase);

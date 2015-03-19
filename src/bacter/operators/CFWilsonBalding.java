@@ -41,7 +41,7 @@ public class CFWilsonBalding extends ACGOperator {
         alpha = alphaInput.get();
     }
 
-    int count = 0;
+    //int count = 0;
 
     @Override
     public double proposal() {
@@ -89,6 +89,7 @@ public class CFWilsonBalding extends ACGOperator {
 
             disconnectEdge(srcNode);
             connectEdge(srcNode, destNode, newTime);
+            acg.setRoot(srcNodeP);
 
             // TODO: Randomly reconnect some of the conversions ancestral
             // to srcNode to the new edge above srcNode.
@@ -117,6 +118,7 @@ public class CFWilsonBalding extends ACGOperator {
 
             disconnectEdge(srcNode);
             connectEdge(srcNode, destNode, newTime);
+            acg.setRoot(srcNodeS);
 
             // TODO: Reconnect conversions on edge above srcNode older than
             // newTime to edges ancestral to destNode.

@@ -75,13 +75,13 @@
         </operator>
     </operator-->
 
-    <logger logEvery="1000">
+    <logger logEvery="10000">
       <model idref='posterior'/>
       <log idref="posterior"/>
       <log spec='TreeHeightLogger' tree="@acg"/>
     </logger>
 
-    <logger logEvery="100" fileName="$(filebase).trees" mode="tree">
+    <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
        <log idref="acg"/>
      </logger>
 
