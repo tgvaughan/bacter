@@ -16,8 +16,10 @@
  */
 package bacter.operators;
 
+import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
+import feast.input.In;
 
 /**
  * Implementation of Wilson-Balding operator modified for the clonal frame
@@ -27,9 +29,25 @@ import beast.util.Randomizer;
  */
 public class CFWilsonBalding extends ACGOperator {
 
+    public Input<Double> alphaInput = new In<Double>("alpha", "Root height "
+            + "proposal parameter").setRequired();
+
+    private double alpha;
+
+    @Override
+    public void initAndValidate() throws Exception {
+        super.initAndValidate();
+
+        alpha = alphaInput.get();
+    }
+
+    int count = 0;
+
     @Override
     public double proposal() {
-        double logHGF = 0.0;
+
+        //System.out.println(++count);
+        //System.out.println(acg.getExtendedNewick(true));
 
         // Determine whether we can apply this operator:
         if (acg.getNodeCount()<3)
@@ -57,14 +75,80 @@ public class CFWilsonBalding extends ACGOperator {
         if (destNode.isRoot()) {
             // Forward root move
 
+            double logHGF = 0.0;
+
+            double t_srcNodeG = srcNodeP.getParent().getHeight();
+
+            logHGF += Math.log(1.0/(t_srcNodeG - Math.max(t_srcNode, t_srcNodeS)));
+
+            double newTime = t_destNode
+                    + Randomizer.nextExponential(1.0/(alpha*t_destNode));
+
+            logHGF -= Math.log(1.0/(alpha*t_destNode))
+                    - 1.0/(alpha*t_destNode)*(newTime - t_destNode);
+
+            disconnectEdge(srcNode);
+            connectEdge(srcNode, destNode, newTime);
+
+            // TODO: Randomly reconnect some of the conversions ancestral
+            // to srcNode to the new edge above srcNode.
+
+            // DEBUG
+            if (!acg.isValid())
+                return Double.NEGATIVE_INFINITY;
+
+            return logHGF;
         }
 
         if (srcNodeP.isRoot()) {
             // Backward root move
 
+            double logHGF = 0.0;
+
+            logHGF += Math.log(1.0/(alpha*t_srcNodeS))
+                    - 1.0*(alpha*t_srcNodeS)*(t_srcNodeP-t_srcNodeS);
+
+            double min_newTime = Math.max(t_srcNode, t_destNode);
+            double t_destNodeP = destNodeP.getHeight();
+            double newTime = min_newTime
+                    + (t_destNodeP - min_newTime)*Randomizer.nextDouble();
+
+            logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
+
+            disconnectEdge(srcNode);
+            connectEdge(srcNode, destNode, newTime);
+
+            // TODO: Reconnect conversions on edge above srcNode older than
+            // newTime to edges ancestral to destNode.
+
+            // DEBUG
+            if (!acg.isValid())
+                return Double.NEGATIVE_INFINITY;
+
+            return logHGF;
         }
 
         // Non-root move
+
+        double logHGF = 0.0;
+
+        double t_srcNodeG = srcNodeP.getParent().getHeight();
+
+        logHGF += Math.log(1.0/(t_srcNodeG - Math.max(t_srcNode, t_srcNodeS)));
+
+        double min_newTime = Math.max(t_destNode, t_srcNode);
+        double t_destNodeP = destNodeP.getHeight();
+        double newTime = min_newTime
+                + (t_destNodeP - min_newTime)*Randomizer.nextDouble();
+
+        logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
+
+        disconnectEdge(srcNode);
+        connectEdge(srcNode, destNode, newTime);
+
+        // DEBUG
+        if (!acg.isValid())
+            return Double.NEGATIVE_INFINITY;
 
         return logHGF;
     }

@@ -19,7 +19,6 @@ package bacter.operators;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
-import bacter.Region;
 import beast.core.Input;
 import beast.core.Operator;
 import beast.evolution.tree.Node;
@@ -98,6 +97,7 @@ public abstract class ACGOperator extends Operator {
             Node grandParent = parent.getParent();
             grandParent.removeChild(parent);
             parent.setParent(null);
+            parent.removeChild(sister);
             grandParent.addChild(sister);
         }
 

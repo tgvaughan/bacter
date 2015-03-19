@@ -48,7 +48,7 @@ public class ClonalFrameLogger extends CalculationNode implements Loggable {
         ConversionGraph arg = acgInput.get();
 
         out.print("tree STATE_" + nSample + " = ");
-        out.print(arg.getRoot().toSortedNewick(new int[1], false) + ";");
+        out.print(arg.getRoot().toShortNewick(true) + ";");
     }
 
     @Override
