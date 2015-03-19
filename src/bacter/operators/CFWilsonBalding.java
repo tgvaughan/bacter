@@ -32,6 +32,9 @@ public class CFWilsonBalding extends ACGOperator {
     public Input<Double> alphaInput = new In<Double>("alpha", "Root height "
             + "proposal parameter").setRequired();
 
+    public Input<Boolean> includeRootInput = new In<Boolean>("includeRoot",
+            "Whether to include root variants of move.").setDefault(true);
+
     private double alpha;
 
     @Override
@@ -75,6 +78,9 @@ public class CFWilsonBalding extends ACGOperator {
         if (destNode.isRoot()) {
             // Forward root move
 
+            if (!includeRootInput.get())
+                return Double.NEGATIVE_INFINITY;
+
             double logHGF = 0.0;
 
             double t_srcNodeG = srcNodeP.getParent().getHeight();
@@ -85,7 +91,7 @@ public class CFWilsonBalding extends ACGOperator {
                     + Randomizer.nextExponential(1.0/(alpha*t_destNode));
 
             logHGF -= Math.log(1.0/(alpha*t_destNode))
-                    - 1.0/(alpha*t_destNode)*(newTime - t_destNode);
+                    - (1.0/alpha)*(newTime/t_destNode - 1.0);
 
             disconnectEdge(srcNode);
             connectEdge(srcNode, destNode, newTime);
@@ -104,10 +110,13 @@ public class CFWilsonBalding extends ACGOperator {
         if (srcNodeP.isRoot()) {
             // Backward root move
 
+            if (!includeRootInput.get())
+                return Double.NEGATIVE_INFINITY;
+
             double logHGF = 0.0;
 
             logHGF += Math.log(1.0/(alpha*t_srcNodeS))
-                    - 1.0*(alpha*t_srcNodeS)*(t_srcNodeP-t_srcNodeS);
+                    - (1.0/alpha)*(t_srcNodeP/t_srcNodeS - 1.0);
 
             double min_newTime = Math.max(t_srcNode, t_destNode);
             double t_destNodeP = destNodeP.getHeight();

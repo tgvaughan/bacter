@@ -20,7 +20,7 @@
 
 
 
-  <run spec="MCMC" id="mcmc" chainLength="10000000">
+  <run spec="MCMC" id="mcmc" chainLength="100000000">
     <state>
       <stateNode idref='acg'/>
     </state>
@@ -67,10 +67,10 @@
         </operator>
     </operator>
 
-    <operator id="WB" spec='CFWilsonBalding' acg="@acg" alpha="0.1" weight="1"/>
+    <operator id="WB" spec='CFWilsonBalding' acg="@acg" alpha="0.1" weight="10" includeRoot="false"/>
 
-    <!--operator id="WB" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator spec='WilsonBalding' weight="1">
+    <!--operator id="WB" spec='ACGValidityWrapper' acg="@acg">
+        <operator spec='WilsonBalding' weight="10">
             <tree idref="acg"/>
         </operator>
     </operator-->
