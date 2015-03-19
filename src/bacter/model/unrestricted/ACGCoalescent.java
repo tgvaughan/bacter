@@ -61,29 +61,30 @@ public class ACGCoalescent extends ACGDistribution {
     @Override
     public double calculateACGLogP() {
 
-        if (acg.isValid()) {
-
-            logP = calculateClonalFrameLogP();
-
-            // Probability of conversion count:
+        logP = calculateClonalFrameLogP();
+        
+        // Probability of conversion count:
+        if (rhoInput.get().getValue()>0.0) {
             double poissonMean = rhoInput.get().getValue()
-                *acg.getClonalFrameLength()
-                *(acg.getSequenceLength()+deltaInput.get().getValue());
+                    *acg.getClonalFrameLength()
+                    *(acg.getSequenceLength()+deltaInput.get().getValue());
             logP += -poissonMean + acg.getConvCount()*Math.log(poissonMean);
-            //    - GammaFunction.lnGamma(acg.getConvCount()+1);
-
-            for (Conversion conv : acg.getConversions())
-                logP += calculateConversionLogP(conv);
-
-            // This N! takes into account the permutation invariance of
-            // the individual conversions, and cancels with the N! in the
-            // denominator of the Poissonian above.
-            // logP += GammaFunction.lnGamma(acg.getConvCount() + 1);
-            
+            //      - GammaFunction.lnGamma(acg.getConvCount()+1);
         } else {
-            logP = Double.NEGATIVE_INFINITY;
+            if (acg.getConvCount()>0)
+                logP = Double.NEGATIVE_INFINITY;
         }
-
+        
+        
+        for (Conversion conv : acg.getConversions())
+            logP += calculateConversionLogP(conv);
+        
+        // This N! takes into account the permutation invariance of
+        // the individual conversions, and cancels with the N! in the
+        // denominator of the Poissonian above.
+        // logP += GammaFunction.lnGamma(acg.getConvCount() + 1);
+        
+        
         return logP;        
     }
 
