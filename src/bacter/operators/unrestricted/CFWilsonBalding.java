@@ -90,6 +90,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
+            System.out.println(acg.getExtendedNewick(true));
+
             double logHGF = 0.0;
 
             double t_srcNodeG = srcNodeP.getParent().getHeight();
@@ -137,6 +139,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             if (!acg.isValid())
                 return Double.NEGATIVE_INFINITY;
 
+            System.out.println(acg.getExtendedNewick(true));
             return logHGF;
         }
 
