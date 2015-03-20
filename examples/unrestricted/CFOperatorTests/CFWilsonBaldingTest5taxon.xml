@@ -46,28 +46,30 @@
         <acg idref="acg"/>
     </operator>
 
-    <operator id="Uniform" spec='ACGValidityWrapper' acg="@acg" weight="1">
+    <operator id="Uniform" spec='ACGValidityWrapper' acg="@acg">
         <operator spec='Uniform' weight="10">
             <tree idref="acg"/>
         </operator>
     </operator>
-    <operator id="STS" spec='ACGValidityWrapper' acg="@acg" weight="1">
+    <operator id="STS" spec='ACGValidityWrapper' acg="@acg">
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
             <tree idref="acg"/>
         </operator>
     </operator>
-    <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg" weight="1">
+    <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg">
         <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
             <tree idref="acg"/>
         </operator>
     </operator>
-    <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg" weight="1">
+    <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg">
         <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
             <tree idref="acg"/>
         </operator>
     </operator>
 
-    <operator id="WB" spec='CFWilsonBalding' acg="@acg" alpha="0.1" weight="10" includeRoot="true"/>
+    <operator id="WB" spec='CFWilsonBalding'
+        acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+        alpha="0.1" weight="10"/>
 
     <!--operator id="WB" spec='ACGValidityWrapper' acg="@acg">
         <operator spec='WilsonBalding' weight="10">
@@ -81,15 +83,15 @@
       <log spec='TreeHeightLogger' tree="@acg"/>
     </logger>
 
-    <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
+    <!--logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
        <log idref="acg"/>
-     </logger>
+     </logger-->
 
      <!--logger logEvery="1" fileName="$(filebase).cf" mode="tree">
          <log spec="ClonalFrameLogger" acg="@acg"/>
      </logger-->
 
-     <logger logEvery="1000" fileName="$(filebase)_withroot.log">
+     <logger logEvery="1000" fileName="$(filebase).log">
          <log idref="posterior"/>
          <log spec="ConversionGraphStatsLogger" acg="@acg"/>
      </logger>

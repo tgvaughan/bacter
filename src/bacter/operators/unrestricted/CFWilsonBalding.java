@@ -14,12 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bacter.operators;
+package bacter.operators.unrestricted;
 
+import bacter.Conversion;
+import bacter.operators.EdgeCreationOperator;
 import beast.core.Input;
+import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
+import beast.math.GammaFunction;
 import beast.util.Randomizer;
 import feast.input.In;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of Wilson-Balding operator modified for the clonal frame
@@ -27,13 +33,16 @@ import feast.input.In;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class CFWilsonBalding extends ACGOperator {
+public class CFWilsonBalding extends ConversionCreationOperator {
 
     public Input<Double> alphaInput = new In<Double>("alpha", "Root height "
             + "proposal parameter").setRequired();
 
     public Input<Boolean> includeRootInput = new In<Boolean>("includeRoot",
             "Whether to include root variants of move.").setDefault(true);
+
+    public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
+            "Conversion rate.").setRequired();
 
     private double alpha;
 
@@ -100,6 +109,30 @@ public class CFWilsonBalding extends ACGOperator {
             // TODO: Randomly reconnect some of the conversions ancestral
             // to srcNode to the new edge above srcNode.
 
+            // Create conversions between the edge above destNode and the
+            // srcNode above t_destNode.
+            double L = 2*(newTime - t_destNode);
+            double Nexp = L*rhoInput.get().getValue()
+                    *(acg.getSequenceLength() + deltaInput.get().getValue());
+            int N = (int)Randomizer.nextPoisson(Nexp);
+
+            logHGF -= -Nexp + N*Math.log(Nexp);
+                    //- GammaFunction.lnGamma(N+1);
+
+            for (int i=0; i<N; i++) {
+                Conversion conv = new Conversion();
+                double u = L*Randomizer.nextDouble();
+                if (u < 0.5*L) {
+                    conv.setNode1(destNode);
+                    conv.setHeight1(t_destNode + u);
+                } else {
+                    conv.setNode1(srcNode);
+                    conv.setHeight2(t_destNode + (u - 0.5*L));
+                }
+                logHGF -= Math.log(1.0/L) + coalesceEdge(conv) + drawAffectedRegion(conv);
+                acg.addConversion(conv);
+            }
+
             // DEBUG
             if (!acg.isValid())
                 return Double.NEGATIVE_INFINITY;
@@ -114,6 +147,28 @@ public class CFWilsonBalding extends ACGOperator {
                 return Double.NEGATIVE_INFINITY;
 
             double logHGF = 0.0;
+
+            // Remove conversions that will become root loops on transformation
+            List<Conversion> toRemove = new ArrayList<>();
+            for (Conversion conv : acg.getConversions()) {
+                if ((conv.getNode1() == srcNode || conv.getNode1() == srcNodeS)
+                        && conv.getHeight1() > t_srcNodeS) {
+                    toRemove.add(conv);
+                }
+            }
+
+            double L = 2*(t_srcNodeP - t_srcNodeS);
+
+            double Nexp = L*rhoInput.get().getValue()
+                    *(acg.getSequenceLength()+deltaInput.get().getValue());
+            logHGF += -Nexp + toRemove.size()*Math.log(Nexp);
+                    //- GammaFunction.lnGamma(toRemove.size()+1);
+
+            for (Conversion conv : toRemove) {
+                logHGF += Math.log(1.0/L) + getEdgeCoalescenceProb(conv) + getAffectedRegionProb(conv);
+                acg.deleteConversion(conv);
+            }
+
 
             logHGF += Math.log(1.0/(alpha*t_srcNodeS))
                     - (1.0/alpha)*(t_srcNodeP/t_srcNodeS - 1.0);
