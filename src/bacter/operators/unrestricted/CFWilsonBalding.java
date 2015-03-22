@@ -17,13 +17,13 @@
 package bacter.operators.unrestricted;
 
 import bacter.Conversion;
-import bacter.operators.EdgeCreationOperator;
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
-import beast.math.GammaFunction;
 import beast.util.Randomizer;
 import feast.input.In;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +33,7 @@ import java.util.List;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
+@Description("Wilson-Balding operator for ACG clonal frames.")
 public class CFWilsonBalding extends ConversionCreationOperator {
 
     public Input<Double> alphaInput = new In<Double>("alpha", "Root height "
@@ -90,7 +91,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-            System.out.println(acg.getExtendedNewick(true));
+//            System.out.println(acg.getExtendedNewick(true));
 
             double logHGF = 0.0;
 
@@ -129,7 +130,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                     conv.setHeight1(t_destNode + u);
                 } else {
                     conv.setNode1(srcNode);
-                    conv.setHeight2(t_destNode + (u - 0.5*L));
+                    conv.setHeight1(t_destNode + (u - 0.5*L));
                 }
                 logHGF -= Math.log(1.0/L) + coalesceEdge(conv) + drawAffectedRegion(conv);
                 acg.addConversion(conv);
@@ -139,7 +140,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             if (!acg.isValid())
                 return Double.NEGATIVE_INFINITY;
 
-            System.out.println(acg.getExtendedNewick(true));
+//            System.out.println(acg.getExtendedNewick(true));
+
             return logHGF;
         }
 
@@ -225,7 +227,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
     /**
      * Returns true if srcNode CANNOT be used for the WB move.
      *
-     * @param srcNode
+     * @param srcNode source node for move
      * @return True if srcNode invalid.
      */
     private boolean invalidSrcNode(Node srcNode) {
@@ -255,8 +257,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
      * Returns true if destNode CANNOT be used for the WB move in conjunction
      * with srcNode.
      *
-     * @param srcNode
-     * @param destNode
+     * @param srcNode source node for move
+     * @param destNode destination node for move
      * @return True if destNode invalid.
      */
     private boolean invalidDestNode(Node srcNode, Node destNode) {

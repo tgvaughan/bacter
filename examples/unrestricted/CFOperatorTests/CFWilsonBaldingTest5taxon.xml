@@ -20,7 +20,7 @@
 
 
 
-  <run spec="MCMC" id="mcmc" chainLength="1000000000">
+  <run spec="MCMC" id="mcmc" chainLength="100000000">
     <state>
       <stateNode idref='acg'/>
     </state>
@@ -77,13 +77,13 @@
         </operator>
     </operator-->
 
-    <logger logEvery="1">
+    <logger logEvery="1000">
       <model idref='posterior'/>
       <log idref="posterior"/>
       <log spec='TreeHeightLogger' tree="@acg"/>
     </logger>
 
-    <logger logEvery="1" fileName="$(filebase).trees" mode="tree">
+    <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
        <log idref="acg"/>
      </logger>
 
