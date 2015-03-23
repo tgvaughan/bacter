@@ -103,13 +103,15 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             logHGF -= Math.log(1.0/(alpha*t_destNode))
                     - (1.0/alpha)*(newTime/t_destNode - 1.0);
 
-            disconnectEdge(srcNode);
-            connectEdge(srcNode, destNode, newTime);
-            acg.setRoot(srcNodeP);
-
             // Randomly reconnect some of the conversions ancestral
             // to srcNode to the new edge above srcNode.
             logHGF -= expandConversions(srcNode, destNode, newTime);
+
+            acg.setRoot(srcNodeP);
+
+            // DEBUG
+            if (!acg.isValid())
+                throw new IllegalStateException("CFWB proposed invalid state.");
 
             return logHGF;
         }
@@ -132,13 +134,18 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
 
-            disconnectEdge(srcNode);
-            connectEdge(srcNode, destNode, newTime);
-            acg.setRoot(srcNodeS);
-
             // Reconnect conversions on edge above srcNode older than
             // newTime to edges ancestral to destNode.
             logHGF += collapseConversions(srcNode, destNode, newTime);
+
+            disconnectEdge(srcNode);
+            connectEdge(srcNode, destNode, newTime);
+
+            acg.setRoot(srcNodeS);
+
+            // DEBUG
+            if (!acg.isValid())
+                throw new IllegalStateException("CFWB proposed invalid state.");
 
             return logHGF;
         }
@@ -163,12 +170,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         else
             logHGF -= expandConversions(srcNode, destNode, newTime);
 
-        disconnectEdge(srcNode);
-        connectEdge(srcNode, destNode, newTime);
-
         // DEBUG
         if (!acg.isValid())
-            return Double.NEGATIVE_INFINITY;
+            throw new IllegalStateException("CFWB proposed invalid state.");
 
         return logHGF;
     }
@@ -225,6 +229,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
     /**
      * Take conversions which connect to edge above srcNode at times greater than
      * destTime and attach them instead to the lineage above destNode.
+     *
+     * Assumes topology has not yet been altered.
      *
      * @param srcNode   source node for move
      * @param destNode  dest node for move
@@ -291,6 +297,10 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             }
         }
 
+        // Apply topology modifications.
+        disconnectEdge(srcNode);
+        connectEdge(srcNode, destNode, destTime);
+
         return logP;
     }
 
@@ -301,6 +311,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
      *
      * In the case that destNode was the root, the conversions starting
      * above destNode are drawn from the prior.
+     *
+     * Assumes topology has not yet been altered.
      *
      * @param srcNode source node for the move
      * @param destNode dest node for the move
@@ -331,6 +343,11 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             node = node.getParent();
         }
 
+        // Apply topology modifications.
+        disconnectEdge(srcNode);
+        connectEdge(srcNode, destNode, destTime);
+
+
         if (destTime>node.getHeight()) {
             double L = 2.0*(destTime - node.getHeight());
             double Nexp = L*rhoInput.get().getValue()
@@ -351,7 +368,6 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                     conv.setHeight1(node.getHeight() + u - 0.5*L);
                 }
 
-                // TODO: This assumes topology already modified, above assumes it hasn't been!
                 logP += Math.log(1.0/L) + drawAffectedRegion(conv) + coalesceEdge(conv);
 
                 acg.addConversion(conv);
