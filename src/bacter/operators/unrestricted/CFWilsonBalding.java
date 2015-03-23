@@ -107,38 +107,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             connectEdge(srcNode, destNode, newTime);
             acg.setRoot(srcNodeP);
 
-            // TODO: Randomly reconnect some of the conversions ancestral
+            // Randomly reconnect some of the conversions ancestral
             // to srcNode to the new edge above srcNode.
-
-            // Create conversions between the edge above destNode and the
-            // srcNode above t_destNode.
-            double L = 2*(newTime - t_destNode);
-            double Nexp = L*rhoInput.get().getValue()
-                    *(acg.getSequenceLength() + deltaInput.get().getValue());
-            int N = (int)Randomizer.nextPoisson(Nexp);
-
-            logHGF -= -Nexp + N*Math.log(Nexp);
-                    //- GammaFunction.lnGamma(N+1);
-
-            for (int i=0; i<N; i++) {
-                Conversion conv = new Conversion();
-                double u = L*Randomizer.nextDouble();
-                if (u < 0.5*L) {
-                    conv.setNode1(destNode);
-                    conv.setHeight1(t_destNode + u);
-                } else {
-                    conv.setNode1(srcNode);
-                    conv.setHeight1(t_destNode + (u - 0.5*L));
-                }
-                logHGF -= Math.log(1.0/L) + coalesceEdge(conv) + drawAffectedRegion(conv);
-                acg.addConversion(conv);
-            }
-
-            // DEBUG
-            if (!acg.isValid())
-                return Double.NEGATIVE_INFINITY;
-
-//            System.out.println(acg.getExtendedNewick(true));
+            logHGF -= expandConversions(srcNode, destNode, newTime);
 
             return logHGF;
         }
@@ -150,28 +121,6 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                 return Double.NEGATIVE_INFINITY;
 
             double logHGF = 0.0;
-
-            // Remove conversions that will become root loops on transformation
-            List<Conversion> toRemove = new ArrayList<>();
-            for (Conversion conv : acg.getConversions()) {
-                if ((conv.getNode1() == srcNode || conv.getNode1() == srcNodeS)
-                        && conv.getHeight1() > t_srcNodeS) {
-                    toRemove.add(conv);
-                }
-            }
-
-            double L = 2*(t_srcNodeP - t_srcNodeS);
-
-            double Nexp = L*rhoInput.get().getValue()
-                    *(acg.getSequenceLength()+deltaInput.get().getValue());
-            logHGF += -Nexp + toRemove.size()*Math.log(Nexp);
-                    //- GammaFunction.lnGamma(toRemove.size()+1);
-
-            for (Conversion conv : toRemove) {
-                logHGF += Math.log(1.0/L) + getEdgeCoalescenceProb(conv) + getAffectedRegionProb(conv);
-                acg.deleteConversion(conv);
-            }
-
 
             logHGF += Math.log(1.0/(alpha*t_srcNodeS))
                     - (1.0/alpha)*(t_srcNodeP/t_srcNodeS - 1.0);
@@ -187,12 +136,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             connectEdge(srcNode, destNode, newTime);
             acg.setRoot(srcNodeS);
 
-            // TODO: Reconnect conversions on edge above srcNode older than
+            // Reconnect conversions on edge above srcNode older than
             // newTime to edges ancestral to destNode.
-
-            // DEBUG
-            if (!acg.isValid())
-                return Double.NEGATIVE_INFINITY;
+            logHGF += collapseConversions(srcNode, destNode, newTime);
 
             return logHGF;
         }
@@ -213,7 +159,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
 
         if (newTime < srcNodeP.getHeight())
-            logHGF -= collapseConversions(srcNode, destNode, newTime);
+            logHGF += collapseConversions(srcNode, destNode, newTime);
+        else
+            logHGF -= expandConversions(srcNode, destNode, newTime);
 
         disconnectEdge(srcNode);
         connectEdge(srcNode, destNode, newTime);
@@ -258,8 +206,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
      * Returns true if destNode CANNOT be used for the WB move in conjunction
      * with srcNode.
      *
-     * @param srcNode source node for move
-     * @param destNode destination node for move
+     * @param srcNode   source node for move
+     * @param destNode  destination node for move
      * @return True if destNode invalid.
      */
     private boolean invalidDestNode(Node srcNode, Node destNode) {
@@ -278,10 +226,10 @@ public class CFWilsonBalding extends ConversionCreationOperator {
      * Take conversions which connect to edge above srcNode at times greater than
      * destTime and attach them instead to the lineage above destNode.
      *
-     * @param srcNode source node for move
-     * @param destNode dest node for move
-     * @param destTime new time of attachment of edge above srcNode to edge
-     *                 above destNode
+     * @param srcNode   source node for move
+     * @param destNode  dest node for move
+     * @param destTime  new time of attachment of edge above srcNode to edge
+     *                  above destNode
      * @return log probability of the collapsed attachments.
      */
     private double collapseConversions(Node srcNode, Node destNode, double destTime) {
@@ -292,6 +240,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                     "never be root in argument to collapseConversions.");
 
         Node node = destNode;
+
+        // Collapse non-root conversions
 
         while (!node.getParent().isRoot() &&
                 node.getHeight() < srcNode.getParent().getHeight()) {
@@ -313,6 +263,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             node = node.getParent();
         }
+
+        // Collapse root conversions
 
         if (node.getHeight() < srcNode.getParent().getHeight()) {
             double L = 2.0*(node.getParent().getHeight()
@@ -337,6 +289,74 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                         + getEdgeAttachmentProb(conv);
                 acg.deleteConversion(conv);
             }
+        }
+
+        return logP;
+    }
+
+    /**
+     * Take length of new edge above srcNode that is greater than the
+     * original height of srcNode.parent and shifts a random fraction of
+     * conversion attachments to it from the lineage above destNode.
+     *
+     * In the case that destNode was the root, the conversions starting
+     * above destNode are drawn from the prior.
+     *
+     * @param srcNode source node for the move
+     * @param destNode dest node for the move
+     * @param destTime new time drawn for srcNode.P.
+     * @return log probability of new conversion configuration.
+     */
+    private double expandConversions(Node srcNode, Node destNode, double destTime) {
+        double logP = 0.0;
+
+        Node node = srcNode.getParent();
+
+        while (!node.isRoot()) {
+            for (Conversion conv : acg.getConversions()) {
+                if (conv.getNode1() == node && conv.getHeight1() < destTime) {
+                    if (Randomizer.nextBoolean())
+                        conv.setNode1(srcNode);
+                    logP += Math.log(0.5);
+                }
+
+                if (conv.getNode2() == node && conv.getHeight2() < destTime) {
+                    if (Randomizer.nextBoolean())
+                        conv.setNode2(srcNode);
+                    logP += Math.log(0.5);
+                }
+
+            }
+
+            node = node.getParent();
+        }
+
+        if (destTime>node.getHeight()) {
+            double L = 2.0*(destTime - node.getHeight());
+            double Nexp = L*rhoInput.get().getValue()
+                    *(acg.getSequenceLength() + deltaInput.get().getValue());
+            int N = (int)Randomizer.nextPoisson(Nexp);
+
+            logP += -Nexp + N*Math.log(Nexp); // Factorial cancels
+
+            for (int i=0; i<N; i++) {
+                Conversion conv = new Conversion();
+
+                double u = Randomizer.nextDouble()*L;
+                if (u < 0.5*L) {
+                    conv.setNode1(node);
+                    conv.setHeight1(node.getHeight() + u);
+                } else {
+                    conv.setNode1(srcNode);
+                    conv.setHeight1(node.getHeight() + u - 0.5*L);
+                }
+
+                // TODO: This assumes topology already modified, above assumes it hasn't been!
+                logP += Math.log(1.0/L) + drawAffectedRegion(conv) + coalesceEdge(conv);
+
+                acg.addConversion(conv);
+            }
+
         }
 
         return logP;
