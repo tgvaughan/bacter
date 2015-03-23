@@ -91,8 +91,6 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-//            System.out.println(acg.getExtendedNewick(true));
-
             double logHGF = 0.0;
 
             double t_srcNodeG = srcNodeP.getParent().getHeight();
@@ -214,6 +212,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
 
+        if (newTime < srcNodeP.getHeight())
+            logHGF -= collapseConversions(srcNode, destNode, newTime);
+
         disconnectEdge(srcNode);
         connectEdge(srcNode, destNode, newTime);
 
@@ -272,4 +273,73 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         return destNodeP != null && (destNodeP.getHeight() <= srcNode.getHeight());
     }
+
+    /**
+     * Take conversions which connect to edge above srcNode at times greater than
+     * destTime and attach them instead to the lineage above destNode.
+     *
+     * @param srcNode source node for move
+     * @param destNode dest node for move
+     * @param destTime new time of attachment of edge above srcNode to edge
+     *                 above destNode
+     * @return log probability of the collapsed attachments.
+     */
+    private double collapseConversions(Node srcNode, Node destNode, double destTime) {
+        double logP = 0.0;
+
+        if (destNode.isRoot())
+            throw new IllegalArgumentException("Destination node should " +
+                    "never be root in argument to collapseConversions.");
+
+        Node node = destNode;
+
+        while (!node.getParent().isRoot() &&
+                node.getHeight() < srcNode.getParent().getHeight()) {
+            for (Conversion conv : acg.getConversions()) {
+                if (conv.getNode1() == srcNode
+                        && conv.getHeight1() > Math.max(destTime, node.getHeight())
+                        && conv.getHeight1() < node.getParent().getHeight()) {
+                    conv.setNode1(node);
+                    logP += Math.log(0.5);
+                }
+
+                if (conv.getNode2() == srcNode
+                        && conv.getHeight2() > Math.max(destTime, node.getHeight())
+                        && conv.getHeight2() < node.getParent().getHeight()) {
+                    conv.setNode2(node);
+                    logP += Math.log(0.5);
+                }
+            }
+
+            node = node.getParent();
+        }
+
+        if (node.getHeight() < srcNode.getParent().getHeight()) {
+            double L = 2.0*(node.getParent().getHeight()
+                    - Math.max(node.getHeight(), srcNode.getHeight()));
+
+            double Nexp = L*rhoInput.get().getValue()
+                    *(acg.getSequenceLength() + deltaInput.get().getValue());
+
+            List<Conversion> toRemove = new ArrayList<>();
+            for (Conversion conv : acg.getConversions()) {
+                if (conv.getNode1() == node || conv.getNode1() == srcNode)
+                    toRemove.add(conv);
+            }
+
+            logP += -Nexp + toRemove.size()*Math.log(Nexp);
+            // Factorial cancelled due to sum over permutations of
+            // individual conversion states
+
+            for (Conversion conv : toRemove) {
+                logP += Math.log(1.0/L)
+                        + getEdgeCoalescenceProb(conv)
+                        + getEdgeAttachmentProb(conv);
+                acg.deleteConversion(conv);
+            }
+        }
+
+        return logP;
+    }
+
 }

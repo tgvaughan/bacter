@@ -1,0 +1,27 @@
+# Netbeans cruft:
+/nbproject
+/manifest.mf
+/nbbuild.xml
+
+# Eclipse cruft:
+/.project
+/.classpath
+/.settings
+
+# IntelliJ cruft:
+/.idea
+/*.iml
+
+# Other cruft
+/.localrc
+
+# Build directories:
+/build
+/dist
+/out
+
+# Output files:
+*.json
+*.nexus
+*.tree
+*.newick

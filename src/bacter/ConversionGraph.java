@@ -108,10 +108,10 @@ public class ConversionGraph extends Tree {
     }
     
     /**
-     * Add recombination to graph, ensuring recombination list
+     * Add conversion to graph, ensuring conversion list
      * remains sorted.
      * 
-     * @param conv
+     * @param conv conversion to add
      */
     public void addConversion(Conversion conv) {
         startEditing(null);
@@ -208,29 +208,13 @@ public class ConversionGraph extends Tree {
         
         return length;
     }
-    
+
     /**
-     * Obtain the total number of sites corresponding to the clonal frame.
-     * 
-     * @return CF site count
-     */
-    public int getClonalFrameSiteCount() {
-        int count = 0;
-
-        for (Region region : getRegions()) {
-            if (region.isClonalFrame())
-                count += region.leftBoundary - region.rightBoundary;
-        }
-
-        return count;
-    }
-
-     /**
-     * Check validity of recombinations.  Useful for probability densities
-     * over the ARG to decide whether to return 0 based on an unphysical
+     * Check validity of conversions.  Useful for probability densities
+     * over the ACG to decide whether to return 0 based on an unphysical
      * state.
      * 
-     * @return true if all recombinations are valid w.r.t. clonal frame.
+     * @return true if all conversions are valid w.r.t. clonal frame.
      */
     public boolean isValid() {
         for (Conversion conv : convs) {
@@ -273,10 +257,10 @@ public class ConversionGraph extends Tree {
     }
     
     /**
-     * Load ARG from string representation.  This is the same representation
+     * Load ACG from string representation.  This is the same representation
      * used for XML state restoration.
      *
-     * @param str
+     * @param str string representation of ACG
      */
     public void fromString(String str) {
         
@@ -424,16 +408,12 @@ public class ConversionGraph extends Tree {
      * is true, include Nexus metadata on hybrid leaf nodes describing the
      * alignment sites affected by the conversion event.
      * 
-     * @param includeRegionInfo
+     * @param includeRegionInfo whether to include region info in output
      * @return Extended Newick string.
      */
     public String getExtendedNewick(boolean includeRegionInfo) {
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append(extendedNewickTraverse(root, includeRegionInfo));
-        sb.append(";");
-        
-        return sb.toString();
+
+        return extendedNewickTraverse(root, includeRegionInfo) + ";";
     }
     
     private String extendedNewickTraverse(Node node, boolean includeRegionInfo) {
