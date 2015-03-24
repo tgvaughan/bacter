@@ -107,11 +107,10 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             // to srcNode to the new edge above srcNode.
             logHGF -= expandConversions(srcNode, destNode, newTime);
 
-            acg.setRoot(srcNodeP);
-
             // DEBUG
             if (!acg.isValid())
-                throw new IllegalStateException("CFWB proposed invalid state.");
+                return Double.NEGATIVE_INFINITY;
+//                throw new IllegalStateException("CFWB proposed invalid state.");
 
             return logHGF;
         }
@@ -138,14 +137,10 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             // newTime to edges ancestral to destNode.
             logHGF += collapseConversions(srcNode, destNode, newTime);
 
-            disconnectEdge(srcNode);
-            connectEdge(srcNode, destNode, newTime);
-
-            acg.setRoot(srcNodeS);
-
             // DEBUG
             if (!acg.isValid())
-                throw new IllegalStateException("CFWB proposed invalid state.");
+                return Double.NEGATIVE_INFINITY;
+//                throw new IllegalStateException("CFWB proposed invalid state.");
 
             return logHGF;
         }
@@ -172,7 +167,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         // DEBUG
         if (!acg.isValid())
-            throw new IllegalStateException("CFWB proposed invalid state.");
+            return Double.NEGATIVE_INFINITY;
+//            throw new IllegalStateException("CFWB proposed invalid state.");
 
         return logHGF;
     }
@@ -245,6 +241,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             throw new IllegalArgumentException("Destination node should " +
                     "never be root in argument to collapseConversions.");
 
+        boolean reverseRootMove = srcNode.getParent().isRoot();
+        Node srcNodeS = getSibling(srcNode);
 
         // Collapse non-root conversions
 
@@ -275,8 +273,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         // Collapse conversions between srcNode edge and its sibling
         // if this was a reverse root move.
 
-        if (srcNode.getParent().isRoot()) {
-            Node srcNodeS = getSibling(srcNode);
+        if (reverseRootMove) {
             double maxChildHeight = Math.max(srcNodeS.getHeight(), srcNode.getHeight());
 
             double L = 2.0*(srcNode.getParent().getHeight() - maxChildHeight);
@@ -297,8 +294,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             for (Conversion conv : toRemove) {
                 logP += Math.log(1.0/L)
-                        + getEdgeCoalescenceProb(conv)
-                        + getEdgeAttachmentProb(conv);
+                        + getAffectedRegionProb(conv)
+                        + getEdgeCoalescenceProb(conv);
+
                 acg.deleteConversion(conv);
             }
         }
@@ -306,6 +304,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         // Apply topology modifications.
         disconnectEdge(srcNode);
         connectEdge(srcNode, destNode, destTime);
+
+        if (reverseRootMove)
+            acg.setRoot(srcNodeS);
 
         return logP;
     }
@@ -327,6 +328,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
      */
     private double expandConversions(Node srcNode, Node destNode, double destTime) {
         double logP = 0.0;
+
+        boolean forwardRootMove = destNode.isRoot();
 
         /*
         Node node = srcNode.getParent();
@@ -356,7 +359,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         // Add conversions between srcNode edge and its sibling if
         // this was a forward root move
-        if (destNode.getParent().isRoot()) {
+        if (forwardRootMove) {
+            acg.setRoot(srcNode.getParent());
+
             double L = 2.0*(destTime - destNode.getHeight());
             double Nexp = L*rhoInput.get().getValue()
                     *(acg.getSequenceLength() + deltaInput.get().getValue());
