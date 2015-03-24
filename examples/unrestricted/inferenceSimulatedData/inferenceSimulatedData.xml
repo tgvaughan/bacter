@@ -126,8 +126,8 @@
     <operator id="mergeSplit" spec="MergeSplitConversion" weight="1.0"
         acg="@acg" />
 
-    <operator id="cfConvSwap" spec="ClonalFrameConversionSwap" weight="10.0"
-        delta="@delta" populationModel="@popModel" acg="@acg" />
+    <!--operator id="cfConvSwap" spec="ClonalFrameConversionSwap" weight="10.0"
+        delta="@delta" populationModel="@popModel" acg="@acg" /-->
 
     <operator id="CEhop" spec="ConvertedEdgeHop" weight="1.0"
         acg="@acg" />
@@ -139,6 +139,17 @@
         acg="@acg" scaleBound="0.8" />
 
     <operator id="CFUniform" spec='CFUniform' acg="@acg" weight="10"/>
+
+    <operator id="CFWB" spec='CFWilsonBalding'
+              acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
+              alpha="1.0" weight="10"/>
+
+    <!-- Leaving this here for comparison with CFWB -->
+    <operator id="WB" spec='ACGValidityWrapper' acg="@acg">
+        <operator spec='WilsonBalding' weight="10">
+            <tree idref="acg"/>
+        </operator>
+    </operator>
 
     <operator id="STS" spec='ACGValidityWrapper' acg="@acg">
         <operator spec='SubtreeSlide' weight="5" gaussian="true" size="0.1">
@@ -154,12 +165,6 @@
 
     <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg">
         <operator id='wide' spec='Exchange' isNarrow='false' weight="10">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
-
-    <operator id="WB" spec='ACGValidityWrapper' acg="@acg">
-        <operator spec='WilsonBalding' weight="10">
             <tree idref="acg"/>
         </operator>
     </operator>
