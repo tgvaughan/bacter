@@ -45,6 +45,9 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         private double addDetour() {
                 double logHGF = 0.0;
 
+                if (acg.getConvCount()==0)
+                        return Double.NEGATIVE_INFINITY;
+
                 // Select conversion at random
                 Conversion conv = acg.getConversions().get(
                         Randomizer.nextInt(acg.getConvCount()));
@@ -91,7 +94,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
                 convB.setNode1(detour);
                 convB.setHeight1(tUpper);
                 convB.setNode2(conv.getNode2());
-                convB.setHeight2(conv.getHeight1());
+                convB.setHeight2(conv.getHeight2());
                 logHGF -= drawAffectedRegion(convB);
 
                 acg.deleteConversion(conv);
@@ -133,18 +136,18 @@ public class AddRemoveDetour extends ConversionCreationOperator {
                 List<Conversion> convBpotentials = new ArrayList<>();
 
                 for (Conversion conv : acg.getConversions()) {
-                        if (conv.getNode1() == conv.getNode2())
-                                continue;
-
-                        if (conv.getNode2() == detour)
+                        if (conv.getNode2() == detour && conv.getNode1() != detour)
                                 convApotentials.add(conv);
 
-                        if (conv.getNode1() == detour)
+                        if (conv.getNode1() == detour && conv.getNode2() != detour)
                                 convBpotentials.add(conv);
                 }
 
+                if (convApotentials.isEmpty() || convBpotentials.isEmpty())
+                        return Double.NEGATIVE_INFINITY;
+
                 Conversion convA = convApotentials.get(Randomizer.nextInt(convApotentials.size()));
-                Conversion convB = convBpotentials.get(Randomizer.nextInt(convApotentials.size()));
+                Conversion convB = convBpotentials.get(Randomizer.nextInt(convBpotentials.size()));
 
                 if (convA.getHeight2()>convB.getHeight1())
                         return Double.NEGATIVE_INFINITY;
