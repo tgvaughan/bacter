@@ -105,13 +105,10 @@ public class AddRemoveDetour extends ConversionCreationOperator {
                 int node1Count = 0;
                 int node2Count = 0;
                 for (Conversion thisConv : acg.getConversions()) {
-                        if (thisConv.getNode1() == thisConv.getNode2())
-                                continue;
-
-                        if (thisConv.getNode1() == detour)
+                        if (thisConv.getNode1() == detour && thisConv.getNode2() != detour)
                                 node1Count += 1;
 
-                        if (thisConv.getNode2() == detour)
+                        if (thisConv.getNode2() == detour && thisConv.getNode1() != detour)
                                 node2Count += 1;
                 }
 
@@ -170,6 +167,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
                 acg.addConversion(conv);
 
                 logHGF += Math.log(1.0/acg.getConvCount())
+                        + Math.log(1.0/(acg.getNodeCount()-1))
                         + Math.log(0.5) - 2.0*Math.log(tUpperBound-tLowerBound)
                         + getAffectedRegionProb(convB);
 
