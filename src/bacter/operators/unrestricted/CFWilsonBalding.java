@@ -242,12 +242,12 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         boolean reverseRootMove = srcNode.getParent().isRoot();
         Node srcNodeP = srcNode.getParent();
         Node srcNodeS = getSibling(srcNode);
+        double maxChildHeight = Math.max(srcNodeS.getHeight(), srcNode.getHeight());
 
         // Collapse non-root conversions
 
         Node node = destNode;
-        while (!node.isRoot() &&
-                node.getHeight() < srcNodeP.getHeight()) {
+        while (!node.isRoot() && node.getHeight() < srcNodeP.getHeight()) {
 
             double lowerBound = Math.max(destTime, node.getHeight());
             double upperBound = Math.min(node.getParent().getHeight(),
@@ -258,7 +258,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                     if (conv.getNode1() == srcNode)
                         conv.setNode1(node);
 
-                    if (conv.getNode1() == node)
+                    if (conv.getNode1() == node &&
+                            (!reverseRootMove || conv.getHeight1() < maxChildHeight))
                         logP += Math.log(0.5);
                 }
 
@@ -266,7 +267,9 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                     if (conv.getNode2() == srcNode)
                         conv.setNode2(node);
 
-                    if (conv.getNode2() == node)
+                    if (conv.getNode2() == node
+                            && (!reverseRootMove || conv.getNode1() != node
+                            || conv.getHeight1() < maxChildHeight))
                         logP += Math.log(0.5);
                 }
             }
@@ -278,8 +281,6 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         // if this was a reverse root move.
 
         if (reverseRootMove) {
-            double maxChildHeight = Math.max(srcNodeS.getHeight(), srcNode.getHeight());
-
             double L = 2.0*(srcNode.getParent().getHeight() - maxChildHeight);
 
             double Nexp = L*rhoInput.get().getValue()
@@ -336,7 +337,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         boolean forwardRootMove = destNode.isRoot();
 
         Node node = srcNode.getParent();
-        while (!node.isRoot()) {
+        while (node != null) {
             for (Conversion conv : acg.getConversions()) {
                 if (conv.getNode1() == node && conv.getHeight1() < destTime) {
                     if (Randomizer.nextBoolean())
