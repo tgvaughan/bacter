@@ -54,13 +54,14 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         alpha = alphaInput.get();
     }
 
-    //int count = 0;
+//    int count = 0;
 
     @Override
     public double proposal() {
 
-        //System.out.println(++count);
-        //System.out.println(acg.getExtendedNewick(true));
+//        System.out.println(++count);
+
+//        System.out.println(acg.getExtendedNewick(true));
 
         // Determine whether we can apply this operator:
         if (acg.getNodeCount()<3)
@@ -109,8 +110,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             // DEBUG
             if (!acg.isValid())
-                return Double.NEGATIVE_INFINITY;
-//                throw new IllegalStateException("CFWB proposed invalid state.");
+                throw new IllegalStateException("CFWB proposed invalid state.");
 
             return logHGF;
         }
@@ -139,8 +139,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             // DEBUG
             if (!acg.isValid())
-                return Double.NEGATIVE_INFINITY;
-//                throw new IllegalStateException("CFWB proposed invalid state.");
+                throw new IllegalStateException("CFWB proposed invalid state.");
 
             return logHGF;
         }
@@ -167,8 +166,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         // DEBUG
         if (!acg.isValid())
-            return Double.NEGATIVE_INFINITY;
-//            throw new IllegalStateException("CFWB proposed invalid state.");
+            throw new IllegalStateException("CFWB proposed invalid state.");
 
         return logHGF;
     }
@@ -246,9 +244,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         // Collapse non-root conversions
 
-        /*
         Node node = destNode;
-        while (!node.getParent().isRoot() &&
+        while (!node.isRoot() &&
                 node.getHeight() < srcNode.getParent().getHeight()) {
             for (Conversion conv : acg.getConversions()) {
                 if (conv.getNode1() == srcNode
@@ -268,7 +265,6 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             node = node.getParent();
         }
-        */
 
         // Collapse conversions between srcNode edge and its sibling
         // if this was a reverse root move.
@@ -331,7 +327,6 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         boolean forwardRootMove = destNode.isRoot();
 
-        /*
         Node node = srcNode.getParent();
         while (!node.isRoot()) {
             for (Conversion conv : acg.getConversions()) {
@@ -351,7 +346,6 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             node = node.getParent();
         }
-        */
 
         // Apply topology modifications.
         disconnectEdge(srcNode);
