@@ -49,7 +49,7 @@ public class MergeSplitConversionTest {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
         
-        TreeParser clonalFrame = new TreeParser("((0:0.5,1:0.5)3:0.2,2:0.7)4:0.0");
+        TreeParser clonalFrame = new TreeParser("((0:0.5,1:0.5):0.2,2:0.7):0.0");
         ConversionGraph acg = new ConversionGraph();
         acg.assignFrom(clonalFrame);
         acg.initByName("sequenceLength", 10000);

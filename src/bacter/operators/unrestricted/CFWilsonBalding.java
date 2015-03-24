@@ -240,26 +240,34 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                     "never be root in argument to collapseConversions.");
 
         boolean reverseRootMove = srcNode.getParent().isRoot();
+        Node srcNodeP = srcNode.getParent();
         Node srcNodeS = getSibling(srcNode);
 
         // Collapse non-root conversions
 
         Node node = destNode;
         while (!node.isRoot() &&
-                node.getHeight() < srcNode.getParent().getHeight()) {
+                node.getHeight() < srcNodeP.getHeight()) {
+
+            double lowerBound = Math.max(destTime, node.getHeight());
+            double upperBound = Math.min(node.getParent().getHeight(),
+                    srcNodeP.getHeight());
+
             for (Conversion conv : acg.getConversions()) {
-                if (conv.getNode1() == srcNode
-                        && conv.getHeight1() > Math.max(destTime, node.getHeight())
-                        && conv.getHeight1() < node.getParent().getHeight()) {
-                    conv.setNode1(node);
-                    logP += Math.log(0.5);
+                if (conv.getHeight1() > lowerBound && conv.getHeight1() < upperBound) {
+                    if (conv.getNode1() == srcNode)
+                        conv.setNode1(node);
+
+                    if (conv.getNode1() == node)
+                        logP += Math.log(0.5);
                 }
 
-                if (conv.getNode2() == srcNode
-                        && conv.getHeight2() > Math.max(destTime, node.getHeight())
-                        && conv.getHeight2() < node.getParent().getHeight()) {
-                    conv.setNode2(node);
-                    logP += Math.log(0.5);
+                if (conv.getHeight2() > lowerBound && conv.getHeight2() < upperBound) {
+                    if (conv.getNode2() == srcNode)
+                        conv.setNode2(node);
+
+                    if (conv.getNode2() == node)
+                        logP += Math.log(0.5);
                 }
             }
 

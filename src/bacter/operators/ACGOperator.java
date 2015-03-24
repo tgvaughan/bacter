@@ -38,7 +38,7 @@ public abstract class ACGOperator extends Operator {
 
     protected class ProposalFailed extends Exception {
         public ProposalFailed() { }
-    };
+    }
 
     @Override
     public void initAndValidate() throws Exception {
@@ -48,8 +48,8 @@ public abstract class ACGOperator extends Operator {
     /**
      * Return sister of node.
      * 
-     * @param node
-     * @return sister node
+     * @param node to return sister of
+     * @return sister of node
      */
     protected Node getSibling(Node node) {
         Node parent = node.getParent();
@@ -77,6 +77,8 @@ public abstract class ACGOperator extends Operator {
      * grandparent (if the grandparent exists), forming a new edge
      * <sister, grandparent>. All conversions originally above node.parent
      * are re-attached to sister.
+     *
+     * Conversions on edge above node are not modified.
      * 
      * @param node base of edge to detach.
      */
@@ -113,7 +115,9 @@ public abstract class ACGOperator extends Operator {
      * Connect edge <node, node.parent> above destEdgeBase, forming new
      * edge <destEdgeBase, node.parent> and <node.parent, destEdgeBase.parent>.
      * All conversions above destEdgeBase that are older than destTime
-     * are transfered to the new edge above node.parent.
+     * are transferred to the new edge above node.parent.
+     *
+     * Conversions on edge above node are not modified.
      * 
      * @param node base of edge to attach
      * @param destEdgeBase base of edge to be bisected
