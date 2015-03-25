@@ -37,10 +37,15 @@ Phase 2:
 - [ ] ARG operators for new model
     - [x] Add/remove
     - [x] Merge/split
+    - [x] Detour add/remove
+    - [x] CF Wilson-Balding
+    - [x] CF Uniform (with root modification)
     - [ ] CF/conversion swap *IN PROGRESS*
+    - [ ] CF subtree slide *IN PROGRESS*
 
 Phase 3:
-- [ ] Inference from data simulated under full model *IN PROGRESS*
+- [x] Inference from data simulated under full model
+- [ ] Inference from real data *IN PROGRESS*
 
 Old road map (legacy)
 ---------------------
