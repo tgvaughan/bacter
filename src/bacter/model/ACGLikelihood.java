@@ -217,8 +217,8 @@ public class ACGLikelihood extends ACGDistribution {
     /**
      * Set leaf states in a likelihood core.
      * 
-     * @param lhc
-     * @param patterns 
+     * @param lhc       likelihood core object
+     * @param patterns  leaf state patterns
      */
     void setStates(LikelihoodCore lhc, Multiset<int[]> patterns) {
         
@@ -245,7 +245,7 @@ public class ACGLikelihood extends ACGDistribution {
      * Traverse a marginal tree, computing partial likelihoods on the way.
      * 
      * @param node Tree node
-     * @param recomb Conversion object.  Null selects the clonal frame.
+     * @param convSet Set of active conversions.
      */
     void traverse(Node node, Set<Conversion> convSet) {
 

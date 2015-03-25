@@ -31,18 +31,17 @@ import beast.util.Randomizer;
  */
 public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
-    int count = 0;
-
     @Override
     public double proposal() {
-        count += 1;
+        throw new IllegalStateException("CF/conv swap operator is buggy.  Do not use!");
 
+        /*
         if (Randomizer.nextBoolean()) {
             return deleteConversion();
         } else {
             return createConversion();
-            //return Double.NEGATIVE_INFINITY;
         }
+        */
     }
 
     /**
