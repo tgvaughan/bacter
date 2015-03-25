@@ -17,7 +17,7 @@
 package bacter.operators.unrestricted;
 
 import bacter.Conversion;
-import bacter.operators.ACGOperator;
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
@@ -35,6 +35,7 @@ import java.util.List;
  *
  * @author Tim Vaughan (tgvaughan@gmail.com)
  */
+@Description("Uniform operator for clonal frame nodes.")
 public class CFUniform extends ConversionCreationOperator {
 
     public Input<RealParameter> rhoInput = new In<RealParameter>(
@@ -69,15 +70,15 @@ public class CFUniform extends ConversionCreationOperator {
             double f = fMin + (fMax-fMin)*Randomizer.nextDouble();
 
             newHeight = node.getHeight()*f;
-            logHGF -= Math.log(1.0/f);
+            logHGF += Math.log(1.0/f);
+
+            //newHeight = node.getHeight() + (Randomizer.nextDouble()-0.5)*scaleFactorInput.get();
 
             if (newHeight < maxChildHeight)
                 return Double.NEGATIVE_INFINITY;
 
         } else {
             Node parent = node.getParent();
-
-            double maxHeight = parent.getHeight();
 
             newHeight = maxChildHeight
                     + Randomizer.nextDouble() * (parent.getHeight() - maxChildHeight);
@@ -113,10 +114,10 @@ public class CFUniform extends ConversionCreationOperator {
                     double u = L*Randomizer.nextDouble();
                     if (u < 0.5*L) {
                         conv.setNode1(leftChild);
-                        conv.setHeight1(maxChildHeight + u);
+                        conv.setHeight1(oldHeight + u);
                     } else {
                         conv.setNode1(rightChild);
-                        conv.setHeight1(maxChildHeight + u - 0.5*L);
+                        conv.setHeight1(oldHeight + u - 0.5*L);
                     }
 
                     logHGF -= Math.log(1.0/L)
@@ -134,6 +135,7 @@ public class CFUniform extends ConversionCreationOperator {
                         && conv.getHeight1()>newHeight) {
                     if (node.isRoot()) {
                         toRemove.add(conv);
+                        continue;
                     } else {
                         conv.setNode1(node);
                         logHGF += logHalf;
@@ -163,6 +165,9 @@ public class CFUniform extends ConversionCreationOperator {
 
             node.setHeight(newHeight);
         }
+
+        if (!acg.isValid())
+            throw new IllegalStateException("Something is broken: CFUniform proposed illegal state!");
 
         return logHGF;
     }
