@@ -46,7 +46,8 @@
         <acg idref="acg"/>
     </operator>
    
-    <operator id="Uniform" spec="CFUniform" acg="@acg" weight="10"/>
+    <operator id="Uniform" spec="CFUniform" delta="@delta" rho="@rho"
+              populationModel="@popFunc" acg="@acg" weight="10"/>
 
     <!--operator id="OldUniform" spec='ACGValidityWrapper' acg="@acg" weight="10">
         <operator spec='Uniform' weight="10">

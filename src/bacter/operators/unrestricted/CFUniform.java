@@ -83,8 +83,6 @@ public class CFUniform extends ConversionCreationOperator {
                     + Randomizer.nextDouble() * (parent.getHeight() - maxChildHeight);
         }
 
-        node.setHeight(newHeight);
-
         if (newHeight>oldHeight) {
             for (Conversion conv : acg.getConversions()) {
                 if (conv.getNode1() == node && conv.getHeight1() < newHeight) {
@@ -97,6 +95,8 @@ public class CFUniform extends ConversionCreationOperator {
                     logHGF -= logHalf;
                 }
             }
+
+            node.setHeight(newHeight);
 
             if (node.isRoot()) {
                 // Draw a number of conversions
@@ -160,6 +160,8 @@ public class CFUniform extends ConversionCreationOperator {
                     acg.deleteConversion(conv);
                 }
             }
+
+            node.setHeight(newHeight);
         }
 
         return logHGF;
