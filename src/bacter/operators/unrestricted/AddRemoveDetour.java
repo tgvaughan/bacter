@@ -68,7 +68,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
                         tUpper = t1;
                 }
 
-                logHGF -= Math.log(0.5) - 2.0*Math.log(conv.getHeight2()-conv.getHeight1());
+                logHGF -= Math.log(2.0) - 2.0*Math.log(conv.getHeight2()-conv.getHeight1());
 
                 // Select non-root node below detour edge at random
                 Node detour = acg.getNode(Randomizer.nextInt(acg.getNodeCount()-1));
@@ -168,7 +168,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
 
                 logHGF += Math.log(1.0/acg.getConvCount())
                         + Math.log(1.0/(acg.getNodeCount()-1))
-                        + Math.log(0.5) - 2.0*Math.log(tUpperBound-tLowerBound)
+                        + Math.log(2.0) - 2.0*Math.log(tUpperBound-tLowerBound)
                         + getAffectedRegionProb(convB);
 
                 return logHGF;
