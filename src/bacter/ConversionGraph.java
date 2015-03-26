@@ -404,7 +404,7 @@ public class ConversionGraph extends Tree {
     }
     
     /**
-     * Obtain extended Newick representation of ARG.  If includeRegionInfo
+     * Obtain extended Newick representation of ACG.  If includeRegionInfo
      * is true, include Nexus metadata on hybrid leaf nodes describing the
      * alignment sites affected by the conversion event.
      * 
@@ -413,10 +413,26 @@ public class ConversionGraph extends Tree {
      */
     public String getExtendedNewick(boolean includeRegionInfo) {
 
-        return extendedNewickTraverse(root, includeRegionInfo) + ";";
+        return extendedNewickTraverse(root, includeRegionInfo, false) + ";";
+    }
+
+    /**
+     * Obtain extended Newick representation of ACG, including only those
+     * conversions which attach to CF edges above non-root nodes.  If
+     * includeRegionInfo is true, include Nexus metadata on hybrid leaf
+     * nodes describing the alignment sites affected by the conversion event.
+     *
+     * @param includeRegionInfo whether to include region info in output
+     * @return Extended Newick string.
+     */
+    public String getTrimmedExtendedNewick(boolean includeRegionInfo) {
+
+        return extendedNewickTraverse(root, includeRegionInfo, true) + ";";
     }
     
-    private String extendedNewickTraverse(Node node, boolean includeRegionInfo) {
+    private String extendedNewickTraverse(Node node,
+                                          boolean includeRegionInfo,
+                                          boolean intraCFOnly) {
         StringBuilder sb = new StringBuilder();
         
         // Determine sequence of events along this node.
@@ -433,6 +449,9 @@ public class ConversionGraph extends Tree {
         }
         List<Event> events = new ArrayList<>();
         for (Conversion recomb : convs) {
+            if (intraCFOnly && recomb.node2.isRoot())
+                continue;
+
             if (recomb.node1 == node)
                 events.add(new Event(false, recomb.getHeight1(), recomb));
             if (recomb.node2 == node)
@@ -490,9 +509,9 @@ public class ConversionGraph extends Tree {
 
         if (!node.isLeaf()) {
             String subtree1 = extendedNewickTraverse(node.getChild(0),
-                    includeRegionInfo);
+                    includeRegionInfo, intraCFOnly);
             String subtree2 = extendedNewickTraverse(node.getChild(1),
-                    includeRegionInfo);
+                    includeRegionInfo, intraCFOnly);
             sb.insert(cursor, "(" + subtree1 + "," + subtree2 + ")");
             cursor += subtree1.length() + subtree2.length() + 3;
         }

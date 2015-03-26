@@ -84,12 +84,12 @@
       <log spec='TreeHeightLogger' tree="@acg"/>
     </logger>
     
-    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
+    <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
        <log idref="acg"/>
      </logger>
      
-     <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
-         <log spec="ClonalFrameLogger" acg="@acg"/>
+     <logger logEvery="10000" fileName="$(filebase)_trimmed.trees" mode="tree">
+         <log spec="TrimmedACGLogger" acg="@acg"/>
      </logger>
      
      <logger logEvery="1000" fileName="$(filebase).converted">
