@@ -18,7 +18,7 @@
     <!-- Simulated ACG (Truth) -->  
 
     <input spec='SimulatedACG' id='acgTruth'
-        rho="0.0005" delta="1000.0" sequenceLength="100000000" nTaxa="20"
+        rho="0.0005" delta="1000.0" sequenceLength="10000" nTaxa="20"
         outputFileName="simulated_acg.nexus">
         <populationModel spec='ConstantPopulation' popSize="1.0"/>
     </input>
@@ -33,7 +33,7 @@
     </input>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="10000">
+    <run spec="MCMC" id="mcmc" chainLength="100000000">
         <state>
             <stateNode id="acg" spec='SimulatedACG'
                 alignment="@alignment" rho="0.0005" delta="1000.0">
