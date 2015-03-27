@@ -32,12 +32,14 @@ import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import feast.input.In;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -127,9 +129,10 @@ public class ACGLikelihood extends ACGDistribution {
         for (int threadIdx=0; threadIdx<usedPoolSize; threadIdx++) {
 
             int start = threadIdx*chunkSize;
-            int end = (threadIdx+1)*chunkSize;
-            if (end > convSets.size())
-                    end = convSets.size();
+            int end = Integer.min((threadIdx+1)*chunkSize, convSets.size());
+
+            if (end<=start)
+                continue;
 
             List<Set<Conversion>> theseConvSets = convSets.subList(start, end);
 
@@ -142,7 +145,8 @@ public class ACGLikelihood extends ACGDistribution {
         // Wait for all tasks to complete.
         try {
             for (int i=0; i<usedPoolSize; i++)
-                futures[i].get();
+                if (futures[i] != null)
+                    futures[i].get();
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("ACG likelihood calculation task interrupted.");
         }
