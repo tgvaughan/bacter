@@ -18,9 +18,7 @@
 package bacter;
 
 import beast.evolution.tree.Node;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -31,7 +29,7 @@ import java.util.List;
  */
 public class ACGEventList {
 
-    public enum EventType { CF_LEAF, CF_COALESCENCE, CONV_DEPART, CONV_ARRIVE };
+    public enum EventType { CF_LEAF, CF_COALESCENCE, CONV_DEPART, CONV_ARRIVE }
     public static class Event {
         EventType type;
         double t;
@@ -96,7 +94,7 @@ public class ACGEventList {
      * 
      * @return ACG event list.
      */
-    public List<Event> getACGEvents() {
+    public synchronized List<Event> getACGEvents() {
         updateEvents();
 
         return events;

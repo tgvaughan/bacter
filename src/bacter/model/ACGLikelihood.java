@@ -35,10 +35,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import feast.input.In;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -64,9 +63,10 @@ public class ACGLikelihood extends ACGDistribution {
     Map<Set<Conversion>, List<Integer>> constantPatterns;
     
     int nStates;
-    
-    int count = 0;
-    
+
+    ExecutorService likelihoodThreadPool;
+    int threadPoolSize;
+
     /**
      * Memory for transition probabilities.
      */
@@ -85,35 +85,70 @@ public class ACGLikelihood extends ACGDistribution {
         nStates = alignment.getMaxStateCount();
 
         // Initialize patterns
-        patterns = Maps.newHashMap();
-        patternLogLikelihoods = Maps.newHashMap();
-        rootPartials = Maps.newHashMap();
-        constantPatterns = Maps.newHashMap();
+        patterns = new LinkedHashMap<>();
+        patternLogLikelihoods = new HashMap<>();
+        rootPartials = new HashMap<>();
+        constantPatterns = new HashMap<>();
         updatePatterns();
         
         // Initialise cores        
-        likelihoodCores = Maps.newHashMap();
+        likelihoodCores = new HashMap<>();
         updateCores();
         
         // Allocate transition probability memory:
         // (Only the first nStates*nStates elements are usually used.)
         probabilities = new double[(nStates+1)*(nStates+1)];
+
+        // Initialize thread pool using number of available processors.
+        threadPoolSize = Runtime.getRuntime().availableProcessors();
+        likelihoodThreadPool = Executors.newFixedThreadPool(threadPoolSize);
     }
     
     
     @Override
     public double calculateACGLogP() {
         
-        count += 1;
-        
         logP = 0.0;
         
         updatePatterns();
         updateCores();
-        
+
+        int nRegions = patterns.size();
+        int usedPoolSize = Integer.min(threadPoolSize, nRegions);
+        int chunkSize =  nRegions % usedPoolSize == 0
+                ? nRegions/usedPoolSize
+                : nRegions/usedPoolSize + 1;
+
+
+        List<Set<Conversion>> convSets = new ArrayList<>(patterns.keySet());
+        Future<?>[] futures = new Future[usedPoolSize];
+
+        // Submit likelihood calculations to thread pool members
+        for (int threadIdx=0; threadIdx<usedPoolSize; threadIdx++) {
+
+            int start = threadIdx*chunkSize;
+            int end = (threadIdx+1)*chunkSize;
+            if (end > convSets.size())
+                    end = convSets.size();
+
+            List<Set<Conversion>> theseConvSets = convSets.subList(start, end);
+
+            futures[threadIdx] = likelihoodThreadPool.submit(() -> {
+                for (Set<Conversion> convSet : theseConvSets)
+                    traverse(new MarginalTree(acg, convSet).getRoot(), convSet);
+            });
+        }
+
+        // Wait for all tasks to complete.
+        try {
+            for (int i=0; i<usedPoolSize; i++)
+                futures[i].get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new IllegalStateException("ACG likelihood calculation task interrupted.");
+        }
+
+        // Collate log likelihoods
         for (Set<Conversion> convSet : patterns.keySet()) {
-            traverse(new MarginalTree(acg, convSet).getRoot(), convSet);
-            
             int i=0;
             for (int[] pattern : patterns.get(convSet).elementSet()) {
                 logP += patternLogLikelihoods.get(convSet)[i]
@@ -257,13 +292,16 @@ public class ACGLikelihood extends ACGDistribution {
                 double jointBranchRate = siteModel.getRateForCategory(i, node);
                 double parentHeight = node.getParent().getHeight();
                 double nodeHeight = node.getHeight();
-                substitutionModel.getTransitionProbabilities(
-                        node,
-                        parentHeight,
-                        nodeHeight,
-                        jointBranchRate,
-                        probabilities);
-                lhc.setNodeMatrix(node.getNr(), i, probabilities);
+
+                synchronized (this) {
+                    substitutionModel.getTransitionProbabilities(
+                            node,
+                            parentHeight,
+                            nodeHeight,
+                            jointBranchRate,
+                            probabilities);
+                    lhc.setNodeMatrix(node.getNr(), i, probabilities);
+                }
             }
         }
         
@@ -273,23 +311,23 @@ public class ACGLikelihood extends ACGDistribution {
             List<Node> children = node.getChildren();
             traverse(children.get(0), convSet);
             traverse(children.get(1), convSet);
-            
+
             lhc.setNodePartialsForUpdate(node.getNr());
             lhc.setNodeStatesForUpdate(node.getNr());
             lhc.calculatePartials(children.get(0).getNr(),
                     children.get(1).getNr(), node.getNr());
-            
+
             if (node.isRoot()) {
                 double [] frequencies = substitutionModel.getFrequencies();
                 double [] proportions = siteModel.getCategoryProportions(node);
                 lhc.integratePartials(node.getNr(), proportions,
                         rootPartials.get(convSet));
-                
+
                 for (int idx : constantPatterns.get(convSet)) {
                     rootPartials.get(convSet)[idx]
                             += siteModel.getProportionInvariant();
                 }
-                
+
                 lhc.calculateLogLikelihoods(rootPartials.get(convSet),
                         frequencies, patternLogLikelihoods.get(convSet));
             }
