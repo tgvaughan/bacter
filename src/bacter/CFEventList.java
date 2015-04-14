@@ -41,7 +41,12 @@ public class CFEventList {
         EventType type;
         double t;
         int lineages;
-        
+
+        /**
+         * Construct event object corresponding to chosen CF node.
+         *
+         * @param node chosen CF node
+         */
         public Event(Node node) {
             if (node.isLeaf())
                 type = EventType.SAMPLE;
@@ -50,7 +55,17 @@ public class CFEventList {
             
             t = node.getHeight();
         }
-        
+
+        /**
+         * Construct an event object with only the time defined.
+         * Useful for conducting binary searches over the event list.
+         *
+         * @param t age of the event object
+         */
+        public Event(double t) {
+            this.t = t;
+        }
+
         public double getHeight() {
             return t;
         }
