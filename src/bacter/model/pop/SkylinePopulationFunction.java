@@ -25,10 +25,7 @@ import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.PopulationFunction;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * In BEAST 2, BSP is implemented as a tree distribution rather than
@@ -55,6 +52,11 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract {
     RealParameter popSizes;
     IntegerParameter groupSizes;
 
+    private boolean dirty;
+
+    double[] intensities;
+    double[] groupBoundaries;
+
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
@@ -77,6 +79,8 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract {
             IntegerParameter newParam = new IntegerParameter(values);
             groupSizes.assignFromWithoutID(newParam);
         }
+
+        dirty = true;
     }
 
     @Override
@@ -90,28 +94,69 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract {
     }
 
     @Override
-    public double getPopSize(double t) {
+    public void prepare() {
+
+        if (!dirty)
+            return;
+
         List<Event> cfEvents = acg.getCFEvents();
+        groupBoundaries = new double[groupSizes.getDimension()+1];
+        int cEventIdx = 0;
+        int cumulant = 0;
+        for (int i=0; i<groupSizes.getDimension(); i++) {
+            if ()
+            if (cfEvent.getType() == CFEventList.EventType.COALESCENCE) {
 
-        int interval = Collections.binarySearch(cfEvents, new Event(t),
-                new Comparator<Event>() {
-                    @Override
-                    public int compare(Event e1, Event e2) {
-                        if (e1.getHeight()<e2.getHeight())
-                            return -1;
+                groupBoundaries[i] = cfEvent.getHeight();
+                i += 1;
+            }
+        }
 
-                        if (e1.getHeight()>e2.getHeight())
-                            return 1;
+        intensities = new double[groupSizes.getDimension()+1];
 
-                        return 0;
-                    }
-                });
+        intensities[0] = 0.0;
+
+        int cumulant = 0;
+        for (int i = 0; i<groupSizes.getDimension(); i++) {
+            int newCumulant = cumulant + groupSizes.getValue(i);
+            double intervalSize = groupBoundaries[newCumulant] - groupBoundaries[cumulant];
+            intensities[i+1] = intensities[i] + intervalSize*(1.0/popSizes.getValue(cumulant));
+
+            cumulant = newCumulant;
+        }
+
+        dirty = false;
+    }
+
+    @Override
+    protected boolean requiresRecalculation() {
+        dirty = true;
+        return true;
+    }
+
+    @Override
+    protected void store() {
+        dirty = true;
+        super.store();
+    }
+
+    @Override
+    protected void restore() {
+        dirty = true;
+        super.restore();
+    }
+
+    @Override
+    public double getPopSize(double t) {
+        prepare();
+
+        if (t < 0)
+            return getPopSize(0);
+
+        int interval = Arrays.binarySearch(groupBoundaries, t);
 
         if (interval<0)
             interval = -(interval + 1) - 1;  // event to the left of time.
-
-        if (interval == -1)
-            return popSizes.getValue(0);
 
         int cumulant = 0;
         for (int i=0; i<groupSizes.getDimension(); i++) {
@@ -125,6 +170,15 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract {
 
     @Override
     public double getIntensity(double t) {
+        prepare();
+
+        if (t < 0 )
+            return -t/popSizes.getValue(0);
+
+        int interval = Arrays.binarySearch(groupBoundaries, t);
+
+
+
         return 0;
     }
 
