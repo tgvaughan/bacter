@@ -19,11 +19,10 @@ package bacter.operators.unrestricted;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
-import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
-import feast.input.In;
+
 import java.io.PrintStream;
 
 /**
@@ -32,16 +31,8 @@ import java.io.PrintStream;
 @Description("Operator which adds and removes conversions to/from an ACG.")
 public class AddRemoveConversion extends ConversionCreationOperator {
     
-    public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
-            "Conversion rate parameter.").setRequired();
+    public AddRemoveConversion() { }
     
-    public AddRemoveConversion() { };
-    
-    @Override
-    public void initAndValidate() throws Exception {
-        super.initAndValidate();
-    };
-
     @Override
     public double proposal() {
         double logHGF = 0;
@@ -96,7 +87,7 @@ public class AddRemoveConversion extends ConversionCreationOperator {
      * Obtain proposal density for the move which results in the current state
      * by adding the conversion conv to a state without that recombination.
      * 
-     * @param conv
+     * @param conv conversion
      * @return log of proposal density
      */
     public double getConversionProb(Conversion conv) {
