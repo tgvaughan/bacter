@@ -67,7 +67,6 @@ public class AddRemoveConversionTest {
             operator.initByName(
                     "weight", 1.0,
                     "acg", acg,
-                    "rho", new RealParameter(Double.toString(1.0/10000)),
                     "delta", new RealParameter("50.0"),
                     "populationModel", popFunc);
             
@@ -119,7 +118,6 @@ public class AddRemoveConversionTest {
         operator.initByName(
             "weight", 1.0,
             "acg", acg,
-            "rho", rho,
             "delta", delta,
             "populationModel", popFunc);
 
