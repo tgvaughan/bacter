@@ -97,7 +97,7 @@ public class RestrictedACGCoalescentTest extends TestBase {
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
         
         //Add a single recombination event
-        Node node1 = acg.getExternalNodes().get(0);
+        Node node1 = acg.getNode(alignment.getTaxonIndex("Tarsius_syrichta"));
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
@@ -115,10 +115,11 @@ public class RestrictedACGCoalescentTest extends TestBase {
         // Test coalescent probability when one recombination exists
         logP = coalescent.calculateRecombinantLogP(newRecomb);
         logPtrue = -3.004053776295126;
+        System.out.println(acg.getExtendedNewick(true));
         assertTrue(relativeDiff(logP, logPtrue)<1e-15);
 
         //Add a second recombination event
-        node1 = acg.getExternalNodes().get(2);
+        node1 = acg.getNode(alignment.getTaxonIndex("Homo_sapiens"));
         node2 = node1.getParent();
         height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
         height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
