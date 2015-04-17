@@ -100,29 +100,26 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract {
             return;
 
         List<Event> cfEvents = acg.getCFEvents();
-        groupBoundaries = new double[groupSizes.getDimension()+1];
-        int cEventIdx = 0;
-        int cumulant = 0;
-        for (int i=0; i<groupSizes.getDimension(); i++) {
-            if ()
-            if (cfEvent.getType() == CFEventList.EventType.COALESCENCE) {
+        groupBoundaries = new double[groupSizes.getDimension() - 1];
+        int lastEventIdx = -1;
+        for (int i=0; i<groupBoundaries.length; i++) {
+            int cumulant = 0;
+            do {
+                lastEventIdx += 1;
+                if (cfEvents.get(lastEventIdx).getType() == CFEventList.EventType.COALESCENCE)
+                    cumulant += 1;
+            } while (cumulant < groupSizes.getValue(i));
 
-                groupBoundaries[i] = cfEvent.getHeight();
-                i += 1;
-            }
+            groupBoundaries[i] = cfEvents.get(lastEventIdx).getHeight();
         }
 
         intensities = new double[groupSizes.getDimension()+1];
-
         intensities[0] = 0.0;
+        double lastBoundary = 0.0;
 
-        int cumulant = 0;
-        for (int i = 0; i<groupSizes.getDimension(); i++) {
-            int newCumulant = cumulant + groupSizes.getValue(i);
-            double intervalSize = groupBoundaries[newCumulant] - groupBoundaries[cumulant];
-            intensities[i+1] = intensities[i] + intervalSize*(1.0/popSizes.getValue(cumulant));
-
-            cumulant = newCumulant;
+        for (int i=1; i<intensities.length; i++) {
+            intensities[i] = intensities[i-1]
+                    + (groupBoundaries[i-1]-lastBoundary)/popSizes.getValue(i-1);
         }
 
         dirty = false;
@@ -156,16 +153,9 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract {
         int interval = Arrays.binarySearch(groupBoundaries, t);
 
         if (interval<0)
-            interval = -(interval + 1) - 1;  // event to the left of time.
+            interval = -(interval + 1) - 1;  // boundary to the left of time.
 
-        int cumulant = 0;
-        for (int i=0; i<groupSizes.getDimension(); i++) {
-            cumulant += groupSizes.getValue(i);
-            if (cumulant>interval)
-                return popSizes.getValue(i);
-        }
-
-        return popSizes.getValue(popSizes.getDimension()-1);
+        return popSizes.getValue(interval+1);
     }
 
     @Override
@@ -177,9 +167,14 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract {
 
         int interval = Arrays.binarySearch(groupBoundaries, t);
 
+        if (interval<0)
+            interval = -(interval + 1) - 1; // boundary to the left of time.
 
+        double intensityGridTime = interval >= 0
+                ? groupBoundaries[interval]
+                : 0.0;
 
-        return 0;
+        return intensities[interval+1] + (t-intensityGridTime)/popSizes.getValue(interval+1);
     }
 
     @Override
