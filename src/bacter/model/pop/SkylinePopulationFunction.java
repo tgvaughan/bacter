@@ -69,14 +69,14 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
 
         // Initialize groupSizes to something sensible.
         if (initGroupSizesInput.get()) {
-            int nCFEvents = acg.getCFEvents().size();
+            int nCoalEvents = acg.getInternalNodeCount();
             Integer[] values = new Integer[groupSizes.getDimension()];
             int cumulant = 0;
             for (int i=0; i<values.length; i++) {
-                values[i] = nCFEvents/values.length;
+                values[i] = nCoalEvents/values.length;
                 cumulant += values[i];
             }
-            values[values.length-1] += nCFEvents - cumulant;
+            values[values.length-1] += nCoalEvents - cumulant;
 
             IntegerParameter newParam = new IntegerParameter(values);
             groupSizes.assignFromWithoutID(newParam);
@@ -119,10 +119,13 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         intensities[0] = 0.0;
         double lastBoundary = 0.0;
 
-        for (int i=1; i<intensities.length; i++) {
+        for (int i=1; i<intensities.length-1; i++) {
             intensities[i] = intensities[i-1]
                     + (groupBoundaries[i-1]-lastBoundary)/popSizes.getValue(i-1);
         }
+
+        intensities[intensities.length-1] = (acg.getRoot().getHeight()-lastBoundary)
+                /popSizes.getValue(popSizes.getDimension()-1);
 
         dirty = false;
     }
@@ -210,6 +213,15 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
 
     @Override
     public void close(PrintStream out) {
+
+    }
+
+    /**
+     * Main method for testing.
+     *
+     * @param args command line arguments (unused)
+     */
+    public static void main(String[] args) {
 
     }
 }

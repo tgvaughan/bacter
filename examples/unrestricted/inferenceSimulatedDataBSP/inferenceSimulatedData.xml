@@ -10,6 +10,7 @@
     :beast.math.distributions
     :beast.util
     :bacter
+    :bacter.model.pop
     :bacter.model:bacter.model.unrestricted
     :bacter.operators:bacter.operators.unrestricted
     :bacter.util'>
@@ -68,7 +69,7 @@
             <distribution spec='ACGCoalescent' id="acgPrior"
                           rho="@rho" delta="@delta">
                 <acg idref="acg"/>
-                <populationModel spec='SkylinePopulationFunction'
+                <populationModel spec='SkylinePopulationFunction' id="popModel"
                                  acg="@acg"
                                  popSizes="@popSizes"
                                  groupSizes="@groupSizes"/>
@@ -103,7 +104,7 @@
               scaleFactor="0.8" parameter="@delta"/-->
 
         <operator id="popSizeScaler" spec="ScaleOperator" weight="1.0"
-            scaleFactor="0.8" parameter="@popSize"/>
+            scaleFactor="0.8" parameter="@popSizes"/>
 
         <operator spec='DeltaExchangeOperator' weight="1"
                   delta="1" integer="true"
@@ -117,7 +118,6 @@
 
     <operator id="addRemove" spec="AddRemoveConversion" weight="10.0">
         <acg idref="acg"/>
-        <rho idref="rho"/>
         <delta idref="delta"/>
         <populationModel idref="popModel"/>
     </operator>
@@ -211,7 +211,7 @@
         <log spec='TreeHeightLogger' tree="@acg"/>
         <log idref='rho'/>
         <log idref='delta'/>
-        <log idref='popSize'/>
+        <log idref='popModel'/>
         <log idref='mutationRate'/>
         <log spec="ConversionGraphStatsLogger" acg="@acg"/>
     </logger>
@@ -222,7 +222,6 @@
         <log spec='TreeHeightLogger' tree="@acg"/>
         <log idref='rho'/>
         <log idref='delta'/>
-        <log idref='popSize'/>
         <log idref='mutationRate'/>
         <log spec="ConversionGraphStatsLogger" acg="@acg"/>
     </logger>
