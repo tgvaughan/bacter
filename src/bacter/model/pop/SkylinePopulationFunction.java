@@ -21,10 +21,12 @@ import bacter.CFEventList;
 import bacter.CFEventList.Event;
 import bacter.ConversionGraph;
 import beast.core.Input;
+import beast.core.Loggable;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.PopulationFunction;
 
+import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -34,7 +36,7 @@ import java.util.*;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class SkylinePopulationFunction extends PopulationFunction.Abstract {
+public class SkylinePopulationFunction extends PopulationFunction.Abstract implements Loggable {
 
     public Input<ConversionGraph> acgInput = new Input<>("acg",
             "Conversion graph", Input.Validate.REQUIRED);
@@ -180,5 +182,34 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract {
     @Override
     public double getInverseIntensity(double x) {
         throw new RuntimeException("Method not implemented");
+    }
+
+    // Loggable implementation:
+
+    @Override
+    public void init(PrintStream out) throws Exception {
+        prepare();
+
+        for (int i=0; i<popSizes.getDimension(); i++) {
+            out.print(getID() + ".N" + i + "\t");
+            if (i>0)
+                out.print(getID() + ".t" + (i-1) + "\t");
+        }
+    }
+
+    @Override
+    public void log(int nSample, PrintStream out) {
+        prepare();
+
+        for (int i=0; i<popSizes.getDimension(); i++) {
+            out.print(popSizes.getValue(i) + "\t");
+            if (i>0)
+                out.print(groupBoundaries[i-1] + "\t");
+        }
+    }
+
+    @Override
+    public void close(PrintStream out) {
+
     }
 }
