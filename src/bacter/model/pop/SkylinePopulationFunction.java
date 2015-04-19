@@ -24,11 +24,12 @@ import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * In BEAST 2, BSP is implemented as a tree distribution rather than
@@ -123,12 +124,10 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         for (int i=1; i<intensities.length-1; i++) {
             intensities[i] = intensities[i-1]
                     + (groupBoundaries[i-1]-lastBoundary)/popSizes.getValue(i-1);
+
+            lastBoundary = groupBoundaries[i-1];
         }
 
-        intensities[intensities.length-1] = (acg.getRoot().getHeight()-lastBoundary)
-                /popSizes.getValue(popSizes.getDimension()-1);
-
-        System.out.println(acg.toXML());
         dirty = false;
     }
 
