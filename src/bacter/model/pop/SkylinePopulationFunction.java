@@ -117,11 +117,11 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
             groupBoundaries[i] = cfEvents.get(lastEventIdx).getHeight();
         }
 
-        intensities = new double[groupSizes.getDimension()+1];
+        intensities = new double[groupSizes.getDimension()];
         intensities[0] = 0.0;
         double lastBoundary = 0.0;
 
-        for (int i=1; i<intensities.length-1; i++) {
+        for (int i=1; i<intensities.length; i++) {
             intensities[i] = intensities[i-1]
                     + (groupBoundaries[i-1]-lastBoundary)/popSizes.getValue(i-1);
 
@@ -185,7 +185,21 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
 
     @Override
     public double getInverseIntensity(double x) {
-        throw new RuntimeException("Method not implemented");
+        prepare();
+
+        if (x<0.0)
+            return -x*popSizes.getValue(0);
+
+        int interval = Arrays.binarySearch(intensities, x);
+
+        if (interval<0)
+            interval = -(interval + 1) - 1; // boundary to the left of x
+
+        if (interval == 0)
+            return x*popSizes.getValue(0);
+        else
+            return groupBoundaries[interval-1]
+                    + (x-intensities[interval])*popSizes.getValue(interval);
     }
 
     // Loggable implementation:
@@ -250,11 +264,12 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
                 "groupSizes", new IntegerParameter("0 0 0 0"));
 
         try (PrintStream ps = new PrintStream("out.txt")){
-            ps.println("t N intensity");
+            ps.println("t N intensity intensityInv");
             double t = 0.0;
             while (t<10) {
-                ps.format("%g %g %g\n", t,
-                        skyline.getPopSize(t), skyline.getIntensity(t));
+                ps.format("%g %g %g %g\n", t,
+                        skyline.getPopSize(t), skyline.getIntensity(t),
+                        skyline.getInverseIntensity(skyline.getIntensity(t)));
                 t += 0.01;
             }
             ps.close();
