@@ -81,6 +81,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
             values[values.length-1] += nCoalEvents - cumulant;
 
             IntegerParameter newParam = new IntegerParameter(values);
+            newParam.setBounds(1, Integer.MAX_VALUE);
             groupSizes.assignFromWithoutID(newParam);
         }
 
@@ -209,9 +210,9 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         prepare();
 
         for (int i=0; i<popSizes.getDimension(); i++) {
-            out.print(getID() + ".N" + i + "\t");
             if (i>0)
                 out.print(getID() + ".t" + (i-1) + "\t");
+            out.print(getID() + ".N" + i + "\t");
         }
     }
 
@@ -220,9 +221,9 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         prepare();
 
         for (int i=0; i<popSizes.getDimension(); i++) {
-            out.print(popSizes.getValue(i) + "\t");
             if (i>0)
                 out.print(groupBoundaries[i-1] + "\t");
+            out.print(popSizes.getValue(i) + "\t");
         }
     }
 
