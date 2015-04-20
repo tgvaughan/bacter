@@ -72,7 +72,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         // Initialize groupSizes to something sensible.
         if (initGroupSizesInput.get()) {
             int nCoalEvents = acg.getInternalNodeCount();
-            Integer[] values = new Integer[groupSizes.getDimension()];
+            Integer[] values = new Integer[popSizes.getDimension()];
             int cumulant = 0;
             for (int i=0; i<values.length; i++) {
                 values[i] = nCoalEvents/values.length;

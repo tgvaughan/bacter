@@ -1,5 +1,3 @@
-df <- read.table('inferenceSimulatedData.log', header=T)
-
 getPopSizes <- function(t, df, idstr="popModel") {
 
     Nindices <- getNindices(df, idstr)
@@ -17,7 +15,7 @@ getPopSizes <- function(t, df, idstr="popModel") {
                    rowsub <- (thist-dfrow[tindices])>0
                    Nindex <- 1
                    if (sum(rowsub)>0)
-                       Nindex <- min((1:length(Nindices))[rowsub]) + 1
+                       Nindex <- max((1:length(tindices))[rowsub]) + 1
 
                    return (dfrow[Nindices[Nindex]])
         })
@@ -44,9 +42,10 @@ getTindices <- function(df, idstr) {
     return(which(regexpr(pattern, names(df))>0))
 }
 
-plotBSP <- function(t, df, idstr="popModel", ...) {
+plotBSP <- function(t, df, burnin=0.1, idstr="popModel", ...) {
 
-    N <- getPopSizes(t, df, idstr)
+    frameLen <- dim(df)[1]
+    N <- getPopSizes(t, df[ceiling(burnin*frameLen):frameLen,], idstr)
 
     plot(t, N$median, 'l', ylim=c(0.9*min(N$lower), 1.1*max(N$upper)), ...)
     polygon(c(t, rev(t)), c(N$lower, rev(N$upper)), col="grey", border=NA)
