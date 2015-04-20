@@ -44,7 +44,13 @@ public class ACGCoalescent extends ACGDistribution {
     
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
-    
+
+    public Input<Integer> lowerCCBoundInput = new In<Integer>("lowerConvCountBound",
+            "Lower bound on conversion count.").setDefault(0);
+
+    public Input<Integer> upperCCBoundInput = new In<Integer>("upperConvCountBound",
+            "Upper bound on conversion count.").setDefault(Integer.MAX_VALUE);
+
     PopulationFunction popFunc;
     int sequenceLength;
     
@@ -60,6 +66,11 @@ public class ACGCoalescent extends ACGDistribution {
     
     @Override
     public double calculateACGLogP() {
+
+        // Check whether conversion count exceeds bounds.
+        if (acg.getConvCount()<lowerCCBoundInput.get()
+                || acg.getConvCount()>upperCCBoundInput.get())
+            return Double.NEGATIVE_INFINITY;
 
         logP = calculateClonalFrameLogP();
         
