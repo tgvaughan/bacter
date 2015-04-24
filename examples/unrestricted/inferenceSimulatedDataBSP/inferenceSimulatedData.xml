@@ -19,7 +19,7 @@
     <!-- Simulated ACG (Truth) -->  
 
     <input spec='SimulatedACG' id='acgTruth'
-        rho="0.0005" delta="1000.0" sequenceLength="10000" nTaxa="20"
+        rho="0.002" delta="500.0" sequenceLength="10000" nTaxa="20"
         outputFileName="simulated_acg.nexus">
         <populationModel spec='ExponentialGrowth'>
             <popSize spec="RealParameter" value="1.0"/>
@@ -31,7 +31,7 @@
 
     <input spec='SimulatedAlignment' id='alignment' acg="@acgTruth"
         outputFileName="simulated_alignment.nexus" useNexus="true">
-        <siteModel spec='SiteModel' mutationRate="0.1">
+        <siteModel spec='SiteModel' mutationRate="1.0">
             <substModel spec='JukesCantor'/>
         </siteModel>
     </input>
@@ -40,15 +40,15 @@
     <run spec="MCMC" id="mcmc" chainLength="100000000">
         <state>
             <stateNode id="acg" spec='SimulatedACG'
-                alignment="@alignment" rho="0.0005" delta="1000.0">
+                alignment="@alignment" rho="0" delta="500.0">
                 <populationModel spec='ConstantPopulation' popSize="5.0"/>
             </stateNode>
 
-            <stateNode id="rho" spec='RealParameter' value="0.0005" />
-            <stateNode id="delta" spec='RealParameter' value="1000.0"/>
+            <stateNode id="rho" spec='RealParameter' value="0.002" />
+            <stateNode id="delta" spec='RealParameter' value="500.0"/>
             <stateNode id="popSizes" spec='RealParameter' value="1.0" dimension="5"/>
             <stateNode id="groupSizes" spec='IntegerParameter' value="0"/>
-            <stateNode id="mutationRate" spec='RealParameter' value="0.1"/>
+            <stateNode id="mutationRate" spec='RealParameter' value="1.0"/>
         </state>
 
         <!-- Posterior -->    
@@ -67,7 +67,7 @@
             <!-- ACG prior -->
 
             <distribution spec='ACGCoalescent' id="acgPrior"
-                          rho="@rho" delta="@delta">
+                rho="@rho" delta="@delta">
                 <acg idref="acg"/>
                 <populationModel spec='SkylinePopulationFunction' id="popModel"
                                  acg="@acg"
@@ -114,6 +114,12 @@
     <!-- ACG operators -->
 
     <operator id="addRemove" spec="AddRemoveConversion" weight="10.0">
+        <acg idref="acg"/>
+        <delta idref="delta"/>
+        <populationModel idref="popModel"/>
+    </operator>
+
+    <operator id="replace" spec="ReplaceConversion" weight="10.0">
         <acg idref="acg"/>
         <delta idref="delta"/>
         <populationModel idref="popModel"/>

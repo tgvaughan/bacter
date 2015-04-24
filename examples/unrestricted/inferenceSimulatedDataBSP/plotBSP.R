@@ -51,3 +51,11 @@ plotBSP <- function(t, df, burnin=0.1, idstr="popModel", ...) {
     polygon(c(t, rev(t)), c(N$lower, rev(N$upper)), col="grey", border=NA)
     lines(t, N$median, 'l', lwd=2)
 }
+
+redraw <- function(...) {
+    t <- 10^seq(-4,-2, length.out=100)
+    #t <- seq(0,0.007, length.out=100)
+    df <- read.table('inferenceSimulatedDataEven.log', header=T)
+    plotBSP(t, df, ...)
+    lines(t, exp(-1000*t), lty=2, lwd=2)
+}

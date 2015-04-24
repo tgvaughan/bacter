@@ -36,6 +36,12 @@ import java.util.List;
  * a population function.  The population function approach is much
  * more flexible and is directly applicable to BACTER's model.
  *
+ * This variant allows one to use a grid of population change times which are
+ * evenly distributed between the most recent sample and the root of the clonal
+ * frame. This is arguably more appropriate than using the clonal frame
+ * coalescence times since conversion-associated coalescences occur more evenly
+ * across the tree.
+ *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class SkylinePopulationFunction extends PopulationFunction.Abstract implements Loggable {
@@ -51,6 +57,14 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
 
     public Input<Boolean> initGroupSizesInput = new Input<>("initGroupSizes",
             "If true (default), initialize group sizes parameter.", true);
+
+    public Input<Integer> nGridPointsInput = new Input<>("nGridPoints",
+            "Number of evenly spaced points at which to allow " +
+                    "population size changes");
+
+    public Input<Boolean> piecewiseLinearInput = new Input<>("piecewiseLinear",
+            "Use piecewise linear rather than piecewise constant " +
+                    "population function.", false);
 
     ConversionGraph acg;
     RealParameter popSizes;
@@ -71,19 +85,28 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
 
         // Initialize groupSizes to something sensible.
         if (initGroupSizesInput.get()) {
-            int nCoalEvents = acg.getInternalNodeCount();
-            Integer[] values = new Integer[popSizes.getDimension()];
+
+            int nChangePoints;
+            if (nGridPointsInput.get() == null)
+                nChangePoints = acg.getInternalNodeCount();
+            else
+                nChangePoints = nGridPointsInput.get();
+
+            Integer[] values = new Integer[popSizes.getDimension()-1];
             int cumulant = 0;
             for (int i=0; i<values.length; i++) {
-                values[i] = nCoalEvents/values.length;
+                values[i] = nChangePoints/values.length;
                 cumulant += values[i];
             }
-            values[values.length-1] += nCoalEvents - cumulant;
+            values[values.length-1] += nChangePoints - cumulant;
 
             IntegerParameter newParam = new IntegerParameter(values);
             newParam.setBounds(1, Integer.MAX_VALUE);
             groupSizes.assignFromWithoutID(newParam);
         }
+
+        groupBoundaries = new double[groupSizes.getDimension()+1];
+        intensities = new double[groupSizes.getDimension()+1];
 
         dirty = true;
     }
@@ -104,29 +127,43 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         if (!dirty)
             return;
 
-        List<Event> cfEvents = acg.getCFEvents();
-        groupBoundaries = new double[groupSizes.getDimension() - 1];
-        int lastEventIdx = -1;
-        for (int i=0; i<groupBoundaries.length; i++) {
-            int cumulant = 0;
-            do {
-                lastEventIdx += 1;
-                if (cfEvents.get(lastEventIdx).getType() == CFEventList.EventType.COALESCENCE)
-                    cumulant += 1;
-            } while (cumulant < groupSizes.getValue(i));
+        groupBoundaries[0] = 0.0;
+        if (nGridPointsInput.get() == null) {
 
-            groupBoundaries[i] = cfEvents.get(lastEventIdx).getHeight();
+            List<Event> cfEvents = acg.getCFEvents();
+            int lastEventIdx = -1;
+            for (int i = 1; i < groupBoundaries.length; i++) {
+                int cumulant = 0;
+                do {
+                    lastEventIdx += 1;
+                    if (cfEvents.get(lastEventIdx).getType() == CFEventList.EventType.COALESCENCE)
+                        cumulant += 1;
+                } while (cumulant < groupSizes.getValue(i-1));
+
+                groupBoundaries[i] = cfEvents.get(lastEventIdx).getHeight();
+            }
+        } else {
+            for (int i=1; i<groupBoundaries.length; i++) {
+                groupBoundaries[i] = groupBoundaries[i-1]
+                        + acg.getRoot().getHeight()*groupSizes.getValue(i-1)/nGridPointsInput.get();
+            }
         }
 
-        intensities = new double[groupSizes.getDimension()];
         intensities[0] = 0.0;
-        double lastBoundary = 0.0;
 
-        for (int i=1; i<intensities.length; i++) {
-            intensities[i] = intensities[i-1]
-                    + (groupBoundaries[i-1]-lastBoundary)/popSizes.getValue(i-1);
+        if (!piecewiseLinearInput.get()) {
+            for (int i = 1; i < intensities.length; i++) {
+                intensities[i] = intensities[i - 1]
+                        + (groupBoundaries[i] - groupBoundaries[i-1]) / popSizes.getValue(i - 1);
+            }
+        } else {
+            for (int i = 1; i < intensities.length; i++) {
 
-            lastBoundary = groupBoundaries[i-1];
+                intensities[i] = intensities[i - 1]
+                        + (groupBoundaries[i] - groupBoundaries[i-1])
+                        /(popSizes.getValue(i)-popSizes.getValue(i-1))
+                        *Math.log(popSizes.getValue(i));
+            }
         }
 
         dirty = false;
@@ -157,12 +194,15 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         if (t < 0)
             return getPopSize(0);
 
+        if (t > groupBoundaries[groupBoundaries.length-1])
+            return popSizes.getValue(popSizes.getDimension()-1);
+
         int interval = Arrays.binarySearch(groupBoundaries, t);
 
         if (interval<0)
             interval = -(interval + 1) - 1;  // boundary to the left of time.
 
-        return popSizes.getValue(interval+1);
+        return popSizes.getValue(interval);
     }
 
     @Override
@@ -177,11 +217,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         if (interval<0)
             interval = -(interval + 1) - 1; // boundary to the left of time.
 
-        double intensityGridTime = interval >= 0
-                ? groupBoundaries[interval]
-                : 0.0;
-
-        return intensities[interval+1] + (t-intensityGridTime)/popSizes.getValue(interval+1);
+        return intensities[interval] + (t-groupBoundaries[interval])/popSizes.getValue(interval);
     }
 
     @Override
@@ -196,11 +232,8 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         if (interval<0)
             interval = -(interval + 1) - 1; // boundary to the left of x
 
-        if (interval == 0)
-            return x*popSizes.getValue(0);
-        else
-            return groupBoundaries[interval-1]
-                    + (x-intensities[interval])*popSizes.getValue(interval);
+        return groupBoundaries[interval]
+                + (x-intensities[interval])*popSizes.getValue(interval);
     }
 
     // Loggable implementation:
@@ -261,7 +294,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         SkylinePopulationFunction skyline = new SkylinePopulationFunction();
         skyline.initByName(
                 "acg", acg,
-                "popSizes", new RealParameter("5.0 1.0 5.0 1.0"),
+                "popSizes", new RealParameter("5.0 1.0 5.0 1.0 2.0"),
                 "groupSizes", new IntegerParameter("0 0 0 0"));
 
         try (PrintStream ps = new PrintStream("out.txt")){
