@@ -92,7 +92,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
             else
                 nChangePoints = nGridPointsInput.get();
 
-            Integer[] values = new Integer[popSizes.getDimension()-1];
+            Integer[] values = new Integer[popSizes.getDimension()];
             int cumulant = 0;
             for (int i=0; i<values.length; i++) {
                 values[i] = nChangePoints/values.length;
@@ -105,8 +105,8 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
             groupSizes.assignFromWithoutID(newParam);
         }
 
-        groupBoundaries = new double[groupSizes.getDimension()+1];
-        intensities = new double[groupSizes.getDimension()+1];
+        groupBoundaries = new double[groupSizes.getDimension()];
+        intensities = new double[groupSizes.getDimension()];
 
         dirty = true;
     }
@@ -162,7 +162,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
                 intensities[i] = intensities[i - 1]
                         + (groupBoundaries[i] - groupBoundaries[i-1])
                         /(popSizes.getValue(i)-popSizes.getValue(i-1))
-                        *Math.log(popSizes.getValue(i));
+                        *Math.log(popSizes.getValue(i)/popSizes.getValue(i-1));
             }
         }
 
@@ -191,10 +191,10 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
     public double getPopSize(double t) {
         prepare();
 
-        if (t < 0)
-            return getPopSize(0);
+        if (t <= 0)
+            return popSizes.getValue(0);
 
-        if (t > groupBoundaries[groupBoundaries.length-1])
+        if (t >= groupBoundaries[groupBoundaries.length-1])
             return popSizes.getValue(popSizes.getDimension()-1);
 
         int interval = Arrays.binarySearch(groupBoundaries, t);
@@ -202,22 +202,49 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         if (interval<0)
             interval = -(interval + 1) - 1;  // boundary to the left of time.
 
-        return popSizes.getValue(interval);
+        if (!piecewiseLinearInput.get())
+            return popSizes.getValue(interval);
+        else {
+            double N0 = popSizes.getValue(interval);
+            double N1 = popSizes.getValue(interval+1);
+
+            double t0 = groupBoundaries[interval];
+            double t1 = groupBoundaries[interval+1];
+
+            return N0 + (t - t0)/(t1 - t0)*(N1 - N0);
+        }
     }
 
     @Override
     public double getIntensity(double t) {
         prepare();
 
-        if (t < 0 )
+        if (t <= 0 )
             return -t/popSizes.getValue(0);
+
+        if (t >= groupBoundaries[groupBoundaries.length-1])
+            return intensities[intensities.length-1]
+                    + (t-groupBoundaries[intensities.length-1])
+                    /popSizes.getValue(popSizes.getDimension()-1);
 
         int interval = Arrays.binarySearch(groupBoundaries, t);
 
         if (interval<0)
             interval = -(interval + 1) - 1; // boundary to the left of time.
 
-        return intensities[interval] + (t-groupBoundaries[interval])/popSizes.getValue(interval);
+        if (!piecewiseLinearInput.get())
+            return intensities[interval] + (t-groupBoundaries[interval])/popSizes.getValue(interval);
+        else {
+            double N0 = popSizes.getValue(interval);
+            double N1 = popSizes.getValue(interval+1);
+
+            double t0 = groupBoundaries[interval];
+            double t1 = groupBoundaries[interval+1];
+
+            double N = N0 + (t - t0)/(t1 - t0)*(N1 - N0);
+
+            return intensities[interval] + (t1-t0)/(N1-N0)*Math.log(N/N0);
+        }
     }
 
     @Override
@@ -295,16 +322,17 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         skyline.initByName(
                 "acg", acg,
                 "popSizes", new RealParameter("5.0 1.0 5.0 1.0 2.0"),
-                "groupSizes", new IntegerParameter("0 0 0 0"));
+                "groupSizes", new IntegerParameter("0 0 0 0"),
+                "piecewiseLinear", true);
 
         try (PrintStream ps = new PrintStream("out.txt")){
-            ps.println("t N intensity intensityInv");
+            ps.println("t N intensity"); // intensityInv");
             double t = 0.0;
             while (t<10) {
-                ps.format("%g %g %g %g\n", t,
-                        skyline.getPopSize(t), skyline.getIntensity(t),
-                        skyline.getInverseIntensity(skyline.getIntensity(t)));
-                t += 0.01;
+                ps.format("%g %g %g\n", t,
+                        skyline.getPopSize(t), skyline.getIntensity(t));
+//                        skyline.getInverseIntensity(skyline.getIntensity(t)));
+                t += 0.001;
             }
             ps.close();
         }
