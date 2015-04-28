@@ -87,8 +87,8 @@ public class SkylinePopulationFunctionTest {
         SkylinePopulationFunction skyline = new SkylinePopulationFunction();
         skyline.initByName(
                 "acg", acg,
-                "popSizes", new RealParameter("5.0 1.0 5.0 1.0"),
-                "groupSizes", new IntegerParameter("0 0 0 0"),
+                "popSizes", new RealParameter("1.0 1.0 5.0 1.0"),
+                "groupSizes", new IntegerParameter("0"),
                 "piecewiseLinear", true);
 
         for (double t = 0.0; t<10; t += 0.01)
@@ -101,8 +101,8 @@ public class SkylinePopulationFunctionTest {
         SkylinePopulationFunction skyline = new SkylinePopulationFunction();
         skyline.initByName(
                 "acg", acg,
-                "popSizes", new RealParameter("5.0 1.0 5.0 1.0"),
-                "groupSizes", new IntegerParameter("0 0 0 0"),
+                "popSizes", new RealParameter("1.0 1.0 5.0 1.0"),
+                "groupSizes", new IntegerParameter("0"),
                 "piecewiseLinear", true);
 
         for (CFEventList.Event cfEvent : acg.getCFEvents()) {

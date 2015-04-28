@@ -159,10 +159,14 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         } else {
             for (int i = 1; i < intensities.length; i++) {
 
-                intensities[i] = intensities[i - 1]
-                        + (groupBoundaries[i] - groupBoundaries[i-1])
-                        /(popSizes.getValue(i)-popSizes.getValue(i-1))
-                        *Math.log(popSizes.getValue(i)/popSizes.getValue(i-1));
+                if (!popSizes.getValue(i - 1).equals(popSizes.getValue(i)))
+                    intensities[i] = intensities[i - 1]
+                            + (groupBoundaries[i] - groupBoundaries[i - 1])
+                            / (popSizes.getValue(i) - popSizes.getValue(i - 1))
+                            * Math.log(popSizes.getValue(i) / popSizes.getValue(i - 1));
+                else
+                    intensities[i] = intensities[i-1]
+                            + (groupBoundaries[i] - groupBoundaries[i-1])/popSizes.getValue(i-1);
             }
         }
 
@@ -243,7 +247,10 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
 
             double N = N0 + (t - t0)/(t1 - t0)*(N1 - N0);
 
-            return intensities[interval] + (t1-t0)/(N1-N0)*Math.log(N/N0);
+            if (N1 != N0)
+                return intensities[interval] + (t1-t0)/(N1-N0)*Math.log(N/N0);
+            else
+                return intensities[interval] + (t - t0)/N0;
         }
     }
 
@@ -277,7 +284,10 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
             double a = N0 - t0*(N1-N0)/(t1-t0);
             double b = (N1-N0)/(t1-t0);
 
-            return (N0*Math.exp((N1-N0)/(t1-t0)*(x-intensities[interval])) - a)/b;
+            if (N1 != N0)
+                return (N0*Math.exp((N1-N0)/(t1-t0)*(x-intensities[interval])) - a)/b;
+            else
+                return groupBoundaries[interval] + N0*(x - intensities[interval]);
         }
     }
 
@@ -339,8 +349,8 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         SkylinePopulationFunction skyline = new SkylinePopulationFunction();
         skyline.initByName(
                 "acg", acg,
-                "popSizes", new RealParameter("5.0 1.0 5.0 1.0 2.0"),
-                "groupSizes", new IntegerParameter("0 0 0 0"),
+                "popSizes", new RealParameter("1.0 1.0 5.0 1.0 2.0"),
+                "groupSizes", new IntegerParameter("0"),
                 "piecewiseLinear", true);
 
         try (PrintStream ps = new PrintStream("out.txt")){
