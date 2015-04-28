@@ -17,6 +17,7 @@
 
 package bacter.model.pop;
 
+import bacter.CFEventList;
 import bacter.ConversionGraph;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
@@ -30,9 +31,6 @@ import static org.junit.Assert.assertTrue;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class SkylinePopulationFunctionTest {
-
-    @Test
-    public void test() throws Exception {
         String acgString = "[&15,0,1.3905355989030808,31,770,1.597708055397074] " +
                         "[&30,931,2.4351280458424904,36,2486,3.78055549386568] " +
                         "[&15,941,2.0439957300083322,38,2364,6.911056700367016] " +
@@ -48,8 +46,15 @@ public class SkylinePopulationFunctionTest {
                         "4:2.8111379795207454)35:0.1331794525400949,((0:0.0243537216663141," +
                         "5:0.0243537216663141)22:0.5681537100482162,18:0.5925074317145304)30:2.35181000034631)36:3.829751995233287)38:0.0";
 
-        ConversionGraph acg = new ConversionGraph();
+        ConversionGraph acg;
+
+    public SkylinePopulationFunctionTest() throws Exception {
+        acg = new ConversionGraph();
         acg.initByName("sequenceLength", 10000, "fromString", acgString);
+    }
+
+    @Test
+    public void test1() throws Exception {
 
         SkylinePopulationFunction skyline = new SkylinePopulationFunction();
         skyline.initByName(
@@ -59,5 +64,50 @@ public class SkylinePopulationFunctionTest {
 
         for (double t = 0.0; t<10; t += 0.01)
             assertTrue(Math.abs(t-skyline.getInverseIntensity(skyline.getIntensity(t)))<1e-14);
+    }
+
+    @Test
+    public void test2() throws Exception {
+
+        SkylinePopulationFunction skyline = new SkylinePopulationFunction();
+        skyline.initByName(
+                "acg", acg,
+                "popSizes", new RealParameter("5.0 1.0 5.0 1.0"),
+                "groupSizes", new IntegerParameter("0 0 0 0"));
+
+        for (CFEventList.Event cfEvent : acg.getCFEvents()) {
+            double t = cfEvent.getHeight();
+            assertTrue(Math.abs(t-skyline.getInverseIntensity(skyline.getIntensity(t)))<1e-14);
+        }
+    }
+
+    @Test
+    public void test3() throws Exception {
+
+        SkylinePopulationFunction skyline = new SkylinePopulationFunction();
+        skyline.initByName(
+                "acg", acg,
+                "popSizes", new RealParameter("5.0 1.0 5.0 1.0"),
+                "groupSizes", new IntegerParameter("0 0 0 0"),
+                "piecewiseLinear", true);
+
+        for (double t = 0.0; t<10; t += 0.01)
+            assertTrue(Math.abs(t-skyline.getInverseIntensity(skyline.getIntensity(t)))<1e-14);
+    }
+
+    @Test
+    public void test4() throws Exception {
+
+        SkylinePopulationFunction skyline = new SkylinePopulationFunction();
+        skyline.initByName(
+                "acg", acg,
+                "popSizes", new RealParameter("5.0 1.0 5.0 1.0"),
+                "groupSizes", new IntegerParameter("0 0 0 0"),
+                "piecewiseLinear", true);
+
+        for (CFEventList.Event cfEvent : acg.getCFEvents()) {
+            double t = cfEvent.getHeight();
+            assertTrue(Math.abs(t-skyline.getInverseIntensity(skyline.getIntensity(t)))<1e-14);
+        }
     }
 }

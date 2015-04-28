@@ -251,16 +251,34 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
     public double getInverseIntensity(double x) {
         prepare();
 
-        if (x<0.0)
+        if (x<=0.0)
             return -x*popSizes.getValue(0);
+
+        if (x >= intensities[intensities.length-1])
+            return groupBoundaries[groupBoundaries.length-1]
+                    + (x - intensities[intensities.length-1])
+                    *popSizes.getValue(popSizes.getDimension()-1);
 
         int interval = Arrays.binarySearch(intensities, x);
 
         if (interval<0)
             interval = -(interval + 1) - 1; // boundary to the left of x
 
-        return groupBoundaries[interval]
-                + (x-intensities[interval])*popSizes.getValue(interval);
+        if (!piecewiseLinearInput.get())
+            return groupBoundaries[interval]
+                    + (x-intensities[interval])*popSizes.getValue(interval);
+        else {
+            double N0 = popSizes.getValue(interval);
+            double N1 = popSizes.getValue(interval+1);
+
+            double t0 = groupBoundaries[interval];
+            double t1 = groupBoundaries[interval+1];
+
+            double a = N0 - t0*(N1-N0)/(t1-t0);
+            double b = (N1-N0)/(t1-t0);
+
+            return (N0*Math.exp((N1-N0)/(t1-t0)*(x-intensities[interval])) - a)/b;
+        }
     }
 
     // Loggable implementation:
@@ -326,12 +344,12 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
                 "piecewiseLinear", true);
 
         try (PrintStream ps = new PrintStream("out.txt")){
-            ps.println("t N intensity"); // intensityInv");
+            ps.println("t N intensity intensityInv");
             double t = 0.0;
             while (t<10) {
-                ps.format("%g %g %g\n", t,
-                        skyline.getPopSize(t), skyline.getIntensity(t));
-//                        skyline.getInverseIntensity(skyline.getIntensity(t)));
+                ps.format("%g %g %g %g\n", t,
+                        skyline.getPopSize(t), skyline.getIntensity(t),
+                        skyline.getInverseIntensity(skyline.getIntensity(t)));
                 t += 0.001;
             }
             ps.close();
