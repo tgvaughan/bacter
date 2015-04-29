@@ -19,7 +19,7 @@
     <!-- Simulated ACG (Truth) -->  
 
     <input spec='SimulatedACG' id='acgTruth'
-        rho="0.051" delta="500.0" sequenceLength="10000" nTaxa="20"
+        rho="0.05" delta="500.0" sequenceLength="10000" nTaxa="20"
         outputFileName="simulated_acg.nexus">
         <populationModel spec='ExponentialGrowth'>
             <popSize spec="RealParameter" value="1.0"/>
@@ -73,17 +73,18 @@
                                  acg="@acg"
                                  popSizes="@popSizes"
                                  groupSizes="@groupSizes"
+                                 nGridPoints="10"
                                  piecewiseLinear="true"/>
             </distribution>
 
             <!-- Parameter priors -->
 
-            <distribution spec='Prior' x='@rho'>
+            <!--distribution spec='Prior' x='@rho'>
                 <distr spec='LogNormalDistributionModel' M='0.0' S='2.0'/>
             </distribution>
             <distribution spec='Prior' x='@delta'>
                 <distr spec='LogNormalDistributionModel' M='0.0' S='2.0'/>
-            </distribution>
+            </distribution-->
             <distribution spec="beast.math.distributions.MarkovChainDistribution"
                           jeffreys="true"
                           parameter="@popSizes"/>

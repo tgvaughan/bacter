@@ -65,8 +65,6 @@ getPopSizesLinear <- function(t, df, idstr) {
     return(res)
 }
 
-
-
 getNindices <- function(df, idstr) {
     pattern <- paste("^", idstr, ".N", sep='')
 
@@ -87,7 +85,20 @@ plotBSP <- function(t, df, burnin=0.1, idstr="popModel", linear=FALSE, ...) {
     else
         N <- getPopSizesLinear(t, df[ceiling(burnin*frameLen):frameLen,], idstr)
 
-    plot(t, N$median, 'l', ylim=c(0.9*min(N$lower), 1.1*max(N$upper)), ...)
+    ellipsis <- list(...)
+
+    if (length(ellipsis$xlab) == 0)
+        ellipsis$xlab = "t"
+
+    if (length(ellipsis$ylab) == 0)
+        ellipsis$ylab = "N"
+
+    if (length(ellipsis$ylim) == 0)
+        ellipsis$ylim = c(0.9*min(N$lower), 1.1*max(N$upper))
+
+    args <- c(list(t, N$median, 'l'), ellipsis)
+
+    do.call(plot, args)
     polygon(c(t, rev(t)), c(N$lower, rev(N$upper)), col="grey", border=NA)
     lines(t, N$median, 'l', lwd=2)
 }
@@ -96,6 +107,7 @@ redraw <- function(...) {
     #t <- 10^seq(-4,-2, length.out=100)
     t <- seq(0,0.01, length.out=100)
     df <- read.table('inferenceSimulatedDataLinear.log', header=T)
+
     plotBSP(t, df, ...)
     lines(t, exp(-1000*t), lty=2, lwd=2)
 }
