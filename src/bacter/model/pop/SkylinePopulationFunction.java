@@ -298,8 +298,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         prepare();
 
         for (int i=0; i<popSizes.getDimension(); i++) {
-            if (i>0)
-                out.print(getID() + ".t" + (i-1) + "\t");
+            out.print(getID() + ".t" + i + "\t");
             out.print(getID() + ".N" + i + "\t");
         }
     }
@@ -309,8 +308,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         prepare();
 
         for (int i=0; i<popSizes.getDimension(); i++) {
-            if (i>0)
-                out.print(groupBoundaries[i-1] + "\t");
+            out.print(groupBoundaries[i] + "\t");
             out.print(popSizes.getValue(i) + "\t");
         }
     }

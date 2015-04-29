@@ -1,4 +1,4 @@
-getPopSizes <- function(t, df, idstr="popModel") {
+getPopSizes <- function(t, df, idstr) {
 
     Nindices <- getNindices(df, idstr)
     tindices <- getTindices(df, idstr)
@@ -12,11 +12,7 @@ getPopSizes <- function(t, df, idstr="popModel") {
         thist <- t[tidx]
 
         N <- apply(df, 1, function (dfrow) {
-                   rowsub <- (thist-dfrow[tindices])>0
-                   Nindex <- 1
-                   if (sum(rowsub)>0)
-                       Nindex <- max((1:length(tindices))[rowsub]) + 1
-
+                   Nindex <- max(1,findInterval(thist, dfrow[tindices]))
                    return (dfrow[Nindices[Nindex]])
         })
 
@@ -28,6 +24,47 @@ getPopSizes <- function(t, df, idstr="popModel") {
 
     return(res)
 }
+
+getPopSizesLinear <- function(t, df, idstr) {
+
+    Nindices <- getNindices(df, idstr)
+    tindices <- getTindices(df, idstr)
+
+    res <- list()
+    res$mean <- rep(0, length(t))
+    res$upper <- rep(0, length(t))
+    res$lower <- rep(0, length(t))
+
+    for (tidx in 1:length(t)) {
+        thist <- t[tidx]
+
+        N <- apply(df, 1, function (dfrow) {
+                   Nindex <- findInterval(thist, dfrow[tindices])
+
+                   if (Nindex==0)
+                       return(dfrow[Nindices[1]])
+
+                   if (Nindex==length(Nindices))
+                       return(dfrow[Nindices[Nindex]])
+
+                   N0 <- dfrow[Nindices[Nindex]]
+                   N1 <- dfrow[Nindices[Nindex+1]]
+
+                   t0 <- dfrow[tindices[Nindex]]
+                   t1 <- dfrow[tindices[Nindex+1]]
+
+                   return(N0 + (N1-N0)/(t1-t0)*(thist-t0))
+        })
+
+        q <- quantile(N, probs=c(0.025, 0.5, 0.975))
+        res$lower[tidx] <- q[1]
+        res$median[tidx] <- q[2]
+        res$upper[tidx] <- q[3]
+    }
+
+    return(res)
+}
+
 
 
 getNindices <- function(df, idstr) {
@@ -42,10 +79,13 @@ getTindices <- function(df, idstr) {
     return(which(regexpr(pattern, names(df))>0))
 }
 
-plotBSP <- function(t, df, burnin=0.1, idstr="popModel", ...) {
+plotBSP <- function(t, df, burnin=0.1, idstr="popModel", linear=FALSE, ...) {
 
     frameLen <- dim(df)[1]
-    N <- getPopSizes(t, df[ceiling(burnin*frameLen):frameLen,], idstr)
+    if (!linear)
+        N <- getPopSizes(t, df[ceiling(burnin*frameLen):frameLen,], idstr)
+    else
+        N <- getPopSizesLinear(t, df[ceiling(burnin*frameLen):frameLen,], idstr)
 
     plot(t, N$median, 'l', ylim=c(0.9*min(N$lower), 1.1*max(N$upper)), ...)
     polygon(c(t, rev(t)), c(N$lower, rev(N$upper)), col="grey", border=NA)
@@ -53,9 +93,9 @@ plotBSP <- function(t, df, burnin=0.1, idstr="popModel", ...) {
 }
 
 redraw <- function(...) {
-    t <- 10^seq(-4,-2, length.out=100)
-    #t <- seq(0,0.007, length.out=100)
-    df <- read.table('inferenceSimulatedDataEven.log', header=T)
+    #t <- 10^seq(-4,-2, length.out=100)
+    t <- seq(0,0.01, length.out=100)
+    df <- read.table('inferenceSimulatedDataLinear.log', header=T)
     plotBSP(t, df, ...)
     lines(t, exp(-1000*t), lty=2, lwd=2)
 }
