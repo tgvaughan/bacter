@@ -16,6 +16,7 @@
  */
 package bacter;
 
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import java.util.Objects;
 
@@ -41,15 +42,17 @@ public class Conversion {
      * @param height2
      * @param startSite
      * @param endSite
+     * @param alignment
      */
     public Conversion(Node node1, double height1, Node node2, double height2,
-            int startSite, int endSite) {
+            int startSite, int endSite, Alignment alignment) {
         this.node1 = node1;
         this.node2 = node2;
         this.height1 = height1;
         this.height2 = height2;
         this.startSite = startSite;
         this.endSite = endSite;
+        this.alignment = alignment;
     }
 
     /**
@@ -66,6 +69,11 @@ public class Conversion {
      * Range of nucleotides affected by homologous gene conversion.
      */
     protected int startSite, endSite;
+
+    /**
+     * Alignment associated with this conversion.
+     */
+    protected Alignment alignment;
     
     /**
      * Obtain node below most recent point at which recombinant edge
@@ -113,7 +121,17 @@ public class Conversion {
     public int getStartSite() {
         return startSite;
     }
-    
+
+
+    /**
+     * Return alignment that this conversion affects.
+     *
+     * @return alignment
+     */
+    public Alignment getAlignment() {
+        return alignment;
+    }
+
     /**
      * Set site of start of alignment region affected by conversion event.
      * 
@@ -183,6 +201,16 @@ public class Conversion {
     public void setHeight2(double height2) {
         startEditing();
         this.height2 = height2;
+    }
+
+    /**
+     * Set the alignment that this conversion corrsponds to.
+     *
+     * @param alignment
+     */
+    public void setAlignment(Alignment alignment) {
+        startEditing();
+        this.alignment = alignment;
     }
 
     
@@ -256,43 +284,44 @@ public class Conversion {
         copy.node2 = node2;
         copy.height1 = height1;
         copy.height2 = height2;
+        copy.alignment = alignment;
         
         return copy;
     }
 
-    /**
-     * Returns true if obj is a Conversion object that represents an
- identical recombination to this.
-     * 
-     * @param obj
-     * @return true if recombinations are equivalent
-     */
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Conversion) {
-            Conversion otherRecomb = (Conversion)obj;
-            return acg == otherRecomb.acg
-                && startSite == otherRecomb.startSite
-                && endSite == otherRecomb.endSite
-                && node1 == otherRecomb.node1
-                && node2 == otherRecomb.node2
-                && height1 == otherRecomb.height1
-                && height2 == otherRecomb.height2;
-        } else
-            return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Conversion that = (Conversion) o;
+
+        if (Double.compare(that.height1, height1) != 0) return false;
+        if (Double.compare(that.height2, height2) != 0) return false;
+        if (startSite != that.startSite) return false;
+        if (endSite != that.endSite) return false;
+        if (!acg.equals(that.acg)) return false;
+        if (!node1.equals(that.node1)) return false;
+        if (!node2.equals(that.node2)) return false;
+        return alignment.equals(that.alignment);
+
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 67 * hash + Objects.hashCode(this.acg);
-        hash = 67 * hash + Objects.hashCode(this.node1);
-        hash = 67 * hash + Objects.hashCode(this.node2);
-        hash = 67 * hash + (int) (Double.doubleToLongBits(this.height1) ^ (Double.doubleToLongBits(this.height1) >>> 32));
-        hash = 67 * hash + (int) (Double.doubleToLongBits(this.height2) ^ (Double.doubleToLongBits(this.height2) >>> 32));
-        hash = 67 * hash + this.startSite;
-        hash = 67 * hash + this.endSite;
-        return hash;
+        int result;
+        long temp;
+        result = acg.hashCode();
+        result = 31 * result + node1.hashCode();
+        result = 31 * result + node2.hashCode();
+        temp = Double.doubleToLongBits(height1);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(height2);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + startSite;
+        result = 31 * result + endSite;
+        result = 31 * result + alignment.hashCode();
+        return result;
     }
 
     @Override

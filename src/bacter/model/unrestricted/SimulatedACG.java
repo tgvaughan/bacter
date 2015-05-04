@@ -79,9 +79,9 @@ public class SimulatedACG extends ConversionGraph {
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
         
-        if (alignmentInput.get() != null) {
-            nTaxa = alignmentInput.get().getTaxonCount();
-            taxonSet = new TaxonSet(alignmentInput.get());
+        if (alignmentsInput.get() != null) {
+            nTaxa = alignmentsInput.get().getTaxonCount();
+            taxonSet = new TaxonSet(alignmentsInput.get());
         } else {
             if (clonalFrameInput.get() != null) {
                 nTaxa = clonalFrameInput.get().getLeafNodeCount();
