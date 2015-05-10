@@ -69,6 +69,8 @@ public class ConversionGraph extends Tree {
     protected RegionList regionList;
     protected CFEventList cfEventList;
     protected ACGEventList acgEventList;
+
+    protected int totalSequenceLength;
     
     @Override
     public void initAndValidate() throws Exception {
@@ -87,17 +89,30 @@ public class ConversionGraph extends Tree {
         regionList = new RegionList(this);
         cfEventList = new CFEventList(this);
         acgEventList = new ACGEventList(this);
+
+        totalSequenceLength = 0;
+        for (Alignment alignment : alignmentsInput.get())
+            totalSequenceLength += alignment.getSiteCount();
         
         super.initAndValidate();
     }
     
     /**
-     * Retrieve length of sequence, identifying bounds of recombination loci.
+     * Retrieve length of sequence, identifying bounds of converted regions.
      * 
      * @return sequence length
      */
     public int getSequenceLength(Alignment alignment) {
         return alignment.getSiteCount();
+    }
+
+    /**
+     * Retrieve total length of all sequence alignments.
+     *
+     * @return total sequence length
+     */
+    public int getTotalSequenceLength() {
+        return totalSequenceLength;
     }
 
     /**

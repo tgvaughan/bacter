@@ -22,6 +22,7 @@ import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
@@ -79,30 +80,8 @@ public class SimulatedACG extends ConversionGraph {
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
         
-        if (alignmentsInput.get() != null) {
-            nTaxa = alignmentsInput.get().getTaxonCount();
-            taxonSet = new TaxonSet(alignmentsInput.get());
-        } else {
-            if (clonalFrameInput.get() != null) {
-                nTaxa = clonalFrameInput.get().getLeafNodeCount();
-                taxonSet = clonalFrameInput.get().getTaxonset();
-            } else {
-                if (!m_traitList.get().isEmpty()) {
-                    taxonSet = m_traitList.get().get(0).taxaInput.get();
-                    nTaxa = taxonSet.getTaxonCount();
-                } else {
-                    if (nTaxaInput.get() != null) {
-                        nTaxa = nTaxaInput.get();
-                        List<Taxon> taxonList = new ArrayList<>();
-                        for (int i=0; i<nTaxa; i++)
-                            taxonList.add(new Taxon("t" + i));
-                        taxonSet = new TaxonSet(taxonList);
-                    } else
-                        throw new IllegalArgumentException("Must specify nTaxa if"
-                                + "neither alignment nor clonalFrame are used.");
-                }
-            }
-        }
+        nTaxa = alignmentsInput.get().get(0).getTaxonCount();
+        taxonSet = new TaxonSet(alignmentsInput.get().get(0));
         m_taxonset.setValue(taxonSet, this);
         
         // Need to do this here as Tree.processTraits(), which is called
@@ -249,21 +228,38 @@ public class SimulatedACG extends ConversionGraph {
 
         // Draw number of conversions:
         int Nconv = (int) Randomizer.nextPoisson(rho*getClonalFrameLength()*
-            (getSequenceLength()+delta));
+            (getTotalSequenceLength()+delta*getAlignments().size()));
 
         // Generate conversions:
         for (int i=0; i<Nconv; i++) {
+            // Choose alignment
+            double u = Randomizer.nextDouble()*(getTotalSequenceLength()
+                    + delta*getAlignments().size());
+
+            Alignment affectedAlignment = null;
+            for (Alignment alignment : getAlignments()) {
+                if (u < getSequenceLength(alignment) + delta) {
+                    affectedAlignment = alignment;
+                    break;
+                } else
+                    u -= getSequenceLength(alignment) + delta;
+            }
+
+            if (affectedAlignment == null)
+                throw new IllegalStateException("Programmer error: " +
+                        "alignment choice loop fell through.");
+
             int startSite, endSite;
-            double u = Randomizer.nextDouble()*(delta + getSequenceLength());
             if (u<delta) {
                 startSite = 0;
             } else {
                 startSite = (int)(u-delta);
             }
             endSite = startSite + (int)Randomizer.nextGeometric(1.0/delta);
-            endSite = Math.min(endSite, getSequenceLength()-1);
+            endSite = Math.min(endSite, getSequenceLength(affectedAlignment)-1);
 
             Conversion conv = new Conversion();
+            conv.setAlignment(affectedAlignment);
             conv.setStartSite(startSite);
             conv.setEndSite(endSite);
             associateConversionWithCF(conv);
