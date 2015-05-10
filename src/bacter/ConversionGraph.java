@@ -16,11 +16,7 @@
  */
 package bacter;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.core.StateNode;
+import beast.core.*;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -113,6 +109,20 @@ public class ConversionGraph extends Tree {
      */
     public int getTotalSequenceLength() {
         return totalSequenceLength;
+    }
+
+    /**
+     * Retrieve alignment with given BEASTObject ID.
+     *
+     * @param id id of alignment to retrieve
+     * @return alignment, or null if no alignment matches.
+     */
+    public Alignment getAlignmentByID(String id) {
+        for (Alignment alignment : alignmentsInput.get())
+            if (alignment.getID().equals(id))
+                return alignment;
+
+        return null;
     }
 
     /**
@@ -254,7 +264,8 @@ public class ConversionGraph extends Tree {
         StringBuilder sb = new StringBuilder();
         
         for (Conversion conv : getConversions()) {
-            sb.append(String.format("[&%d,%d,%s,%d,%d,%s,%s] ",
+            sb.append(String.format("[&%s,%d,%d,%s,%d,%d,%s,%s] ",
+                    conv.getAlignment().getID(),
                     conv.node1.getNr(),
                     conv.startSite,
                     String.valueOf(conv.height1),
@@ -310,24 +321,19 @@ public class ConversionGraph extends Tree {
         
         while(convMatcher.find()) {
             String [] elements = convMatcher.group(1).split(",");
-            
-            Node node1 = getNode(Integer.parseInt(elements[0]));
-            int startLocus = Integer.parseInt(elements[1]);
-            double height1 = Double.parseDouble(elements[2]);
-            
-            Node node2 = getNode(Integer.parseInt(elements[3]));
-            int endLocus = Integer.parseInt(elements[4]);
-            double height2 = Double.parseDouble(elements[5]);
 
-            String alignmentID = elements[6];
-            Alignment alignment = null;
-            for (Alignment thisAlignment : getAlignments())
-                if (thisAlignment.getID().equals(alignmentID))
-                    alignment = thisAlignment;
-
+            Alignment alignment = getAlignmentByID(elements[0]);
             if (alignment == null)
                 throw new RuntimeException("Uknown alignment id "
-                        + alignmentID + ".  Aborting.");
+                        + elements[0] + ".  Aborting.");
+
+            Node node1 = getNode(Integer.parseInt(elements[1]));
+            int startLocus = Integer.parseInt(elements[2]);
+            double height1 = Double.parseDouble(elements[3]);
+            
+            Node node2 = getNode(Integer.parseInt(elements[4]));
+            int endLocus = Integer.parseInt(elements[5]);
+            double height2 = Double.parseDouble(elements[6]);
 
             Conversion recomb = new Conversion(
                     node1, height1,
@@ -358,10 +364,9 @@ public class ConversionGraph extends Tree {
         
         arg.convs = Lists.newArrayList();
         arg.storedConvs = Lists.newArrayList();
-        
-        for (Conversion recomb : convs) {
+
+        for (Conversion recomb : convs)
             arg.convs.add(recomb.getCopy());
-        }
 
         return arg;
     }

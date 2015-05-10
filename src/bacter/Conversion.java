@@ -327,8 +327,10 @@ public class Conversion {
     @Override
     public String toString() {
         return String.format("Depart: (Node %d, height %g, site %d) "
-                + "Arrive: (Node %d, height %g, site %d)",
+                + "Arrive: (Node %d, height %g, site %d) "
+                + "Align: %s",
                 node1.getNr(), height1, startSite,
-                node2.getNr(), height2, endSite);
+                node2.getNr(), height2, endSite,
+                alignment.getID());
     }
 }
