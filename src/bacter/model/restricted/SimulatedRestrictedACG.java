@@ -23,7 +23,7 @@ import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.IntegerParameter;
-import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -35,6 +35,7 @@ import feast.nexus.NexusBlock;
 import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
 import feast.nexus.TreesBlock;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,24 +48,23 @@ import java.util.List;
         + "sampler validation.")
 public class SimulatedRestrictedACG extends ConversionGraph {
 
-    public Input<Double> rhoInput = new In<Double>("rho",
-            "Recombination rate parameter.").setRequired();
+    public Input<Double> rhoInput = new Input<>("rho",
+            "Recombination rate parameter.",
+            Input.Validate.REQUIRED);
     
-    public Input<Double> deltaInput = new In<Double>("delta",
-            "Tract length parameter.").setRequired();
+    public Input<Double> deltaInput = new Input<>("delta",
+            "Tract length parameter.",
+            Input.Validate.REQUIRED);
     
-    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
-            "populationModel", "Demographic model to use.").setRequired();
+    public Input<PopulationFunction> popFuncInput = new Input<>(
+            "populationModel", "Demographic model to use.",
+            Input.Validate.REQUIRED);
     
-    public Input<Integer> nTaxaInput = In.create("nTaxa",
-            "Number of taxa to use in simulation. "
-                    + "(Only use when alignment is unavailable.)");
-    
-    public Input<Tree> clonalFrameInput = In.create("clonalFrame",
+    public Input<Tree> clonalFrameInput = new Input<>("clonalFrame",
             "Optional tree specifying fixed clonal frame.");
     
-    public Input<IntegerParameter> mapInput = In.create(
-            "recombinationMap", "Optional sequence of integers specifying "
+    public Input<IntegerParameter> mapInput = new Input<>("recombinationMap",
+            "Optional sequence of integers specifying "
                     + "sites affected by recombination events.  Fixes the "
                     + "total number of recombination events and the sites "
                     + "they affect, leaving only the clonal frame and "
@@ -78,7 +78,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
     private int nTaxa;
     private TaxonSet taxonSet;
     
-    public SimulatedRestrictedACG() { };
+    public SimulatedRestrictedACG() { }
     
     @Override
     public void initAndValidate() throws Exception {
@@ -87,30 +87,8 @@ public class SimulatedRestrictedACG extends ConversionGraph {
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
         
-        if (alignmentsInput.get() != null) {
-            nTaxa = alignmentsInput.get().get(0).getTaxonCount();
-            taxonSet = new TaxonSet(alignmentsInput.get().get(0));
-        } else {
-            if (clonalFrameInput.get() != null) {
-                nTaxa = clonalFrameInput.get().getLeafNodeCount();
-                taxonSet = clonalFrameInput.get().getTaxonset();
-            } else {
-                if (!m_traitList.get().isEmpty()) {
-                    taxonSet = m_traitList.get().get(0).taxaInput.get();
-                    nTaxa = taxonSet.getTaxonCount();
-                } else {
-                    if (nTaxaInput.get() != null) {
-                        nTaxa = nTaxaInput.get();
-                        List<Taxon> taxonList = new ArrayList<>();
-                        for (int i=0; i<nTaxa; i++)
-                            taxonList.add(new Taxon("t" + i));
-                        taxonSet = new TaxonSet(taxonList);
-                    } else
-                        throw new IllegalArgumentException("Must specify nTaxa if"
-                                + "neither alignment nor clonalFrame are used.");
-                }
-            }
-        }
+        nTaxa = alignmentsInput.get().get(0).getTaxonCount();
+        taxonSet = new TaxonSet(alignmentsInput.get().get(0));
         m_taxonset.setValue(taxonSet, this);
         
         // Need to do this here as Tree.processTraits(), which is called
@@ -209,7 +187,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
             leaf.setID(taxonSet.asStringList().get(i));
                         
             if (hasDateTrait())
-                leaf.setHeight(getDateTrait().getValue(i));
+                leaf.setHeight(getDateTrait().getValue(leaf.getID()));
             else
                 leaf.setHeight(0.0);
             
@@ -288,43 +266,47 @@ public class SimulatedRestrictedACG extends ConversionGraph {
         // Check for zero recombination rate (used sometimes for testing)
         if (pRec==0.0)
             return;
-        
-        int l; // next available convertible locus
-        if (Randomizer.nextDouble()>p0cf) {
-            Conversion recomb = new Conversion();
-            recomb.setStartSite(0);
-            int tractEndSite = (int)Randomizer.nextGeometric(pTractEnd);
-            recomb.setEndSite(Math.min(tractEndSite, getSequenceLength()-1));
-            associateRecombinationWithCF(recomb);
-            addConversion(recomb);
-            
-            l = tractEndSite + 2;
-        } else
-            l = 1;
-        
-        if (l>=getSequenceLength())
-            return;
-        
-        while (true) {
-            l += Randomizer.nextGeometric(pRec);
 
-            if (l>=getSequenceLength())
-                break;
-            
-            Conversion recomb = new Conversion();
+        for (Alignment alignment : getAlignments()) {
+            int l; // next available convertible locus
+            if (Randomizer.nextDouble() > p0cf) {
+                Conversion conv = new Conversion();
+                conv.setAlignment(alignment);
+                conv.setStartSite(0);
+                int tractEndSite = (int) Randomizer.nextGeometric(pTractEnd);
+                conv.setEndSite(Math.min(tractEndSite, getSequenceLength(alignment) - 1));
+                associateRecombinationWithCF(conv);
+                addConversion(conv);
 
-            recomb.setStartSite(l);
-            l += Randomizer.nextGeometric(pTractEnd);
-            recomb.setEndSite(Math.min(l, getSequenceLength()-1));
+                l = tractEndSite + 2;
+            } else
+                l = 1;
 
-            associateRecombinationWithCF(recomb);
-            addConversion(recomb);
-            
-            // The next site at which a conversion can begin
-            l += 2;
-            
-            if (l>=getSequenceLength())
-                break;
+            if (l >= getSequenceLength(alignment))
+                return;
+
+            while (true) {
+                l += Randomizer.nextGeometric(pRec);
+
+                if (l >= getSequenceLength(alignment))
+                    break;
+
+                Conversion conv = new Conversion();
+                conv.setAlignment(alignment);
+
+                conv.setStartSite(l);
+                l += Randomizer.nextGeometric(pTractEnd);
+                conv.setEndSite(Math.min(l, getSequenceLength(alignment) - 1));
+
+                associateRecombinationWithCF(conv);
+                addConversion(conv);
+
+                // The next site at which a conversion can begin
+                l += 2;
+
+                if (l >= getSequenceLength(alignment))
+                    break;
+            }
         }
     }
     
