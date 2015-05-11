@@ -47,7 +47,7 @@ public class ConversionCount extends BEASTObject implements Loggable, Function {
 
     @Override
     public void log(int nSample, PrintStream out) {
-        out.print(acgInput.get().getConvCount() + "\t");
+        out.print(acgInput.get().getTotalConvCount() + "\t");
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ConversionCount extends BEASTObject implements Loggable, Function {
 
     @Override
     public double getArrayValue() {
-        return acgInput.get().getConvCount();
+        return acgInput.get().getTotalConvCount();
     }
 
     @Override

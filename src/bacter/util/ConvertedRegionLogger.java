@@ -24,6 +24,8 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Loggable;
+import beast.evolution.alignment.Alignment;
+
 import java.io.PrintStream;
 
 /**
@@ -41,29 +43,33 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
     @Override
     public void init(PrintStream out) throws Exception {
         final ConversionGraph arg = acgInput.get();
-        if (getID() == null || getID().matches("\\s*")) {
-            out.print(arg.getID() + ".converted\t");
-        } else {
-            out.print(getID() + "\t");
-        }
+
+        String mainID = (getID() == null || getID().matches(("\\s*")))
+                ? arg.getID() + ".converted"
+                : getID();
+
+        for (Alignment alignment : acgInput.get().getAlignments())
+                out.print(mainID + "." + alignment.getID() + "\t");
     }
 
     @Override
     public void log(int nSample, PrintStream out) {
-        
-        if (acgInput.get().getConvCount()==0) {
-            out.print("NA\t");
-            return;
-        }
-        
-        for (int r=0; r<acgInput.get().getConvCount(); r++) {
-            if (r>0)
-                out.print(",");
 
-            Conversion recomb = acgInput.get().getConversions().get(r);
-            out.print(recomb.getStartSite() + ":" + recomb.getEndSite());
+        for (Alignment alignment : acgInput.get().getAlignments()) {
+            if (acgInput.get().getConvCount(alignment) == 0) {
+                out.print("NA\t");
+                return;
+            }
+
+            for (int r = 0; r < acgInput.get().getConvCount(alignment); r++) {
+                if (r > 0)
+                    out.print(",");
+
+                Conversion recomb = acgInput.get().getConversions(alignment).get(r);
+                out.print(recomb.getStartSite() + ":" + recomb.getEndSite());
+            }
+            out.print("\t");
         }
-        out.print("\t");
     }
 
     @Override
