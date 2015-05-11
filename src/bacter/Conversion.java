@@ -31,11 +31,19 @@ import java.util.Objects;
 public class Conversion {
     
     protected ConversionGraph acg;
-    
-    public Conversion() { }
+
+    /**
+     * Construct new conversion with only alignment specified.
+     *
+     * @param alignment
+     */
+    public Conversion(Alignment alignment) {
+        this.alignment = alignment;
+    }
     
     /**
      * Construct new recombination with specified properties.
+     *
      * @param node1
      * @param height1
      * @param node2
@@ -269,7 +277,7 @@ public class Conversion {
      * @return copy of Conversion object
      */
     public Conversion getCopy() {
-        Conversion copy = new Conversion();
+        Conversion copy = new Conversion(alignment);
         copy.acg = acg;
         copy.startSite = startSite;
         copy.endSite = endSite;

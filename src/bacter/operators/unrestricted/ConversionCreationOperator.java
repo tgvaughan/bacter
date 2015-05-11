@@ -20,6 +20,7 @@ import bacter.Conversion;
 import bacter.operators.EdgeCreationOperator;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
 import feast.input.In;
 
@@ -44,30 +45,32 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
     public double drawAffectedRegion(Conversion conv) {
         double logP = 0.0;
 
+        Alignment alignment = conv.getAlignment();
+
         // Draw location of converted region.
         int startSite, endSite;
-        double u = Randomizer.nextDouble()*(deltaInput.get().getValue() + acg.getSequenceLength());
+        double u = Randomizer.nextDouble()*(deltaInput.get().getValue() + acg.getSequenceLength(alignment));
         if (u<deltaInput.get().getValue()) {
             startSite = 0;
             logP += Math.log(deltaInput.get().getValue()
-                /(deltaInput.get().getValue() + acg.getSequenceLength()));
+                /(deltaInput.get().getValue() + acg.getSequenceLength(alignment)));
         } else {
             startSite = (int)(u-deltaInput.get().getValue());
             logP += Math.log(1.0/(deltaInput.get().getValue()
-                + acg.getSequenceLength()));
+                + acg.getSequenceLength(alignment)));
         }
 
         endSite = startSite + (int)Randomizer.nextGeometric(1.0/deltaInput.get().getValue());
-        endSite = Math.min(endSite, acg.getSequenceLength()-1);
+        endSite = Math.min(endSite, acg.getSequenceLength(alignment)-1);
 
         // Probability of end site:
         double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
             endSite-startSite)/ deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (endSite == acg.getSequenceLength()-1)
+        if (endSite == acg.getSequenceLength(alignment)-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength()-startSite);
+                    acg.getSequenceLength(alignment)-startSite);
 
         logP += Math.log(probEnd);
 
@@ -87,13 +90,15 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
     public double getAffectedRegionProb(Conversion conv) {
         double logP = 0.0;
 
+        Alignment alignment = conv.getAlignment();
+
         // Calculate probability of converted region.
         if (conv.getStartSite()==0)
             logP += Math.log((deltaInput.get().getValue() + 1)
-                /(deltaInput.get().getValue() + acg.getSequenceLength()));
+                /(deltaInput.get().getValue() + acg.getSequenceLength(alignment)));
         else
             logP += Math.log(1.0/(deltaInput.get().getValue()
-                + acg.getSequenceLength()));
+                + acg.getSequenceLength(alignment)));
 
         // Probability of end site:
         double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
@@ -101,9 +106,9 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             / deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (conv.getEndSite() == acg.getSequenceLength()-1)
+        if (conv.getEndSite() == acg.getSequenceLength(alignment)-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength()-conv.getStartSite());
+                    acg.getSequenceLength(alignment)-conv.getStartSite());
 
         logP += Math.log(probEnd);
 

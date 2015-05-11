@@ -242,8 +242,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
         for (Alignment alignment : getAlignments()) {
             int l; // next available convertible locus
             if (Randomizer.nextDouble() > p0cf) {
-                Conversion conv = new Conversion();
-                conv.setAlignment(alignment);
+                Conversion conv = new Conversion(alignment);
                 conv.setStartSite(0);
                 int tractEndSite = (int) Randomizer.nextGeometric(pTractEnd);
                 conv.setEndSite(Math.min(tractEndSite, getSequenceLength(alignment) - 1));
@@ -263,8 +262,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
                 if (l >= getSequenceLength(alignment))
                     break;
 
-                Conversion conv = new Conversion();
-                conv.setAlignment(alignment);
+                Conversion conv = new Conversion(alignment);
 
                 conv.setStartSite(l);
                 l += Randomizer.nextGeometric(pTractEnd);

@@ -94,9 +94,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
     public double drawNewConversion(Alignment alignment) throws ProposalFailed {
         double logP = 0;
 
-        Conversion newConversion = new Conversion();
-        newConversion.setAlignment(alignment);
-        
+        Conversion newConversion = new Conversion(alignment);
+
         logP += attachEdge(newConversion);
         
         // Draw location of converted region.  Currently draws start locus 

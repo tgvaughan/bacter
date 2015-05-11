@@ -112,8 +112,7 @@ public class ReplaceConversion extends EdgeCreationOperator {
             logP -= (gapSize-1)*Math.log(1.0-pRec) + Math.log(pRec)
                     + Math.log(1.0/(conv.getEndSite()-conv.getStartSite()-1));
             
-            Conversion newConv = new Conversion();
-            newConv.setAlignment(conv.getAlignment());
+            Conversion newConv = new Conversion(conv.getAlignment());
             if (right) {
                 newConv.setStartSite(endGap+1);
                 newConv.setEndSite(conv.getEndSite());

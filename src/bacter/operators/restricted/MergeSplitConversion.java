@@ -110,8 +110,7 @@ public class MergeSplitConversion extends ACGOperator {
         conv.setEndSite(s);
         
         // Create new recombination
-        Conversion newConv = new Conversion();
-        newConv.setAlignment(conv.getAlignment());
+        Conversion newConv = new Conversion(conv.getAlignment());
         newConv.setStartSite(s + gap + 2);
         newConv.setEndSite(origEnd);
         newConv.setNode1(conv.getNode1());

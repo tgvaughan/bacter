@@ -20,6 +20,7 @@ import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
 
@@ -36,28 +37,30 @@ public class AddRemoveConversion extends ConversionCreationOperator {
     @Override
     public double proposal() {
         double logHGF = 0;
+
+        Alignment alignment = chooseAlignment();
         
         if (Randomizer.nextBoolean()) {
             
             // Add
             
-            logHGF += Math.log(1.0/(acg.getConvCount()+1));
-            logHGF -= drawNewConversion();
+            logHGF += Math.log(1.0/(acg.getConvCount(alignment)+1));
+            logHGF -= drawNewConversion(alignment);
             
         } else {
             
             // Remove
             
-            if (acg.getConvCount()==0)
+            if (acg.getConvCount(alignment)==0)
                 return Double.NEGATIVE_INFINITY;
             
             // Select conversion to remove:
-            Conversion conv = acg.getConversions().get(
-                    Randomizer.nextInt(acg.getConvCount()));
+            Conversion conv = acg.getConversions(alignment).get(
+                    Randomizer.nextInt(acg.getConvCount(alignment)));
             
             // Calculate HGF
             logHGF += getConversionProb(conv);
-            logHGF -= Math.log(1.0/acg.getConvCount());
+            logHGF -= Math.log(1.0/acg.getConvCount(alignment));
             
             // Remove conversion
             acg.deleteConversion(conv);
@@ -70,11 +73,13 @@ public class AddRemoveConversion extends ConversionCreationOperator {
     /**
      * Add new conversion to ACG, returning the probability density of the
      * new edge and converted region location.
-     * 
+     *
+     * @param alignment alignment with which to associate conversion
      * @return log of proposal density 
      */
-    public double drawNewConversion() {
+    public double drawNewConversion(Alignment alignment) {
         Conversion newConversion = new Conversion();
+        newConversion.setAlignment(alignment);
 
         double logP = attachEdge(newConversion) + drawAffectedRegion(newConversion);
 
