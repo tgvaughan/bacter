@@ -62,14 +62,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
     
     public Input<Tree> clonalFrameInput = new Input<>("clonalFrame",
             "Optional tree specifying fixed clonal frame.");
-    
-    public Input<IntegerParameter> mapInput = new Input<>("recombinationMap",
-            "Optional sequence of integers specifying "
-                    + "sites affected by recombination events.  Fixes the "
-                    + "total number of recombination events and the sites "
-                    + "they affect, leaving only the clonal frame and "
-                    + "recombinant edges to be simulated.");
-    
+
     public Input<String> outputFileNameInput = In.create("outputFileName",
             "If provided, simulated ARG is additionally written to this file.");
 
@@ -107,30 +100,8 @@ public class SimulatedRestrictedACG extends ConversionGraph {
         initArrays();
         
         // Generate recombinations
-        if (mapInput.get() == null)
-            generateRecombinations();
-        else {
-            // Read recombination map directly from input
-            if (mapInput.get().getDimension()%2 != 0)
-                throw new IllegalArgumentException(
-                        "Map must contain an even number of site indices.");
-            
-            for (int i=0; i<mapInput.get().getDimension()/2; i++) {
-                int start = mapInput.get().getValue(i*2);
-                int end = mapInput.get().getValue(i*2 + 1);
-                if (end<start)
-                    throw new IllegalArgumentException(
-                            "Map site index pairs i,j must satisfy j>=i.");
-                
-                Conversion recomb = new Conversion();
-                recomb.setStartSite(mapInput.get().getValue(i*2));
-                recomb.setEndSite(mapInput.get().getValue(i*2 + 1));
-                
-                associateRecombinationWithCF(recomb);
-                addConversion(recomb);
-            }
-        }
-        
+        generateRecombinations();
+
         // Write output file
         if (outputFileNameInput.get() != null) {
 
@@ -156,12 +127,14 @@ public class SimulatedRestrictedACG extends ConversionGraph {
                 public List<String> getBlockLines() {
                     List<String> lines = new ArrayList<>();
                     lines.add("clonalframe " + root.toShortNewick(true));
-                    for (int r = 0; r < getConvCount(); r++) {
-                        Conversion recomb = getConversions().get(r);
-                        lines.add("conversion node1=" + recomb.getNode1().getNr()
-                        + " node2=" + recomb.getNode2().getNr()
-                        + " site1=" + recomb.getStartSite()
-                        + " site2=" + recomb.getEndSite());
+                    for (Alignment alignment : getAlignments()) {
+                        for (Conversion conv : getConversions(alignment)) {
+                            lines.add("conversion node1=" + conv.getNode1().getNr()
+                                    + " node2=" + conv.getNode2().getNr()
+                                    + " site1=" + conv.getStartSite()
+                                    + " site2=" + conv.getEndSite()
+                                    + " alignment=" + alignment.getID());
+                        }
                     }
                     
                     return lines;
@@ -276,7 +249,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
                 int tractEndSite = (int) Randomizer.nextGeometric(pTractEnd);
                 conv.setEndSite(Math.min(tractEndSite, getSequenceLength(alignment) - 1));
                 associateRecombinationWithCF(conv);
-                addConversion(conv);
+                addConversion(alignment, conv);
 
                 l = tractEndSite + 2;
             } else
@@ -299,7 +272,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
                 conv.setEndSite(Math.min(l, getSequenceLength(alignment) - 1));
 
                 associateRecombinationWithCF(conv);
-                addConversion(conv);
+                addConversion(alignment, conv);
 
                 // The next site at which a conversion can begin
                 l += 2;

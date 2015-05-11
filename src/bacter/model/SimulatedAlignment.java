@@ -45,21 +45,24 @@ import java.util.List;
 @Description("An alignment produced by simulating sequence evolution down an ACG.")
 public class SimulatedAlignment extends Alignment {
     
-    public Input<ConversionGraph> acgInput = new In<ConversionGraph>(
+    public Input<ConversionGraph> acgInput = new Input<>(
             "acg",
-            "Conversions graph down which to simulate evolution.")
-            .setRequired();
+            "Conversions graph down which to simulate evolution.",
+            Input.Validate.REQUIRED);
     
-    public Input<SiteModel> siteModelInput = new In<SiteModel>(
+    public Input<SiteModel> siteModelInput = new Input<>(
             "siteModel",
-            "site model for leafs in the beast.tree")
-            .setRequired();
+            "site model for leafs in the beast.tree",
+            Input.Validate.REQUIRED);
     
-    public Input<String> outputFileNameInput = In.create("outputFileName",
+    public Input<String> outputFileNameInput = new Input<>(
+            "outputFileName",
             "If provided, simulated alignment is additionally written to this file."); 
     
-    public Input<Boolean> useNexusInput = new In<Boolean>("useNexus",
-            "Use Nexus format to write alignment file.").setDefault(false);
+    public Input<Boolean> useNexusInput = new Input<>(
+            "useNexus",
+            "Use Nexus format to write alignment file.",
+            false);
     
     private ConversionGraph acg;
     private SiteModel siteModel;
@@ -110,7 +113,7 @@ public class SimulatedAlignment extends Alignment {
         int nStates = dataType.getStateCount();
         double[][] transitionProbs = new double[nCategories][nStates*nStates];
         
-        int[][] alignment = new int[nTaxa][acg.getSequenceLength()];
+        int[][] alignment = new int[nTaxa][acg.getTotalSequenceLength()];
         
         for (Region region : acg.getRegions()) {
             int thisLength = region.getRegionLength();
@@ -161,7 +164,6 @@ public class SimulatedAlignment extends Alignment {
      * Traverse a marginal tree simulating a region of the sequence alignment
      * down it.
      * 
-     * @param recomb  Conversion identifying the marginal tree
      * @param node Node of the marginal tree
      * @param parentSequence Sequence at the parent node in the marginal tree
      * @param categories Mapping from sites to categories
@@ -211,7 +213,7 @@ public class SimulatedAlignment extends Alignment {
      * 
      * @param alignment
      * @param regionAlignment
-     * @param recomb 
+     * @param region
      */
     private void copyToAlignment(int[][] alignment, int[][] regionAlignment,
             Region region) {
@@ -228,7 +230,6 @@ public class SimulatedAlignment extends Alignment {
     /**
      * HORRIBLE function to identify data type from given description.
      * 
-     * @param dataTypeDesc
      * @return DataType instance (null if none found)
      */
     private void grabDataType() {

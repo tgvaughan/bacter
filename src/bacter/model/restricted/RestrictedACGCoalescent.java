@@ -23,6 +23,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import feast.input.In;
 import java.util.List;
@@ -44,16 +45,13 @@ public class RestrictedACGCoalescent extends ACGDistribution {
             "Tract length parameter.").setRequired();
     
     PopulationFunction popFunc;
-    int sequenceLength;
-    
+
     public RestrictedACGCoalescent() { }
     
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
         
-        sequenceLength = acg.getSequenceLength();
-
         popFunc = popFuncInput.get();
     }
     
@@ -63,9 +61,11 @@ public class RestrictedACGCoalescent extends ACGDistribution {
         if (acg.isValid()) {
             
             logP = calculateClonalFrameLogP();
-            
-            for (Conversion conv : acg.getConversions())
-                logP += calculateRecombinantLogP(conv);
+
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment))
+                    logP += calculateRecombinantLogP(conv);
+            }
             
             logP += calculateConvertedRegionMapLogP();
         } else {
@@ -103,7 +103,8 @@ public class RestrictedACGCoalescent extends ACGDistribution {
     
     /**
      * Compute probability of recombinant edges under conditional coalescent.
-     * @param conv
+     *
+     * @param conv conversion for which to evaluate probability.
      * @return log(P)
      */
     public double calculateRecombinantLogP(Conversion conv) {
@@ -145,55 +146,58 @@ public class RestrictedACGCoalescent extends ACGDistribution {
     public double calculateConvertedRegionMapLogP() {
         
         double thisLogP = 0.0;
-        
-        List<Conversion> conversions = acg.getConversions();
-        
-        double rho = rhoInput.get().getValue();
-        double pTractEnd = 1.0/deltaInput.get().getValue();
-        double cfLength = acg.getClonalFrameLength();
-        
-        // Probability of recombination per site along sequence
-        double pRec = 1.0 - Math.exp(-0.5*rho*cfLength);
-        
-        // Probability that sequence begins in the clonal frame:
-        double pStartCF = 1.0/(pRec/pTractEnd + 1.0);
-        
-        if (acg.getConvCount()==0){
-            // Probability of no recombinations
-            thisLogP += Math.log(pStartCF) 
-                    + (sequenceLength-1)*Math.log(1.0-pRec);
-        } else {
-            
-            // Contribution from start of sequence up to first recomb region
-            if (conversions.get(0).getStartSite()>0) {
+
+        for (Alignment alignment : acg.getAlignments()) {
+            List<Conversion> conversions = acg.getConversions(alignment);
+
+            double rho = rhoInput.get().getValue();
+            double pTractEnd = 1.0 / deltaInput.get().getValue();
+            double cfLength = acg.getClonalFrameLength();
+
+            // Probability of recombination per site along sequence
+            double pRec = 1.0 - Math.exp(-0.5 * rho * cfLength);
+
+            // Probability that sequence begins in the clonal frame:
+            double pStartCF = 1.0 / (pRec / pTractEnd + 1.0);
+
+            if (acg.getConvCount(alignment) == 0) {
+                // Probability of no recombinations
                 thisLogP += Math.log(pStartCF)
-                        + (conversions.get(0).getStartSite()-1)*Math.log(1-pRec);
-            }  else {
-                thisLogP += Math.log(1.0-pStartCF)
-                        - Math.log(pRec);
-            }
-            
-            // Contribution from remaining recomb regions and adjacent CF regions
-            for (int ridx=0; ridx<conversions.size(); ridx++) {
-                Conversion recomb = conversions.get(ridx);
-                
-                thisLogP += Math.log(pRec)
-                        + (recomb.getEndSite() - recomb.getStartSite())*Math.log(1.0-pTractEnd);
-                
-                if (ridx<conversions.size()-1) {
-                    thisLogP += Math.log(pTractEnd)
-                            + (conversions.get(ridx+1).getStartSite()-recomb.getEndSite()-2)
-                            *Math.log(1.0-pRec);
+                        + (acg.getSequenceLength(alignment) - 1) * Math.log(1.0 - pRec);
+            } else {
+
+                // Contribution from start of sequence up to first recomb region
+                if (conversions.get(0).getStartSite() > 0) {
+                    thisLogP += Math.log(pStartCF)
+                            + (conversions.get(0).getStartSite() - 1) * Math.log(1 - pRec);
                 } else {
-                    if (recomb.getEndSite()<sequenceLength-1) {
+                    thisLogP += Math.log(1.0 - pStartCF)
+                            - Math.log(pRec);
+                }
+
+                // Contribution from remaining recomb regions and adjacent CF regions
+                for (int ridx = 0; ridx < conversions.size(); ridx++) {
+                    Conversion recomb = conversions.get(ridx);
+
+                    thisLogP += Math.log(pRec)
+                            + (recomb.getEndSite() - recomb.getStartSite()) * Math.log(1.0 - pTractEnd);
+
+                    if (ridx < conversions.size() - 1) {
                         thisLogP += Math.log(pTractEnd)
-                                + (sequenceLength-1-recomb.getEndSite()-1)
-                                *Math.log(1.0-pRec);
+                                + (conversions.get(ridx + 1).getStartSite()
+                                - recomb.getEndSite() - 2)
+                                * Math.log(1.0 - pRec);
+                    } else {
+                        if (recomb.getEndSite() < acg.getSequenceLength(alignment) - 1) {
+                            thisLogP += Math.log(pTractEnd)
+                                    + (acg.getSequenceLength(alignment) - 1
+                                    - recomb.getEndSite() - 1)
+                                    * Math.log(1.0 - pRec);
+                        }
                     }
                 }
             }
         }
-        
         
         return thisLogP;
     }
