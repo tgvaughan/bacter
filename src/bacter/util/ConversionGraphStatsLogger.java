@@ -24,6 +24,7 @@ import beast.core.CalculationNode;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.Loggable;
+import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
 import java.io.PrintStream;
 
@@ -50,16 +51,16 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * @param acg
      * @return mean length, or NaN if ACG has no converted edges.
      */
-    public static double getMeanTractLength(ConversionGraph acg) {
+    public static double getMeanTractLength(ConversionGraph acg, Alignment alignment) {
         
-        if (acg.getConvCount()<1)
+        if (acg.getConvCount(alignment)<1)
             return Double.NaN;
         
         double mean = 0;
-        for (Conversion conv : acg.getConversions())
+        for (Conversion conv : acg.getConversions(alignment))
             mean += conv.getEndSite()-conv.getStartSite()+1;
 
-        mean /= acg.getConvCount();
+        mean /= acg.getConvCount(alignment);
         
         return mean;
     }
@@ -92,15 +93,15 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * @param acg
      * @return average site index or NaN if no conversions in ACG.
      */
-    public static double getMeanStartSite(ConversionGraph acg) {
-        if (acg.getConvCount()<1)
+    public static double getMeanStartSite(ConversionGraph acg, Alignment alignment) {
+        if (acg.getConvCount(alignment)<1)
             return Double.NaN;
 
         double mean = 0.0;
-        for (Conversion conv : acg.getConversions())
+        for (Conversion conv : acg.getConversions(alignment))
             mean += conv.getStartSite();
 
-        mean /= acg.getConvCount();
+        mean /= acg.getConvCount(alignment);
 
         return mean;
     }
@@ -112,12 +113,12 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * @param acg
      * @return end site index or NaN if no conversions
      */
-    public static double getRandomEndSite(ConversionGraph acg) {
-        if (acg.getConvCount()<1)
+    public static double getRandomEndSite(ConversionGraph acg, Alignment alignment) {
+        if (acg.getConvCount(alignment)<1)
             return Double.NaN;
         else
-            return acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount())).getEndSite();
+            return acg.getConversions(alignment).get(
+                Randomizer.nextInt(acg.getConvCount(alignment))).getEndSite();
     }
 
     /**
@@ -127,12 +128,12 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * @param acg
      * @return start site index or NaN if no conversions
      */
-    public static double getRandomStartSite(ConversionGraph acg) {
-        if (acg.getConvCount()<1)
+    public static double getRandomStartSite(ConversionGraph acg, Alignment alignment) {
+        if (acg.getConvCount(alignment)<1)
             return Double.NaN;
         else
-            return acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount())).getStartSite();
+            return acg.getConversions(alignment).get(
+                Randomizer.nextInt(acg.getConvCount(alignment))).getStartSite();
     }
 
     /**
@@ -141,15 +142,15 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * @param acg
      * @return average site index or NaN if no conversions in ACG.
      */
-    public static double getMeanEndSite(ConversionGraph acg) {
-        if (acg.getConvCount()<1)
+    public static double getMeanEndSite(ConversionGraph acg, Alignment alignment) {
+        if (acg.getConvCount(alignment)<1)
             return Double.NaN;
 
         double mean = 0.0;
-        for (Conversion conv : acg.getConversions())
+        for (Conversion conv : acg.getConversions(alignment))
             mean += conv.getEndSite();
 
-        mean /= acg.getConvCount();
+        mean /= acg.getConvCount(alignment);
 
         return mean;
     }
@@ -162,14 +163,16 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      */
     public static double getMeanEdgeLength(ConversionGraph acg) {
         
-        if (acg.getConvCount()<1)
+        if (acg.getTotalConvCount()<1)
             return Double.NaN;
         
         double mean = 0.0;
-        for (Conversion conv : acg.getConversions())
-            mean += conv.getHeight2()-conv.getHeight1();
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment))
+                mean += conv.getHeight2() - conv.getHeight1();
+        }
 
-        mean /= acg.getConvCount();
+        mean /= acg.getTotalConvCount();
         
         return mean;
     }
@@ -182,14 +185,16 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * @return mean height, or NaN if ACG has no converted edges
      */
     public static double getMeanDepartureHeight(ConversionGraph acg) {
-        if (acg.getConvCount()<1)
+        if (acg.getTotalConvCount()<1)
             return Double.NaN;
         
         double mean = 0.0;
-        for (Conversion conv : acg.getConversions()) {
-            mean += conv.getHeight1();
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                mean += conv.getHeight1();
+            }
         }
-        mean /= acg.getConvCount();
+        mean /= acg.getTotalConvCount();
         
         return mean;
     }
@@ -203,29 +208,36 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
         out.print(id + ".CFheight\t"
                 + id + ".CFlength\t"
                 + id + ".nConv\t"
-                + id + ".meanTractLength\t"
                 + id + ".meanRegionLength\t"
-                + id + ".meanStartSite\t"
-                + id + ".meanEndSite\t"
-                + id + ".randomStartSite\t"
-                + id + ".randomEndSite\t"
                 + id + ".meanEdgeLength\t"
                 + id + ".meanDepartureHeight\t");
+
+        for (Alignment alignment : acg.getAlignments()) {
+            String aid = id + "." + alignment.getID();
+            out.print(aid + ".meanTractLength\t"
+                    + aid + ".meanStartSite\t"
+                    + aid + ".meanEndSite\t"
+                    + aid + ".randomStartSite\t"
+                    + aid + ".randomEndSite\t");
+        }
     }
 
     @Override
     public void log(int nSample, PrintStream out) {
         out.print(acg.getRoot().getHeight() + "\t"
                 + acg.getClonalFrameLength() + "\t"
-                + acg.getConvCount() + "\t"
-                + ConversionGraphStatsLogger.getMeanTractLength(acg) + "\t"
+                + acg.getTotalConvCount() + "\t"
                 + ConversionGraphStatsLogger.getMeanRegionLength(acg) + "\t"
-                + ConversionGraphStatsLogger.getMeanStartSite(acg) + "\t"
-                + ConversionGraphStatsLogger.getMeanEndSite(acg) + "\t"
-                + ConversionGraphStatsLogger.getRandomStartSite(acg) + "\t"
-                + ConversionGraphStatsLogger.getRandomEndSite(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanEdgeLength(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanDepartureHeight(acg) + "\t");
+
+        for (Alignment alignment : acg.getAlignments()) {
+            out.print(ConversionGraphStatsLogger.getMeanTractLength(acg, alignment) + "\t"
+                    + ConversionGraphStatsLogger.getMeanStartSite(acg, alignment) + "\t"
+                    + ConversionGraphStatsLogger.getMeanEndSite(acg, alignment) + "\t"
+                    + ConversionGraphStatsLogger.getRandomStartSite(acg, alignment) + "\t"
+                    + ConversionGraphStatsLogger.getRandomEndSite(acg, alignment) + "\t");
+        }
     }
 
     @Override
