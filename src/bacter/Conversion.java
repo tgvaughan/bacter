@@ -42,17 +42,15 @@ public class Conversion {
      * @param height2
      * @param startSite
      * @param endSite
-     * @param alignment
      */
     public Conversion(Node node1, double height1, Node node2, double height2,
-            int startSite, int endSite, Alignment alignment) {
+            int startSite, int endSite) {
         this.node1 = node1;
         this.node2 = node2;
         this.height1 = height1;
         this.height2 = height2;
         this.startSite = startSite;
         this.endSite = endSite;
-        this.alignment = alignment;
     }
 
     /**
@@ -71,10 +69,10 @@ public class Conversion {
     protected int startSite, endSite;
 
     /**
-     * Alignment associated with this conversion.
+     * Alignment with which conversion is associated.
      */
     protected Alignment alignment;
-    
+
     /**
      * Obtain node below most recent point at which recombinant edge
      * attaches to clonal frame.
@@ -122,16 +120,6 @@ public class Conversion {
         return startSite;
     }
 
-
-    /**
-     * Return alignment that this conversion affects.
-     *
-     * @return alignment
-     */
-    public Alignment getAlignment() {
-        return alignment;
-    }
-
     /**
      * Set site of start of alignment region affected by conversion event.
      * 
@@ -159,7 +147,7 @@ public class Conversion {
         startEditing();
         this.endSite = endSite;
     }
-    
+
     /**
      * Set node below most recent point at which recombinant edge attaches
      * to clonal frame.
@@ -204,19 +192,23 @@ public class Conversion {
     }
 
     /**
-     * Set the alignment that this conversion corrsponds to.
+     * @return Alignment with which this conversion is associated.
+     */
+    public Alignment getAlignment() {
+        return alignment;
+    }
+
+    /**
+     * Set alignment that this conversion is associated with.
      *
-     * @param alignment
+     * @param alignment alignment with which this conversion will be associated.
      */
     public void setAlignment(Alignment alignment) {
-        startEditing();
         this.alignment = alignment;
     }
 
-    
     /**
-     * 
-     * @return 
+     * @return total number of sites affected by this alignment.
      */
     public int getSiteCount() {
         return (int)(endSite - startSite + 1);
@@ -284,8 +276,7 @@ public class Conversion {
         copy.node2 = node2;
         copy.height1 = height1;
         copy.height2 = height2;
-        copy.alignment = alignment;
-        
+
         return copy;
     }
 
@@ -300,10 +291,10 @@ public class Conversion {
         if (Double.compare(that.height2, height2) != 0) return false;
         if (startSite != that.startSite) return false;
         if (endSite != that.endSite) return false;
-        if (!acg.equals(that.acg)) return false;
+        if (acg != null ? !acg.equals(that.acg) : that.acg != null)
+            return false;
         if (!node1.equals(that.node1)) return false;
-        if (!node2.equals(that.node2)) return false;
-        return alignment.equals(that.alignment);
+        return node2.equals(that.node2);
 
     }
 
@@ -311,7 +302,7 @@ public class Conversion {
     public int hashCode() {
         int result;
         long temp;
-        result = acg.hashCode();
+        result = acg != null ? acg.hashCode() : 0;
         result = 31 * result + node1.hashCode();
         result = 31 * result + node2.hashCode();
         temp = Double.doubleToLongBits(height1);
@@ -320,17 +311,14 @@ public class Conversion {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + startSite;
         result = 31 * result + endSite;
-        result = 31 * result + alignment.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
         return String.format("Depart: (Node %d, height %g, site %d) "
-                + "Arrive: (Node %d, height %g, site %d) "
-                + "Align: %s",
+                + "Arrive: (Node %d, height %g, site %d)",
                 node1.getNr(), height1, startSite,
-                node2.getNr(), height2, endSite,
-                alignment.getID());
+                node2.getNr(), height2, endSite);
     }
 }

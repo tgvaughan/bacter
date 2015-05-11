@@ -17,6 +17,7 @@
 
 package bacter;
 
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import java.util.ArrayList;
 import java.util.List;
@@ -134,18 +135,20 @@ public class ACGEventList {
         }
 
         // Add conversion events:
-        for (Conversion conv : acg.getConversions()) {
-            Event departureEvent = new Event();
-            departureEvent.conversion = conv;
-            departureEvent.type = EventType.CONV_DEPART;
-            departureEvent.t = conv.height1;
-            events.add(departureEvent);
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                Event departureEvent = new Event();
+                departureEvent.conversion = conv;
+                departureEvent.type = EventType.CONV_DEPART;
+                departureEvent.t = conv.height1;
+                events.add(departureEvent);
 
-            Event arrivalEvent = new Event();
-            arrivalEvent.conversion = conv;
-            arrivalEvent.type = EventType.CONV_ARRIVE;
-            arrivalEvent.t = conv.height2;
-            events.add(arrivalEvent);
+                Event arrivalEvent = new Event();
+                arrivalEvent.conversion = conv;
+                arrivalEvent.type = EventType.CONV_ARRIVE;
+                arrivalEvent.t = conv.height2;
+                events.add(arrivalEvent);
+            }
         }
 
         // Sort event list:

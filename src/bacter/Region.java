@@ -16,6 +16,8 @@
  */
 package bacter;
 
+import beast.evolution.alignment.Alignment;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -29,6 +31,7 @@ import java.util.Set;
 public class Region {
 
     public int leftBoundary, rightBoundary;
+    public Alignment alignment;
     public Set<Conversion> activeConversions;
 
     public Region() {

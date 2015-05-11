@@ -17,10 +17,12 @@
 
 package bacter;
 
+import beast.evolution.alignment.Alignment;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -31,6 +33,8 @@ public class RegionList {
 
     private final List<Region> regions;
     private boolean dirty;
+
+    private Map<Alignment, List<Conversion>> conversionsByAlignment;
 
     /**
      * Ancestral conversion graph this list belongs to.
@@ -89,57 +93,59 @@ public class RegionList {
         
         regions.clear();
 
-        List<Conversion> convOrderedByStart = Lists.newArrayList();
-        convOrderedByStart.addAll(acg.getConversions());
-        convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
+        for (Alignment alignment : acg.getAlignments()) {
+            List<Conversion> convOrderedByStart = Lists.newArrayList();
+            convOrderedByStart.addAll(acg.getConversions(alignment));
+            convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
 
-        List<Conversion> convOrderedByEnd = Lists.newArrayList();
-        convOrderedByEnd.addAll(acg.getConversions());
-        convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
+            List<Conversion> convOrderedByEnd = Lists.newArrayList();
+            convOrderedByEnd.addAll(acg.getConversions(alignment));
+            convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
 
-        Set <Conversion> activeConversions = Sets.newHashSet();
+            Set<Conversion> activeConversions = Sets.newHashSet();
 
-        int lastBoundary = 0;
+            int lastBoundary = 0;
 
-        while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty())  {
+            while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
-            int nextStart;
-            if (!convOrderedByStart.isEmpty())
-                nextStart = convOrderedByStart.get(0).getStartSite();
-            else
-                nextStart = Integer.MAX_VALUE;
+                int nextStart;
+                if (!convOrderedByStart.isEmpty())
+                    nextStart = convOrderedByStart.get(0).getStartSite();
+                else
+                    nextStart = Integer.MAX_VALUE;
 
-            int nextEnd;
-            if (!convOrderedByEnd.isEmpty())
-                nextEnd = convOrderedByEnd.get(0).getEndSite() + 1;
-            else
-                nextEnd = Integer.MAX_VALUE;
+                int nextEnd;
+                if (!convOrderedByEnd.isEmpty())
+                    nextEnd = convOrderedByEnd.get(0).getEndSite() + 1;
+                else
+                    nextEnd = Integer.MAX_VALUE;
 
-            int nextBoundary = Math.min(nextStart, nextEnd);
-            if (nextBoundary > lastBoundary) {
+                int nextBoundary = Math.min(nextStart, nextEnd);
+                if (nextBoundary > lastBoundary) {
+                    Region region = new Region();
+                    region.leftBoundary = lastBoundary;
+                    region.rightBoundary = nextBoundary;
+                    region.activeConversions.addAll(activeConversions);
+                    regions.add(region);
+                }
+
+                if (nextStart < nextEnd) {
+                    activeConversions.add(convOrderedByStart.get(0));
+                    convOrderedByStart.remove(0);
+                    lastBoundary = nextStart;
+                } else {
+                    activeConversions.remove(convOrderedByEnd.get(0));
+                    convOrderedByEnd.remove(0);
+                    lastBoundary = nextEnd;
+                }
+            }
+
+            if (lastBoundary < acg.getSequenceLength(alignment)) {
                 Region region = new Region();
                 region.leftBoundary = lastBoundary;
-                region.rightBoundary = nextBoundary;
-                region.activeConversions.addAll(activeConversions);
+                region.rightBoundary = acg.getSequenceLength(alignment);
                 regions.add(region);
             }
-
-            if (nextStart < nextEnd) {
-                activeConversions.add(convOrderedByStart.get(0));
-                convOrderedByStart.remove(0);
-                lastBoundary = nextStart;
-            } else {
-                activeConversions.remove(convOrderedByEnd.get(0));
-                convOrderedByEnd.remove(0);
-                lastBoundary = nextEnd;
-            }
-        }
-
-        if (lastBoundary<acg.getSequenceLength()) {
-            Region region = new Region();
-            region.leftBoundary = lastBoundary;
-            region.rightBoundary = acg.getSequenceLength();
-            regions.add(region);
         }
 
         dirty = false;
