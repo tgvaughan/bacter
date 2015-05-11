@@ -21,6 +21,7 @@ import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
+import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
 import feast.input.In;
 
@@ -41,32 +42,34 @@ public class ConvertedRegionShift extends ACGOperator {
 
     @Override
     public double proposal() {
-        
-        if (acg.getConvCount()<1)
+
+        Alignment alignment = chooseAlignment();
+
+        if (acg.getConvCount(alignment)<1)
             return Double.NEGATIVE_INFINITY;
         
-        int ridx = Randomizer.nextInt(acg.getConvCount());
-        Conversion recomb = acg.getConversions().get(ridx);
+        int ridx = Randomizer.nextInt(acg.getConvCount(alignment));
+        Conversion recomb = acg.getConversions(alignment).get(ridx);
         
-        int radius = (int)Math.round(argInput.get().getSequenceLength()
+        int radius = (int)Math.round(argInput.get().getSequenceLength(alignment)
                 *apertureSizeInput.get())/2;
 
         int delta = Randomizer.nextInt(radius*2 + 1) - radius;
         
         if (delta>0) {
             int maxDelta;
-            if (ridx<acg.getConvCount()-1)
-                maxDelta = acg.getConversions().get(ridx+1).getStartSite() - 2
+            if (ridx<acg.getConvCount(alignment)-1)
+                maxDelta = acg.getConversions(alignment).get(ridx+1).getStartSite() - 2
                         - recomb.getEndSite();
             else
-                maxDelta = acg.getSequenceLength() - 1 - recomb.getEndSite();
+                maxDelta = acg.getSequenceLength(alignment) - 1 - recomb.getEndSite();
             
             if (delta>maxDelta)
                 return Double.NEGATIVE_INFINITY;
         } else {
             int minDelta;
             if (ridx>0)
-                minDelta = acg.getConversions().get(ridx-1).getEndSite() + 2
+                minDelta = acg.getConversions(alignment).get(ridx-1).getEndSite() + 2
                         - recomb.getStartSite();
             else
                 minDelta = 0 - recomb.getStartSite();

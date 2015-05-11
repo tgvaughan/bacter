@@ -16,45 +16,44 @@
  */
 package bacter.operators.restricted;
 
-import bacter.operators.EdgeCreationOperator;
 import bacter.Conversion;
+import bacter.operators.EdgeCreationOperator;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
-import feast.input.In;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Operator which adds and removes conversions to/from an ACG.")
 public class AddRemoveConversion extends EdgeCreationOperator {
-    
-    public Input<RealParameter> rhoInput = new Input<>("rho",
-            "Conversion rate parameter.", Input.Validate.REQUIRED);
-    
+
     public Input<RealParameter> deltaInput = new Input<>("delta",
             "Tract length parameter.", Input.Validate.REQUIRED);
     
-    public AddRemoveConversion() { };
+    public AddRemoveConversion() { }
     
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
-    };
+    }
 
     @Override
     public double proposal() {
         double logHGF = 0;
-        
+
+        Alignment alignment = chooseAlignment();
+
         if (Randomizer.nextBoolean()) {
             
             // Add
-            
-            logHGF += Math.log(1.0/(acg.getTotalConvCount()+1));
+
+            logHGF += Math.log(1.0/(acg.getConvCount(alignment)+1));
             
             try {
-                logHGF -= drawNewConversion();
+                logHGF -= drawNewConversion(alignment);
             } catch (ProposalFailed ex) {
                 return Double.NEGATIVE_INFINITY;
             }
@@ -66,15 +65,16 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Remove
             
-            if (acg.getTotalConvCount()==0)
+            if (acg.getConvCount(alignment)==0)
                 return Double.NEGATIVE_INFINITY;
             
             // Select conversion to remove:
-            Conversion conv = chooseConversion();
+            Conversion conv = acg.getConversions(alignment).get(
+                    Randomizer.nextInt(acg.getConvCount(alignment)));
 
             // Calculate HGF
             logHGF += getConversionProb(conv);
-            logHGF -= Math.log(1.0/acg.getTotalConvCount());
+            logHGF -= Math.log(1.0/acg.getConvCount(alignment));
             
             // Remove conversion
             acg.deleteConversion(conv);
@@ -87,13 +87,15 @@ public class AddRemoveConversion extends EdgeCreationOperator {
     /**
      * Add new conversion to ACG, returning the probability density of the
      * new edge and converted region location.
-     * 
+     *
+     * @param alignment alignment with which to associate new conversion
      * @return log of proposal density 
      */
-    public double drawNewConversion() throws ProposalFailed {
+    public double drawNewConversion(Alignment alignment) throws ProposalFailed {
         double logP = 0;
 
         Conversion newConversion = new Conversion();
+        newConversion.setAlignment(alignment);
         
         logP += attachEdge(newConversion);
         
@@ -102,14 +104,14 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         // length from an exponential distribution.  If the end of the tract
         // exceeds the start of the next region, the proposal is rejected.
         
-        int convertableLength = getConvertableSiteCount(null);
+        int convertableLength = getConvertableSiteCount(alignment, null);
         if (convertableLength==0)
             throw new ProposalFailed();
         
         int z = Randomizer.nextInt(convertableLength);
         logP += Math.log(1.0/convertableLength);
         
-        for (Conversion recomb : acg.getConversions()) {
+        for (Conversion recomb : acg.getConversions(alignment)) {
             
             if (z<recomb.getStartSite()-1)
                 break;
@@ -137,8 +139,8 @@ public class AddRemoveConversion extends EdgeCreationOperator {
     /**
      * Obtain proposal density for the move which results in the current state
      * by adding the conversion conv to a state without that recombination.
-     * 
-     * @param conv
+     *
+     * @param conv conversion
      * @return log of proposal density
      */
     public double getConversionProb(Conversion conv) {
@@ -147,7 +149,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
         logP += getEdgeAttachmentProb(conv);
         
         // Calculate probability of converted region.
-        int convertableLength = getConvertableSiteCount(conv);
+        int convertableLength = getConvertableSiteCount(conv.getAlignment(), conv);
         if (convertableLength==0)
             return Double.NEGATIVE_INFINITY;
         
@@ -162,25 +164,26 @@ public class AddRemoveConversion extends EdgeCreationOperator {
     /**
      * Get total number of sites available to convert, optionally skipping
      * one recombination.
-     * 
+     *
+     * @param alignment alignment on which to count convertable sites
      * @param skip recombination to skip (may be null)
      * @return convertible site count
      */
-    private int getConvertableSiteCount(Conversion skip) {
+    private int getConvertableSiteCount(Alignment alignment, Conversion skip) {
         int count = 0;
-        
+
         int l=0;
-        for (int ridx=0; ridx<acg.getConvCount(); ridx++) {
-            Conversion recomb = acg.getConversions().get(ridx);
+        for (int ridx=0; ridx<acg.getConvCount(alignment); ridx++) {
+            Conversion recomb = acg.getConversions(alignment).get(ridx);
             if (recomb == skip)
                 continue;
-            
+
             count += Math.max(0, recomb.getStartSite()-l+1);
-            
+
             l = recomb.getEndSite()+2;
         }
-        
-        count += Math.max(0, acg.getSequenceLength() - l); // L - 1 - l + 1
+
+        count += Math.max(0, acg.getSequenceLength(alignment) - l); // L - 1 - l + 1
         
         return count;
     }

@@ -21,6 +21,7 @@ import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
+import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
 import feast.input.In;
 
@@ -47,22 +48,25 @@ public class MergeSplitConversion extends ACGOperator {
     
     @Override
     public double proposal() {
+
+        Alignment alignment = chooseAlignment();
+
         if (Randomizer.nextBoolean())
-            return mergeProposal(); // Attempt merge
+            return mergeProposal(alignment); // Attempt merge
         else
-            return splitProposal(); // Attempt split
+            return splitProposal(alignment); // Attempt split
     }
     
-    double splitProposal() {
+    double splitProposal(Alignment alignment) {
         double logHR = 0.0;
-        
-        if (acg.getConvCount()==0)
+
+        if (acg.getConvCount(alignment)==0)
             return Double.NEGATIVE_INFINITY;
         
         // Select conversion
-        Conversion conv = acg.getConversions()
-                .get(Randomizer.nextInt(acg.getConvCount()));
-        logHR -= Math.log(1.0/acg.getConvCount());
+        Conversion conv = acg.getConversions(alignment)
+                .get(Randomizer.nextInt(acg.getConvCount(alignment)));
+        logHR -= Math.log(1.0/acg.getConvCount(alignment));
         
         if (conv.getSiteCount()<3)
             return Double.NEGATIVE_INFINITY;
@@ -106,33 +110,34 @@ public class MergeSplitConversion extends ACGOperator {
         conv.setEndSite(s);
         
         // Create new recombination
-        Conversion newRecomb = new Conversion();
-        newRecomb.setStartSite(s + gap + 2);
-        newRecomb.setEndSite(origEnd);
-        newRecomb.setNode1(conv.getNode1());
-        newRecomb.setNode2(conv.getNode2());
-        newRecomb.setHeight1(depHeight);
-        newRecomb.setHeight2(arrHeight);
-        acg.addConversion(newRecomb);
+        Conversion newConv = new Conversion();
+        newConv.setAlignment(conv.getAlignment());
+        newConv.setStartSite(s + gap + 2);
+        newConv.setEndSite(origEnd);
+        newConv.setNode1(conv.getNode1());
+        newConv.setNode2(conv.getNode2());
+        newConv.setHeight1(depHeight);
+        newConv.setHeight2(arrHeight);
+        acg.addConversion(newConv);
         
         // Include probability of reverse (merge) move in HR:
-        logHR += Math.log(1.0/((double)(acg.getConvCount()-1)));
+        logHR += Math.log(1.0/((double)(acg.getConvCount(alignment)-1)));
         
         return logHR;
     }
     
-    double mergeProposal() {
+    double mergeProposal(Alignment alignment) {
         double logHR = 0.0;
         
-        if (acg.getConvCount()<2)
+        if (acg.getConvCount(alignment)<2)
             return Double.NEGATIVE_INFINITY;
         
         // Select a random pair of adjacent (on alignment) regions
-        int r1idx = Randomizer.nextInt(acg.getConvCount()-1);
+        int r1idx = Randomizer.nextInt(acg.getConvCount(alignment)-1);
         int r2idx = r1idx + 1;
-        Conversion recomb1 = acg.getConversions().get(r1idx);
-        Conversion recomb2 = acg.getConversions().get(r2idx);
-        logHR -= Math.log(1.0/((double)(acg.getConvCount()-1)));
+        Conversion recomb1 = acg.getConversions(alignment).get(r1idx);
+        Conversion recomb2 = acg.getConversions(alignment).get(r2idx);
+        logHR -= Math.log(1.0/((double)(acg.getConvCount(alignment)-1)));
         
         // Ensure a split operator could have generated this pair
         if (recomb1.getNode1() != recomb2.getNode1()
@@ -164,7 +169,7 @@ public class MergeSplitConversion extends ACGOperator {
         acg.deleteConversion(recomb2);
         
         // Include probability of reverse (split) move in HR:
-        logHR += Math.log(1.0/acg.getConvCount())
+        logHR += Math.log(1.0/acg.getConvCount(alignment))
                 + Math.log(1.0/((double)(recomb1.getSiteCount()-2)))
                 + gap*Math.log(1.0-gapRate) + Math.log(gapRate)
                 + Math.log(1.0/(depRange*arrRange));

@@ -5,6 +5,7 @@ import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
+import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
 import feast.input.In;
 
@@ -43,15 +44,18 @@ public class ConvertedRegionPairBoundaryShift extends ACGOperator{
     
     @Override
     public double proposal() {
-        if (acg.getConvCount()<2)
+
+        Alignment alignment = chooseAlignment();
+
+        if (acg.getConvCount(alignment)<2)
             return Double.NEGATIVE_INFINITY;
         
         // Select random recombination to be left of pair:
-        int ridx = Randomizer.nextInt(acg.getConvCount()-1);
-        Conversion leftRecomb = acg.getConversions().get(ridx);
-        Conversion rightRecomb = acg.getConversions().get(ridx+1);
+        int ridx = Randomizer.nextInt(acg.getConvCount(alignment)-1);
+        Conversion leftRecomb = acg.getConversions(alignment).get(ridx);
+        Conversion rightRecomb = acg.getConversions(alignment).get(ridx+1);
         
-        int radius = (int)Math.round(acg.getSequenceLength()
+        int radius = (int)Math.round(acg.getSequenceLength(alignment)
                 *apertureSizeInput.get())/2;
         
         int minOffset = -(leftRecomb.getEndSite() - leftRecomb.getStartSite());

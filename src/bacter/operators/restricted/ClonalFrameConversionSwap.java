@@ -20,6 +20,7 @@ package bacter.operators.restricted;
 import bacter.operators.EdgeCreationOperator;
 import bacter.Conversion;
 import beast.core.Description;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
@@ -38,21 +39,23 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
     public double proposal() {
         double logHR = 0.0;
 
-        if (acg.getConvCount()==0 || getGapCount()==0)
+        Alignment alignment = chooseAlignment();
+
+        if (acg.getConvCount(alignment)==0 || getGapCount(alignment)==0)
             return Double.NEGATIVE_INFINITY;
         
         // Choose recombination
-        int ridx = Randomizer.nextInt(acg.getConvCount());
-        Conversion recomb = acg.getConversions().get(ridx);
+        int ridx = Randomizer.nextInt(acg.getConvCount(alignment));
+        Conversion conv = acg.getConversions(alignment).get(ridx);
 
-        if (recomb.getNode1()==recomb.getNode2())
+        if (conv.getNode1()==conv.getNode2())
             return Double.NEGATIVE_INFINITY;
 
         // Calculate probability of reverse move:
-        logHR += getReverseMoveProb(recomb);
+        logHR += getReverseMoveProb(conv);
         
         // Perform swap and incorporate probability of forward move:
-        logHR -= performSwap(recomb);
+        logHR -= performSwap(conv);
         
         return logHR;
     }
@@ -62,17 +65,17 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
      * 
      * @return clonal frame region count
      */
-    private int getGapCount() {
+    private int getGapCount(Alignment alignment) {
         int count = 0;
 
-        if (acg.getConvCount()>0 && acg.getConversions().get(0).getStartSite()>0)
+        if (acg.getConvCount(alignment)>0 && acg.getConversions(alignment).get(0).getStartSite()>0)
             count += 1;
         
-        if (acg.getConvCount()>1)
-            count += acg.getConvCount()-1;
+        if (acg.getConvCount(alignment)>1)
+            count += acg.getConvCount(alignment)-1;
         
-        if (acg.getConvCount() == 0
-                || acg.getConversions().get(acg.getConvCount()-1).getEndSite()<acg.getSequenceLength()-1)
+        if (acg.getConvCount(alignment) == 0
+                || acg.getConversions(alignment).get(acg.getConvCount(alignment)-1).getEndSite()<acg.getSequenceLength(alignment)-1)
             count += 1;
         
         return count;
@@ -81,18 +84,20 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
     /**
      * Perform swap operation.
      * 
-     * @param recomb selected recombination
+     * @param conv selected conversion
      * @return log probability of new state
      */
-    protected double performSwap(Conversion recomb) {
+    protected double performSwap(Conversion conv) {
         double logP = 0.0;
+
+        Alignment alignment = conv.getAlignment();
         
         // Choose unconverted (clonal frame) fragment:
-        int gapCount = getGapCount();
+        int gapCount = getGapCount(alignment);
         int chosenGapIdx = Randomizer.nextInt(gapCount);
         
         // Record details required to effect topology change:
-        Node pivot = recomb.getNode1();
+        Node pivot = conv.getNode1();
         Node floating = pivot.getParent();
         Node sister = floating.getLeft() == pivot
                 ? floating.getRight()
@@ -101,19 +106,19 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
         // Create recombination corresponding to original clonal frame:
         Conversion oldCFrecomb = new Conversion();
         oldCFrecomb.setNode1(pivot);
-        oldCFrecomb.setHeight1(recomb.getHeight1());
-        if (recomb.getNode2()==sister)
+        oldCFrecomb.setHeight1(conv.getHeight1());
+        if (conv.getNode2()==sister)
             oldCFrecomb.setNode2(floating);
         else
             oldCFrecomb.setNode2(sister);
         oldCFrecomb.setHeight2(floating.getHeight());
         
-        // Make marginal tree of chosen recomb the new clonal frame.
+        // Make marginal tree of chosen conv the new clonal frame.
 
         floating.removeChild(sister);
         
-        if (recomb.getNode2() == floating)
-            recomb.setNode2(sister);
+        if (conv.getNode2() == floating)
+            conv.setNode2(sister);
         
         if (floating.isRoot())
             sister.setParent(null);
@@ -124,7 +129,7 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
             grandparent.addChild(sister);
         }
         
-        Node newSister = recomb.getNode2();
+        Node newSister = conv.getNode2();
 
         if (!newSister.isRoot()) {
             Node newParent = newSister.getParent();
@@ -132,7 +137,7 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
             newParent.addChild(floating);
         }
         floating.addChild(newSister);
-        floating.setHeight(recomb.getHeight2());
+        floating.setHeight(conv.getHeight2());
         
         // Ensure any change of root is catered for
         
@@ -148,11 +153,11 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
         List<Integer> startSites = Lists.newArrayList();
         List<Integer> endSites = Lists.newArrayList();
 
-        while (acg.getConversions().size()>0) {
-            Conversion thisRecomb = acg.getConversions().get(acg.getConvCount()-1);
+        while (acg.getConversions(alignment).size()>0) {
+            Conversion thisRecomb = acg.getConversions(alignment).get(acg.getConvCount(alignment)-1);
             startSites.add(thisRecomb.getStartSite());
             endSites.add(thisRecomb.getEndSite());
-            acg.deleteConversion(acg.getConversions().get(acg.getConvCount()-1));
+            acg.deleteConversion(acg.getConversions(alignment).get(acg.getConvCount(alignment)-1));
         }
         
         Collections.reverse(startSites);
@@ -194,7 +199,7 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
             gapIdx += 1;
         }
         
-        if (endSites.get(endSites.size()-1)<acg.getSequenceLength()-1) {
+        if (endSites.get(endSites.size()-1)<acg.getSequenceLength(alignment)-1) {
             Conversion newRecomb;
             if (chosenGapIdx==gapIdx) {
                 newRecomb = oldCFrecomb;
@@ -203,7 +208,7 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
                 logP += attachEdge(newRecomb);
             }
             newRecomb.setStartSite(endSites.get(endSites.size()-1)+1);
-            newRecomb.setEndSite(acg.getSequenceLength()-1);
+            newRecomb.setEndSite(acg.getSequenceLength(alignment)-1);
             acg.addConversion(newRecomb);
             
             gapIdx += 1;
@@ -215,20 +220,20 @@ public class ClonalFrameConversionSwap extends EdgeCreationOperator {
     /**
      * Obtain probability of reverse move.
      * 
-     * @param recomb recombination chosen for forward move
+     * @param conv recombination chosen for forward move
      * @return log of reverse move probability.
      */
-    protected double getReverseMoveProb(Conversion recomb) {
+    protected double getReverseMoveProb(Conversion conv) {
         double logP = 0.0;
 
         // Probability of drawing existing recombinant edges in x from
         // the clonal frame in x'.  (This excludes the conversion corresponding
         // to the chosen gap in x'.)
-        for (Conversion thisRecomb : acg.getConversions()) {
-            if (thisRecomb == recomb)
+        for (Conversion thisConv : acg.getConversions(conv.getAlignment())) {
+            if (thisConv == conv)
                 continue;
             
-            logP += getEdgeAttachmentProb(thisRecomb);
+            logP += getEdgeAttachmentProb(thisConv);
         }
         
         return logP;

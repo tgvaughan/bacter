@@ -17,11 +17,11 @@
 
 package bacter.operators.restricted;
 
-import bacter.operators.ACGOperator;
 import bacter.Conversion;
-import bacter.ConversionGraph;
+import bacter.operators.ACGOperator;
 import beast.core.Description;
 import beast.core.Input;
+import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
 import feast.input.In;
 
@@ -42,14 +42,16 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
 
     @Override
     public double proposal() {
+
+        Alignment alignment = chooseAlignment();
         
-        if (acg.getConvCount()<1)
+        if (acg.getConvCount(alignment)<1)
             return Double.NEGATIVE_INFINITY;
         
         // Select random recombination and region edge:
-        int z = Randomizer.nextInt(acg.getConvCount()*2);
+        int z = Randomizer.nextInt(acg.getConvCount(alignment)*2);
         int ridx = z/2;
-        Conversion recomb = acg.getConversions().get(ridx);
+        Conversion recomb = acg.getConversions(alignment).get(ridx);
         boolean moveStart = (z%2 == 0);
         
         int currentLocus, minLocus, maxLocus;
@@ -58,20 +60,20 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
             maxLocus = recomb.getEndSite();
             
             if (ridx>0)
-                minLocus = acg.getConversions().get(ridx-1).getEndSite() + 2;
+                minLocus = acg.getConversions(alignment).get(ridx-1).getEndSite() + 2;
             else
                 minLocus = 0;
         } else {
             currentLocus = recomb.getEndSite();
             minLocus = recomb.getStartSite();
             
-            if (ridx<acg.getConvCount()-1)
-                maxLocus = acg.getConversions().get(ridx+1).getStartSite() - 2;
+            if (ridx<acg.getConvCount(alignment)-1)
+                maxLocus = acg.getConversions(alignment).get(ridx+1).getStartSite() - 2;
             else
-                maxLocus = acg.getSequenceLength()-1;
+                maxLocus = acg.getSequenceLength(alignment)-1;
         }
         
-        int radius = (int)Math.round(argInput.get().getSequenceLength()
+        int radius = (int)Math.round(argInput.get().getSequenceLength(alignment)
                 *apertureSizeInput.get())/2;
         
         int newLocus = currentLocus + Randomizer.nextInt(2*radius+1)-radius;
