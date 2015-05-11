@@ -22,7 +22,6 @@ import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
-import beast.core.parameter.IntegerParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;

@@ -24,6 +24,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.math.GammaFunction;
 import feast.input.In;
@@ -60,7 +61,6 @@ public class ACGCoalescent extends ACGDistribution {
     public void initAndValidate() throws Exception {
         super.initAndValidate();
         
-        sequenceLength = acg.getSequenceLength();
         popFunc = popFuncInput.get();
     }
     
@@ -68,8 +68,8 @@ public class ACGCoalescent extends ACGDistribution {
     public double calculateACGLogP() {
 
         // Check whether conversion count exceeds bounds.
-        if (acg.getConvCount()<lowerCCBoundInput.get()
-                || acg.getConvCount()>upperCCBoundInput.get())
+        if (acg.getTotalConvCount()<lowerCCBoundInput.get()
+                || acg.getTotalConvCount()>upperCCBoundInput.get())
             return Double.NEGATIVE_INFINITY;
 
         logP = calculateClonalFrameLogP();
@@ -78,17 +78,19 @@ public class ACGCoalescent extends ACGDistribution {
         if (rhoInput.get().getValue()>0.0) {
             double poissonMean = rhoInput.get().getValue()
                     *acg.getClonalFrameLength()
-                    *(acg.getSequenceLength()+deltaInput.get().getValue());
-            logP += -poissonMean + acg.getConvCount()*Math.log(poissonMean);
+                    *(acg.getTotalSequenceLength()
+                    +acg.getAlignments().size()*deltaInput.get().getValue());
+            logP += -poissonMean + acg.getTotalConvCount()*Math.log(poissonMean);
             //      - GammaFunction.lnGamma(acg.getConvCount()+1);
         } else {
-            if (acg.getConvCount()>0)
+            if (acg.getTotalConvCount()>0)
                 logP = Double.NEGATIVE_INFINITY;
         }
         
-        
-        for (Conversion conv : acg.getConversions())
-            logP += calculateConversionLogP(conv);
+
+        for (Alignment alignment : acg.getAlignments())
+            for (Conversion conv : acg.getConversions(alignment))
+                logP += calculateConversionLogP(conv);
         
         // This N! takes into account the permutation invariance of
         // the individual conversions, and cancels with the N! in the
@@ -164,10 +166,12 @@ public class ACGCoalescent extends ACGDistribution {
         // Probability of start site:
         if (conv.getStartSite()==0)
             thisLogP += Math.log((deltaInput.get().getValue() + 1)
-                /(deltaInput.get().getValue() + acg.getSequenceLength()));
+                /(acg.getAlignments().size()*deltaInput.get().getValue()
+                    + acg.getTotalSequenceLength()));
         else
-            thisLogP += Math.log(1.0/(deltaInput.get().getValue()
-                + acg.getSequenceLength()));
+            thisLogP += Math.log(
+                    1.0/(acg.getAlignments().size()*deltaInput.get().getValue()
+                            + acg.getTotalSequenceLength()));
 
         // Probability of end site:
         double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
@@ -175,9 +179,9 @@ public class ACGCoalescent extends ACGDistribution {
             / deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (conv.getEndSite() == acg.getSequenceLength()-1)
+        if (conv.getEndSite() == acg.getSequenceLength(conv.getAlignment())-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength()-conv.getStartSite());
+                    acg.getSequenceLength(conv.getAlignment())-conv.getStartSite());
 
         thisLogP += Math.log(probEnd);
         

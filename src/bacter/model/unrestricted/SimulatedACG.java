@@ -23,7 +23,6 @@ import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
@@ -35,6 +34,7 @@ import feast.nexus.NexusBlock;
 import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
 import feast.nexus.TreesBlock;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,15 +55,11 @@ public class SimulatedACG extends ConversionGraph {
     
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "Demographic model to use.").setRequired();
-    
-    public Input<Integer> nTaxaInput = In.create("nTaxa",
-            "Number of taxa to use in simulation. "
-                    + "(Only use when alignment is unavailable.)");
-    
-    public Input<Tree> clonalFrameInput = In.create("clonalFrame",
+
+    public Input<Tree> clonalFrameInput = new Input<>("clonalFrame",
             "Optional tree specifying fixed clonal frame.");
 
-    public Input<String> outputFileNameInput = In.create("outputFileName",
+    public Input<String> outputFileNameInput = new Input<>("outputFileName",
             "If provided, simulated ARG is additionally written to this file.");
 
     private double rho, delta;
@@ -71,7 +67,7 @@ public class SimulatedACG extends ConversionGraph {
     private int nTaxa;
     private TaxonSet taxonSet;
     
-    public SimulatedACG() { };
+    public SimulatedACG() { }
     
     @Override
     public void initAndValidate() throws Exception {
@@ -127,12 +123,14 @@ public class SimulatedACG extends ConversionGraph {
                 public List<String> getBlockLines() {
                     List<String> lines = new ArrayList<>();
                     lines.add("clonalframe " + root.toShortNewick(true));
-                    for (int r = 0; r < getConvCount(); r++) {
-                        Conversion recomb = getConversions().get(r);
-                        lines.add("conversion node1=" + recomb.getNode1().getNr()
-                        + " node2=" + recomb.getNode2().getNr()
-                        + " site1=" + recomb.getStartSite()
-                        + " site2=" + recomb.getEndSite());
+                    for (Alignment alignment : getAlignments()) {
+                        for (Conversion conv : getConversions(alignment)) {
+                            lines.add("conversion node1=" + conv.getNode1().getNr()
+                                    + " node2=" + conv.getNode2().getNr()
+                                    + " site1=" + conv.getStartSite()
+                                    + " site2=" + conv.getEndSite()
+                                    + " alignment=" + alignment.getID());
+                        }
                     }
                     
                     return lines;
@@ -158,7 +156,7 @@ public class SimulatedACG extends ConversionGraph {
             leaf.setID(taxonSet.asStringList().get(i));
                         
             if (hasDateTrait())
-                leaf.setHeight(getDateTrait().getValue(i));
+                leaf.setHeight(getDateTrait().getValue(leaf.getID()));
             else
                 leaf.setHeight(0.0);
             
@@ -259,11 +257,10 @@ public class SimulatedACG extends ConversionGraph {
             endSite = Math.min(endSite, getSequenceLength(affectedAlignment)-1);
 
             Conversion conv = new Conversion();
-            conv.setAlignment(affectedAlignment);
             conv.setStartSite(startSite);
             conv.setEndSite(endSite);
             associateConversionWithCF(conv);
-            addConversion(conv);
+            addConversion(affectedAlignment, conv);
         }
     }
     
