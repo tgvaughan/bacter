@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bacter.operators.unrestricted;
+package bacter.operators;
 
 import bacter.Conversion;
-import bacter.model.unrestricted.SimulatedACG;
+import bacter.model.SimulatedACG;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.ConstantPopulation;

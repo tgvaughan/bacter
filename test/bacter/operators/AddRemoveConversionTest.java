@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.operators.unrestricted;
+package bacter.operators;
 
 import bacter.Conversion;
-import bacter.model.unrestricted.ACGCoalescent;
-import bacter.model.unrestricted.SimulatedACG;
+import bacter.model.ACGCoalescent;
+import bacter.model.SimulatedACG;
+import bacter.operators.AddRemoveConversion;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;

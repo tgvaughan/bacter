@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package bacter.model.restricted;
+package bacter.model;
 
 import bacter.CFEventList;
 import bacter.Conversion;
+import bacter.ConversionGraph;
 import bacter.model.ACGDistribution;
 import beast.core.Description;
 import beast.core.Input;
@@ -25,6 +26,7 @@ import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.math.GammaFunction;
 import feast.input.In;
 import java.util.List;
 import java.util.Random;
@@ -33,7 +35,7 @@ import java.util.Random;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Appoximation to the coalescent with gene conversion.")
-public class RestrictedACGCoalescent extends ACGDistribution {
+public class ACGCoalescent extends ACGDistribution {
     
     public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
             "populationModel", "Population model.").setRequired();
@@ -43,10 +45,17 @@ public class RestrictedACGCoalescent extends ACGDistribution {
     
     public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
             "Tract length parameter.").setRequired();
-    
-    PopulationFunction popFunc;
 
-    public RestrictedACGCoalescent() { }
+    public Input<Integer> lowerCCBoundInput = new In<Integer>("lowerConvCountBound",
+            "Lower bound on conversion count.").setDefault(0);
+
+    public Input<Integer> upperCCBoundInput = new In<Integer>("upperConvCountBound",
+            "Upper bound on conversion count.").setDefault(Integer.MAX_VALUE);
+
+    PopulationFunction popFunc;
+    int sequenceLength;
+    
+    public ACGCoalescent() { }
     
     @Override
     public void initAndValidate() throws Exception {
@@ -58,20 +67,37 @@ public class RestrictedACGCoalescent extends ACGDistribution {
     @Override
     public double calculateACGLogP() {
 
-        if (acg.isValid()) {
-            
-            logP = calculateClonalFrameLogP();
+        // Check whether conversion count exceeds bounds.
+        if (acg.getTotalConvCount()<lowerCCBoundInput.get()
+                || acg.getTotalConvCount()>upperCCBoundInput.get())
+            return Double.NEGATIVE_INFINITY;
 
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment))
-                    logP += calculateRecombinantLogP(conv);
-            }
-            
-            logP += calculateConvertedRegionMapLogP();
+        logP = calculateClonalFrameLogP();
+        
+        // Probability of conversion count:
+        if (rhoInput.get().getValue()>0.0) {
+            double poissonMean = rhoInput.get().getValue()
+                    *acg.getClonalFrameLength()
+                    *(acg.getTotalSequenceLength()
+                    +acg.getAlignments().size()*deltaInput.get().getValue());
+            logP += -poissonMean + acg.getTotalConvCount()*Math.log(poissonMean);
+            //      - GammaFunction.lnGamma(acg.getConvCount()+1);
         } else {
-            logP = Double.NEGATIVE_INFINITY;
+            if (acg.getTotalConvCount()>0)
+                logP = Double.NEGATIVE_INFINITY;
         }
-            
+        
+
+        for (Alignment alignment : acg.getAlignments())
+            for (Conversion conv : acg.getConversions(alignment))
+                logP += calculateConversionLogP(conv);
+        
+        // This N! takes into account the permutation invariance of
+        // the individual conversions, and cancels with the N! in the
+        // denominator of the Poissonian above.
+        // logP += GammaFunction.lnGamma(acg.getConvCount() + 1);
+        
+        
         return logP;        
     }
 
@@ -103,16 +129,17 @@ public class RestrictedACGCoalescent extends ACGDistribution {
     
     /**
      * Compute probability of recombinant edges under conditional coalescent.
-     *
-     * @param conv conversion for which to evaluate probability.
+     * @param conv
      * @return log(P)
      */
-    public double calculateRecombinantLogP(Conversion conv) {
+    public double calculateConversionLogP(Conversion conv) {
+
+        double thisLogP = 0.0;
         
         List<CFEventList.Event> events = acg.getCFEvents();
         
         // Probability density of location of recombinant edge start
-        double thisLogP = Math.log(1.0/acg.getClonalFrameLength());
+        thisLogP += Math.log(1.0/acg.getClonalFrameLength());
 
         // Identify interval containing the start of the recombinant edge
         int startIdx = 0;
@@ -135,69 +162,28 @@ public class RestrictedACGCoalescent extends ACGDistribution {
         
         // Probability of single coalescence event
         thisLogP += Math.log(1.0/popFunc.getPopSize(conv.getHeight2()));
+
+        // Probability of start site:
+        if (conv.getStartSite()==0)
+            thisLogP += Math.log((deltaInput.get().getValue() + 1)
+                /(acg.getAlignments().size()*deltaInput.get().getValue()
+                    + acg.getTotalSequenceLength()));
+        else
+            thisLogP += Math.log(
+                    1.0/(acg.getAlignments().size()*deltaInput.get().getValue()
+                            + acg.getTotalSequenceLength()));
+
+        // Probability of end site:
+        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
+            conv.getEndSite() - conv.getStartSite())
+            / deltaInput.get().getValue();
         
-        return thisLogP;
-    }
-    
-    /**
-     * Compute probability of number and genome extent of converted segments.
-     * @return log(P)
-     */
-    public double calculateConvertedRegionMapLogP() {
-        
-        double thisLogP = 0.0;
+        // Include probability of going past the end:
+        if (conv.getEndSite() == acg.getSequenceLength(conv.getAlignment())-1)
+            probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
+                    acg.getSequenceLength(conv.getAlignment())-conv.getStartSite());
 
-        for (Alignment alignment : acg.getAlignments()) {
-            List<Conversion> conversions = acg.getConversions(alignment);
-
-            double rho = rhoInput.get().getValue();
-            double pTractEnd = 1.0 / deltaInput.get().getValue();
-            double cfLength = acg.getClonalFrameLength();
-
-            // Probability of recombination per site along sequence
-            double pRec = 1.0 - Math.exp(-0.5 * rho * cfLength);
-
-            // Probability that sequence begins in the clonal frame:
-            double pStartCF = 1.0 / (pRec / pTractEnd + 1.0);
-
-            if (acg.getConvCount(alignment) == 0) {
-                // Probability of no recombinations
-                thisLogP += Math.log(pStartCF)
-                        + (acg.getSequenceLength(alignment) - 1) * Math.log(1.0 - pRec);
-            } else {
-
-                // Contribution from start of sequence up to first recomb region
-                if (conversions.get(0).getStartSite() > 0) {
-                    thisLogP += Math.log(pStartCF)
-                            + (conversions.get(0).getStartSite() - 1) * Math.log(1 - pRec);
-                } else {
-                    thisLogP += Math.log(1.0 - pStartCF)
-                            - Math.log(pRec);
-                }
-
-                // Contribution from remaining recomb regions and adjacent CF regions
-                for (int ridx = 0; ridx < conversions.size(); ridx++) {
-                    Conversion recomb = conversions.get(ridx);
-
-                    thisLogP += Math.log(pRec)
-                            + (recomb.getEndSite() - recomb.getStartSite()) * Math.log(1.0 - pTractEnd);
-
-                    if (ridx < conversions.size() - 1) {
-                        thisLogP += Math.log(pTractEnd)
-                                + (conversions.get(ridx + 1).getStartSite()
-                                - recomb.getEndSite() - 2)
-                                * Math.log(1.0 - pRec);
-                    } else {
-                        if (recomb.getEndSite() < acg.getSequenceLength(alignment) - 1) {
-                            thisLogP += Math.log(pTractEnd)
-                                    + (acg.getSequenceLength(alignment) - 1
-                                    - recomb.getEndSite() - 1)
-                                    * Math.log(1.0 - pRec);
-                        }
-                    }
-                }
-            }
-        }
+        thisLogP += Math.log(probEnd);
         
         return thisLogP;
     }

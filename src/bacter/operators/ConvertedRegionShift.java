@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.operators.unrestricted;
+package bacter.operators;
 
 import bacter.operators.ACGOperator;
 import bacter.Conversion;
