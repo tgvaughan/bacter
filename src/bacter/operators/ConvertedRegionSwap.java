@@ -17,11 +17,9 @@
 
 package bacter.operators;
 
-import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.evolution.tree.Node;
-import beast.util.Randomizer;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -35,31 +33,33 @@ public class ConvertedRegionSwap extends ACGOperator {
     @Override
     public double proposal() {
         
-        if (acg.getConvCount()<2)
+        if (acg.getTotalConvCount()<2)
             return Double.NEGATIVE_INFINITY;
 
         // Select a random pair of recombinations
-        int[] idx = Randomizer.shuffled(acg.getConvCount());
-        Conversion recomb1 = acg.getConversions().get(idx[0]);
-        Conversion recomb2 = acg.getConversions().get(idx[1]);
+        Conversion conv1 = chooseConversion();
+        Conversion conv2;
+        do {
+            conv2 = chooseConversion();
+        } while (conv2 == conv1);
         
         // Switch edges corresponding to recombinations.  (Can't switch
         // loci, as this would break ordering constraint.)
         
-        double tmpHeight1 = recomb1.getHeight1();
-        double tmpHeight2 = recomb1.getHeight2();
-        Node tmpNode1 = recomb1.getNode1();
-        Node tmpNode2 = recomb1.getNode2();
+        double tmpHeight1 = conv1.getHeight1();
+        double tmpHeight2 = conv1.getHeight2();
+        Node tmpNode1 = conv1.getNode1();
+        Node tmpNode2 = conv1.getNode2();
         
-        recomb1.setHeight1(recomb2.getHeight1());
-        recomb1.setHeight2(recomb2.getHeight2());
-        recomb1.setNode1(recomb2.getNode1());
-        recomb1.setNode2(recomb2.getNode2());
+        conv1.setHeight1(conv2.getHeight1());
+        conv1.setHeight2(conv2.getHeight2());
+        conv1.setNode1(conv2.getNode1());
+        conv1.setNode2(conv2.getNode2());
         
-        recomb2.setHeight1(tmpHeight1);
-        recomb2.setHeight2(tmpHeight2);
-        recomb2.setNode1(tmpNode1);
-        recomb2.setNode2(tmpNode2);
+        conv2.setHeight1(tmpHeight1);
+        conv2.setHeight2(tmpHeight2);
+        conv2.setNode1(tmpNode1);
+        conv2.setNode2(tmpNode2);
         
         return 0.0;
     }

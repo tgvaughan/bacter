@@ -51,7 +51,7 @@ public abstract class EdgeCreationOperator extends ACGOperator {
      * attachment points (nodes and heights) are set, the affected region of
      * the alignment is not modified.
      * 
-     * @param conv
+     * @param conv conversion
      * @return log probability density of chosen attachment.
      */
     public double attachEdge(Conversion conv) {
@@ -84,7 +84,7 @@ public abstract class EdgeCreationOperator extends ACGOperator {
      * Retrieve probability density for both attachment points of the given
      * recombinant edge.
      * 
-     * @param conv
+     * @param conv conversion
      * @return log probability density
      */
     public double getEdgeAttachmentProb(Conversion conv) {
@@ -166,7 +166,7 @@ public abstract class EdgeCreationOperator extends ACGOperator {
      * Get probability density for the arrival time of the given recombinant
      * edge under ClonalOrigin's coalescent model.
      * 
-     * @param conv
+     * @param conv conversion
      * @return log probability density
      */
     public double getEdgeCoalescenceProb(Conversion conv) {

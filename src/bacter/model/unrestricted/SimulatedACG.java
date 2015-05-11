@@ -257,10 +257,11 @@ public class SimulatedACG extends ConversionGraph {
             endSite = Math.min(endSite, getSequenceLength(affectedAlignment)-1);
 
             Conversion conv = new Conversion();
+            conv.setAlignment(affectedAlignment);
             conv.setStartSite(startSite);
             conv.setEndSite(endSite);
             associateConversionWithCF(conv);
-            addConversion(affectedAlignment, conv);
+            addConversion(conv);
         }
     }
     

@@ -17,7 +17,6 @@
 
 package bacter.operators;
 
-import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.evolution.tree.Node;
@@ -34,19 +33,15 @@ public class ConvertedEdgeHop extends ACGOperator {
     @Override
     public double proposal() {
 
-        if (acg.getConvCount()==0)
+        if (acg.getTotalConvCount()==0)
             return Double.NEGATIVE_INFINITY;
         
         // Select recombination at random
-        Conversion recomb = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount()));
+        Conversion recomb = chooseConversion();
         
         // Choose whether to move departure or arrival point
         boolean moveDeparture;
-        if (recomb.getNode2().isRoot())
-            moveDeparture = true;
-        else
-            moveDeparture = Randomizer.nextBoolean();
+        moveDeparture = recomb.getNode2().isRoot() || Randomizer.nextBoolean();
         
         // Select new attachment point:
         double u = Randomizer.nextDouble()*acg.getClonalFrameLength();
@@ -65,7 +60,7 @@ public class ConvertedEdgeHop extends ACGOperator {
             u -= node.getLength();
         }
         
-        if (newHeight<0.0 || nodeBelow == null)
+        if (newHeight < 0.0)
             throw new IllegalStateException("Problem with recombinant edge "
                     + "hop operator!  This is a bug.");
         

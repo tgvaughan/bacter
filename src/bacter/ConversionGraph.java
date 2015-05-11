@@ -146,15 +146,15 @@ public class ConversionGraph extends Tree {
      * Add conversion to graph, ensuring conversion list
      * remains sorted.
      *
-     * @param alignment alignment with which conversion is associated
      * @param conv conversion to add
      */
-    public void addConversion(Alignment alignment, Conversion conv) {
+    public void addConversion(Conversion conv) {
         startEditing(null);
         
         conv.setConversionGraph(this);
-        conv.setAlignment(alignment);
-        
+
+        Alignment alignment = conv.getAlignment();
+
         int i;
         for (i=0; i<convs.get(alignment).size(); i++)
             if (convs.get(alignment).get(i).startSite>conv.startSite)
@@ -166,13 +166,12 @@ public class ConversionGraph extends Tree {
     /**
      * Remove recombination from graph.
      *
-     * @param alignment alignment with which conversion is associated
      * @param conv conversion to remove.
      */
-    public void deleteConversion(Alignment alignment, Conversion conv) {
+    public void deleteConversion(Conversion conv) {
         startEditing(null);
         
-        convs.get(alignment).remove(conv);
+        convs.get(conv.getAlignment()).remove(conv);
     }
     
     /**
@@ -387,9 +386,9 @@ public class ConversionGraph extends Tree {
             Conversion conv = new Conversion(
                     node1, height1,
                     node2, height2,
-                    startLocus, endLocus);
+                    startLocus, endLocus, alignment);
             
-            addConversion(alignment, conv);
+            addConversion(conv);
         }
     }
     

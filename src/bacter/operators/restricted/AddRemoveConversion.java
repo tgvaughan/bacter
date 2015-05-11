@@ -30,11 +30,11 @@ import feast.input.In;
 @Description("Operator which adds and removes conversions to/from an ACG.")
 public class AddRemoveConversion extends EdgeCreationOperator {
     
-    public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
-            "Conversion rate parameter.").setRequired();
+    public Input<RealParameter> rhoInput = new Input<>("rho",
+            "Conversion rate parameter.", Input.Validate.REQUIRED);
     
-    public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
-            "Tract length parameter.").setRequired();
+    public Input<RealParameter> deltaInput = new Input<>("delta",
+            "Tract length parameter.", Input.Validate.REQUIRED);
     
     public AddRemoveConversion() { };
     
@@ -51,7 +51,7 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Add
             
-            logHGF += Math.log(1.0/(acg.getConvCount()+1));
+            logHGF += Math.log(1.0/(acg.getTotalConvCount()+1));
             
             try {
                 logHGF -= drawNewConversion();
@@ -66,16 +66,15 @@ public class AddRemoveConversion extends EdgeCreationOperator {
             
             // Remove
             
-            if (acg.getConvCount()==0)
+            if (acg.getTotalConvCount()==0)
                 return Double.NEGATIVE_INFINITY;
             
             // Select conversion to remove:
-            Conversion conv = acg.getConversions().get(
-                    Randomizer.nextInt(acg.getConvCount()));
-            
+            Conversion conv = chooseConversion();
+
             // Calculate HGF
             logHGF += getConversionProb(conv);
-            logHGF -= Math.log(1.0/acg.getConvCount());
+            logHGF -= Math.log(1.0/acg.getTotalConvCount());
             
             // Remove conversion
             acg.deleteConversion(conv);
@@ -90,7 +89,6 @@ public class AddRemoveConversion extends EdgeCreationOperator {
      * new edge and converted region location.
      * 
      * @return log of proposal density 
-     * @throws bacter.operators.ConversionGraphOperator.ProposalFailed 
      */
     public double drawNewConversion() throws ProposalFailed {
         double logP = 0;

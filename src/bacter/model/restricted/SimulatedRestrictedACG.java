@@ -248,7 +248,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
                 int tractEndSite = (int) Randomizer.nextGeometric(pTractEnd);
                 conv.setEndSite(Math.min(tractEndSite, getSequenceLength(alignment) - 1));
                 associateRecombinationWithCF(conv);
-                addConversion(alignment, conv);
+                addConversion(conv);
 
                 l = tractEndSite + 2;
             } else
@@ -271,7 +271,7 @@ public class SimulatedRestrictedACG extends ConversionGraph {
                 conv.setEndSite(Math.min(l, getSequenceLength(alignment) - 1));
 
                 associateRecombinationWithCF(conv);
-                addConversion(alignment, conv);
+                addConversion(conv);
 
                 // The next site at which a conversion can begin
                 l += 2;

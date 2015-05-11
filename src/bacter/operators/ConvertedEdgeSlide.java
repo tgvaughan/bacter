@@ -17,7 +17,6 @@
 
 package bacter.operators;
 
-import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
@@ -52,12 +51,11 @@ public class ConvertedEdgeSlide extends ACGOperator {
         
         double logHR = 0.0;
         
-        if (acg.getConvCount()==0)
+        if (acg.getTotalConvCount()==0)
             return Double.NEGATIVE_INFINITY;
 
         // Select edge at random:
-        Conversion recomb = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount()));
+        Conversion conv = chooseConversion();
         
         // Decide whether to move departure or arrival point
         boolean moveDeparture = Randomizer.nextBoolean();
@@ -65,9 +63,9 @@ public class ConvertedEdgeSlide extends ACGOperator {
         // Get current (old) attachment height
         double oldHeight;
         if (moveDeparture) {
-            oldHeight = recomb.getHeight1();
+            oldHeight = conv.getHeight1();
         } else {
-            oldHeight = recomb.getHeight2();
+            oldHeight = conv.getHeight2();
         }
         
         // Choose scale factor
@@ -78,10 +76,10 @@ public class ConvertedEdgeSlide extends ACGOperator {
         
         // Check for boundary violation
         if (moveDeparture) {
-            if (newHeight>recomb.getHeight2() || newHeight>acg.getRoot().getHeight())
+            if (newHeight>conv.getHeight2() || newHeight>acg.getRoot().getHeight())
                 return Double.NEGATIVE_INFINITY;
         } else {
-            if (newHeight<recomb.getHeight1())
+            if (newHeight<conv.getHeight1())
                 return Double.NEGATIVE_INFINITY;
         }
         
@@ -91,9 +89,9 @@ public class ConvertedEdgeSlide extends ACGOperator {
         // Get node below current (old) attachment point
         Node nodeBelow;
         if (moveDeparture)
-            nodeBelow = recomb.getNode1();
+            nodeBelow = conv.getNode1();
         else
-            nodeBelow = recomb.getNode2();
+            nodeBelow = conv.getNode2();
 
         // Choose node below new attachment point
         if (f<1.0) {
@@ -117,11 +115,11 @@ public class ConvertedEdgeSlide extends ACGOperator {
         
         // Write changes back to recombination object
         if (moveDeparture) {
-            recomb.setHeight1(newHeight);
-            recomb.setNode1(nodeBelow);
+            conv.setHeight1(newHeight);
+            conv.setNode1(nodeBelow);
         } else {
-            recomb.setHeight2(newHeight);
-            recomb.setNode2(nodeBelow);
+            conv.setHeight2(newHeight);
+            conv.setNode2(nodeBelow);
         }
         
         return logHR;

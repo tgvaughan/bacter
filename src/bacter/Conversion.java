@@ -44,13 +44,14 @@ public class Conversion {
      * @param endSite
      */
     public Conversion(Node node1, double height1, Node node2, double height2,
-            int startSite, int endSite) {
+            int startSite, int endSite, Alignment alignment) {
         this.node1 = node1;
         this.node2 = node2;
         this.height1 = height1;
         this.height2 = height2;
         this.startSite = startSite;
         this.endSite = endSite;
+        this.alignment = alignment;
     }
 
     /**

@@ -18,6 +18,7 @@ package bacter.operators;
 
 import bacter.Conversion;
 import beast.core.Input;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
@@ -61,19 +62,21 @@ public class CFSubtreeSlide extends ACGOperator {
 
             Node newSister = sister;
             while (true) {
-                for (Conversion conv : acg.getConversions()) {
-                    if (conv.getNode1() == node
-                            && conv.getHeight1()>newHeight
-                            && conv.getHeight1()>newSister.getHeight()) {
-                        conv.setNode1(newSister);
-                        logHGF += logHalf;
-                    }
-                    
-                    if (conv.getNode2() == node
-                            && conv.getHeight2()>newHeight
-                            && conv.getHeight2()>newSister.getHeight()) {
-                        conv.setNode2(newSister);
-                        logHGF += logHalf;
+                for (Alignment alignment : acg.getAlignments()) {
+                    for (Conversion conv : acg.getConversions(alignment)) {
+                        if (conv.getNode1() == node
+                                && conv.getHeight1() > newHeight
+                                && conv.getHeight1() > newSister.getHeight()) {
+                            conv.setNode1(newSister);
+                            logHGF += logHalf;
+                        }
+
+                        if (conv.getNode2() == node
+                                && conv.getHeight2() > newHeight
+                                && conv.getHeight2() > newSister.getHeight()) {
+                            conv.setNode2(newSister);
+                            logHGF += logHalf;
+                        }
                     }
                 }
                 
@@ -111,16 +114,18 @@ public class CFSubtreeSlide extends ACGOperator {
 
             parent.setHeight(newHeight);
 
-            for (Conversion conv : acg.getConversions()) {
-                if (conv.getNode1() == newSister && conv.getHeight1()>newHeight) {
-                    if (!parent.isRoot())
-                        conv.setNode1(parent);
-                    else
-                        return Double.NEGATIVE_INFINITY;
-                }
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment)) {
+                    if (conv.getNode1() == newSister && conv.getHeight1() > newHeight) {
+                        if (!parent.isRoot())
+                            conv.setNode1(parent);
+                        else
+                            return Double.NEGATIVE_INFINITY;
+                    }
 
-                if (conv.getNode2() == newSister && conv.getHeight2()>newHeight)
-                    conv.setNode2(parent);
+                    if (conv.getNode2() == newSister && conv.getHeight2() > newHeight)
+                        conv.setNode2(parent);
+                }
             }
                 
         } else {
@@ -142,32 +147,36 @@ public class CFSubtreeSlide extends ACGOperator {
 
             // Move any conversions on edge previously above parent to edge
             // above sister
-            for (Conversion conv: acg.getConversions()) {
-                if (conv.getNode1() == parent)
-                    conv.setNode1(sister);
-                if (conv.getNode2() == parent)
-                    conv.setNode2(sister);
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment)) {
+                    if (conv.getNode1() == parent)
+                        conv.setNode1(sister);
+                    if (conv.getNode2() == parent)
+                        conv.setNode2(sister);
+                }
             }
 
             Node newSister = sister;
             while (true) {
-                for (Conversion conv : acg.getConversions()) {
-                    if (conv.getNode1() == newSister
-                            && conv.getHeight1()>parent.getHeight()
-                            && conv.getHeight1()<newHeight) {
-                        if (Randomizer.nextBoolean())
-                            conv.setNode1(node);
-                        
-                        logHGF -= logHalf;
-                    }
-                    
-                    if (conv.getNode2() == newSister
-                            && conv.getHeight2()>parent.getHeight()
-                            && conv.getHeight2()<newHeight) {
-                        if (Randomizer.nextBoolean())
-                            conv.setNode2(node);
-                        
-                        logHGF -= logHalf;
+                for (Alignment alignment : acg.getAlignments()) {
+                    for (Conversion conv : acg.getConversions(alignment)) {
+                        if (conv.getNode1() == newSister
+                                && conv.getHeight1() > parent.getHeight()
+                                && conv.getHeight1() < newHeight) {
+                            if (Randomizer.nextBoolean())
+                                conv.setNode1(node);
+
+                            logHGF -= logHalf;
+                        }
+
+                        if (conv.getNode2() == newSister
+                                && conv.getHeight2() > parent.getHeight()
+                                && conv.getHeight2() < newHeight) {
+                            if (Randomizer.nextBoolean())
+                                conv.setNode2(node);
+
+                            logHGF -= logHalf;
+                        }
                     }
                 }
                 
@@ -192,12 +201,14 @@ public class CFSubtreeSlide extends ACGOperator {
 
             parent.setHeight(newHeight);
 
-            for (Conversion conv : acg.getConversions()) {
-                if (conv.getNode1()==newSister && conv.getHeight2()<newHeight)
-                    conv.setNode1(parent);
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment)) {
+                    if (conv.getNode1() == newSister && conv.getHeight2() < newHeight)
+                        conv.setNode1(parent);
 
-                if (conv.getNode2()==newSister && conv.getHeight2()<newHeight)
-                    conv.setNode2(parent);
+                    if (conv.getNode2() == newSister && conv.getHeight2() < newHeight)
+                        conv.setNode2(parent);
+                }
             }
 
         }

@@ -34,11 +34,10 @@ public class ConvertedEdgeFlip extends ACGOperator {
     @Override
     public double proposal() {
 
-        if (acg.getConvCount()==0)
+        if (acg.getTotalConvCount()==0)
             return Double.NEGATIVE_INFINITY;
         
-        Conversion recomb = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount()));
+        Conversion recomb = chooseConversion();
         
         Node node1 = recomb.getNode1();
         Node node2 = recomb.getNode2();

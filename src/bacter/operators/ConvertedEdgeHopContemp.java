@@ -36,12 +36,11 @@ public class ConvertedEdgeHopContemp extends ACGOperator {
     @Override
     public double proposal() {
 
-        if (acg.getConvCount() == 0)
+        if (acg.getTotalConvCount() == 0)
             return Double.NEGATIVE_INFINITY;
 
         // Select recombination at random
-        Conversion conv = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount()));
+        Conversion conv = chooseConversion();
 
         // Choose whether to move departure or arrival point
         boolean moveDeparture = conv.getNode2().isRoot() || Randomizer.nextBoolean();

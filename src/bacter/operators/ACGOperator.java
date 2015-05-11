@@ -21,7 +21,9 @@ import bacter.Conversion;
 import bacter.ConversionGraph;
 import beast.core.Input;
 import beast.core.Operator;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
+import beast.util.Randomizer;
 import feast.input.In;
 
 /**
@@ -63,11 +65,13 @@ public abstract class ACGOperator extends Operator {
      * @return true if region map is valid under the restricted CO model.
      */
     protected boolean regionMapIsValid() {
-        for (int c=0; c<acg.getConversions().size()-1; c++) {
-            Conversion thisConv = acg.getConversions().get(c);
-            Conversion nextConv = acg.getConversions().get(c+1);
-            if (nextConv.getStartSite()-thisConv.getEndSite()<2)
-                return false;
+        for (Alignment alignment : acg.getAlignments()) {
+            for (int c = 0; c < acg.getConversions(alignment).size() - 1; c++) {
+                Conversion thisConv = acg.getConversions(alignment).get(c);
+                Conversion nextConv = acg.getConversions(alignment).get(c + 1);
+                if (nextConv.getStartSite() - thisConv.getEndSite() < 2)
+                    return false;
+            }
         }
         return true;
     }
@@ -102,12 +106,14 @@ public abstract class ACGOperator extends Operator {
             grandParent.addChild(sister);
         }
 
-        for (Conversion conv : acg.getConversions()) {
-            if (conv.getNode1() == parent)
-                conv.setNode1(sister);
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if (conv.getNode1() == parent)
+                    conv.setNode1(sister);
 
-            if (conv.getNode2() == parent)
-                conv.setNode2(sister);
+                if (conv.getNode2() == parent)
+                    conv.setNode2(sister);
+            }
         }
     }
 
@@ -142,12 +148,30 @@ public abstract class ACGOperator extends Operator {
 
         parent.setHeight(destTime);
 
-        for (Conversion conv : acg.getConversions()) {
-            if (conv.getNode1()==destEdgeBase && conv.getHeight1()>destTime)
-                conv.setNode1(parent);
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if (conv.getNode1() == destEdgeBase && conv.getHeight1() > destTime)
+                    conv.setNode1(parent);
 
-            if (conv.getNode2()==destEdgeBase && conv.getHeight2()>destTime)
-                conv.setNode2(parent);
+                if (conv.getNode2() == destEdgeBase && conv.getHeight2() > destTime)
+                    conv.setNode2(parent);
+            }
         }
+    }
+
+    /**
+     * @return conversion selected uniformly at random
+     */
+    protected Conversion chooseConversion() {
+        int idx = Randomizer.nextInt(acg.getTotalConvCount());
+        for (Alignment alignment : acg.getAlignments()) {
+            if (idx<acg.getConvCount(alignment))
+                return acg.getConversions(alignment).get(idx);
+            else
+                idx -= acg.getConvCount(alignment);
+        }
+
+        throw new IllegalStateException("Programmer error: loop fell through" +
+                " in chooseConversion().");
     }
 }

@@ -17,14 +17,14 @@
 
 package bacter.operators;
 
-import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
-import feast.input.In;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,20 +34,22 @@ import java.util.List;
 @Description("Scaling operator for recombination graphs.")
 public class ACGScaler extends ACGOperator {
 
-    public Input<List<RealParameter>> parametersInput = new In<List<RealParameter>>(
-            "parameter", "Parameter to scale with ARG.")
-            .setDefault(new ArrayList<>());
+    public Input<List<RealParameter>> parametersInput = new Input<>(
+            "parameter", "Parameter to scale with ARG.",
+            new ArrayList<>());
 
-    public Input<List<RealParameter>> parametersInverseInput = new In<List<RealParameter>>(
-            "parameterInverse", "Parameter to scale inversely with ARG.")
-            .setDefault(new ArrayList<>());
+    public Input<List<RealParameter>> parametersInverseInput = new Input<>(
+            "parameterInverse", "Parameter to scale inversely with ARG.",
+            new ArrayList<>());
     
-    public Input<Double> scaleParamInput = new In<Double>("scaleFactor",
-            "Scale factor tuning parameter.  Must be < 1.").setRequired();
+    public Input<Double> scaleParamInput = new Input<>("scaleFactor",
+            "Scale factor tuning parameter.  Must be < 1.",
+            Input.Validate.REQUIRED);
     
-    public Input<Boolean> rootOnlyInput = new In<Boolean>(
+    public Input<Boolean> rootOnlyInput = new Input<>(
             "rootOnly", "Scale root node and connections which attach directly "
-                    + "below and above the root only.").setDefault(false);
+                    + "below and above the root only.",
+            false);
     
     private double scaleParam;
     private boolean rootOnly;
@@ -81,22 +83,24 @@ public class ACGScaler extends ACGOperator {
         }
         
         // Scale recombinant edges:
-        for (Conversion recomb : acg.getConversions()) {
-            
-            if (!rootOnly || recomb.getNode1().getParent().isRoot()) {
-                recomb.setHeight1(recomb.getHeight1()*f);
-                count += 1;
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion recomb : acg.getConversions(alignment)) {
+
+                if (!rootOnly || recomb.getNode1().getParent().isRoot()) {
+                    recomb.setHeight1(recomb.getHeight1() * f);
+                    count += 1;
+                }
+
+                if (!rootOnly || recomb.getNode2().isRoot() || recomb.getNode2().getParent().isRoot()) {
+                    recomb.setHeight2(recomb.getHeight2() * f);
+                    count += 1;
+                }
+
+                if (recomb.getHeight1() < recomb.getNode1().getHeight()
+                        || recomb.getHeight2() < recomb.getNode2().getHeight()
+                        || recomb.getHeight1() > recomb.getHeight2())
+                    return Double.NEGATIVE_INFINITY;
             }
-            
-            if (!rootOnly || recomb.getNode2().isRoot() || recomb.getNode2().getParent().isRoot()) {
-                recomb.setHeight2(recomb.getHeight2()*f);
-                count += 1;
-            }
-            
-            if (recomb.getHeight1()<recomb.getNode1().getHeight()
-                    || recomb.getHeight2()<recomb.getNode2().getHeight()
-                    || recomb.getHeight1()>recomb.getHeight2())
-                return Double.NEGATIVE_INFINITY;
         }
         
         // Check for illegal node heights:
