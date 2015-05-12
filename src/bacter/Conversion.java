@@ -32,14 +32,7 @@ public class Conversion {
     
     protected ConversionGraph acg;
 
-    /**
-     * Construct new conversion with only alignment specified.
-     *
-     * @param alignment
-     */
-    public Conversion(Alignment alignment) {
-        this.alignment = alignment;
-    }
+    public Conversion() { }
     
     /**
      * Construct new recombination with specified properties.
@@ -277,7 +270,8 @@ public class Conversion {
      * @return copy of Conversion object
      */
     public Conversion getCopy() {
-        Conversion copy = new Conversion(alignment);
+        Conversion copy = new Conversion();
+        copy.alignment = alignment;
         copy.acg = acg;
         copy.startSite = startSite;
         copy.endSite = endSite;

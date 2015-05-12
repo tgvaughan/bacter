@@ -33,30 +33,27 @@ public class AddRemoveDetour extends ConversionCreationOperator {
 
     @Override
     public double proposal() {
-        Alignment alignment = chooseAlignment();
 
         if (Randomizer.nextBoolean())
-            return addDetour(alignment);
+            return addDetour();
         else
-            return removeDetour(alignment);
+            return removeDetour();
     }
 
     /**
      * Detour addition variant of move.
      *
-     * @param alignment alignment to which detour will be added
      * @return log HGF
      */
-    private double addDetour(Alignment alignment) {
+    private double addDetour() {
         double logHGF = 0.0;
 
-        if (acg.getConvCount(alignment) == 0)
+        if (acg.getTotalConvCount() == 0)
             return Double.NEGATIVE_INFINITY;
 
         // Select conversion at random
-        Conversion conv = acg.getConversions(alignment).get(
-                Randomizer.nextInt(acg.getConvCount(alignment)));
-        logHGF -= Math.log(1.0 / acg.getConvCount(alignment));
+        Conversion conv = chooseConversion();
+        logHGF -= Math.log(1.0 / acg.getTotalConvCount());
 
         // Select detour times:
         double t1 = conv.getHeight1()
@@ -87,7 +84,8 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         if (detour == conv.getNode1() || detour == conv.getNode2())
             return Double.NEGATIVE_INFINITY;
 
-        Conversion convA = new Conversion(alignment);
+        Conversion convA = new Conversion();
+        convA.setAlignment(conv.getAlignment());
         convA.setNode1(conv.getNode1());
         convA.setHeight1(conv.getHeight1());
         convA.setNode2(detour);
@@ -95,7 +93,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         convA.setStartSite(conv.getStartSite());
         convA.setEndSite(conv.getEndSite());
 
-        Conversion convB = new Conversion(alignment);
+        Conversion convB = new Conversion();
         convB.setNode1(detour);
         convB.setHeight1(tUpper);
         convB.setNode2(conv.getNode2());
@@ -109,12 +107,14 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         // Count number of node1s and node2s attached to detour edge
         int node1Count = 0;
         int node2Count = 0;
-        for (Conversion thisConv : acg.getConversions(alignment)) {
-            if (thisConv.getNode1() == detour && thisConv.getNode2() != detour)
-                node1Count += 1;
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion thisConv : acg.getConversions(alignment)) {
+                if (thisConv.getNode1() == detour && thisConv.getNode2() != detour)
+                    node1Count += 1;
 
-            if (thisConv.getNode2() == detour && thisConv.getNode1() != detour)
-                node2Count += 1;
+                if (thisConv.getNode2() == detour && thisConv.getNode1() != detour)
+                    node2Count += 1;
+            }
         }
 
         // Incorporate probability of reverse move:
@@ -126,10 +126,9 @@ public class AddRemoveDetour extends ConversionCreationOperator {
     /**
      * Detour deletion variant of move.
      *
-     * @param alignment alignment from which to remove detour
      * @return log HGF
      */
-    private double removeDetour(Alignment alignment) {
+    private double removeDetour() {
         double logHGF = 0.0;
 
         // Choose non-root detour edge at random
@@ -139,12 +138,14 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         List<Conversion> convApotentials = new ArrayList<>();
         List<Conversion> convBpotentials = new ArrayList<>();
 
-        for (Conversion conv : acg.getConversions(alignment)) {
-            if (conv.getNode2() == detour && conv.getNode1() != detour)
-                convApotentials.add(conv);
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if (conv.getNode2() == detour && conv.getNode1() != detour)
+                    convApotentials.add(conv);
 
-            if (conv.getNode1() == detour && conv.getNode2() != detour)
-                convBpotentials.add(conv);
+                if (conv.getNode1() == detour && conv.getNode2() != detour)
+                    convBpotentials.add(conv);
+            }
         }
 
         if (convApotentials.isEmpty() || convBpotentials.isEmpty())
@@ -161,19 +162,20 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         double tLowerBound = convA.getHeight1();
         double tUpperBound = convB.getHeight2();
 
-        Conversion conv = new Conversion(alignment);
+        Conversion conv = new Conversion();
         conv.setNode1(convA.getNode1());
         conv.setHeight1(convA.getHeight1());
         conv.setNode2(convB.getNode2());
         conv.setHeight2(convB.getHeight2());
         conv.setStartSite(convA.getStartSite());
         conv.setEndSite(convA.getEndSite());
+        conv.setAlignment(convA.getAlignment());
 
         acg.deleteConversion(convA);
         acg.deleteConversion(convB);
         acg.addConversion(conv);
 
-        logHGF += Math.log(1.0 / acg.getConvCount(alignment))
+        logHGF += Math.log(1.0 / acg.getTotalConvCount())
                 + Math.log(1.0 / (acg.getNodeCount() - 1))
                 + Math.log(2.0) - 2.0 * Math.log(tUpperBound - tLowerBound)
                 + getAffectedRegionProb(convB);

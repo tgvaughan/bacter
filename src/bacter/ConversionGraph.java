@@ -625,8 +625,9 @@ public class ConversionGraph extends Tree {
             storedConvs.get(alignment).clear();
 
             for (Conversion conv : convs.get(alignment)) {
-                Conversion convCopy = new Conversion(alignment);
+                Conversion convCopy = new Conversion();
 
+                convCopy.setAlignment(conv.getAlignment());
                 convCopy.setStartSite(conv.getStartSite());
                 convCopy.setEndSite(conv.getEndSite());
                 convCopy.setHeight1(conv.getHeight1());

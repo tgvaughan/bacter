@@ -17,17 +17,17 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
 /**
- * Implementation of subtree slide that aims to sensibly deal with
- * conversions.
- *
  * @author Tim Vaughan (tgvaughan@gmail.com)
  */
+@Description("Implementation of subtree slide that aims to sensibly deal " +
+        "with conversions")
 public class CFSubtreeSlide extends ACGOperator {
 
     public Input<Double> sizeInput = new Input<>("size",

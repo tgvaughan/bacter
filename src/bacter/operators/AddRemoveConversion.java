@@ -41,29 +41,26 @@ public class AddRemoveConversion extends ConversionCreationOperator {
     public double proposal() {
         double logHGF = 0;
 
-        Alignment alignment = chooseAlignment();
-        
         if (Randomizer.nextBoolean()) {
             
             // Add
             
-            logHGF += Math.log(1.0/(acg.getConvCount(alignment)+1));
-            logHGF -= drawNewConversion(alignment);
+            logHGF += Math.log(1.0/(acg.getTotalConvCount()+1));
+            logHGF -= drawNewConversion();
             
         } else {
             
             // Remove
             
-            if (acg.getConvCount(alignment)==0)
+            if (acg.getTotalConvCount()==0)
                 return Double.NEGATIVE_INFINITY;
             
             // Select conversion to remove:
-            Conversion conv = acg.getConversions(alignment).get(
-                    Randomizer.nextInt(acg.getConvCount(alignment)));
-            
+            Conversion conv = chooseConversion();
+
             // Calculate HGF
             logHGF += getConversionProb(conv);
-            logHGF -= Math.log(1.0/acg.getConvCount(alignment));
+            logHGF -= Math.log(1.0/acg.getTotalConvCount());
             
             // Remove conversion
             acg.deleteConversion(conv);
@@ -77,11 +74,10 @@ public class AddRemoveConversion extends ConversionCreationOperator {
      * Add new conversion to ACG, returning the probability density of the
      * new edge and converted region location.
      *
-     * @param alignment alignment with which to associate conversion
-     * @return log of proposal density 
+     * @return log of proposal density
      */
-    public double drawNewConversion(Alignment alignment) {
-        Conversion newConversion = new Conversion(alignment);
+    public double drawNewConversion() {
+        Conversion newConversion = new Conversion();
 
         double logP = attachEdge(newConversion) + drawAffectedRegion(newConversion);
 
@@ -127,7 +123,8 @@ public class AddRemoveConversion extends ConversionCreationOperator {
                 acg.initByName(
                     "alignment", alignment,
                     "fromString", "(0:1.0,1:1.0)2:0.0;");
-                operator.drawNewConversion(alignment);
+
+                operator.drawNewConversion();
                 
                 ps.println(acg.getConversions(alignment).get(0).getStartSite() + " "
                     + acg.getConversions(alignment).get(0).getEndSite());

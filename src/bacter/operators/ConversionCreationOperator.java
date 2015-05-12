@@ -45,20 +45,35 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
     public double drawAffectedRegion(Conversion conv) {
         double logP = 0.0;
 
-        Alignment alignment = conv.getAlignment();
+        // Total effective number of possible start sites
+        double alpha = acg.getTotalSequenceLength()
+                + acg.getAlignments().size()*deltaInput.get().getValue();
 
         // Draw location of converted region.
-        int startSite, endSite;
-        double u = Randomizer.nextDouble()*(deltaInput.get().getValue() + acg.getSequenceLength(alignment));
-        if (u<deltaInput.get().getValue()) {
-            startSite = 0;
-            logP += Math.log(deltaInput.get().getValue()
-                /(deltaInput.get().getValue() + acg.getSequenceLength(alignment)));
-        } else {
-            startSite = (int)(u-deltaInput.get().getValue());
-            logP += Math.log(1.0/(deltaInput.get().getValue()
-                + acg.getSequenceLength(alignment)));
+        int startSite = -1;
+        int endSite = -1;
+        Alignment alignment = null;
+
+        double u = Randomizer.nextDouble()*alpha;
+        for (Alignment thisAlignment : acg.getAlignments()) {
+            if (u < deltaInput.get().getValue() + acg.getSequenceLength(thisAlignment)) {
+                alignment = thisAlignment;
+
+                if (u < deltaInput.get().getValue()) {
+                    startSite = 0;
+                    logP += Math.log(deltaInput.get().getValue() / alpha);
+                } else {
+                    startSite = (int) (u - deltaInput.get().getValue());
+                    logP += Math.log(1.0 / alpha);
+                }
+
+                break;
+            }
         }
+
+        if (alignment == null)
+            throw new IllegalStateException("Programmer error: " +
+                    "loop in drawAffectedRegion() fell through.");
 
         endSite = startSite + (int)Randomizer.nextGeometric(1.0/deltaInput.get().getValue());
         endSite = Math.min(endSite, acg.getSequenceLength(alignment)-1);
@@ -68,12 +83,13 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             endSite-startSite)/ deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (endSite == acg.getSequenceLength(alignment)-1)
+        if (endSite == acg.getSequenceLength(conv.getAlignment())-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
                     acg.getSequenceLength(alignment)-startSite);
 
         logP += Math.log(probEnd);
 
+        conv.setAlignment(alignment);
         conv.setStartSite(startSite);
         conv.setEndSite(endSite);
 
@@ -90,15 +106,16 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
     public double getAffectedRegionProb(Conversion conv) {
         double logP = 0.0;
 
-        Alignment alignment = conv.getAlignment();
+        // Total effective number of possible start sites
+        double alpha = acg.getTotalSequenceLength()
+                + acg.getAlignments().size()*deltaInput.get().getValue();
+
 
         // Calculate probability of converted region.
         if (conv.getStartSite()==0)
-            logP += Math.log((deltaInput.get().getValue() + 1)
-                /(deltaInput.get().getValue() + acg.getSequenceLength(alignment)));
+            logP += Math.log((deltaInput.get().getValue() + 1) / alpha);
         else
-            logP += Math.log(1.0/(deltaInput.get().getValue()
-                + acg.getSequenceLength(alignment)));
+            logP += Math.log(1.0 / alpha);
 
         // Probability of end site:
         double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
@@ -106,9 +123,9 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             / deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (conv.getEndSite() == acg.getSequenceLength(alignment)-1)
+        if (conv.getEndSite() == acg.getSequenceLength(conv.getAlignment())-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength(alignment)-conv.getStartSite());
+                    acg.getSequenceLength(conv.getAlignment())-conv.getStartSite());
 
         logP += Math.log(probEnd);
 
