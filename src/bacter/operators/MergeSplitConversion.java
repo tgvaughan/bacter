@@ -19,6 +19,7 @@ package bacter.operators;
 import bacter.Conversion;
 import bacter.operators.ACGOperator;
 import bacter.operators.EdgeCreationOperator;
+import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
 
 /**
@@ -35,37 +36,41 @@ public class MergeSplitConversion extends ACGOperator {
 
     @Override
     public double proposal() {
+
+        Alignment alignment = chooseAlignment();
+
         if (Randomizer.nextBoolean())
-            return mergeProposal();
+            return mergeProposal(alignment);
         else
-            return splitProposal();
+            return splitProposal(alignment);
     }
 
     /**
      * Perform merge portion of merge/split move.
-     * 
+     *
+     * @param alignment alignment on which to apply move
      * @return log of move HR
      */
-    private double mergeProposal() {
+    private double mergeProposal(Alignment alignment) {
 
         double logHGF = 0.0;
 
-        if (acg.getConvCount()<2)
+        if (acg.getConvCount(alignment)<2)
             return Double.NEGATIVE_INFINITY;
 
-        Conversion conv1 = acg.getConversions().get(
-            Randomizer.nextInt(acg.getConvCount()));
+        Conversion conv1 = acg.getConversions(alignment).get(
+            Randomizer.nextInt(acg.getConvCount(alignment)));
 
         Conversion conv2;
         do {
-            conv2 = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount()));
+            conv2 = acg.getConversions(alignment).get(
+                Randomizer.nextInt(acg.getConvCount(alignment)));
         } while (conv2 == conv1);
 
         if (conv2.getNode1() != conv1.getNode1() || conv2.getNode2() != conv1.getNode2())
             return Double.NEGATIVE_INFINITY;
 
-        logHGF -= Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
+        logHGF -= Math.log(1.0/(acg.getConvCount(alignment)*(acg.getConvCount(alignment)-1)));
 
         int minStart = conv1.getStartSite() < conv2.getStartSite()
             ? conv1.getStartSite() : conv2.getStartSite();
@@ -89,27 +94,28 @@ public class MergeSplitConversion extends ACGOperator {
         conv1.setStartSite(minStart);
         conv1.setEndSite(maxEnd);
 
-        logHGF += Math.log(1.0/acg.getConvCount());
+        logHGF += Math.log(1.0/acg.getConvCount(alignment));
 
         return logHGF;
     }
 
     /**
      * Perform split component of merge/split move.
-     * 
+     *
+     * @param alignment alignment on which to apply move
      * @return log of move HR
      */
-    private double splitProposal() {
+    private double splitProposal(Alignment alignment) {
 
         double logHGF = 0.0;
 
-        if (acg.getConvCount() == 0)
+        if (acg.getConvCount(alignment) == 0)
             return Double.NEGATIVE_INFINITY;
 
-        Conversion conv1 = acg.getConversions().get(
-            Randomizer.nextInt(acg.getConvCount()));
+        Conversion conv1 = acg.getConversions(alignment).get(
+            Randomizer.nextInt(acg.getConvCount(alignment)));
 
-        logHGF -= Math.log(1.0/acg.getConvCount());
+        logHGF -= Math.log(1.0/acg.getConvCount(alignment));
 
         Conversion conv2 = new Conversion();
         conv2.setNode1(conv1.getNode1());
@@ -169,7 +175,7 @@ public class MergeSplitConversion extends ACGOperator {
 
         acg.addConversion(conv2);
 
-        logHGF += Math.log(1.0/(acg.getConvCount()*(acg.getConvCount()-1)));
+        logHGF += Math.log(1.0/(acg.getConvCount(alignment)*(acg.getConvCount(alignment)-1)));
 
         return logHGF;
     }

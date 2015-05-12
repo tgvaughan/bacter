@@ -112,8 +112,7 @@ public class CFUniform extends ConversionCreationOperator {
 
                 for (int i=0; i<N; i++) {
 
-                    // TODO: Fix up HR.  This is BUGGY.
-                    Conversion conv = new Conversion(chooseAlignment());
+                    Conversion conv = new Conversion();
 
                     double u = L*Randomizer.nextDouble();
                     if (u < 0.5*L) {

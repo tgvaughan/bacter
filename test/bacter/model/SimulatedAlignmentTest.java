@@ -17,7 +17,6 @@
 
 package bacter.model;
 
-import bacter.model.restricted.SimulatedRestrictedACG;
 import bacter.ConversionGraph;
 import bacter.MarginalTree;
 import bacter.Region;

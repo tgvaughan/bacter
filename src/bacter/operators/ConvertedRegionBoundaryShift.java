@@ -41,27 +41,25 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
     @Override
     public double proposal() {
         
-        if (acg.getConvCount()<1)
+        if (acg.getTotalConvCount()<1)
             return Double.NEGATIVE_INFINITY;
         
-        // Select random recombination and region edge:
-        int z = Randomizer.nextInt(acg.getConvCount()*2);
-        int ridx = z/2;
-        Conversion recomb = acg.getConversions().get(ridx);
-        boolean moveStart = (z%2 == 0);
+        // Select random conversion and region edge:
+        Conversion conv = chooseConversion();
+        boolean moveStart = Randomizer.nextBoolean();
         
         int currentLocus, minLocus, maxLocus;
         if (moveStart) {
-            currentLocus = recomb.getStartSite();
-            maxLocus = recomb.getEndSite();
+            currentLocus = conv.getStartSite();
+            maxLocus = conv.getEndSite();
             minLocus = 0;
         } else {
-            currentLocus = recomb.getEndSite();
-            minLocus = recomb.getStartSite();
-            maxLocus = acg.getSequenceLength()-1;
+            currentLocus = conv.getEndSite();
+            minLocus = conv.getStartSite();
+            maxLocus = acg.getSequenceLength(conv.getAlignment())-1;
         }
         
-        int radius = (int)Math.round(argInput.get().getSequenceLength()
+        int radius = (int)Math.round(argInput.get().getSequenceLength(conv.getAlignment())
                 *apertureSizeInput.get())/2;
         
         int newLocus = currentLocus + Randomizer.nextInt(2*radius+1)-radius;
@@ -70,9 +68,9 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
             return Double.NEGATIVE_INFINITY;
 
         if (moveStart)
-            recomb.setStartSite(newLocus);
+            conv.setStartSite(newLocus);
         else
-            recomb.setEndSite(newLocus);
+            conv.setEndSite(newLocus);
         
         return 0;
     }

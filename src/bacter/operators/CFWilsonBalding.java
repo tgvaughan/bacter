@@ -20,6 +20,7 @@ import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 import feast.input.In;
@@ -253,24 +254,26 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             double upperBound = Math.min(node.getParent().getHeight(),
                     srcNodeP.getHeight());
 
-            for (Conversion conv : acg.getConversions()) {
-                if (conv.getHeight1() > lowerBound && conv.getHeight1() < upperBound) {
-                    if (conv.getNode1() == srcNode)
-                        conv.setNode1(node);
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment)) {
+                    if (conv.getHeight1() > lowerBound && conv.getHeight1() < upperBound) {
+                        if (conv.getNode1() == srcNode)
+                            conv.setNode1(node);
 
-                    if (conv.getNode1() == node &&
-                            (!reverseRootMove || conv.getHeight1() < maxChildHeight))
-                        logP += Math.log(0.5);
-                }
+                        if (conv.getNode1() == node &&
+                                (!reverseRootMove || conv.getHeight1() < maxChildHeight))
+                            logP += Math.log(0.5);
+                    }
 
-                if (conv.getHeight2() > lowerBound && conv.getHeight2() < upperBound) {
-                    if (conv.getNode2() == srcNode)
-                        conv.setNode2(node);
+                    if (conv.getHeight2() > lowerBound && conv.getHeight2() < upperBound) {
+                        if (conv.getNode2() == srcNode)
+                            conv.setNode2(node);
 
-                    if (conv.getNode2() == node
-                            && (!reverseRootMove || conv.getNode1() != node
-                            || conv.getHeight1() < maxChildHeight))
-                        logP += Math.log(0.5);
+                        if (conv.getNode2() == node
+                                && (!reverseRootMove || conv.getNode1() != node
+                                || conv.getHeight1() < maxChildHeight))
+                            logP += Math.log(0.5);
+                    }
                 }
             }
 
@@ -284,13 +287,16 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             double L = 2.0*(srcNode.getParent().getHeight() - maxChildHeight);
 
             double Nexp = L*rhoInput.get().getValue()
-                    *(acg.getSequenceLength() + deltaInput.get().getValue());
+                    *(acg.getTotalSequenceLength()
+                    + acg.getAlignments().size()*deltaInput.get().getValue());
 
             List<Conversion> toRemove = new ArrayList<>();
-            for (Conversion conv : acg.getConversions()) {
-                if (conv.getNode1() == srcNodeS
-                        || (conv.getNode1() == srcNode && conv.getHeight1()>maxChildHeight))
-                    toRemove.add(conv);
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment)) {
+                    if (conv.getNode1() == srcNodeS
+                            || (conv.getNode1() == srcNode && conv.getHeight1() > maxChildHeight))
+                        toRemove.add(conv);
+                }
             }
 
             logP += -Nexp + toRemove.size()*Math.log(Nexp);
@@ -338,19 +344,21 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         Node node = srcNode.getParent();
         while (node != null) {
-            for (Conversion conv : acg.getConversions()) {
-                if (conv.getNode1() == node && conv.getHeight1() < destTime) {
-                    if (Randomizer.nextBoolean())
-                        conv.setNode1(srcNode);
-                    logP += Math.log(0.5);
-                }
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment)) {
+                    if (conv.getNode1() == node && conv.getHeight1() < destTime) {
+                        if (Randomizer.nextBoolean())
+                            conv.setNode1(srcNode);
+                        logP += Math.log(0.5);
+                    }
 
-                if (conv.getNode2() == node && conv.getHeight2() < destTime) {
-                    if (Randomizer.nextBoolean())
-                        conv.setNode2(srcNode);
-                    logP += Math.log(0.5);
-                }
+                    if (conv.getNode2() == node && conv.getHeight2() < destTime) {
+                        if (Randomizer.nextBoolean())
+                            conv.setNode2(srcNode);
+                        logP += Math.log(0.5);
+                    }
 
+                }
             }
 
             node = node.getParent();
@@ -367,7 +375,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             double L = 2.0*(destTime - destNode.getHeight());
             double Nexp = L*rhoInput.get().getValue()
-                    *(acg.getSequenceLength() + deltaInput.get().getValue());
+                    *(acg.getTotalSequenceLength()
+                    + acg.getAlignments().size()*deltaInput.get().getValue());
             int N = (int)Randomizer.nextPoisson(Nexp);
 
             logP += -Nexp + N*Math.log(Nexp); // Factorial cancels

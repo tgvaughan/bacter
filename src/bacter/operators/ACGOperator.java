@@ -174,4 +174,20 @@ public abstract class ACGOperator extends Operator {
         throw new IllegalStateException("Programmer error: loop fell through" +
                 " in chooseConversion().");
     }
+
+    /**
+     * @return alignment selected proportional to its length
+     */
+    protected Alignment chooseAlignment() {
+        int z = Randomizer.nextInt(acg.getTotalSequenceLength());
+        for (Alignment alignment : acg.getAlignments()) {
+            if (z < acg.getSequenceLength(alignment))
+                return alignment;
+            else
+                z -= acg.getSequenceLength(alignment);
+        }
+
+        throw new IllegalStateException("Programmer error: loop fell through" +
+                " in chooseAlignment().");
+    }
 }

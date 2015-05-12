@@ -19,9 +19,9 @@ package bacter.operators;
 import bacter.Conversion;
 import bacter.model.SimulatedACG;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.util.Randomizer;
 
 /**
  * Operator which reversibly deletes a conversion, modifying the CF to match the
@@ -52,31 +52,32 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
     public double deleteConversion() {
         double logHGF = 0.0;
 
-        if (acg.getConvCount() == 0) {
+        if (acg.getTotalConvCount() == 0) {
             return Double.NEGATIVE_INFINITY;
         }
 
-        Conversion chosenConv = acg.getConversions().get(
-            Randomizer.nextInt(acg.getConvCount()));
+        Conversion chosenConv = chooseConversion();
 
         // Skip invisible conversions:
         if (chosenConv.getNode1() == chosenConv.getNode2()) {
             return Double.NEGATIVE_INFINITY;
         }
 
-        logHGF -= Math.log(1.0 / acg.getConvCount());
+        logHGF -= Math.log(1.0 / acg.getTotalConvCount());
 
         // Abort if conversions attach to node1 above height1.
-        for (Conversion conv : acg.getConversions()) {
-            if (conv == chosenConv) {
-                continue;
-            }
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if (conv == chosenConv) {
+                    continue;
+                }
 
-            if ((conv.getNode1() == chosenConv.getNode1()
-                && conv.getHeight1() > chosenConv.getHeight1())
-                || (conv.getNode2() == chosenConv.getNode1()
-                && conv.getHeight2() > chosenConv.getHeight2())) {
-                return Double.NEGATIVE_INFINITY;
+                if ((conv.getNode1() == chosenConv.getNode1()
+                        && conv.getHeight1() > chosenConv.getHeight1())
+                        || (conv.getNode2() == chosenConv.getNode1()
+                        && conv.getHeight2() > chosenConv.getHeight2())) {
+                    return Double.NEGATIVE_INFINITY;
+                }
             }
         }
 
@@ -84,17 +85,19 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Node parent = chosenConv.getNode1().getParent();
         Node sister = getSibling(chosenConv.getNode1());
 
-        for (Conversion conv : acg.getConversions()) {
-            if (conv == chosenConv) {
-                continue;
-            }
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if (conv == chosenConv) {
+                    continue;
+                }
 
-            if (conv.getNode1() == parent) {
-                conv.setNode1(sister);
-            }
+                if (conv.getNode1() == parent) {
+                    conv.setNode1(sister);
+                }
 
-            if (conv.getNode2() == parent) {
-                conv.setNode2(sister);
+                if (conv.getNode2() == parent) {
+                    conv.setNode2(sister);
+                }
             }
         }
 
@@ -119,19 +122,21 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         chosenConv.setHeight2(oldParentHeight);
 
         // Move conversions from node2 to parent
-        for (Conversion otherConv : acg.getConversions()) {
-            if (otherConv == chosenConv) {
-                continue;
-            }
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion otherConv : acg.getConversions(alignment)) {
+                if (otherConv == chosenConv) {
+                    continue;
+                }
 
-            if (otherConv.getNode1() == chosenConv.getNode2()
-                && otherConv.getHeight1() > parent.getHeight()) {
-                otherConv.setNode1(parent);
-            }
+                if (otherConv.getNode1() == chosenConv.getNode2()
+                        && otherConv.getHeight1() > parent.getHeight()) {
+                    otherConv.setNode1(parent);
+                }
 
-            if (otherConv.getNode2() == chosenConv.getNode2()
-                && otherConv.getHeight2() > parent.getHeight()) {
-                otherConv.setNode2(parent);
+                if (otherConv.getNode2() == chosenConv.getNode2()
+                        && otherConv.getHeight2() > parent.getHeight()) {
+                    otherConv.setNode2(parent);
+                }
             }
         }
 
@@ -157,9 +162,11 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         // Reject if move has given us a conversion departing from the
         // root edge:
-        for (Conversion conv : acg.getConversions()) {
-            if (conv.getNode1().isRoot())
-                return Double.NEGATIVE_INFINITY;
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if (conv.getNode1().isRoot())
+                    return Double.NEGATIVE_INFINITY;
+            }
         }
 
         return logHGF;
@@ -187,12 +194,14 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
 
         // Check for conversions which attach above chosen point
-        for (Conversion conv : acg.getConversions()) {
-            if ((conv.getNode1() == newConv.getNode1()
-                && conv.getHeight1() > newConv.getHeight1())
-                || (conv.getNode2() == newConv.getNode1()
-                && conv.getHeight2() > newConv.getHeight1())) {
-                return Double.NEGATIVE_INFINITY;
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if ((conv.getNode1() == newConv.getNode1()
+                        && conv.getHeight1() > newConv.getHeight1())
+                        || (conv.getNode2() == newConv.getNode1()
+                        && conv.getHeight2() > newConv.getHeight1())) {
+                    return Double.NEGATIVE_INFINITY;
+                }
             }
         }
 
@@ -202,13 +211,15 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Node newNode2 = sister;
 
         // Detach parent from original location above sister
-        for (Conversion conv : acg.getConversions()) {
-            if (conv.getNode1() == parent) {
-                conv.setNode1(sister);
-            }
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if (conv.getNode1() == parent) {
+                    conv.setNode1(sister);
+                }
 
-            if (conv.getNode2() == parent) {
-                conv.setNode2(sister);
+                if (conv.getNode2() == parent) {
+                    conv.setNode2(sister);
+                }
             }
         }
 
@@ -236,15 +247,17 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
         parent.addChild(newConv.getNode2());
 
-        for (Conversion conv : acg.getConversions()) {
-            if ((conv.getNode1() == newConv.getNode2())
-                && (conv.getHeight1() > parent.getHeight())) {
-                conv.setNode1(parent);
-            }
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if ((conv.getNode1() == newConv.getNode2())
+                        && (conv.getHeight1() > parent.getHeight())) {
+                    conv.setNode1(parent);
+                }
 
-            if ((conv.getNode2() == newConv.getNode2())
-                && (conv.getHeight2() > parent.getHeight())) {
-                conv.setNode2(parent);
+                if ((conv.getNode2() == newConv.getNode2())
+                        && (conv.getHeight2() > parent.getHeight())) {
+                    conv.setNode2(parent);
+                }
             }
         }
 
@@ -271,13 +284,15 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         // Reject if move has given us a conversion departing from the
         // root edge:
-        for (Conversion conv : acg.getConversions()) {
-            if (conv.getNode1().isRoot())
-                return Double.NEGATIVE_INFINITY;
+        for (Alignment alignment : acg.getAlignments()) {
+            for (Conversion conv : acg.getConversions(alignment)) {
+                if (conv.getNode1().isRoot())
+                    return Double.NEGATIVE_INFINITY;
+            }
         }
 
         // Include reverse move HGF contribution:
-        logHGF += Math.log(1.0 / acg.getConvCount());
+        logHGF += Math.log(1.0 / acg.getTotalConvCount());
 
         return logHGF;
     }

@@ -32,14 +32,13 @@ public class ReplaceConversion extends ConversionCreationOperator {
 
     @Override
     public double proposal() {
-        if (acg.getConvCount()==0)
+        if (acg.getTotalConvCount()==0)
             return Double.NEGATIVE_INFINITY;
 
         double logHGF = 0;
 
         // Select conversion to replace:
-        Conversion conv = acg.getConversions().get(
-                Randomizer.nextInt(acg.getConvCount()));
+        Conversion conv = chooseConversion();
 
         // Incorporate conversion prior probability into HGF
         logHGF += getEdgeAttachmentProb(conv) + getAffectedRegionProb(conv);

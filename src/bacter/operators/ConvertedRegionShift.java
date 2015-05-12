@@ -42,17 +42,17 @@ public class ConvertedRegionShift extends ACGOperator {
     @Override
     public double proposal() {
         
-        if (acg.getConvCount()<1)
+        if (acg.getTotalConvCount()<1)
             return Double.NEGATIVE_INFINITY;
         
-        Conversion conv = acg.getConversions().get(Randomizer.nextInt(acg.getConvCount()));
+        Conversion conv = chooseConversion();
         
-        int radius = (int)Math.round(argInput.get().getSequenceLength()
+        int radius = (int)Math.round(argInput.get().getSequenceLength(conv.getAlignment())
             *apertureSizeInput.get())/2;
 
         int delta = Randomizer.nextInt(radius*2 + 1) - radius;
         
-        if (conv.getEndSite() + delta > acg.getSequenceLength() - 1)
+        if (conv.getEndSite() + delta > acg.getSequenceLength(conv.getAlignment()) - 1)
             return Double.NEGATIVE_INFINITY;
 
         if (conv.getStartSite() + delta<0)
