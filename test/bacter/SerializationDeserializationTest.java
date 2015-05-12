@@ -58,7 +58,7 @@ public class SerializationDeserializationTest extends TestBase {
         int startLocus = 100;
         int endLocus = 200;
         Conversion recomb1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus);
+                startLocus, endLocus, alignment);
         arg.addConversion(recomb1);
         
         //Add recombination event 2
@@ -69,7 +69,7 @@ public class SerializationDeserializationTest extends TestBase {
         startLocus = 300;
         endLocus = 400;
         Conversion recomb2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus);
+                startLocus, endLocus, alignment);
         arg.addConversion(recomb2);
         
         // Write ARG out to XML string
@@ -89,7 +89,7 @@ public class SerializationDeserializationTest extends TestBase {
         argNew.fromXML(docNode);
         
         // Check that new ARG matches old
-        Conversion newRecomb1 = argNew.getConversions().get(0);
+        Conversion newRecomb1 = argNew.getConversions(alignment).get(0);
         assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
@@ -97,7 +97,7 @@ public class SerializationDeserializationTest extends TestBase {
         assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
         assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
-        Conversion newRecomb2 = argNew.getConversions().get(1);
+        Conversion newRecomb2 = argNew.getConversions(alignment).get(1);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
@@ -132,7 +132,7 @@ public class SerializationDeserializationTest extends TestBase {
         int startLocus = 100;
         int endLocus = 200;
         Conversion recomb1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus);
+                startLocus, endLocus, alignment);
         arg.addConversion(recomb1);
         
         //Add recombination event 2
@@ -143,7 +143,7 @@ public class SerializationDeserializationTest extends TestBase {
         startLocus = 300;
         endLocus = 400;
         Conversion recomb2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus);
+                startLocus, endLocus, alignment);
         arg.addConversion(recomb2);
         
         // Write ARG out to string
@@ -154,7 +154,7 @@ public class SerializationDeserializationTest extends TestBase {
         argNew.initByName("alignment", alignment, "fromString", argString);
         
         // Check that new ARG matches old
-        Conversion newRecomb1 = argNew.getConversions().get(0);
+        Conversion newRecomb1 = argNew.getConversions(alignment).get(0);
         assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
@@ -162,7 +162,7 @@ public class SerializationDeserializationTest extends TestBase {
         assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
         assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
-        Conversion newRecomb2 = argNew.getConversions().get(1);
+        Conversion newRecomb2 = argNew.getConversions(alignment).get(1);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);

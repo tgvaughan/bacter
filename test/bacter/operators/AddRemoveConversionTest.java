@@ -18,10 +18,12 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.TestBase;
 import bacter.model.ACGCoalescent;
 import bacter.model.SimulatedACG;
 import bacter.operators.AddRemoveConversion;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -33,7 +35,7 @@ import org.junit.Test;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class AddRemoveConversionTest {
+public class AddRemoveConversionTest extends TestBase {
     
     public AddRemoveConversionTest() { }
     
@@ -49,13 +51,14 @@ public class AddRemoveConversionTest {
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
-        
+
+        Alignment alignment = getAlignment();
+
         SimulatedACG acg = new SimulatedACG();
         acg.initByName(
-                "rho", 1.0/10000,
+                "rho", 1.0/alignment.getSiteCount(),
                 "delta", 50.0,
-                "sequenceLength", 10000,
-                "nTaxa", 10,
+                "alignment", alignment,
                 "populationModel", popFunc);
         
 
@@ -72,7 +75,7 @@ public class AddRemoveConversionTest {
                     "populationModel", popFunc);
             
             oldConversions = Lists.newArrayList(
-                    acg.getConversions());
+                    acg.getConversions(alignment));
         
             logP1 = operator.drawNewConversion();
         } while (Double.isInfinite(logP1));
@@ -81,7 +84,7 @@ public class AddRemoveConversionTest {
         
         // Identify new recomination
         Conversion newRecomb = null;
-        for (Conversion recomb : acg.getConversions()) {
+        for (Conversion recomb : acg.getConversions(alignment)) {
             if (!oldConversions.contains(recomb))
                 newRecomb = recomb;
         }
@@ -103,16 +106,17 @@ public class AddRemoveConversionTest {
 
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
+
+        Alignment alignment = getAlignment();
         
         SimulatedACG acg = new SimulatedACG();
         acg.initByName(
-                "rho", 1.0/10000,
+                "rho", 1.0/alignment.getSiteCount(),
                 "delta", 50.0,
-                "sequenceLength", 10000,
-                "nTaxa", 10,
+                "alignment", alignment,
                 "populationModel", popFunc);
         
-        RealParameter rho = new RealParameter(Double.toString(1.0/10000));
+        RealParameter rho = new RealParameter(Double.toString(1.0/alignment.getSiteCount()));
         RealParameter delta = new RealParameter("50.0");
 
         AddRemoveConversion operator = new AddRemoveConversion();
@@ -131,7 +135,7 @@ public class AddRemoveConversionTest {
         
         double logP1 = 0.0;
         double logP2 = 0.0;
-        for (Conversion conv : acg.getConversions()) {
+        for (Conversion conv : acg.getConversions(alignment)) {
             logP1 += operator.getConversionProb(conv);
             logP2 += coal.calculateConversionLogP(conv);
         }

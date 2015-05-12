@@ -16,7 +16,6 @@
  */
 package bacter.model;
 
-import bacter.model.restricted.SimulatedRestrictedACG;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.MarginalTree;
@@ -91,7 +90,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         int startLocus = 100;
         int endLocus = 200;
         Conversion recomb1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus);
+                startLocus, endLocus, alignment);
         acg.addConversion(recomb1);
         
         logP = argLikelihood.calculateLogP();
@@ -110,7 +109,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         startLocus = 250;
         endLocus = 300;
         Conversion recomb2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus);
+                startLocus, endLocus, alignment);
         acg.addConversion(recomb2);
         
         logP = argLikelihood.calculateLogP();
@@ -127,14 +126,15 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
+
+        Alignment dummyAlignment = getAlignment();
         
-        ConversionGraph acg = new SimulatedRestrictedACG();
+        ConversionGraph acg = new SimulatedACG();
         acg.initByName(
                 "rho", 5.0,
                 "delta", 1000.0,
                 "populationModel", popFunc,
-                "nTaxa", 5,
-                "sequenceLength", 10000);
+                "aligment", dummyAlignment);
         
         System.out.println(acg);
 

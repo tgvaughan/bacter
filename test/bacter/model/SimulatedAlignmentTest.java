@@ -41,17 +41,18 @@ public class SimulatedAlignmentTest extends TestBase {
     public void test() throws Exception {
         
         Randomizer.setSeed(5);
+
+        Alignment dummyAlignment = getAlignment();
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
-        
-        ConversionGraph acg = new SimulatedRestrictedACG();
+
+        ConversionGraph acg = new SimulatedACG();
         acg.initByName(
                 "rho", 5.0/10000,
                 "delta", 1000.0,
                 "populationModel", popFunc,
-                "nTaxa", 5,
-                "sequenceLength", 10000);
+                "alignment", dummyAlignment);
         
         System.out.println(acg);
 
