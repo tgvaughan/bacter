@@ -47,7 +47,7 @@ public class ConversionGraph extends Tree {
             "alignment",
             "Sequence alignment corresponding to graph.",
             new ArrayList<>());
-    
+
     public Input<String> fromStringInput = new Input<>(
             "fromString",
             "Initialise ARG from string representation.");
@@ -75,8 +75,8 @@ public class ConversionGraph extends Tree {
         storedConvs = new HashMap<>();
 
         if (alignmentsInput.get().isEmpty())
-            throw new RuntimeException("Must specify at least one alignment " +
-                    "as an input to ConversionGraph.");
+                throw new RuntimeException("Must specify at least one alignment " +
+                        "as an input to ConversionGraph.");
 
         alignments = alignmentsInput.get();
 

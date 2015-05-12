@@ -20,6 +20,7 @@ import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 import feast.input.In;
@@ -85,15 +86,17 @@ public class CFUniform extends ConversionCreationOperator {
         }
 
         if (newHeight>oldHeight) {
-            for (Conversion conv : acg.getConversions()) {
-                if (conv.getNode1() == node && conv.getHeight1() < newHeight) {
-                    conv.setNode1(Randomizer.nextBoolean() ? leftChild : rightChild);
-                    logHGF -= logHalf;
-                }
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment)) {
+                    if (conv.getNode1() == node && conv.getHeight1() < newHeight) {
+                        conv.setNode1(Randomizer.nextBoolean() ? leftChild : rightChild);
+                        logHGF -= logHalf;
+                    }
 
-                if (conv.getNode2() == node && conv.getHeight2() < newHeight) {
-                    conv.setNode2(Randomizer.nextBoolean() ? leftChild : rightChild);
-                    logHGF -= logHalf;
+                    if (conv.getNode2() == node && conv.getHeight2() < newHeight) {
+                        conv.setNode2(Randomizer.nextBoolean() ? leftChild : rightChild);
+                        logHGF -= logHalf;
+                    }
                 }
             }
 
@@ -103,13 +106,14 @@ public class CFUniform extends ConversionCreationOperator {
                 // Draw a number of conversions
                 double L = 2.0*(newHeight-oldHeight);
                 double Nexp = L*rhoInput.get().getValue()
-                        *(acg.getSequenceLength()+deltaInput.get().getValue());
+                        *(acg.getTotalSequenceLength()+acg.getAlignments().size()*deltaInput.get().getValue());
                 int N = (int)Randomizer.nextPoisson(Nexp);
                 logHGF -= -Nexp + N*Math.log(Nexp); // N! cancels
 
                 for (int i=0; i<N; i++) {
 
-                    Conversion conv = new Conversion();
+                    // TODO: Fix up HR.  This is BUGGY.
+                    Conversion conv = new Conversion(chooseAlignment());
 
                     double u = L*Randomizer.nextDouble();
                     if (u < 0.5*L) {
@@ -130,29 +134,31 @@ public class CFUniform extends ConversionCreationOperator {
 
             List<Conversion> toRemove = new ArrayList<>();
 
-            for (Conversion conv : acg.getConversions()) {
-                if ((conv.getNode1() == leftChild || conv.getNode1() == rightChild)
-                        && conv.getHeight1()>newHeight) {
-                    if (node.isRoot()) {
-                        toRemove.add(conv);
-                        continue;
-                    } else {
-                        conv.setNode1(node);
+            for (Alignment alignment : acg.getAlignments()) {
+                for (Conversion conv : acg.getConversions(alignment)) {
+                    if ((conv.getNode1() == leftChild || conv.getNode1() == rightChild)
+                            && conv.getHeight1() > newHeight) {
+                        if (node.isRoot()) {
+                            toRemove.add(conv);
+                            continue;
+                        } else {
+                            conv.setNode1(node);
+                            logHGF += logHalf;
+                        }
+                    }
+
+                    if ((conv.getNode2() == leftChild || conv.getNode2() == rightChild)
+                            && conv.getHeight2() > newHeight) {
+                        conv.setNode2(node);
                         logHGF += logHalf;
                     }
-                }
-
-                if ((conv.getNode2() == leftChild || conv.getNode2() == rightChild)
-                        && conv.getHeight2()>newHeight) {
-                    conv.setNode2(node);
-                    logHGF += logHalf;
                 }
             }
 
             if (node.isRoot()) {
                 double L = 2.0*(oldHeight-newHeight);
                 double Nexp = L*rhoInput.get().getValue()*
-                        (acg.getSequenceLength() + deltaInput.get().getValue());
+                        (acg.getTotalSequenceLength() + acg.getAlignments().size()*deltaInput.get().getValue());
                 logHGF += -Nexp + toRemove.size()*Math.log(Nexp); // N! cancels
 
                 for (Conversion conv : toRemove) {

@@ -18,9 +18,12 @@ package bacter.operators;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.util.RandomizedAlignment;
 import beast.core.Description;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.Randomizer;
 
@@ -78,8 +81,7 @@ public class AddRemoveConversion extends ConversionCreationOperator {
      * @return log of proposal density 
      */
     public double drawNewConversion(Alignment alignment) {
-        Conversion newConversion = new Conversion();
-        newConversion.setAlignment(alignment);
+        Conversion newConversion = new Conversion(alignment);
 
         double logP = attachEdge(newConversion) + drawAffectedRegion(newConversion);
 
@@ -113,15 +115,22 @@ public class AddRemoveConversion extends ConversionCreationOperator {
             "delta", new RealParameter("50.0"));
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
+        TaxonSet taxonSet = new TaxonSet();
+        taxonSet.taxonsetInput.setValue(new Taxon("t1"), taxonSet);
+        taxonSet.taxonsetInput.setValue(new Taxon("t2"), taxonSet);
+
+        RandomizedAlignment alignment = new RandomizedAlignment();
+        alignment.initByName("taxonSet", taxonSet, "sequenceLength", 10000);
+
         try (PrintStream ps = new PrintStream("out.txt")) {
             for (int i=0; i<100000; i++) {
                 acg.initByName(
-                    "sequenceLength", 10000,
+                    "alignment", alignment,
                     "fromString", "(0:1.0,1:1.0)2:0.0;");
-                operator.drawNewConversion();
+                operator.drawNewConversion(alignment);
                 
-                ps.println(acg.getConversions().get(0).getStartSite() + " "
-                    + acg.getConversions().get(0).getEndSite());
+                ps.println(acg.getConversions(alignment).get(0).getStartSite() + " "
+                    + acg.getConversions(alignment).get(0).getEndSite());
             }
         }
     }

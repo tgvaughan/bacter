@@ -19,6 +19,7 @@ package bacter.operators;
 
 import bacter.Conversion;
 import beast.core.Description;
+import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
@@ -30,147 +31,153 @@ import java.util.List;
         " clonal frame edge.")
 public class AddRemoveDetour extends ConversionCreationOperator {
 
-        @Override
-        public double proposal() {
-                if (Randomizer.nextBoolean())
-                        return addDetour();
-                else
-                        return removeDetour();
+    @Override
+    public double proposal() {
+        Alignment alignment = chooseAlignment();
+
+        if (Randomizer.nextBoolean())
+            return addDetour(alignment);
+        else
+            return removeDetour(alignment);
+    }
+
+    /**
+     * Detour addition variant of move.
+     *
+     * @param alignment alignment to which detour will be added
+     * @return log HGF
+     */
+    private double addDetour(Alignment alignment) {
+        double logHGF = 0.0;
+
+        if (acg.getConvCount(alignment) == 0)
+            return Double.NEGATIVE_INFINITY;
+
+        // Select conversion at random
+        Conversion conv = acg.getConversions(alignment).get(
+                Randomizer.nextInt(acg.getConvCount(alignment)));
+        logHGF -= Math.log(1.0 / acg.getConvCount(alignment));
+
+        // Select detour times:
+        double t1 = conv.getHeight1()
+                + Randomizer.nextDouble() * (conv.getHeight2() - conv.getHeight1());
+        double t2 = conv.getHeight1()
+                + Randomizer.nextDouble() * (conv.getHeight2() - conv.getHeight1());
+
+        double tLower, tUpper;
+        if (t1 < t2) {
+            tLower = t1;
+            tUpper = t2;
+        } else {
+            tLower = t2;
+            tUpper = t1;
         }
 
-        /**
-         * Detour addition variant of move.
-         * @return log HGF
-         */
-        private double addDetour() {
-                double logHGF = 0.0;
+        logHGF -= Math.log(2.0) - 2.0 * Math.log(conv.getHeight2() - conv.getHeight1());
 
-                if (acg.getConvCount()==0)
-                        return Double.NEGATIVE_INFINITY;
+        // Select non-root node below detour edge at random
+        Node detour = acg.getNode(Randomizer.nextInt(acg.getNodeCount() - 1));
+        logHGF -= Math.log(1.0 / (acg.getNodeCount() - 1));
 
-                // Select conversion at random
-                Conversion conv = acg.getConversions().get(
-                        Randomizer.nextInt(acg.getConvCount()));
-                logHGF -= Math.log(1.0/acg.getConvCount());
+        // Abort if selected detour edge does not contain tLower and tUpper
+        if (detour.getHeight() > tLower || detour.getParent().getHeight() < tUpper)
+            return Double.NEGATIVE_INFINITY;
 
-                // Select detour times:
-                double t1 = conv.getHeight1()
-                        + Randomizer.nextDouble()*(conv.getHeight2()-conv.getHeight1());
-                double t2 = conv.getHeight1()
-                        + Randomizer.nextDouble()*(conv.getHeight2()-conv.getHeight1());
+        // Abort if conv is already attached to selected detour edge:
+        if (detour == conv.getNode1() || detour == conv.getNode2())
+            return Double.NEGATIVE_INFINITY;
 
-                double tLower, tUpper;
-                if (t1 < t2) {
-                        tLower = t1;
-                        tUpper = t2;
-                } else {
-                        tLower = t2;
-                        tUpper = t1;
-                }
+        Conversion convA = new Conversion(alignment);
+        convA.setNode1(conv.getNode1());
+        convA.setHeight1(conv.getHeight1());
+        convA.setNode2(detour);
+        convA.setHeight2(tLower);
+        convA.setStartSite(conv.getStartSite());
+        convA.setEndSite(conv.getEndSite());
 
-                logHGF -= Math.log(2.0) - 2.0*Math.log(conv.getHeight2()-conv.getHeight1());
+        Conversion convB = new Conversion(alignment);
+        convB.setNode1(detour);
+        convB.setHeight1(tUpper);
+        convB.setNode2(conv.getNode2());
+        convB.setHeight2(conv.getHeight2());
+        logHGF -= drawAffectedRegion(convB);
 
-                // Select non-root node below detour edge at random
-                Node detour = acg.getNode(Randomizer.nextInt(acg.getNodeCount()-1));
-                logHGF -= Math.log(1.0/(acg.getNodeCount()-1));
+        acg.deleteConversion(conv);
+        acg.addConversion(convA);
+        acg.addConversion(convB);
 
-                // Abort if selected detour edge does not contain tLower and tUpper
-                if (detour.getHeight() > tLower || detour.getParent().getHeight() < tUpper)
-                        return Double.NEGATIVE_INFINITY;
+        // Count number of node1s and node2s attached to detour edge
+        int node1Count = 0;
+        int node2Count = 0;
+        for (Conversion thisConv : acg.getConversions(alignment)) {
+            if (thisConv.getNode1() == detour && thisConv.getNode2() != detour)
+                node1Count += 1;
 
-                // Abort if conv is already attached to selected detour edge:
-                if (detour == conv.getNode1() || detour == conv.getNode2())
-                        return Double.NEGATIVE_INFINITY;
-
-                Conversion convA = new Conversion();
-                convA.setNode1(conv.getNode1());
-                convA.setHeight1(conv.getHeight1());
-                convA.setNode2(detour);
-                convA.setHeight2(tLower);
-                convA.setStartSite(conv.getStartSite());
-                convA.setEndSite(conv.getEndSite());
-
-                Conversion convB = new Conversion();
-                convB.setNode1(detour);
-                convB.setHeight1(tUpper);
-                convB.setNode2(conv.getNode2());
-                convB.setHeight2(conv.getHeight2());
-                logHGF -= drawAffectedRegion(convB);
-
-                acg.deleteConversion(conv);
-                acg.addConversion(convA);
-                acg.addConversion(convB);
-
-                // Count number of node1s and node2s attached to detour edge
-                int node1Count = 0;
-                int node2Count = 0;
-                for (Conversion thisConv : acg.getConversions()) {
-                        if (thisConv.getNode1() == detour && thisConv.getNode2() != detour)
-                                node1Count += 1;
-
-                        if (thisConv.getNode2() == detour && thisConv.getNode1() != detour)
-                                node2Count += 1;
-                }
-
-                // Incorporate probability of reverse move:
-                logHGF += Math.log(1.0/((acg.getNodeCount()-1)*node1Count*node2Count));
-
-                return logHGF;
+            if (thisConv.getNode2() == detour && thisConv.getNode1() != detour)
+                node2Count += 1;
         }
 
-        /**
-         * Detour deletion variant of move.
-         * @return log HGF
-         */
-        private double removeDetour() {
-                double logHGF = 0.0;
+        // Incorporate probability of reverse move:
+        logHGF += Math.log(1.0 / ((acg.getNodeCount() - 1) * node1Count * node2Count));
 
-                // Choose non-root detour edge at random
-                Node detour = acg.getNode(Randomizer.nextInt(acg.getNodeCount()-1));
-                logHGF -= Math.log(1.0/(acg.getNodeCount()-1));
+        return logHGF;
+    }
 
-                List<Conversion> convApotentials = new ArrayList<>();
-                List<Conversion> convBpotentials = new ArrayList<>();
+    /**
+     * Detour deletion variant of move.
+     *
+     * @param alignment alignment from which to remove detour
+     * @return log HGF
+     */
+    private double removeDetour(Alignment alignment) {
+        double logHGF = 0.0;
 
-                for (Conversion conv : acg.getConversions()) {
-                        if (conv.getNode2() == detour && conv.getNode1() != detour)
-                                convApotentials.add(conv);
+        // Choose non-root detour edge at random
+        Node detour = acg.getNode(Randomizer.nextInt(acg.getNodeCount() - 1));
+        logHGF -= Math.log(1.0 / (acg.getNodeCount() - 1));
 
-                        if (conv.getNode1() == detour && conv.getNode2() != detour)
-                                convBpotentials.add(conv);
-                }
+        List<Conversion> convApotentials = new ArrayList<>();
+        List<Conversion> convBpotentials = new ArrayList<>();
 
-                if (convApotentials.isEmpty() || convBpotentials.isEmpty())
-                        return Double.NEGATIVE_INFINITY;
+        for (Conversion conv : acg.getConversions(alignment)) {
+            if (conv.getNode2() == detour && conv.getNode1() != detour)
+                convApotentials.add(conv);
 
-                Conversion convA = convApotentials.get(Randomizer.nextInt(convApotentials.size()));
-                Conversion convB = convBpotentials.get(Randomizer.nextInt(convBpotentials.size()));
-
-                if (convA.getHeight2()>convB.getHeight1())
-                        return Double.NEGATIVE_INFINITY;
-
-                logHGF -= Math.log(1.0 / (convApotentials.size() * convBpotentials.size()));
-
-                double tLowerBound = convA.getHeight1();
-                double tUpperBound = convB.getHeight2();
-
-                Conversion conv = new Conversion();
-                conv.setNode1(convA.getNode1());
-                conv.setHeight1(convA.getHeight1());
-                conv.setNode2(convB.getNode2());
-                conv.setHeight2(convB.getHeight2());
-                conv.setStartSite(convA.getStartSite());
-                conv.setEndSite(convA.getEndSite());
-
-                acg.deleteConversion(convA);
-                acg.deleteConversion(convB);
-                acg.addConversion(conv);
-
-                logHGF += Math.log(1.0/acg.getConvCount())
-                        + Math.log(1.0/(acg.getNodeCount()-1))
-                        + Math.log(2.0) - 2.0*Math.log(tUpperBound-tLowerBound)
-                        + getAffectedRegionProb(convB);
-
-                return logHGF;
+            if (conv.getNode1() == detour && conv.getNode2() != detour)
+                convBpotentials.add(conv);
         }
+
+        if (convApotentials.isEmpty() || convBpotentials.isEmpty())
+            return Double.NEGATIVE_INFINITY;
+
+        Conversion convA = convApotentials.get(Randomizer.nextInt(convApotentials.size()));
+        Conversion convB = convBpotentials.get(Randomizer.nextInt(convBpotentials.size()));
+
+        if (convA.getHeight2() > convB.getHeight1())
+            return Double.NEGATIVE_INFINITY;
+
+        logHGF -= Math.log(1.0 / (convApotentials.size() * convBpotentials.size()));
+
+        double tLowerBound = convA.getHeight1();
+        double tUpperBound = convB.getHeight2();
+
+        Conversion conv = new Conversion(alignment);
+        conv.setNode1(convA.getNode1());
+        conv.setHeight1(convA.getHeight1());
+        conv.setNode2(convB.getNode2());
+        conv.setHeight2(convB.getHeight2());
+        conv.setStartSite(convA.getStartSite());
+        conv.setEndSite(convA.getEndSite());
+
+        acg.deleteConversion(convA);
+        acg.deleteConversion(convB);
+        acg.addConversion(conv);
+
+        logHGF += Math.log(1.0 / acg.getConvCount(alignment))
+                + Math.log(1.0 / (acg.getNodeCount() - 1))
+                + Math.log(2.0) - 2.0 * Math.log(tUpperBound - tLowerBound)
+                + getAffectedRegionProb(convB);
+
+        return logHGF;
+    }
 }

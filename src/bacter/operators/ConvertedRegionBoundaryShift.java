@@ -17,10 +17,7 @@
 
 package bacter.operators;
 
-import bacter.operators.restricted.*;
-import bacter.operators.ACGOperator;
 import bacter.Conversion;
-import bacter.ConversionGraph;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
