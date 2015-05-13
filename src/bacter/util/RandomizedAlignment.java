@@ -20,8 +20,12 @@ package bacter.util;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.Taxon;
 import beast.evolution.alignment.TaxonSet;
 import beast.util.Randomizer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -37,6 +41,28 @@ public class RandomizedAlignment extends Alignment {
             "sequenceLength",
             "Length of randomized alignment to generate.",
             Input.Validate.REQUIRED);
+
+    public RandomizedAlignment() { }
+
+    /**
+     * Create a randomized alignment. Taxa are labeled 0 ... nTaxa-1.
+     *
+     * @param nTaxa Number of taxa in alignment.
+     * @param length Number of sites in alignment.
+     * @throws Exception
+     */
+    public RandomizedAlignment(int nTaxa, int length) throws Exception {
+
+        List<Taxon> taxonList = new ArrayList<>();
+        for (int i=0; i<nTaxa; i++) {
+            taxonList.add(new Taxon(Integer.toString(i)));
+        }
+
+        taxonSetInput.setValue(new TaxonSet(taxonList), this);
+        sequenceLengthInput.setValue(length, this);
+
+        initAndValidate();
+    }
 
     @Override
     public void initAndValidate() throws Exception {

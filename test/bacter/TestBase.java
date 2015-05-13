@@ -17,6 +17,7 @@
 
 package bacter;
 
+import bacter.util.RandomizedAlignment;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.tree.Node;
@@ -57,7 +58,7 @@ public abstract class TestBase {
         
         return new Alignment(sequences, 4, "nucleotide");
     }
-    
+
     /**
      * Create Alignment object representing alignment of a region
      * corresponding to a single marginal tree.
