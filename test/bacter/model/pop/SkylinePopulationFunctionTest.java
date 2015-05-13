@@ -19,8 +19,10 @@ package bacter.model.pop;
 
 import bacter.CFEventList;
 import bacter.ConversionGraph;
+import bacter.util.RandomizedAlignment;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
+import beast.evolution.alignment.Alignment;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -31,10 +33,10 @@ import static org.junit.Assert.assertTrue;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class SkylinePopulationFunctionTest {
-        String acgString = "[&15,0,1.3905355989030808,31,770,1.597708055397074] " +
-                        "[&30,931,2.4351280458424904,36,2486,3.78055549386568] " +
-                        "[&15,941,2.0439957300083322,38,2364,6.911056700367016] " +
-                        "[&36,1091,4.285505683622974,38,2589,9.867725913197855] " +
+        String acgString = "[&alignment,15,0,1.3905355989030808,31,770,1.597708055397074] " +
+                        "[&alignment,30,931,2.4351280458424904,36,2486,3.78055549386568] " +
+                        "[&alignment,15,941,2.0439957300083322,38,2364,6.911056700367016] " +
+                        "[&alignment,36,1091,4.285505683622974,38,2589,9.867725913197855] " +
                         "((((10:0.5385300170206817,(17:0.116794353049212," +
                         "((3:0.039229346597297564,12:0.039229346597297564)23:0.04582913870888949," +
                         "13:0.08505848530618705)24:0.03173586774302495)26:0.4217356639714697)28:1.8114199763246093," +
@@ -49,8 +51,11 @@ public class SkylinePopulationFunctionTest {
         ConversionGraph acg;
 
     public SkylinePopulationFunctionTest() throws Exception {
+        Alignment alignment = new RandomizedAlignment(20, 10000);
+        alignment.setID("alignment");
+
         acg = new ConversionGraph();
-        acg.initByName("sequenceLength", 10000, "fromString", acgString);
+        acg.initByName("alignment", alignment, "fromString", acgString);
     }
 
     @Test
