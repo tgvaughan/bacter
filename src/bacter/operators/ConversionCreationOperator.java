@@ -83,7 +83,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             endSite-startSite)/ deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (endSite == acg.getSequenceLength(conv.getAlignment())-1)
+        if (endSite == acg.getSequenceLength(alignment)-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
                     acg.getSequenceLength(alignment)-startSite);
 
