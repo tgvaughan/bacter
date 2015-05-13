@@ -81,8 +81,6 @@ public class ConversionGraph extends Tree {
 
         alignments = alignmentsInput.get();
 
-        m_taxonset.setValue(new TaxonSet(alignments.get(0)), this);
-
         // Sort alignment list lexographically in order of BEASTObject IDs
         alignments.sort((a1, a2) -> a1.getID().compareTo(a2.getID()));
 
