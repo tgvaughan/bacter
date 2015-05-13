@@ -21,6 +21,7 @@ import bacter.ConversionGraph;
 import bacter.MarginalTree;
 import bacter.Region;
 import bacter.TestBase;
+import bacter.util.RandomizedAlignment;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.likelihood.TreeLikelihood;
@@ -46,6 +47,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
     public void testClonalFrameLikelihood() throws Exception {
 
         Alignment alignment = getAlignment();
+        alignment.setID("alignment");
         
         // ConversionGraph
         ConversionGraph acg = new ConversionGraph();
@@ -127,14 +129,15 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        Alignment dummyAlignment = getAlignment();
+        Alignment dummyAlignment = new RandomizedAlignment(10, 10000);
+        dummyAlignment.setID("dummy");
         
         ConversionGraph acg = new SimulatedACG();
         acg.initByName(
-                "rho", 5.0,
+                "rho", 5.0/dummyAlignment.getSiteCount(),
                 "delta", 1000.0,
                 "populationModel", popFunc,
-                "aligment", dummyAlignment);
+                "alignment", dummyAlignment);
         
         System.out.println(acg);
 
