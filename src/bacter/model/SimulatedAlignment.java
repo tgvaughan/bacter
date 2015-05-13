@@ -208,9 +208,8 @@ public class SimulatedAlignment extends Alignment {
     }
     
     /**
-     * Copy region alignment over to full alignment.  Trivial in all
-     * cases besides the clonal frame alignment.
-     * 
+     * Copy region alignment over to full alignment.
+     *
      * @param alignment
      * @param regionAlignment
      * @param region

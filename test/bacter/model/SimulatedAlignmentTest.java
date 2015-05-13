@@ -21,6 +21,7 @@ import bacter.ConversionGraph;
 import bacter.MarginalTree;
 import bacter.Region;
 import bacter.TestBase;
+import bacter.util.RandomizedAlignment;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.sitemodel.SiteModel;
@@ -40,16 +41,17 @@ public class SimulatedAlignmentTest extends TestBase {
     @Test
     public void test() throws Exception {
         
-        Randomizer.setSeed(5);
+        Randomizer.setSeed(7);
 
-        Alignment dummyAlignment = getAlignment();
+        Alignment dummyAlignment = new RandomizedAlignment(10, 10000);
+        dummyAlignment.setID("dummy");
         
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
         ConversionGraph acg = new SimulatedACG();
         acg.initByName(
-                "rho", 5.0/10000,
+                "rho", 1.0/10000,
                 "delta", 1000.0,
                 "populationModel", popFunc,
                 "alignment", dummyAlignment);
@@ -61,7 +63,7 @@ public class SimulatedAlignmentTest extends TestBase {
         jc.initByName();
         SiteModel siteModel = new SiteModel();
         siteModel.initByName(
-                "mutationRate", new RealParameter("1"),
+                "mutationRate", new RealParameter("1.0"),
                 "substModel", jc);
 
         // Simulate alignment:
@@ -71,11 +73,14 @@ public class SimulatedAlignmentTest extends TestBase {
                 "siteModel", siteModel,
                 "outputFileName", "simulated_alignment.nexus",
                 "useNexus", true);
-        
+
+        for (Region region : acg.getRegions())
+                System.out.println(new MarginalTree(acg, region));
 
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
         for (Region region : acg.getRegions()) {
+
             Alignment margAlign = createMarginalAlignment(alignment, acg, region);
             
             ClusterTree upgmaTree = new ClusterTree();
@@ -83,8 +88,11 @@ public class SimulatedAlignmentTest extends TestBase {
                     "clusterType", "upgma",
                     "taxa", margAlign);
 
-            assertTrue(topologiesEquivalent(new MarginalTree(acg, region).getRoot(),
-                    upgmaTree.getRoot()));
+            MarginalTree marginalTree = new MarginalTree(acg, region);
+//            System.out.println(marginalTree.getRoot());
+//            System.out.println(upgmaTree.getRoot());
+
+            assertTrue(topologiesEquivalent(marginalTree.getRoot(), upgmaTree.getRoot()));
         }
     }
     

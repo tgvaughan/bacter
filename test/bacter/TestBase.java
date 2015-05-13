@@ -78,9 +78,11 @@ public abstract class TestBase {
             
             stateSequence = alignment.getCounts().get(leafIdx)
                     .subList(region.leftBoundary, region.rightBoundary);
-            
-            sequences.add(new Sequence(alignment.getTaxaNames().get(leafIdx),
-                    alignment.getDataType().state2string(stateSequence)));
+
+            String taxonName = alignment.getTaxaNames().get(leafIdx);
+            String charSequence = alignment.getDataType().state2string(stateSequence);
+
+            sequences.add(new Sequence(taxonName, charSequence));
         }
         
         Alignment margAlignment = new Alignment(sequences,
@@ -167,7 +169,7 @@ public abstract class TestBase {
     /**
      * Retrieve clades and heights of clade MRCAs from tree.
      * 
-     * @param tree
+     * @param root
      * @return Map from clades to corresponding MRCA heights.
      */
     private Map<Clade, Double> getCladeHeights(Node root) {
@@ -184,7 +186,7 @@ public abstract class TestBase {
     /**
      * Convenience clade class.
      */
-    private class Clade extends HashSet<Integer> {
+    private class Clade extends HashSet<String> {
 
         /**
          * Construct clade from leaves below node.
@@ -193,7 +195,7 @@ public abstract class TestBase {
          */
         public Clade(Node node) {
             for (Node leaf : node.getAllLeafNodes())
-                add(leaf.getNr());
+                add(leaf.getID());
         }
     };
 }
