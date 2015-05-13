@@ -39,19 +39,20 @@ public class SerializationDeserializationTest extends TestBase {
     public void testXML() throws Exception {
         
         Alignment alignment = getAlignment();
+        alignment.setID("alignment");
         
         // ConversionGraph
-        ConversionGraph arg = new ConversionGraph();
+        ConversionGraph acg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
                 "taxa", alignment);
         
-        arg.assignFrom(tree);
-        arg.initByName("alignment", alignment);
+        acg.assignFrom(tree);
+        acg.initByName("alignment", alignment);
         
         //Add recombination event 1
-        Node node1 = arg.getExternalNodes().get(0);
+        Node node1 = acg.getExternalNodes().get(0);
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
@@ -59,21 +60,21 @@ public class SerializationDeserializationTest extends TestBase {
         int endLocus = 200;
         Conversion recomb1 = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus, alignment);
-        arg.addConversion(recomb1);
+        acg.addConversion(recomb1);
         
         //Add recombination event 2
-        node1 = arg.getExternalNodes().get(0);
-        node2 = arg.getRoot();
+        node1 = acg.getExternalNodes().get(0);
+        node2 = acg.getRoot();
         height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
         height2 = node2.getHeight() + 1.0;
         startLocus = 300;
         endLocus = 400;
         Conversion recomb2 = new Conversion(node1, height1, node2, height2,
                 startLocus, endLocus, alignment);
-        arg.addConversion(recomb2);
+        acg.addConversion(recomb2);
         
         // Write ARG out to XML string
-        String xmlStr = arg.toXML();
+        String xmlStr = acg.toXML();
         
         // Build DOM from XML string
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -113,6 +114,7 @@ public class SerializationDeserializationTest extends TestBase {
     public void testString() throws Exception {
 
         Alignment alignment = getAlignment();
+        alignment.setID("alignment");
         
         // ConversionGraph
         ConversionGraph arg = new ConversionGraph();
