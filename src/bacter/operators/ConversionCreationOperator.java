@@ -69,6 +69,8 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
 
                 break;
             }
+
+            u -= deltaInput.get().getValue() + acg.getSequenceLength(thisAlignment);
         }
 
         if (alignment == null)
