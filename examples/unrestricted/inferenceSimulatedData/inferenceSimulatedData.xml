@@ -7,19 +7,46 @@
     :beast.evolution.substitutionmodel
     :beast.evolution.tree
     :beast.evolution.tree.coalescent
+    :beast.evolution.alignment
     :beast.math.distributions
     :beast.util
     :bacter
-    :bacter.model:bacter.model.unrestricted
-    :bacter.operators:bacter.operators.unrestricted
+    :bacter.model
+    :bacter.operators
     :bacter.util'>
+
+
+    <taxonSet spec="TaxonSet" id="taxonSet">
+        <taxon spec="Taxon" id="t1"/>
+        <taxon spec="Taxon" id="t2"/>
+        <taxon spec="Taxon" id="t3"/>
+        <taxon spec="Taxon" id="t4"/>
+        <taxon spec="Taxon" id="t5"/>
+        <taxon spec="Taxon" id="t6"/>
+        <taxon spec="Taxon" id="t7"/>
+        <taxon spec="Taxon" id="t8"/>
+        <taxon spec="Taxon" id="t9"/>
+        <taxon spec="Taxon" id="t10"/>
+        <taxon spec="Taxon" id="t11"/>
+        <taxon spec="Taxon" id="t12"/>
+        <taxon spec="Taxon" id="t13"/>
+        <taxon spec="Taxon" id="t14"/>
+        <taxon spec="Taxon" id="t15"/>
+        <taxon spec="Taxon" id="t16"/>
+        <taxon spec="Taxon" id="t17"/>
+        <taxon spec="Taxon" id="t18"/>
+        <taxon spec="Taxon" id="t19"/>
+        <taxon spec="Taxon" id="t20"/>
+    </taxonSet>
 
 
     <!-- Simulated ACG (Truth) -->  
 
     <input spec='SimulatedACG' id='acgTruth'
-        rho="0.0005" delta="1000.0" sequenceLength="10000" nTaxa="20"
+        rho="0.0005" delta="1000.0"
         outputFileName="simulated_acg.nexus">
+        <alignment spec="RandomizedAlignment"
+                   taxonSet="@taxonSet" sequenceLength="10000"/>
         <populationModel spec='ConstantPopulation' popSize="1.0"/>
     </input>
 
@@ -104,7 +131,6 @@
 
     <operator id="addRemove" spec="AddRemoveConversion" weight="10.0">
         <acg idref="acg"/>
-        <rho idref="rho"/>
         <delta idref="delta"/>
         <populationModel idref="popModel"/>
     </operator>
@@ -128,9 +154,6 @@
 
      <operator id="addRemoveDetour" spec="AddRemoveDetour" weight="10.0"
              acg="@acg" delta="@delta" populationModel="@popModel"/>
-
-    <!--operator id="cfConvSwap" spec="ClonalFrameConversionSwap" weight="10.0"
-        delta="@delta" populationModel="@popModel" acg="@acg" /-->
 
     <operator id="CEhop" spec="ConvertedEdgeHop" weight="1.0"
         acg="@acg" />
@@ -196,7 +219,6 @@
     <logger logEvery="10000">
         <log idref="posterior"/>
         <log spec='TreeHeightLogger' tree="@acg"/>
-        <log idref='rho'/>
         <log idref='delta'/>
         <log idref='popSize'/>
         <log idref='mutationRate'/>
