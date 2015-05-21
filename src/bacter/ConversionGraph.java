@@ -571,7 +571,7 @@ public class ConversionGraph extends Tree {
             
             if (event.isArrival) {
                 String meta = !includeRegionInfo ? ""
-                        : String.format("[&conv=%d, region={%d,%d}, alignID=%s]",
+                        : String.format("[&conv=%d, region={%d,%d}, alignID=\"%s\"]",
                                 convs.get(event.conv.getAlignment()).indexOf(event.conv),
                                 event.conv.getStartSite(),
                                 event.conv.getEndSite(),
