@@ -18,7 +18,6 @@ package bacter;
 
 import beast.core.*;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
@@ -218,9 +217,10 @@ public class ConversionGraph extends Tree {
     public int getConversionIndex(Conversion conv) {
         int index = 0;
         for (Alignment alignment : getAlignments()) {
-            if (alignment == conv.getAlignment())
+            if (alignment == conv.getAlignment()) {
                 index += getConversions(alignment).indexOf(conv);
-            else
+                break;
+            } else
                 index += getConvCount(alignment);
         }
 
