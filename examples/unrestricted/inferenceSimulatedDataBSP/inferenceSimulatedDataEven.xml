@@ -12,8 +12,8 @@
     :beast.util
     :bacter
     :bacter.model.pop
-    :bacter.model:bacter.model.unrestricted
-    :bacter.operators:bacter.operators.unrestricted
+    :bacter.model
+    :bacter.operators
     :bacter.util'>
 
     <taxonSet spec="TaxonSet" id="taxonSet">
@@ -42,7 +42,7 @@
     <!-- Simulated ACG (Truth) -->  
 
     <input spec='SimulatedACG' id='acgTruth'
-        rho="0.05" delta="500.0"
+        rho="0.1" delta="500.0"
         outputFileName="simulated_acg.nexus">
         <alignment id="dummyAlignment" spec="RandomizedAlignment"
                    taxonSet="@taxonSet" sequenceLength="10000"/>
@@ -69,9 +69,9 @@
                 <populationModel spec='ConstantPopulation' popSize="5.0"/>
             </stateNode>
 
-            <stateNode id="rho" spec='RealParameter' value="0.05" />
+            <stateNode id="rho" spec='RealParameter' value="0.1" />
             <stateNode id="delta" spec='RealParameter' value="500.0"/>
-            <stateNode id="popSizes" spec='RealParameter' value="1.0" dimension="5"/>
+            <stateNode id="popSizes" spec='RealParameter' value="1.0" dimension="10"/>
             <stateNode id="groupSizes" spec='IntegerParameter' value="0"/>
             <stateNode id="mutationRate" spec='RealParameter' value="1"/>
         </state>
@@ -98,18 +98,17 @@
                                  acg="@acg"
                                  popSizes="@popSizes"
                                  groupSizes="@groupSizes"
-                                 nGridPoints="10"
-                                 piecewiseLinear="true"/>
+                                 nGridPoints="20"/>
             </distribution>
 
             <!-- Parameter priors -->
 
-            <!--distribution spec='Prior' x='@rho'>
+            <distribution spec='Prior' x='@rho'>
                 <distr spec='LogNormalDistributionModel' M='0.0' S='2.0'/>
             </distribution>
             <distribution spec='Prior' x='@delta'>
                 <distr spec='LogNormalDistributionModel' M='0.0' S='2.0'/>
-            </distribution-->
+            </distribution>
             <distribution spec="beast.math.distributions.MarkovChainDistribution"
                           jeffreys="true"
                           parameter="@popSizes"/>
