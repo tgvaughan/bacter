@@ -5,18 +5,26 @@
                  :beast.evolution.operators
                  :beast.evolution.tree
                  :beast.evolution.tree.coalescent
+                 :beast.evolution.alignment
                  :beast.util
                  :bacter
-                 :bacter.model:bacter.model.unrestricted
-                 :bacter.operators:bacter.operators.unrestricted
+                 :bacter.model
+                 :bacter.operators
                  :bacter.util'>
 
-  
-  <input spec='SimulatedACG' id='acg'
-         rho="0.0005" delta="50.0" sequenceLength="10000" nTaxa="5">
-      <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
-  </input>
-
+    <input spec="SimulatedACG" id="acg"
+           rho="0.0005" delta="50.0">
+        <alignment id="alignment" spec="RandomizedAlignment" sequenceLength="10000">
+            <taxonSet spec="TaxonSet">
+                <taxon spec="Taxon" id="t1"/>
+                <taxon spec="Taxon" id="t2"/>
+                <taxon spec="Taxon" id="t3"/>
+                <taxon spec="Taxon" id="t4"/>
+                <taxon spec="Taxon" id="t5"/>
+            </taxonSet>
+        </alignment>
+        <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
+    </input>
 
 
 
@@ -36,7 +44,6 @@
 
     <operator id="addRemove" spec="AddRemoveConversion" weight="1.0">
         <acg idref="acg"/>
-        <rho idref="rho"/>
         <delta idref="delta"/>
         <populationModel idref="popFunc"/>
     </operator>
@@ -73,7 +80,6 @@
     </operator>
 
     <logger logEvery="10000">
-      <model idref='posterior'/>
       <log idref="posterior"/>
       <log spec='TreeHeightLogger' tree="@acg"/>
     </logger>

@@ -118,6 +118,7 @@ public class MergeSplitConversion extends ACGOperator {
         logHGF -= Math.log(1.0/acg.getConvCount(alignment));
 
         Conversion conv2 = new Conversion();
+        conv2.setAlignment(alignment);
         conv2.setNode1(conv1.getNode1());
         conv2.setNode2(conv1.getNode2());
 

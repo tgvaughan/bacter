@@ -1,14 +1,22 @@
 <beast version='2.0'
        namespace='beast.evolution.tree.coalescent
+                 :beast.evolution.alignment
                  :bacter
-                 :bacter.model.unrestricted
-                 :bacter.util:beast.util'>
+                 :bacter.model
+                 :bacter.util
+                 :beast.util'>
   
     <run spec="ACGSimulator" nSims="10000">
          <simACG spec="SimulatedACG" id="acg"
-                 rho="0.0005" delta="50.0" sequenceLength="10000">
+                 rho="0.0005" delta="50.0">
              <populationModel spec="ConstantPopulation" popSize="1.0"/>
              <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
+             <alignment spec="RandomizedAlignment" sequenceLength="10000">
+                 <taxonSet spec="TaxonSet">
+                     <taxon spec="Taxon" id="A"/>
+                     <taxon spec="Taxon" id="B"/>
+                 </taxonSet>
+             </alignment>
          </simACG>
          
          <logger logEvery="1" fileName="$(filebase).converted">

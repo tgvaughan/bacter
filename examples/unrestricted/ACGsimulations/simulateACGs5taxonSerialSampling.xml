@@ -3,23 +3,27 @@
                   :beast.evolution.tree
                   :beast.evolution.alignment
                   :bacter
-                  :bacter.model.unrestricted
+                  :bacter.model
                   :bacter.operators
                   :bacter.util'>
-  
+
+    <taxonSet id="taxonSet" spec="TaxonSet">
+        <taxon spec="Taxon" id="t1"/>
+        <taxon spec="Taxon" id="t2"/>
+        <taxon spec="Taxon" id="t3"/>
+        <taxon spec="Taxon" id="t4"/>
+        <taxon spec="Taxon" id="t5"/>
+    </taxonSet>
+
     <run spec="ACGSimulator" nSims="100000">
          <simACG spec="SimulatedACG" id="acg"
-                 rho="0.0005" delta="50.0" sequenceLength="10000"
-                 nTaxa="5">
+                 rho="0.0005" delta="50.0">
+             <alignment spec="RandomizedAlignment" id="alignment"
+                        sequenceLength="10000" taxonSet="@taxonSet"/>
              <populationModel spec="ConstantPopulation" popSize="1.0"/>
-             <trait spec='TraitSet' id="timeTrait" traitname="date-backward">
-                 <taxa spec='TaxonSet'>
-                     <taxon spec='Taxon' id="t1"/>
-                     <taxon spec='Taxon' id="t2"/>
-                     <taxon spec='Taxon' id="t3"/>
-                     <taxon spec='Taxon' id="t4"/>
-                     <taxon spec='Taxon' id="t5"/>
-                 </taxa>
+             <trait spec='TraitSet' id="timeTrait"
+                    taxa="@taxonSet"
+                    traitname="date-backward">
                  t1=0.0,
                  t2=0.1,
                  t3=0.2,

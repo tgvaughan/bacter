@@ -412,9 +412,9 @@ public class ConversionGraph extends Tree {
         
         acg.convs = new HashMap<>();
         acg.storedConvs = new HashMap<>();
-        for (Alignment alignment : acg.getAlignments()) {
-            acg.convs.put(alignment, new ArrayList<>(acg.convs.get(alignment)));
-            acg.storedConvs.put(alignment, new ArrayList<>(acg.storedConvs.get(alignment)));
+        for (Alignment alignment : getAlignments()) {
+            acg.convs.put(alignment, new ArrayList<>(convs.get(alignment)));
+            acg.storedConvs.put(alignment, new ArrayList<>(storedConvs.get(alignment)));
         }
 
         return acg;

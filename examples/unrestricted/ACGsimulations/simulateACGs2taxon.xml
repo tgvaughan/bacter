@@ -1,10 +1,19 @@
 <beast version='2.0'
-       namespace='beast.evolution.tree.coalescent:bacter:bacter.model:bacter.model.unrestricted:bacter.util'>
+       namespace='beast.evolution.tree.coalescent
+                :beast.evolution.alignment
+                :bacter
+                :bacter.model
+                :bacter.util'>
   
     <run spec="ACGSimulator" nSims="100000">
         <simACG spec="SimulatedACG" id="acg"
-                rho="0.0005" delta="50.0" sequenceLength="10000"
-                nTaxa="2">
+                rho="0.0005" delta="50.0">
+                <alignment id="alignment" spec="RandomizedAlignment" sequenceLength="10000">
+                    <taxonSet spec="TaxonSet">
+                        <taxon spec="Taxon" id="A"/>
+                        <taxon spec="Taxon" id="B"/>
+                    </taxonSet>
+                </alignment>
             <populationModel spec="ConstantPopulation" popSize="1.0"/>
         </simACG>
         
