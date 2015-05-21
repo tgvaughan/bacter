@@ -12,9 +12,6 @@
 /.idea
 /*.iml
 
-# Other cruft
-/.localrc
-
 # Build directories:
 /build
 /dist
@@ -25,3 +22,13 @@
 *.nexus
 *.tree
 *.newick
+*.cf
+*.converted
+*.trees
+*.state
+*.stats
+*.log
+
+# Other cruft
+/.localrc
+.ipynb_checkpoints
