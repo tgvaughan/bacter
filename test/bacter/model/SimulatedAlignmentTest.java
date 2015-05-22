@@ -74,12 +74,12 @@ public class SimulatedAlignmentTest extends TestBase {
                 "outputFileName", "simulated_alignment.nexus",
                 "useNexus", true);
 
-        for (Region region : acg.getRegions())
+        for (Region region : acg.getRegions(dummyAlignment))
                 System.out.println(new MarginalTree(acg, region));
 
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
-        for (Region region : acg.getRegions()) {
+        for (Region region : acg.getRegions(dummyAlignment)) {
 
             Alignment margAlign = createMarginalAlignment(alignment, acg, region);
             

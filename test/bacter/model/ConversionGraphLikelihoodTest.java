@@ -190,7 +190,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
             SiteModel siteModel) throws Exception {
 
         double logP = 0.0;
-        for (Region region : arg.getRegions()) {
+        for (Region region : arg.getRegions(alignment)) {
             Alignment margAlign = createMarginalAlignment(alignment, arg, region);
             Tree margTree = new Tree(new MarginalTree(arg, region).getRoot());
             TreeLikelihood treeLikelihood = new TreeLikelihood();

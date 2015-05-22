@@ -72,10 +72,10 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
      * @param acg
      * @return mean length
      */
-    public static double getMeanRegionLength(ConversionGraph acg) {
+    public static double getMeanRegionLength(ConversionGraph acg, Alignment alignment) {
         double sum = 0.0;
         int count = 0;
-        for (Region region : acg.getRegions())
+        for (Region region : acg.getRegions(alignment))
             if (!region.isClonalFrame()) {
                 sum += region.getRegionLength();
                 count += 1;
@@ -208,13 +208,13 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
         out.print(id + ".CFheight\t"
                 + id + ".CFlength\t"
                 + id + ".nConv\t"
-                + id + ".meanRegionLength\t"
                 + id + ".meanEdgeLength\t"
                 + id + ".meanDepartureHeight\t");
 
         for (Alignment alignment : acg.getAlignments()) {
             String aid = id + "." + alignment.getID();
             out.print(aid + ".meanTractLength\t"
+                    + aid + ".meanRegionLength\t"
                     + aid + ".meanStartSite\t"
                     + aid + ".meanEndSite\t"
                     + aid + ".randomStartSite\t"
@@ -227,12 +227,12 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
         out.print(acg.getRoot().getHeight() + "\t"
                 + acg.getClonalFrameLength() + "\t"
                 + acg.getTotalConvCount() + "\t"
-                + ConversionGraphStatsLogger.getMeanRegionLength(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanEdgeLength(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanDepartureHeight(acg) + "\t");
 
         for (Alignment alignment : acg.getAlignments()) {
             out.print(ConversionGraphStatsLogger.getMeanTractLength(acg, alignment) + "\t"
+                    + ConversionGraphStatsLogger.getMeanRegionLength(acg, alignment) + "\t"
                     + ConversionGraphStatsLogger.getMeanStartSite(acg, alignment) + "\t"
                     + ConversionGraphStatsLogger.getMeanEndSite(acg, alignment) + "\t"
                     + ConversionGraphStatsLogger.getRandomStartSite(acg, alignment) + "\t"

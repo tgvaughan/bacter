@@ -31,7 +31,6 @@ import java.util.Set;
 public class Region {
 
     public int leftBoundary, rightBoundary;
-    public Alignment alignment;
     public Set<Conversion> activeConversions;
 
     public Region() {

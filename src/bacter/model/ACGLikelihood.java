@@ -174,7 +174,7 @@ public class ACGLikelihood extends ACGDistribution {
         patternLogLikelihoods.clear();
         rootPartials.clear();
         
-        for (Region region : acg.getRegions()) {
+        for (Region region : acg.getRegions(alignment)) {
 
             Multiset<int[]> patSet;
             if (patterns.containsKey(region.activeConversions))

@@ -73,9 +73,9 @@ public class MarginalTreeTest extends TestBase {
             "(((0:0.04916909893812016,1:0.04916909893812016)10:0.5465237639426681,(((((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:0.21838173019409446)17:1.1073878800617445,2:1.7030807429425328)18:0.0"
         };
 
-        for (int r=0; r<acg.getRegionCount(); r++) {
+        for (int r=0; r<acg.getRegionCount(alignment); r++) {
             MarginalTree marginalTree = new MarginalTree(acg,
-                acg.getRegions().get(r));
+                acg.getRegions(alignment).get(r));
 
             //System.out.println(marginalTree + ";");
 
@@ -124,9 +124,9 @@ public class MarginalTreeTest extends TestBase {
             "(((0:0.04916909893812016,1:0.04916909893812016)10:0.5465237639426681,(((((3:0.07561592852503529,6:0.07561592852503529)11:0.1461919778724432,8:0.2218079063974785)13:0.010206467073885506,9:0.232014373471364)14:0.11654268918790511,(5:0.1074670293493194,7:0.1074670293493194)12:0.24109003330994971)15:0.028754070027424694,4:0.3773111326866938)16:0.21838173019409446)17:1.1073878800617445,2:1.7030807429425328)18:0.0;"
         };
 
-        for (int r=0; r<acg.getRegionCount(); r++) {
+        for (int r=0; r<acg.getRegionCount(alignment); r++) {
             MarginalTree marginalTree = new MarginalTree(acg,
-                acg.getRegions().get(r));
+                acg.getRegions(alignment).get(r));
 
 //            System.out.println(marginalTree + ";");
 

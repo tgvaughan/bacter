@@ -61,7 +61,7 @@ public class ConversionGraph extends Tree {
     /**
      * Event and region lists.
      */
-    protected RegionList regionList;
+    protected Map<Alignment, RegionList> regionLists;
     protected CFEventList cfEventList;
     protected ACGEventList acgEventList;
 
@@ -94,7 +94,10 @@ public class ConversionGraph extends Tree {
             fromString(fromStringInput.get());
         }
 
-        regionList = new RegionList(this);
+        regionLists = new HashMap<>();
+        for (Alignment alignment : alignments)
+            regionLists.put(alignment, new RegionList(this, alignment));
+
         cfEventList = new CFEventList(this);
         acgEventList = new ACGEventList(this);
 
@@ -232,8 +235,8 @@ public class ConversionGraph extends Tree {
      * 
      * @return list of regions
      */
-    public List<Region> getRegions() {
-        return regionList.getRegions();
+    public List<Region> getRegions(Alignment alignment) {
+        return regionLists.get(alignment).getRegions();
     }
 
     /**
@@ -241,8 +244,8 @@ public class ConversionGraph extends Tree {
      * 
      * @return Number of regions.
      */
-    public int getRegionCount() {
-        return regionList.getRegions().size();
+    public int getRegionCount(Alignment alignment) {
+        return regionLists.get(alignment).getRegions().size();
     }
 
     /**
@@ -451,9 +454,9 @@ public class ConversionGraph extends Tree {
                 acgEventList = new ACGEventList(this);
             acgEventList.makeDirty();
 
-            if (regionList == null)
-                regionList = new RegionList(this);
-            regionList.makeDirty();
+            regionLists.clear();
+            for (Alignment alignment : alignments)
+                regionLists.put(alignment, new RegionList(this, alignment));
         }
     }
     
@@ -463,6 +466,8 @@ public class ConversionGraph extends Tree {
 
         if (other instanceof  ConversionGraph) {
             ConversionGraph acg = (ConversionGraph) other;
+
+            alignments = acg.getAlignments();
 
             convs.clear();
             storedConvs.clear();
@@ -480,9 +485,9 @@ public class ConversionGraph extends Tree {
                 acgEventList = new ACGEventList(this);
             acgEventList.makeDirty();
 
-            if (regionList == null)
-                regionList = new RegionList(this);
-            regionList.makeDirty();
+            regionLists.clear();
+            for (Alignment alignment : alignments)
+                regionLists.put(alignment, new RegionList(this, alignment));
         }
     }
     
@@ -654,7 +659,8 @@ public class ConversionGraph extends Tree {
 
         cfEventList.makeDirty();
         acgEventList.makeDirty();
-        regionList.makeDirty();
+        for (Alignment alignment : alignments)
+            regionLists.get(alignment).makeDirty();
     }
 
     @Override
@@ -668,8 +674,9 @@ public class ConversionGraph extends Tree {
         if (acgEventList != null)
             acgEventList.makeDirty();
 
-        if (regionList != null)
-            regionList.makeDirty();
+        if (regionLists != null)
+            for (RegionList regionList : regionLists.values())
+                regionList.makeDirty();
     }
     
     /*

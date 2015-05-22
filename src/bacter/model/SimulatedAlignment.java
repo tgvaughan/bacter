@@ -80,11 +80,21 @@ public class SimulatedAlignment extends Alignment {
         acg = acgInput.get();
         siteModel = siteModelInput.get();
 
-        if (acg.getAlignmentByID(locusIDinput.get()) == null)
-            throw new IllegalArgumentException("Locus with ID "
-                    + locusIDinput.get() + " not found.");
+        Alignment locus;
+        if (acg.getAlignments().size()==1)
+            locus = acg.getAlignments().get(0);
+        else {
+            if (locusIDinput.get() == null)
+                throw new IllegalArgumentException("Must specify locus ID" +
+                        " when simulating alignment from ACG associated" +
+                        " with multiple loci.");
 
-        Alignment locus = acg.getAlignmentByID(locusIDinput.get());
+            if (acg.getAlignmentByID(locusIDinput.get()) == null)
+                throw new IllegalArgumentException("Locus with ID "
+                        + locusIDinput.get() + " not found.");
+
+            locus = acg.getAlignmentByID(locusIDinput.get());
+        }
 
         // We can't wait for Alignment.initAndValidate() to get the
         // data type for us.
@@ -123,7 +133,7 @@ public class SimulatedAlignment extends Alignment {
         
         int[][] alignment = new int[nTaxa][acg.getSequenceLength(locus)];
         
-        for (Region region : acg.getRegions()) {
+        for (Region region : acg.getRegions(locus)) {
             int thisLength = region.getRegionLength();
 
             MarginalTree marginalTree = new MarginalTree(acg, region);
