@@ -309,12 +309,12 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
             "delta", 500.0,
             "populationModel", popFunc,
             "nTaxa", 10,
-            "sequenceLength", 10000);
+            "siteCount", 10000);
 
         /*
          ConversionGraph acg = new ConversionGraph();
          acg.initByName(
-         "sequenceLength", 10000,
+         "siteCount", 10000,
          //            "fromString", "(0:1.0,1:1.0)2:0.0;");
          "fromString", "[&0,500,0.2,1,800,0.8] (0:1.0,1:1.0)2:0.0;");
          */

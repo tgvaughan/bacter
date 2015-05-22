@@ -341,7 +341,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
                         "5:0.0243537216663141)22:0.5681537100482162,18:0.5925074317145304)30:2.35181000034631)36:3.829751995233287)38:0.0";
 
         ConversionGraph acg = new ConversionGraph();
-        acg.initByName("sequenceLength", 10000, "fromString", acgString);
+        acg.initByName("siteCount", 10000, "fromString", acgString);
 
 
         SkylinePopulationFunction skyline = new SkylinePopulationFunction();

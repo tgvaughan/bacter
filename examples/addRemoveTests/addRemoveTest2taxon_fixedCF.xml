@@ -11,7 +11,7 @@
 
   
   <!--input spec='SimulatedACG' id='acg'
-         rho="0.0005" delta="50.0" sequenceLength="10000" nTaxa="2">
+         rho="0.0005" delta="50.0" siteCount="10000" nTaxa="2">
       <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
       <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
   </input-->

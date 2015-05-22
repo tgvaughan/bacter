@@ -116,7 +116,7 @@ public class AddRemoveConversion extends ConversionCreationOperator {
         taxonSet.taxonsetInput.setValue(new Taxon("t2"), taxonSet);
 
         RandomizedAlignment alignment = new RandomizedAlignment();
-        alignment.initByName("taxonSet", taxonSet, "sequenceLength", 10000);
+        alignment.initByName("taxonSet", taxonSet, "siteCount", 10000);
 
         try (PrintStream ps = new PrintStream("out.txt")) {
             for (int i=0; i<100000; i++) {

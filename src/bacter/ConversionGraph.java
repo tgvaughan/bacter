@@ -43,9 +43,9 @@ public class ConversionGraph extends Tree {
  the length of an alignment) to be specified so that the regions of
  the alignment affected by recombination events can be recorded.
      */
-    public Input<List<Alignment>> alignmentsInput = new Input<>(
-            "alignment",
-            "Sequence alignment corresponding to graph.",
+    public Input<List<Locus>> lociInput = new Input<>(
+            "locus",
+            "Locus associated with graph.",
             new ArrayList<>());
 
     public Input<String> fromStringInput = new Input<>(
@@ -55,17 +55,17 @@ public class ConversionGraph extends Tree {
     /**
      * List of recombinations on graph.
      */
-    protected Map<Alignment, List<Conversion>> convs;
-    protected Map<Alignment, List<Conversion>> storedConvs;
+    protected Map<Locus, List<Conversion>> convs;
+    protected Map<Locus, List<Conversion>> storedConvs;
 
     /**
      * Event and region lists.
      */
-    protected Map<Alignment, RegionList> regionLists;
+    protected Map<Locus, RegionList> regionLists;
     protected CFEventList cfEventList;
     protected ACGEventList acgEventList;
 
-    protected List<Alignment> alignments;
+    protected List<Locus> loci;
     protected int totalSequenceLength;
     
     @Override
@@ -74,20 +74,20 @@ public class ConversionGraph extends Tree {
         convs = new HashMap<>();
         storedConvs = new HashMap<>();
 
-        if (alignmentsInput.get().isEmpty())
-                throw new RuntimeException("Must specify at least one alignment " +
+        if (lociInput.get().isEmpty())
+                throw new RuntimeException("Must specify at least one locus " +
                         "as an input to ConversionGraph.");
 
-        alignments = alignmentsInput.get();
+        loci = lociInput.get();
 
         // Sort alignment list lexographically in order of BEASTObject IDs
-        alignments.sort((a1, a2) -> a1.getID().compareTo(a2.getID()));
+        loci.sort((l1, l2) -> l1.getID().compareTo(l2.getID()));
 
         totalSequenceLength = 0;
-        for (Alignment alignment : alignments) {
-            convs.put(alignment, new ArrayList<>());
-            storedConvs.put(alignment, new ArrayList<>());
-            totalSequenceLength += alignment.getSiteCount();
+        for (Locus locus : loci) {
+            convs.put(locus, new ArrayList<>());
+            storedConvs.put(locus, new ArrayList<>());
+            totalSequenceLength += locus.getSiteCount();
         }
         
         if (fromStringInput.get() != null) {
@@ -95,8 +95,8 @@ public class ConversionGraph extends Tree {
         }
 
         regionLists = new HashMap<>();
-        for (Alignment alignment : alignments)
-            regionLists.put(alignment, new RegionList(this, alignment));
+        for (Locus locus : loci)
+            regionLists.put(locus, new RegionList(this, locus));
 
         cfEventList = new CFEventList(this);
         acgEventList = new ACGEventList(this);
@@ -123,15 +123,15 @@ public class ConversionGraph extends Tree {
     }
 
     /**
-     * Retrieve alignment with given BEASTObject ID.
+     * Retrieve locus associated with this ACG having a given BEASTObject ID.
      *
      * @param id id of alignment to retrieve
-     * @return alignment, or null if no alignment matches.
+     * @return locus, or null if no locus matches.
      */
-    public Alignment getAlignmentByID(String id) {
-        for (Alignment alignment : alignments)
-            if (alignment.getID().equals(id))
-                return alignment;
+    public Locus getLocusByID(String id) {
+        for (Locus locus : loci)
+            if (locus.getID().equals(id))
+                return locus;
 
         return null;
     }
@@ -141,8 +141,8 @@ public class ConversionGraph extends Tree {
      *
      * @return list of associated alignments
      */
-    public List<Alignment> getAlignments() {
-        return alignments;
+    public List<Locus> getLoci() {
+        return loci;
     }
     
     /**
@@ -156,14 +156,14 @@ public class ConversionGraph extends Tree {
         
         conv.setConversionGraph(this);
 
-        Alignment alignment = conv.getAlignment();
+        Locus locus = conv.getLocus();
 
         int i;
-        for (i=0; i<convs.get(alignment).size(); i++)
-            if (convs.get(alignment).get(i).startSite>conv.startSite)
+        for (i=0; i<convs.get(locus).size(); i++)
+            if (convs.get(locus).get(i).startSite>conv.startSite)
                 break;
         
-        convs.get(alignment).add(i, conv);
+        convs.get(locus).add(i, conv);
     }
     
     /**
@@ -174,27 +174,27 @@ public class ConversionGraph extends Tree {
     public void deleteConversion(Conversion conv) {
         startEditing(null);
         
-        convs.get(conv.getAlignment()).remove(conv);
+        convs.get(conv.getLocus()).remove(conv);
     }
     
     /**
-     * Retrieve list of conversions associated with given alignment.
+     * Retrieve list of conversions associated with given locus.
      *
-     * @param alignment alignment with which conversions are associated
+     * @param locus locus with which conversions are associated
      * @return List of conversions.
      */
-    public List<Conversion> getConversions(Alignment alignment) {
-        return convs.get(alignment);
+    public List<Conversion> getConversions(Locus locus) {
+        return convs.get(locus);
     }
 
     /**
-     * Obtain number of conversion events associated with given alignment.
+     * Obtain number of conversion events associated with given locus.
      *
-     * @param alignment alignment with which conversions are associated.
+     * @param locus locus with which conversions are associated.
      * @return Number of conversions.
      */
-    public int getConvCount(Alignment alignment) {
-        return convs.get(alignment).size();
+    public int getConvCount(Locus locus) {
+        return convs.get(locus).size();
     }
 
     /**
@@ -204,8 +204,8 @@ public class ConversionGraph extends Tree {
      */
     public int getTotalConvCount() {
         int convCount = 0;
-        for (Alignment alignment : alignments)
-            convCount += convs.get(alignment).size();
+        for (Locus locus : loci)
+            convCount += convs.get(locus).size();
 
         return convCount;
     }
@@ -219,12 +219,12 @@ public class ConversionGraph extends Tree {
      */
     public int getConversionIndex(Conversion conv) {
         int index = 0;
-        for (Alignment alignment : getAlignments()) {
-            if (alignment == conv.getAlignment()) {
-                index += getConversions(alignment).indexOf(conv);
+        for (Locus locus : getLoci()) {
+            if (locus == conv.getLocus()) {
+                index += getConversions(locus).indexOf(conv);
                 break;
             } else
-                index += getConvCount(alignment);
+                index += getConvCount(locus);
         }
 
         return index;
@@ -292,15 +292,15 @@ public class ConversionGraph extends Tree {
      * @return true if all conversions are valid w.r.t. clonal frame.
      */
     public boolean isValid() {
-        for (Alignment alignment : alignments) {
-            for (Conversion conv : convs.get(alignment)) {
+        for (Locus locus : loci) {
+            for (Conversion conv : convs.get(locus)) {
                 if (!conv.isValid()) {
                     return false;
                 }
                 if (conv.getStartSite() < 0
-                        || conv.getStartSite() >= getSequenceLength(alignment)
+                        || conv.getStartSite() >= locus.getSiteCount()
                         || conv.getEndSite() < 0
-                        || conv.getEndSite() >= getSequenceLength(alignment)) {
+                        || conv.getEndSite() >= locus.getSiteCount()) {
                     return false;
                 }
             }
@@ -313,10 +313,10 @@ public class ConversionGraph extends Tree {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (Alignment alignment : alignments) {
-            for (Conversion conv : getConversions(alignment)) {
+        for (Locus locus : loci) {
+            for (Conversion conv : getConversions(locus)) {
                 sb.append(String.format("[&%s,%d,%d,%s,%d,%d,%s] ",
-                        alignment.getID(),
+                        locus.getID(),
                         conv.node1.getNr(),
                         conv.startSite,
                         String.valueOf(conv.height1),
@@ -368,15 +368,15 @@ public class ConversionGraph extends Tree {
         Matcher convMatcher = convPattern.matcher(str);
         
         // Process recombinations
-        for (Alignment alignment : getAlignments())
-            convs.get(alignment).clear();
+        for (Locus locus : getLoci())
+            convs.get(locus).clear();
 
         while(convMatcher.find()) {
             String [] elements = convMatcher.group(1).split(",");
 
-            Alignment alignment = getAlignmentByID(elements[0]);
-            if (alignment == null)
-                throw new RuntimeException("Uknown alignment id "
+            Locus locus = getLocusByID(elements[0]);
+            if (locus == null)
+                throw new RuntimeException("Uknown locus id "
                         + elements[0] + ".  Aborting.");
 
             Node node1 = getNode(Integer.parseInt(elements[1]));
@@ -390,7 +390,7 @@ public class ConversionGraph extends Tree {
             Conversion conv = new Conversion(
                     node1, height1,
                     node2, height2,
-                    startLocus, endLocus, alignment);
+                    startLocus, endLocus, locus);
             
             addConversion(conv);
         }
@@ -415,9 +415,9 @@ public class ConversionGraph extends Tree {
         
         acg.convs = new HashMap<>();
         acg.storedConvs = new HashMap<>();
-        for (Alignment alignment : getAlignments()) {
-            acg.convs.put(alignment, new ArrayList<>(convs.get(alignment)));
-            acg.storedConvs.put(alignment, new ArrayList<>(storedConvs.get(alignment)));
+        for (Locus locus : getLoci()) {
+            acg.convs.put(locus, new ArrayList<>(convs.get(locus)));
+            acg.storedConvs.put(locus, new ArrayList<>(storedConvs.get(locus)));
         }
 
         return acg;
@@ -436,14 +436,14 @@ public class ConversionGraph extends Tree {
         if (other instanceof ConversionGraph) {
             ConversionGraph acg = (ConversionGraph)other;
 
-            alignments = acg.getAlignments();
+            loci = acg.getLoci();
         
             convs.clear();
             storedConvs.clear();
-            for (Alignment alignment : alignments) {
-                convs.put(alignment, new ArrayList<>());
-                for (Conversion conv : acg.getConversions(alignment))
-                    convs.get(alignment).add(conv.getCopy());
+            for (Locus locus : loci) {
+                convs.put(locus, new ArrayList<>());
+                for (Conversion conv : acg.getConversions(locus))
+                    convs.get(locus).add(conv.getCopy());
             }
 
             if (cfEventList == null)
@@ -455,8 +455,8 @@ public class ConversionGraph extends Tree {
             acgEventList.makeDirty();
 
             regionLists.clear();
-            for (Alignment alignment : alignments)
-                regionLists.put(alignment, new RegionList(this, alignment));
+            for (Locus locus : loci)
+                regionLists.put(locus, new RegionList(this, locus));
         }
     }
     
@@ -467,14 +467,14 @@ public class ConversionGraph extends Tree {
         if (other instanceof  ConversionGraph) {
             ConversionGraph acg = (ConversionGraph) other;
 
-            alignments = acg.getAlignments();
+            loci = acg.getLoci();
 
             convs.clear();
             storedConvs.clear();
-            for (Alignment alignment : alignments) {
-                convs.put(alignment, new ArrayList<>());
-                for (Conversion conv : acg.getConversions(alignment))
-                    convs.get(alignment).add(conv.getCopy());
+            for (Locus locus : loci) {
+                convs.put(locus, new ArrayList<>());
+                for (Conversion conv : acg.getConversions(locus))
+                    convs.get(locus).add(conv.getCopy());
             }
 
             if (cfEventList == null)
@@ -486,8 +486,8 @@ public class ConversionGraph extends Tree {
             acgEventList.makeDirty();
 
             regionLists.clear();
-            for (Alignment alignment : alignments)
-                regionLists.put(alignment, new RegionList(this, alignment));
+            for (Locus locus : loci)
+                regionLists.put(locus, new RegionList(this, locus));
         }
     }
     
@@ -536,8 +536,8 @@ public class ConversionGraph extends Tree {
             }
         }
         List<Event> events = new ArrayList<>();
-        for (Alignment alignment : getAlignments()) {
-            for (Conversion conv : getConversions(alignment)) {
+        for (Locus locus : getLoci()) {
+            for (Conversion conv : getConversions(locus)) {
                 if (intraCFOnly && conv.node2.isRoot())
                     continue;
 
@@ -576,11 +576,11 @@ public class ConversionGraph extends Tree {
             
             if (event.isArrival) {
                 String meta = !includeRegionInfo ? ""
-                        : String.format("[&conv=%d, region={%d,%d}, alignID=\"%s\"]",
-                                convs.get(event.conv.getAlignment()).indexOf(event.conv),
+                        : String.format("[&conv=%d, region={%d,%d}, locusID=\"%s\"]",
+                                convs.get(event.conv.getLocus()).indexOf(event.conv),
                                 event.conv.getStartSite(),
                                 event.conv.getEndSite(),
-                                event.conv.getAlignment().getID());
+                                event.conv.getLocus().getID());
 
                 sb.insert(cursor, "(,#" + getConversionIndex(event.conv)
                         + meta
@@ -627,13 +627,13 @@ public class ConversionGraph extends Tree {
     protected void store () {
         super.store();
         
-        for (Alignment alignment : getAlignments()) {
-            storedConvs.get(alignment).clear();
+        for (Locus locus : getLoci()) {
+            storedConvs.get(locus).clear();
 
-            for (Conversion conv : convs.get(alignment)) {
+            for (Conversion conv : convs.get(locus)) {
                 Conversion convCopy = new Conversion();
 
-                convCopy.setAlignment(conv.getAlignment());
+                convCopy.setLocus(conv.getLocus());
                 convCopy.setStartSite(conv.getStartSite());
                 convCopy.setEndSite(conv.getEndSite());
                 convCopy.setHeight1(conv.getHeight1());
@@ -644,7 +644,7 @@ public class ConversionGraph extends Tree {
 
                 convCopy.setConversionGraph(this);
 
-                storedConvs.get(alignment).add(convCopy);
+                storedConvs.get(locus).add(convCopy);
             }
         }
     }
@@ -653,14 +653,14 @@ public class ConversionGraph extends Tree {
     public void restore() {
         super.restore();
         
-        Map<Alignment, List<Conversion>> tmp = storedConvs;
+        Map<Locus, List<Conversion>> tmp = storedConvs;
         storedConvs = convs;
         convs = tmp;
 
         cfEventList.makeDirty();
         acgEventList.makeDirty();
-        for (Alignment alignment : alignments)
-            regionLists.get(alignment).makeDirty();
+        for (Locus locus : loci)
+            regionLists.get(locus).makeDirty();
     }
 
     @Override

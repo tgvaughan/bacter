@@ -38,7 +38,7 @@ public class RandomizedAlignment extends Alignment {
             Input.Validate.REQUIRED);
 
     public Input<Integer> sequenceLengthInput = new Input<>(
-            "sequenceLength",
+            "siteCount",
             "Length of randomized alignment to generate.",
             Input.Validate.REQUIRED);
 

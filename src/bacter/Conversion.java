@@ -43,16 +43,17 @@ public class Conversion {
      * @param height2
      * @param startSite
      * @param endSite
+     * @param locus
      */
     public Conversion(Node node1, double height1, Node node2, double height2,
-            int startSite, int endSite, Alignment alignment) {
+            int startSite, int endSite, Locus locus) {
         this.node1 = node1;
         this.node2 = node2;
         this.height1 = height1;
         this.height2 = height2;
         this.startSite = startSite;
         this.endSite = endSite;
-        this.alignment = alignment;
+        this.locus = locus;
     }
 
     /**
@@ -71,9 +72,9 @@ public class Conversion {
     protected int startSite, endSite;
 
     /**
-     * Alignment with which conversion is associated.
+     * Locus with which conversion is associated.
      */
-    protected Alignment alignment;
+    protected Locus locus;
 
     /**
      * Obtain node below most recent point at which recombinant edge
@@ -141,7 +142,7 @@ public class Conversion {
     }
 
     /**
-     * Set site of end of alignment region affected by conversion event.
+     * Set site of end of region affected by conversion event.
      * 
      * @param endSite 
      */
@@ -194,23 +195,23 @@ public class Conversion {
     }
 
     /**
-     * @return Alignment with which this conversion is associated.
+     * @return Locus with which this conversion is associated.
      */
-    public Alignment getAlignment() {
-        return alignment;
+    public Locus getLocus() {
+        return locus;
     }
 
     /**
-     * Set alignment that this conversion is associated with.
+     * Set locus that this conversion is associated with.
      *
-     * @param alignment alignment with which this conversion will be associated.
+     * @param locus locus with which this conversion will be associated.
      */
-    public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
+    public void setLocus(Locus locus) {
+        this.locus = locus;
     }
 
     /**
-     * @return total number of sites affected by this alignment.
+     * @return total number of sites affected by this conversion.
      */
     public int getSiteCount() {
         return (int)(endSite - startSite + 1);
@@ -271,7 +272,7 @@ public class Conversion {
      */
     public Conversion getCopy() {
         Conversion copy = new Conversion();
-        copy.alignment = alignment;
+        copy.locus = locus;
         copy.acg = acg;
         copy.startSite = startSite;
         copy.endSite = endSite;

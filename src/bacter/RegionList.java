@@ -31,7 +31,7 @@ import java.util.Set;
 public class RegionList {
 
     private final List<Region> regions;
-    private Alignment alignment;
+    private Locus locus;
     private boolean dirty;
 
     /**
@@ -43,12 +43,13 @@ public class RegionList {
      * Construct a new region list for the given ACG.  There should only
      * be one of these objects per ACG object, created during the ACG
      * initAndValidate().
-     * 
+     *
      * @param acg Conversion graph from which to compute region list.
+     * @param locus Locus with which this region list is associated.
      */
-    public RegionList(ConversionGraph acg, Alignment alignment) {
+    public RegionList(ConversionGraph acg, Locus locus) {
         this.acg = acg;
-        this.alignment = alignment;
+        this.locus = locus;
         regions = new ArrayList<>();
         dirty = true;
     }
@@ -93,11 +94,11 @@ public class RegionList {
         regions.clear();
 
         List<Conversion> convOrderedByStart = Lists.newArrayList();
-        convOrderedByStart.addAll(acg.getConversions(alignment));
+        convOrderedByStart.addAll(acg.getConversions(locus));
         convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
 
         List<Conversion> convOrderedByEnd = Lists.newArrayList();
-        convOrderedByEnd.addAll(acg.getConversions(alignment));
+        convOrderedByEnd.addAll(acg.getConversions(locus));
         convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
 
         Set<Conversion> activeConversions = Sets.newHashSet();
@@ -138,10 +139,10 @@ public class RegionList {
             }
         }
 
-        if (lastBoundary < acg.getSequenceLength(alignment)) {
+        if (lastBoundary < locus.getSiteCount()) {
             Region region = new Region();
             region.leftBoundary = lastBoundary;
-            region.rightBoundary = acg.getSequenceLength(alignment);
+            region.rightBoundary = locus.getSiteCount();
             regions.add(region);
         }
 
