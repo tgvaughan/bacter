@@ -30,12 +30,11 @@ import beast.evolution.tree.Node;
 import beast.util.AddOnManager;
 import beast.util.Randomizer;
 import beast.util.XMLProducer;
-import com.google.common.collect.Lists;
-import feast.input.In;
 import feast.nexus.CharactersBlock;
 import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,13 +62,16 @@ public class SimulatedAlignment extends Alignment {
             "useNexus",
             "Use Nexus format to write alignment file.",
             false);
+
+    public Input<String> locusIDinput = new Input<>("locusID",
+            "BEAST ID of locus for which alignment will be simulated.");
     
     private ConversionGraph acg;
     private SiteModel siteModel;
     private DataType dataType;
     
     public SimulatedAlignment() {
-        In.setOptional(sequenceInput);
+        sequenceInput.setRule(Input.Validate.OPTIONAL);
     }
 
     @Override
@@ -78,12 +80,18 @@ public class SimulatedAlignment extends Alignment {
         acg = acgInput.get();
         siteModel = siteModelInput.get();
 
+        if (acg.getAlignmentByID(locusIDinput.get()) == null)
+            throw new IllegalArgumentException("Locus with ID "
+                    + locusIDinput.get() + " not found.");
+
+        Alignment locus = acg.getAlignmentByID(locusIDinput.get());
+
         // We can't wait for Alignment.initAndValidate() to get the
         // data type for us.
         grabDataType();
 
         // Simulate alignment
-        simulate();
+        simulate(locus);
         
         super.initAndValidate();
         
@@ -103,7 +111,7 @@ public class SimulatedAlignment extends Alignment {
     /**
      * Perform actual sequence simulation.
      */
-    private void simulate() throws Exception {
+    private void simulate(Alignment locus) throws Exception {
         Node cfRoot = acg.getRoot();
         int nTaxa = acg.getLeafNodeCount();
         
@@ -113,7 +121,7 @@ public class SimulatedAlignment extends Alignment {
         int nStates = dataType.getStateCount();
         double[][] transitionProbs = new double[nCategories][nStates*nStates];
         
-        int[][] alignment = new int[nTaxa][acg.getTotalSequenceLength()];
+        int[][] alignment = new int[nTaxa][acg.getSequenceLength(locus)];
         
         for (Region region : acg.getRegions()) {
             int thisLength = region.getRegionLength();
@@ -236,7 +244,7 @@ public class SimulatedAlignment extends Alignment {
             dataType = userDataTypeInput.get();
         } else {
 
-            List<String> dataTypeDescList = Lists.newArrayList();
+            List<String> dataTypeDescList = new ArrayList<>();
             List<String> classNames = AddOnManager.find(beast.evolution.datatype.DataType.class, "beast.evolution.datatype");
             for (String className : classNames) {
                 try {
