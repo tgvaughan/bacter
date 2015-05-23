@@ -135,8 +135,8 @@ public class ACGEventList {
         }
 
         // Add conversion events:
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 Event departureEvent = new Event();
                 departureEvent.conversion = conv;
                 departureEvent.type = EventType.CONV_DEPART;

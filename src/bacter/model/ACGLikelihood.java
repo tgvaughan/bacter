@@ -17,6 +17,7 @@
 package bacter.model;
 
 import bacter.Conversion;
+import bacter.Locus;
 import bacter.MarginalTree;
 import bacter.Region;
 import beast.core.Description;
@@ -33,7 +34,6 @@ import beast.evolution.tree.Node;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
-import feast.input.In;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -47,15 +47,24 @@ import java.util.concurrent.Future;
 @Description("Probability of sequence data given recombination graph.")
 public class ACGLikelihood extends ACGDistribution {
 
-    public Input<Alignment> alignmentInput = new In<Alignment>(
-            "data", "Sequence data to evaluate probability of.").setRequired();
+    public Input<Alignment> alignmentInput = new Input<>(
+            "data",
+            "Sequence data to evaluate probability of.",
+            Input.Validate.REQUIRED);
+
+    public Input<Locus> locusInput = new Input<>(
+            "locus",
+            "Locus alignment is associated with.");
     
-    public Input<SiteModelInterface> siteModelInput = new In<SiteModelInterface>(
-            "siteModel", "Site model for evolution of alignment.").setRequired();
+    public Input<SiteModelInterface> siteModelInput = new Input<>(
+            "siteModel",
+            "Site model for evolution of alignment.",
+            Input.Validate.REQUIRED);
 
     SiteModel.Base siteModel;
     SubstitutionModel.Base substitutionModel;
     Alignment alignment;
+    Locus locus;
     
     Map<Set<Conversion>, LikelihoodCore> likelihoodCores;
     
@@ -83,7 +92,17 @@ public class ACGLikelihood extends ACGDistribution {
         alignment = alignmentInput.get();
         siteModel = (SiteModel.Base) siteModelInput.get();
         substitutionModel = (SubstitutionModel.Base) siteModel.getSubstitutionModel();
-        
+
+        if (acg.getLoci().size()==1) {
+            locus = acg.getLoci().get(0);
+        } else {
+            locus = locusInput.get();
+            if (locus == null) {
+                throw new IllegalArgumentException("Must specify locus in " +
+                        "ACGLikelihood for multi-locus ACGs.");
+            }
+        }
+
         nStates = alignment.getMaxStateCount();
 
         // Initialize patterns
@@ -174,7 +193,7 @@ public class ACGLikelihood extends ACGDistribution {
         patternLogLikelihoods.clear();
         rootPartials.clear();
         
-        for (Region region : acg.getRegions(alignment)) {
+        for (Region region : acg.getRegions(locus)) {
 
             Multiset<int[]> patSet;
             if (patterns.containsKey(region.activeConversions))

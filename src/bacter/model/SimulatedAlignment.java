@@ -18,6 +18,7 @@
 package bacter.model;
 
 import bacter.ConversionGraph;
+import bacter.Locus;
 import bacter.MarginalTree;
 import bacter.Region;
 import beast.core.Description;
@@ -63,8 +64,8 @@ public class SimulatedAlignment extends Alignment {
             "Use Nexus format to write alignment file.",
             false);
 
-    public Input<String> locusIDinput = new Input<>("locusID",
-            "BEAST ID of locus for which alignment will be simulated.");
+    public Input<Locus> locusInput = new Input<>("locus",
+            "Locus for which alignment will be simulated.");
     
     private ConversionGraph acg;
     private SiteModel siteModel;
@@ -80,20 +81,15 @@ public class SimulatedAlignment extends Alignment {
         acg = acgInput.get();
         siteModel = siteModelInput.get();
 
-        Alignment locus;
-        if (acg.getAlignments().size()==1)
-            locus = acg.getAlignments().get(0);
+        Locus locus;
+        if (acg.getLoci().size()==1)
+            locus = acg.getLoci().get(0);
         else {
-            if (locusIDinput.get() == null)
-                throw new IllegalArgumentException("Must specify locus ID" +
+            locus = locusInput.get();
+            if (locus == null)
+                throw new IllegalArgumentException("Must specify locus" +
                         " when simulating alignment from ACG associated" +
                         " with multiple loci.");
-
-            if (acg.getAlignmentByID(locusIDinput.get()) == null)
-                throw new IllegalArgumentException("Locus with ID "
-                        + locusIDinput.get() + " not found.");
-
-            locus = acg.getAlignmentByID(locusIDinput.get());
         }
 
         // We can't wait for Alignment.initAndValidate() to get the
@@ -121,7 +117,7 @@ public class SimulatedAlignment extends Alignment {
     /**
      * Perform actual sequence simulation.
      */
-    private void simulate(Alignment locus) throws Exception {
+    private void simulate(Locus locus) throws Exception {
         Node cfRoot = acg.getRoot();
         int nTaxa = acg.getLeafNodeCount();
         
@@ -131,7 +127,7 @@ public class SimulatedAlignment extends Alignment {
         int nStates = dataType.getStateCount();
         double[][] transitionProbs = new double[nCategories][nStates*nStates];
         
-        int[][] alignment = new int[nTaxa][acg.getSequenceLength(locus)];
+        int[][] alignment = new int[nTaxa][locus.getSiteCount()];
         
         for (Region region : acg.getRegions(locus)) {
             int thisLength = region.getRegionLength();

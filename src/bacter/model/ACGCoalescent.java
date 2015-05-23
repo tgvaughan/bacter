@@ -18,16 +18,13 @@ package bacter.model;
 
 import bacter.CFEventList;
 import bacter.Conversion;
-import bacter.ConversionGraph;
-import bacter.model.ACGDistribution;
+import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.coalescent.PopulationFunction;
-import beast.math.GammaFunction;
-import feast.input.In;
+
 import java.util.List;
 import java.util.Random;
 
@@ -37,24 +34,23 @@ import java.util.Random;
 @Description("Appoximation to the coalescent with gene conversion.")
 public class ACGCoalescent extends ACGDistribution {
     
-    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
-            "populationModel", "Population model.").setRequired();
+    public Input<PopulationFunction> popFuncInput = new Input<>(
+            "populationModel", "Population model.", Input.Validate.REQUIRED);
     
-    public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
-            "Recombination rate parameter.").setRequired();
+    public Input<RealParameter> rhoInput = new Input<>("rho",
+            "Recombination rate parameter.", Input.Validate.REQUIRED);
     
-    public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
-            "Tract length parameter.").setRequired();
+    public Input<RealParameter> deltaInput = new Input<>("delta",
+            "Tract length parameter.", Input.Validate.REQUIRED);
 
-    public Input<Integer> lowerCCBoundInput = new In<Integer>("lowerConvCountBound",
-            "Lower bound on conversion count.").setDefault(0);
+    public Input<Integer> lowerCCBoundInput = new Input<>("lowerConvCountBound",
+            "Lower bound on conversion count.", 0);
 
-    public Input<Integer> upperCCBoundInput = new In<Integer>("upperConvCountBound",
-            "Upper bound on conversion count.").setDefault(Integer.MAX_VALUE);
+    public Input<Integer> upperCCBoundInput = new Input<>("upperConvCountBound",
+            "Upper bound on conversion count.", Integer.MAX_VALUE);
 
     PopulationFunction popFunc;
-    int sequenceLength;
-    
+
     public ACGCoalescent() { }
     
     @Override
@@ -79,7 +75,7 @@ public class ACGCoalescent extends ACGDistribution {
             double poissonMean = rhoInput.get().getValue()
                     *acg.getClonalFrameLength()
                     *(acg.getTotalSequenceLength()
-                    +acg.getAlignments().size()*deltaInput.get().getValue());
+                    +acg.getLoci().size()*deltaInput.get().getValue());
             logP += -poissonMean + acg.getTotalConvCount()*Math.log(poissonMean);
             //      - GammaFunction.lnGamma(acg.getConvCount()+1);
         } else {
@@ -88,8 +84,8 @@ public class ACGCoalescent extends ACGDistribution {
         }
         
 
-        for (Alignment alignment : acg.getAlignments())
-            for (Conversion conv : acg.getConversions(alignment))
+        for (Locus locus : acg.getLoci())
+            for (Conversion conv : acg.getConversions(locus))
                 logP += calculateConversionLogP(conv);
         
         // This N! takes into account the permutation invariance of
@@ -129,7 +125,7 @@ public class ACGCoalescent extends ACGDistribution {
     
     /**
      * Compute probability of recombinant edges under conditional coalescent.
-     * @param conv
+     * @param conv conversion with which edge is associated
      * @return log(P)
      */
     public double calculateConversionLogP(Conversion conv) {
@@ -166,11 +162,11 @@ public class ACGCoalescent extends ACGDistribution {
         // Probability of start site:
         if (conv.getStartSite()==0)
             thisLogP += Math.log((deltaInput.get().getValue() + 1)
-                /(acg.getAlignments().size()*deltaInput.get().getValue()
+                /(acg.getLoci().size()*deltaInput.get().getValue()
                     + acg.getTotalSequenceLength()));
         else
             thisLogP += Math.log(
-                    1.0/(acg.getAlignments().size()*deltaInput.get().getValue()
+                    1.0/(acg.getLoci().size()*deltaInput.get().getValue()
                             + acg.getTotalSequenceLength()));
 
         // Probability of end site:
@@ -179,9 +175,9 @@ public class ACGCoalescent extends ACGDistribution {
             / deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (conv.getEndSite() == acg.getSequenceLength(conv.getAlignment())-1)
+        if (conv.getEndSite() == conv.getLocus().getSiteCount()-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength(conv.getAlignment())-conv.getStartSite());
+                    conv.getLocus().getSiteCount()-conv.getStartSite());
 
         thisLogP += Math.log(probEnd);
         

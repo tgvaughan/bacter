@@ -20,6 +20,7 @@ package bacter.model;
 import bacter.CFEventList;
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
@@ -67,7 +68,9 @@ public class SimulatedACG extends ConversionGraph {
     private int nTaxa;
     private TaxonSet taxonSet;
     
-    public SimulatedACG() { }
+    public SimulatedACG() {
+        m_taxonset.setRule(Input.Validate.REQUIRED);
+    }
     
     @Override
     public void initAndValidate() throws Exception {
@@ -75,10 +78,6 @@ public class SimulatedACG extends ConversionGraph {
         rho = rhoInput.get();
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
-        
-        nTaxa = alignmentsInput.get().get(0).getTaxonCount();
-        taxonSet = new TaxonSet(alignmentsInput.get().get(0));
-        m_taxonset.setValue(taxonSet, this);
         
         // Need to do this here as Tree.processTraits(), which is called
         // by hasDateTrait() and hence simulateClonalFrame(), expects a
@@ -103,7 +102,7 @@ public class SimulatedACG extends ConversionGraph {
 
             NexusBuilder nexusBuilder = new NexusBuilder();
             
-            nexusBuilder.append(new TaxaBlock(taxonSet));
+            nexusBuilder.append(new TaxaBlock(m_taxonset.get()));
             
             nexusBuilder.append((new TreesBlock() {
                 @Override
@@ -123,13 +122,13 @@ public class SimulatedACG extends ConversionGraph {
                 public List<String> getBlockLines() {
                     List<String> lines = new ArrayList<>();
                     lines.add("clonalframe " + root.toShortNewick(true));
-                    for (Alignment alignment : getAlignments()) {
-                        for (Conversion conv : getConversions(alignment)) {
+                    for (Locus locus : getLoci()) {
+                        for (Conversion conv : getConversions(locus)) {
                             lines.add("conversion node1=" + conv.getNode1().getNr()
                                     + " node2=" + conv.getNode2().getNr()
                                     + " site1=" + conv.getStartSite()
                                     + " site2=" + conv.getEndSite()
-                                    + " alignment=" + alignment.getID());
+                                    + " locus=" + locus.getID());
                         }
                     }
                     
@@ -226,26 +225,26 @@ public class SimulatedACG extends ConversionGraph {
 
         // Draw number of conversions:
         int Nconv = (int) Randomizer.nextPoisson(rho*getClonalFrameLength()*
-            (getTotalSequenceLength()+delta*getAlignments().size()));
+            (getTotalSequenceLength()+delta*getLoci().size()));
 
         // Generate conversions:
         for (int i=0; i<Nconv; i++) {
             // Choose alignment
             double u = Randomizer.nextDouble()*(getTotalSequenceLength()
-                    + delta*getAlignments().size());
+                    + delta*getLoci().size());
 
-            Alignment affectedAlignment = null;
-            for (Alignment alignment : getAlignments()) {
-                if (u < getSequenceLength(alignment) + delta) {
-                    affectedAlignment = alignment;
+            Locus affectedLocus = null;
+            for (Locus locus : getLoci()) {
+                if (u < locus.getSiteCount() + delta) {
+                    affectedLocus = locus;
                     break;
                 } else
-                    u -= getSequenceLength(alignment) + delta;
+                    u -= locus.getSiteCount() + delta;
             }
 
-            if (affectedAlignment == null)
+            if (affectedLocus == null)
                 throw new IllegalStateException("Programmer error: " +
-                        "alignment choice loop fell through.");
+                        "locus choice loop fell through.");
 
             int startSite, endSite;
             if (u<delta) {
@@ -254,10 +253,10 @@ public class SimulatedACG extends ConversionGraph {
                 startSite = (int)(u-delta);
             }
             endSite = startSite + (int)Randomizer.nextGeometric(1.0/delta);
-            endSite = Math.min(endSite, getSequenceLength(affectedAlignment)-1);
+            endSite = Math.min(endSite, affectedLocus.getSiteCount()-1);
 
             Conversion conv = new Conversion();
-            conv.setAlignment(affectedAlignment);
+            conv.setLocus(affectedLocus);
             conv.setStartSite(startSite);
             conv.setEndSite(endSite);
             associateConversionWithCF(conv);

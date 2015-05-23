@@ -231,21 +231,25 @@ public class ConversionGraph extends Tree {
     }
 
     /**
-     * Get list of contiguous regions having fixed marginal trees. 
-     * 
+     * Get list of contiguous regions having fixed marginal trees
+     * associated with given locus.
+     *
+     * @param locus locus with which regions are associated
      * @return list of regions
      */
-    public List<Region> getRegions(Alignment alignment) {
-        return regionLists.get(alignment).getRegions();
+    public List<Region> getRegions(Locus locus) {
+        return regionLists.get(locus).getRegions();
     }
 
     /**
-     * Obtain number of contiguous single-tree regions.
-     * 
+     * Obtain number of contiguous single-tree regions associated with
+     * given locus.
+     *
+     * @param locus locus with which regions are associated
      * @return Number of regions.
      */
-    public int getRegionCount(Alignment alignment) {
-        return regionLists.get(alignment).getRegions().size();
+    public int getRegionCount(Locus locus) {
+        return regionLists.get(locus).getRegions().size();
     }
 
     /**
