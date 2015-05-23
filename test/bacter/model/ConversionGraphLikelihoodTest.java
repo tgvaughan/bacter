@@ -137,7 +137,8 @@ public class ConversionGraphLikelihoodTest extends TestBase {
                 "rho", 5.0/locus.getSiteCount(),
                 "delta", 1000.0,
                 "populationModel", popFunc,
-                "locus", locus);
+                "locus", locus,
+                "taxonset", taxonSet);
         
         System.out.println(acg);
 

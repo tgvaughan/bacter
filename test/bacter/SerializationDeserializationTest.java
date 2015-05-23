@@ -89,7 +89,7 @@ public class SerializationDeserializationTest extends TestBase {
         // Read ARG back in from DOM
         ConversionGraph argNew = new ConversionGraph();
         argNew.assignFrom(tree);
-        argNew.initByName("alignment", alignment);
+        argNew.initByName("locus", locus);
         argNew.fromXML(docNode);
         
         // Check that new ARG matches old
@@ -159,7 +159,7 @@ public class SerializationDeserializationTest extends TestBase {
         
         // Read ACG back in from string
         ConversionGraph argNew = new ConversionGraph();
-        argNew.initByName("alignment", alignment, "fromString", argString);
+        argNew.initByName("locus", locus, "fromString", argString);
         
         // Check that new ACG matches old
         Conversion newConv1 = argNew.getConversions(locus).get(0);

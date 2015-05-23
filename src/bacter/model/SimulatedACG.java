@@ -65,9 +65,7 @@ public class SimulatedACG extends ConversionGraph {
 
     private double rho, delta;
     private PopulationFunction popFunc;
-    private int nTaxa;
-    private TaxonSet taxonSet;
-    
+
     public SimulatedACG() {
         m_taxonset.setRule(Input.Validate.REQUIRED);
     }
@@ -78,7 +76,7 @@ public class SimulatedACG extends ConversionGraph {
         rho = rhoInput.get();
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
-        
+
         // Need to do this here as Tree.processTraits(), which is called
         // by hasDateTrait() and hence simulateClonalFrame(), expects a
         // tree with nodes.
@@ -149,10 +147,10 @@ public class SimulatedACG extends ConversionGraph {
 
         // Initialize leaf nodes
         List<Node> leafNodes = Lists.newArrayList();
-        for (int i=0; i<nTaxa; i++) {
+        for (int i=0; i<m_taxonset.get().getTaxonCount(); i++) {
             Node leaf = new Node();
             leaf.setNr(i);
-            leaf.setID(taxonSet.asStringList().get(i));
+            leaf.setID(m_taxonset.get().asStringList().get(i));
                         
             if (hasDateTrait())
                 leaf.setHeight(getDateTrait().getValue(leaf.getID()));
