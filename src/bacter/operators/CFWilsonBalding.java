@@ -17,10 +17,10 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 import feast.input.In;
@@ -254,8 +254,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             double upperBound = Math.min(node.getParent().getHeight(),
                     srcNodeP.getHeight());
 
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment)) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getHeight1() > lowerBound && conv.getHeight1() < upperBound) {
                         if (conv.getNode1() == srcNode)
                             conv.setNode1(node);
@@ -288,11 +288,11 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
             double Nexp = L*rhoInput.get().getValue()
                     *(acg.getTotalSequenceLength()
-                    + acg.getAlignments().size()*deltaInput.get().getValue());
+                    + acg.getLoci().size()*deltaInput.get().getValue());
 
             List<Conversion> toRemove = new ArrayList<>();
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment)) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == srcNodeS
                             || (conv.getNode1() == srcNode && conv.getHeight1() > maxChildHeight))
                         toRemove.add(conv);
@@ -344,8 +344,8 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
         Node node = srcNode.getParent();
         while (node != null) {
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment)) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == node && conv.getHeight1() < destTime) {
                         if (Randomizer.nextBoolean())
                             conv.setNode1(srcNode);
@@ -376,7 +376,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             double L = 2.0*(destTime - destNode.getHeight());
             double Nexp = L*rhoInput.get().getValue()
                     *(acg.getTotalSequenceLength()
-                    + acg.getAlignments().size()*deltaInput.get().getValue());
+                    + acg.getLoci().size()*deltaInput.get().getValue());
             int N = (int)Randomizer.nextPoisson(Nexp);
 
             logP += -Nexp + N*Math.log(Nexp); // Factorial cancels

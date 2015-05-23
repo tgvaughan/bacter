@@ -18,6 +18,7 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.Locus;
 import beast.core.Description;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
@@ -85,7 +86,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
             return Double.NEGATIVE_INFINITY;
 
         Conversion convA = new Conversion();
-        convA.setAlignment(conv.getAlignment());
+        convA.setLocus(conv.getLocus());
         convA.setNode1(conv.getNode1());
         convA.setHeight1(conv.getHeight1());
         convA.setNode2(detour);
@@ -107,8 +108,8 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         // Count number of node1s and node2s attached to detour edge
         int node1Count = 0;
         int node2Count = 0;
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion thisConv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion thisConv : acg.getConversions(locus)) {
                 if (thisConv.getNode1() == detour && thisConv.getNode2() != detour)
                     node1Count += 1;
 
@@ -138,8 +139,8 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         List<Conversion> convApotentials = new ArrayList<>();
         List<Conversion> convBpotentials = new ArrayList<>();
 
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode2() == detour && conv.getNode1() != detour)
                     convApotentials.add(conv);
 
@@ -169,7 +170,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         conv.setHeight2(convB.getHeight2());
         conv.setStartSite(convA.getStartSite());
         conv.setEndSite(convA.getEndSite());
-        conv.setAlignment(convA.getAlignment());
+        conv.setLocus(convA.getLocus());
 
         acg.deleteConversion(convA);
         acg.deleteConversion(convB);

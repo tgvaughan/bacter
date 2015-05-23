@@ -17,6 +17,7 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
@@ -62,8 +63,8 @@ public class CFSubtreeSlide extends ACGOperator {
 
             Node newSister = sister;
             while (true) {
-                for (Alignment alignment : acg.getAlignments()) {
-                    for (Conversion conv : acg.getConversions(alignment)) {
+                for (Locus locus : acg.getLoci()) {
+                    for (Conversion conv : acg.getConversions(locus)) {
                         if (conv.getNode1() == node
                                 && conv.getHeight1() > newHeight
                                 && conv.getHeight1() > newSister.getHeight()) {
@@ -114,8 +115,8 @@ public class CFSubtreeSlide extends ACGOperator {
 
             parent.setHeight(newHeight);
 
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment)) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == newSister && conv.getHeight1() > newHeight) {
                         if (!parent.isRoot())
                             conv.setNode1(parent);
@@ -147,8 +148,8 @@ public class CFSubtreeSlide extends ACGOperator {
 
             // Move any conversions on edge previously above parent to edge
             // above sister
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment)) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == parent)
                         conv.setNode1(sister);
                     if (conv.getNode2() == parent)
@@ -158,8 +159,8 @@ public class CFSubtreeSlide extends ACGOperator {
 
             Node newSister = sister;
             while (true) {
-                for (Alignment alignment : acg.getAlignments()) {
-                    for (Conversion conv : acg.getConversions(alignment)) {
+                for (Locus locus : acg.getLoci()) {
+                    for (Conversion conv : acg.getConversions(locus)) {
                         if (conv.getNode1() == newSister
                                 && conv.getHeight1() > parent.getHeight()
                                 && conv.getHeight1() < newHeight) {
@@ -201,8 +202,8 @@ public class CFSubtreeSlide extends ACGOperator {
 
             parent.setHeight(newHeight);
 
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment)) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == newSister && conv.getHeight2() < newHeight)
                         conv.setNode1(parent);
 

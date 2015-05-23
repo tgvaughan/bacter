@@ -17,7 +17,6 @@
 
 package bacter.operators;
 
-import bacter.operators.ACGOperator;
 import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
@@ -47,12 +46,12 @@ public class ConvertedRegionShift extends ACGOperator {
         
         Conversion conv = chooseConversion();
         
-        int radius = (int)Math.round(argInput.get().getSequenceLength(conv.getAlignment())
+        int radius = (int)Math.round(conv.getLocus().getSiteCount()
             *apertureSizeInput.get())/2;
 
         int delta = Randomizer.nextInt(radius*2 + 1) - radius;
         
-        if (conv.getEndSite() + delta > acg.getSequenceLength(conv.getAlignment()) - 1)
+        if (conv.getEndSite() + delta > conv.getLocus().getSiteCount() - 1)
             return Double.NEGATIVE_INFINITY;
 
         if (conv.getStartSite() + delta<0)

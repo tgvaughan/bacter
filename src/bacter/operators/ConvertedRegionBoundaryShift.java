@@ -56,11 +56,11 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
         } else {
             currentLocus = conv.getEndSite();
             minLocus = conv.getStartSite();
-            maxLocus = acg.getSequenceLength(conv.getAlignment())-1;
+            maxLocus = conv.getLocus().getSiteCount()-1;
         }
         
-        int radius = (int)Math.round(argInput.get().getSequenceLength(conv.getAlignment())
-                *apertureSizeInput.get())/2;
+        int radius = (int)Math.round(conv.getLocus().getSiteCount()
+                * apertureSizeInput.get())/2;
         
         int newLocus = currentLocus + Randomizer.nextInt(2*radius+1)-radius;
         

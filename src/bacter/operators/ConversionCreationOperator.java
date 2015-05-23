@@ -17,6 +17,7 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.Locus;
 import bacter.operators.EdgeCreationOperator;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -47,17 +48,17 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
 
         // Total effective number of possible start sites
         double alpha = acg.getTotalSequenceLength()
-                + acg.getAlignments().size()*deltaInput.get().getValue();
+                + acg.getLoci().size()*deltaInput.get().getValue();
 
         // Draw location of converted region.
         int startSite = -1;
-        int endSite = -1;
-        Alignment alignment = null;
+        int endSite;
+        Locus locus = null;
 
         double u = Randomizer.nextDouble()*alpha;
-        for (Alignment thisAlignment : acg.getAlignments()) {
-            if (u < deltaInput.get().getValue() + acg.getSequenceLength(thisAlignment)) {
-                alignment = thisAlignment;
+        for (Locus thisLocus : acg.getLoci()) {
+            if (u < deltaInput.get().getValue() + thisLocus.getSiteCount()) {
+                locus = thisLocus;
 
                 if (u < deltaInput.get().getValue()) {
                     startSite = 0;
@@ -70,28 +71,28 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
                 break;
             }
 
-            u -= deltaInput.get().getValue() + acg.getSequenceLength(thisAlignment);
+            u -= deltaInput.get().getValue() + thisLocus.getSiteCount();
         }
 
-        if (alignment == null)
+        if (locus == null)
             throw new IllegalStateException("Programmer error: " +
                     "loop in drawAffectedRegion() fell through.");
 
         endSite = startSite + (int)Randomizer.nextGeometric(1.0/deltaInput.get().getValue());
-        endSite = Math.min(endSite, acg.getSequenceLength(alignment)-1);
+        endSite = Math.min(endSite, locus.getSiteCount()-1);
 
         // Probability of end site:
         double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
             endSite-startSite)/ deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (endSite == acg.getSequenceLength(alignment)-1)
+        if (endSite == locus.getSiteCount()-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength(alignment)-startSite);
+                    locus.getSiteCount()-startSite);
 
         logP += Math.log(probEnd);
 
-        conv.setAlignment(alignment);
+        conv.setLocus(locus);
         conv.setStartSite(startSite);
         conv.setEndSite(endSite);
 
@@ -102,7 +103,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
      * Calculate probability of choosing region affected by the given
      * conversion under the ClonalOrigin model.
      * 
-     * @param conv
+     * @param conv conversion region is associated with
      * @return log probability density
      */
     public double getAffectedRegionProb(Conversion conv) {
@@ -110,7 +111,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
 
         // Total effective number of possible start sites
         double alpha = acg.getTotalSequenceLength()
-                + acg.getAlignments().size()*deltaInput.get().getValue();
+                + acg.getLoci().size()*deltaInput.get().getValue();
 
 
         // Calculate probability of converted region.
@@ -125,9 +126,9 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             / deltaInput.get().getValue();
         
         // Include probability of going past the end:
-        if (conv.getEndSite() == acg.getSequenceLength(conv.getAlignment())-1)
+        if (conv.getEndSite() == conv.getLocus().getSiteCount()-1)
             probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    acg.getSequenceLength(conv.getAlignment())-conv.getStartSite());
+                    conv.getLocus().getSiteCount()-conv.getStartSite());
 
         logP += Math.log(probEnd);
 

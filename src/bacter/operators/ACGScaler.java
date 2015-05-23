@@ -18,6 +18,7 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
@@ -83,8 +84,8 @@ public class ACGScaler extends ACGOperator {
         }
         
         // Scale recombinant edges:
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion recomb : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion recomb : acg.getConversions(locus)) {
 
                 if (!rootOnly || recomb.getNode1().getParent().isRoot()) {
                     recomb.setHeight1(recomb.getHeight1() * f);

@@ -17,10 +17,10 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 import feast.input.In;
@@ -86,8 +86,8 @@ public class CFUniform extends ConversionCreationOperator {
         }
 
         if (newHeight>oldHeight) {
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment)) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == node && conv.getHeight1() < newHeight) {
                         conv.setNode1(Randomizer.nextBoolean() ? leftChild : rightChild);
                         logHGF -= logHalf;
@@ -106,7 +106,7 @@ public class CFUniform extends ConversionCreationOperator {
                 // Draw a number of conversions
                 double L = 2.0*(newHeight-oldHeight);
                 double Nexp = L*rhoInput.get().getValue()
-                        *(acg.getTotalSequenceLength()+acg.getAlignments().size()*deltaInput.get().getValue());
+                        *(acg.getTotalSequenceLength()+acg.getLoci().size()*deltaInput.get().getValue());
                 int N = (int)Randomizer.nextPoisson(Nexp);
                 logHGF -= -Nexp + N*Math.log(Nexp); // N! cancels
 
@@ -133,8 +133,8 @@ public class CFUniform extends ConversionCreationOperator {
 
             List<Conversion> toRemove = new ArrayList<>();
 
-            for (Alignment alignment : acg.getAlignments()) {
-                for (Conversion conv : acg.getConversions(alignment)) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
                     if ((conv.getNode1() == leftChild || conv.getNode1() == rightChild)
                             && conv.getHeight1() > newHeight) {
                         if (node.isRoot()) {
@@ -157,7 +157,7 @@ public class CFUniform extends ConversionCreationOperator {
             if (node.isRoot()) {
                 double L = 2.0*(oldHeight-newHeight);
                 double Nexp = L*rhoInput.get().getValue()*
-                        (acg.getTotalSequenceLength() + acg.getAlignments().size()*deltaInput.get().getValue());
+                        (acg.getTotalSequenceLength() + acg.getLoci().size()*deltaInput.get().getValue());
                 logHGF += -Nexp + toRemove.size()*Math.log(Nexp); // N! cancels
 
                 for (Conversion conv : toRemove) {

@@ -17,9 +17,8 @@
 package bacter.operators;
 
 import bacter.Conversion;
-import bacter.operators.ACGOperator;
-import bacter.operators.EdgeCreationOperator;
-import beast.evolution.alignment.Alignment;
+import bacter.Locus;
+import beast.core.Description;
 import beast.util.Randomizer;
 
 /**
@@ -32,45 +31,46 @@ import beast.util.Randomizer;
  *
  * @author Tim Vaughan (tgvaughan@gmail.com)
  */
+@Description("Operator which merges or splits conversions.")
 public class MergeSplitConversion extends ACGOperator {
 
     @Override
     public double proposal() {
 
-        Alignment alignment = chooseAlignment();
+        Locus locus = chooseLocus();
 
         if (Randomizer.nextBoolean())
-            return mergeProposal(alignment);
+            return mergeProposal(locus);
         else
-            return splitProposal(alignment);
+            return splitProposal(locus);
     }
 
     /**
      * Perform merge portion of merge/split move.
      *
-     * @param alignment alignment on which to apply move
+     * @param locus locus on which to apply move
      * @return log of move HR
      */
-    private double mergeProposal(Alignment alignment) {
+    private double mergeProposal(Locus locus) {
 
         double logHGF = 0.0;
 
-        if (acg.getConvCount(alignment)<2)
+        if (acg.getConvCount(locus)<2)
             return Double.NEGATIVE_INFINITY;
 
-        Conversion conv1 = acg.getConversions(alignment).get(
-            Randomizer.nextInt(acg.getConvCount(alignment)));
+        Conversion conv1 = acg.getConversions(locus).get(
+            Randomizer.nextInt(acg.getConvCount(locus)));
 
         Conversion conv2;
         do {
-            conv2 = acg.getConversions(alignment).get(
-                Randomizer.nextInt(acg.getConvCount(alignment)));
+            conv2 = acg.getConversions(locus).get(
+                Randomizer.nextInt(acg.getConvCount(locus)));
         } while (conv2 == conv1);
 
         if (conv2.getNode1() != conv1.getNode1() || conv2.getNode2() != conv1.getNode2())
             return Double.NEGATIVE_INFINITY;
 
-        logHGF -= Math.log(1.0/(acg.getConvCount(alignment)*(acg.getConvCount(alignment)-1)));
+        logHGF -= Math.log(1.0/(acg.getConvCount(locus)*(acg.getConvCount(locus)-1)));
 
         int minStart = conv1.getStartSite() < conv2.getStartSite()
             ? conv1.getStartSite() : conv2.getStartSite();
@@ -94,7 +94,7 @@ public class MergeSplitConversion extends ACGOperator {
         conv1.setStartSite(minStart);
         conv1.setEndSite(maxEnd);
 
-        logHGF += Math.log(1.0/acg.getConvCount(alignment));
+        logHGF += Math.log(1.0/acg.getConvCount(locus));
 
         return logHGF;
     }
@@ -102,23 +102,23 @@ public class MergeSplitConversion extends ACGOperator {
     /**
      * Perform split component of merge/split move.
      *
-     * @param alignment alignment on which to apply move
+     * @param locus locus on which to apply move
      * @return log of move HR
      */
-    private double splitProposal(Alignment alignment) {
+    private double splitProposal(Locus locus) {
 
         double logHGF = 0.0;
 
-        if (acg.getConvCount(alignment) == 0)
+        if (acg.getConvCount(locus) == 0)
             return Double.NEGATIVE_INFINITY;
 
-        Conversion conv1 = acg.getConversions(alignment).get(
-            Randomizer.nextInt(acg.getConvCount(alignment)));
+        Conversion conv1 = acg.getConversions(locus).get(
+            Randomizer.nextInt(acg.getConvCount(locus)));
 
-        logHGF -= Math.log(1.0/acg.getConvCount(alignment));
+        logHGF -= Math.log(1.0/acg.getConvCount(locus));
 
         Conversion conv2 = new Conversion();
-        conv2.setAlignment(alignment);
+        conv2.setLocus(locus);
         conv2.setNode1(conv1.getNode1());
         conv2.setNode2(conv1.getNode2());
 
@@ -176,7 +176,7 @@ public class MergeSplitConversion extends ACGOperator {
 
         acg.addConversion(conv2);
 
-        logHGF += Math.log(1.0/(acg.getConvCount(alignment)*(acg.getConvCount(alignment)-1)));
+        logHGF += Math.log(1.0/(acg.getConvCount(locus)*(acg.getConvCount(locus)-1)));
 
         return logHGF;
     }
