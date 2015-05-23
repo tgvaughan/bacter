@@ -40,7 +40,10 @@ public class SerializationDeserializationTest extends TestBase {
         
         Alignment alignment = getAlignment();
         alignment.setID("alignment");
-        
+
+        Locus locus = new Locus(alignment.getSiteCount());
+        locus.setID("locus");
+
         // ConversionGraph
         ConversionGraph acg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
@@ -49,7 +52,7 @@ public class SerializationDeserializationTest extends TestBase {
                 "taxa", alignment);
         
         acg.assignFrom(tree);
-        acg.initByName("alignment", alignment);
+        acg.initByName("locus", locus);
         
         //Add recombination event 1
         Node node1 = acg.getExternalNodes().get(0);
@@ -59,7 +62,7 @@ public class SerializationDeserializationTest extends TestBase {
         int startLocus = 100;
         int endLocus = 200;
         Conversion recomb1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, alignment);
+                startLocus, endLocus, locus);
         acg.addConversion(recomb1);
         
         //Add recombination event 2
@@ -70,7 +73,7 @@ public class SerializationDeserializationTest extends TestBase {
         startLocus = 300;
         endLocus = 400;
         Conversion recomb2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, alignment);
+                startLocus, endLocus, locus);
         acg.addConversion(recomb2);
         
         // Write ARG out to XML string
@@ -90,7 +93,7 @@ public class SerializationDeserializationTest extends TestBase {
         argNew.fromXML(docNode);
         
         // Check that new ARG matches old
-        Conversion newRecomb1 = argNew.getConversions(alignment).get(0);
+        Conversion newRecomb1 = argNew.getConversions(locus).get(0);
         assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
         assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
         assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
@@ -98,7 +101,7 @@ public class SerializationDeserializationTest extends TestBase {
         assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
         assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
         
-        Conversion newRecomb2 = argNew.getConversions(alignment).get(1);
+        Conversion newRecomb2 = argNew.getConversions(locus).get(1);
         assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
         assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
         assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
@@ -115,6 +118,9 @@ public class SerializationDeserializationTest extends TestBase {
 
         Alignment alignment = getAlignment();
         alignment.setID("alignment");
+
+        Locus locus = new Locus(alignment.getSiteCount());
+        locus.setID("locus");
         
         // ConversionGraph
         ConversionGraph arg = new ConversionGraph();
@@ -124,7 +130,7 @@ public class SerializationDeserializationTest extends TestBase {
                 "taxa", alignment);
         
         arg.assignFrom(tree);
-        arg.initByName("alignment", alignment);
+        arg.initByName("locus", locus);
         
         //Add recombination event 1
         Node node1 = arg.getExternalNodes().get(0);
@@ -133,9 +139,9 @@ public class SerializationDeserializationTest extends TestBase {
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
-        Conversion recomb1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, alignment);
-        arg.addConversion(recomb1);
+        Conversion conv1 = new Conversion(node1, height1, node2, height2,
+                startLocus, endLocus, locus);
+        arg.addConversion(conv1);
         
         //Add recombination event 2
         node1 = arg.getExternalNodes().get(0);
@@ -144,33 +150,33 @@ public class SerializationDeserializationTest extends TestBase {
         height2 = node2.getHeight() + 1.0;
         startLocus = 300;
         endLocus = 400;
-        Conversion recomb2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, alignment);
-        arg.addConversion(recomb2);
+        Conversion conv2 = new Conversion(node1, height1, node2, height2,
+                startLocus, endLocus, locus);
+        arg.addConversion(conv2);
         
-        // Write ARG out to string
+        // Write ACG out to string
         String argString = arg.toString();
         
-        // Read ARG back in from string
+        // Read ACG back in from string
         ConversionGraph argNew = new ConversionGraph();
         argNew.initByName("alignment", alignment, "fromString", argString);
         
-        // Check that new ARG matches old
-        Conversion newRecomb1 = argNew.getConversions(alignment).get(0);
-        assertEquals(newRecomb1.getNode1().getNr(),recomb1.getNode1().getNr());
-        assertEquals(newRecomb1.getNode2().getNr(),recomb1.getNode2().getNr());
-        assertEquals(newRecomb1.getHeight1(),recomb1.getHeight1(), 1e-15);
-        assertEquals(newRecomb1.getHeight2(),recomb1.getHeight2(), 1e-15);
-        assertEquals(newRecomb1.getStartSite(), recomb1.getStartSite());
-        assertEquals(newRecomb1.getEndSite(), recomb1.getEndSite());
+        // Check that new ACG matches old
+        Conversion newConv1 = argNew.getConversions(locus).get(0);
+        assertEquals(newConv1.getNode1().getNr(), conv1.getNode1().getNr());
+        assertEquals(newConv1.getNode2().getNr(), conv1.getNode2().getNr());
+        assertEquals(newConv1.getHeight1(),conv1.getHeight1(), 1e-15);
+        assertEquals(newConv1.getHeight2(),conv1.getHeight2(), 1e-15);
+        assertEquals(newConv1.getStartSite(), conv1.getStartSite());
+        assertEquals(newConv1.getEndSite(), conv1.getEndSite());
         
-        Conversion newRecomb2 = argNew.getConversions(alignment).get(1);
-        assertEquals(newRecomb2.getNode1().getNr(),recomb2.getNode1().getNr());
-        assertEquals(newRecomb2.getNode2().getNr(),recomb2.getNode2().getNr());
-        assertEquals(newRecomb2.getHeight1(),recomb2.getHeight1(), 1e-15);
-        assertEquals(newRecomb2.getHeight2(),recomb2.getHeight2(), 1e-15);
-        assertEquals(newRecomb2.getStartSite(), recomb2.getStartSite());
-        assertEquals(newRecomb2.getEndSite(), recomb2.getEndSite());
+        Conversion newConv2 = argNew.getConversions(locus).get(1);
+        assertEquals(newConv2.getNode1().getNr(), conv2.getNode1().getNr());
+        assertEquals(newConv2.getNode2().getNr(), conv2.getNode2().getNr());
+        assertEquals(newConv2.getHeight1(),conv2.getHeight1(), 1e-15);
+        assertEquals(newConv2.getHeight2(),conv2.getHeight2(), 1e-15);
+        assertEquals(newConv2.getStartSite(), conv2.getStartSite());
+        assertEquals(newConv2.getEndSite(), conv2.getEndSite());
         
         // Note that there are minor differences in the tree due to
         // rounding errors.  Is this normal!?

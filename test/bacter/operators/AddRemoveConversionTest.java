@@ -18,17 +18,20 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.Locus;
 import bacter.TestBase;
 import bacter.model.ACGCoalescent;
 import bacter.model.SimulatedACG;
-import bacter.operators.AddRemoveConversion;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;
-import java.util.List;
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for AddRemoveRecombination operator.
@@ -52,13 +55,16 @@ public class AddRemoveConversionTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        Alignment alignment = getAlignment();
+        Locus locus = new Locus(10000);
+        locus.setID("locus");
+        TaxonSet taxonSet = getTaxonSet(10);
 
         SimulatedACG acg = new SimulatedACG();
         acg.initByName(
-                "rho", 1.0/alignment.getSiteCount(),
+                "rho", 1.0/locus.getSiteCount(),
                 "delta", 50.0,
-                "alignment", alignment,
+                "locus", locus,
+                "taxonset", taxonSet,
                 "populationModel", popFunc);
         
 
@@ -75,7 +81,7 @@ public class AddRemoveConversionTest extends TestBase {
                     "populationModel", popFunc);
             
             oldConversions = Lists.newArrayList(
-                    acg.getConversions(alignment));
+                    acg.getConversions(locus));
         
             logP1 = operator.drawNewConversion();
         } while (Double.isInfinite(logP1));
@@ -84,7 +90,7 @@ public class AddRemoveConversionTest extends TestBase {
         
         // Identify new recomination
         Conversion newRecomb = null;
-        for (Conversion recomb : acg.getConversions(alignment)) {
+        for (Conversion recomb : acg.getConversions(locus)) {
             if (!oldConversions.contains(recomb))
                 newRecomb = recomb;
         }
@@ -107,16 +113,20 @@ public class AddRemoveConversionTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        Alignment alignment = getAlignment();
+        Locus locus = new Locus(10000);
+        locus.setID("locus");
+
+        TaxonSet taxonSet = getTaxonSet(10);
         
         SimulatedACG acg = new SimulatedACG();
         acg.initByName(
-                "rho", 1.0/alignment.getSiteCount(),
+                "rho", 1.0/locus.getSiteCount(),
                 "delta", 50.0,
-                "alignment", alignment,
+                "locus", locus,
+                "taxonset", taxonSet,
                 "populationModel", popFunc);
         
-        RealParameter rho = new RealParameter(Double.toString(1.0/alignment.getSiteCount()));
+        RealParameter rho = new RealParameter(Double.toString(1.0/locus.getSiteCount()));
         RealParameter delta = new RealParameter("50.0");
 
         AddRemoveConversion operator = new AddRemoveConversion();
@@ -135,7 +145,7 @@ public class AddRemoveConversionTest extends TestBase {
         
         double logP1 = 0.0;
         double logP2 = 0.0;
-        for (Conversion conv : acg.getConversions(alignment)) {
+        for (Conversion conv : acg.getConversions(locus)) {
             logP1 += operator.getConversionProb(conv);
             logP2 += coal.calculateConversionLogP(conv);
         }

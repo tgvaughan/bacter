@@ -19,10 +19,10 @@ package bacter.model.pop;
 
 import bacter.CFEventList;
 import bacter.ConversionGraph;
-import bacter.util.RandomizedAlignment;
+import bacter.Locus;
+import bacter.TestBase;
 import beast.core.parameter.IntegerParameter;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class SkylinePopulationFunctionTest {
+public class SkylinePopulationFunctionTest extends TestBase {
         String acgString = "[&alignment,15,0,1.3905355989030808,31,770,1.597708055397074] " +
                         "[&alignment,30,931,2.4351280458424904,36,2486,3.78055549386568] " +
                         "[&alignment,15,941,2.0439957300083322,38,2364,6.911056700367016] " +
@@ -51,11 +51,11 @@ public class SkylinePopulationFunctionTest {
         ConversionGraph acg;
 
     public SkylinePopulationFunctionTest() throws Exception {
-        Alignment alignment = new RandomizedAlignment(20, 10000);
-        alignment.setID("alignment");
+        Locus locus = new Locus(10000);
+        locus.setID("locus");
 
         acg = new ConversionGraph();
-        acg.initByName("alignment", alignment, "fromString", acgString);
+        acg.initByName("locus", locus, "fromString", acgString);
     }
 
     @Test

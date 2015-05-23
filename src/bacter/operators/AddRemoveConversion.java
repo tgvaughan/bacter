@@ -18,6 +18,7 @@ package bacter.operators;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.Locus;
 import bacter.util.RandomizedAlignment;
 import beast.core.Description;
 import beast.core.parameter.RealParameter;
@@ -115,19 +116,19 @@ public class AddRemoveConversion extends ConversionCreationOperator {
         taxonSet.taxonsetInput.setValue(new Taxon("t1"), taxonSet);
         taxonSet.taxonsetInput.setValue(new Taxon("t2"), taxonSet);
 
-        RandomizedAlignment alignment = new RandomizedAlignment();
-        alignment.initByName("taxonSet", taxonSet, "siteCount", 10000);
+        Locus locus = new Locus(10000);
 
         try (PrintStream ps = new PrintStream("out.txt")) {
             for (int i=0; i<100000; i++) {
                 acg.initByName(
-                    "alignment", alignment,
-                    "fromString", "(0:1.0,1:1.0)2:0.0;");
+                        "locus", locus,
+                        "taxonset", taxonSet,
+                        "fromString", "(0:1.0,1:1.0)2:0.0;");
 
                 operator.drawNewConversion();
                 
-                ps.println(acg.getConversions(alignment).get(0).getStartSite() + " "
-                    + acg.getConversions(alignment).get(0).getEndSite());
+                ps.println(acg.getConversions(locus).get(0).getStartSite() + " "
+                    + acg.getConversions(locus).get(0).getEndSite());
             }
         }
     }

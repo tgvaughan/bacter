@@ -17,9 +17,9 @@
 package bacter.operators;
 
 import bacter.Conversion;
+import bacter.Locus;
 import bacter.model.SimulatedACG;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 
@@ -66,8 +66,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         logHGF -= Math.log(1.0 / acg.getTotalConvCount());
 
         // Abort if conversions attach to node1 above height1.
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 if (conv == chosenConv) {
                     continue;
                 }
@@ -85,8 +85,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Node parent = chosenConv.getNode1().getParent();
         Node sister = getSibling(chosenConv.getNode1());
 
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 if (conv == chosenConv) {
                     continue;
                 }
@@ -122,8 +122,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         chosenConv.setHeight2(oldParentHeight);
 
         // Move conversions from node2 to parent
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion otherConv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion otherConv : acg.getConversions(locus)) {
                 if (otherConv == chosenConv) {
                     continue;
                 }
@@ -162,8 +162,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         // Reject if move has given us a conversion departing from the
         // root edge:
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode1().isRoot())
                     return Double.NEGATIVE_INFINITY;
             }
@@ -194,8 +194,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
 
         // Check for conversions which attach above chosen point
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 if ((conv.getNode1() == newConv.getNode1()
                         && conv.getHeight1() > newConv.getHeight1())
                         || (conv.getNode2() == newConv.getNode1()
@@ -211,8 +211,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         Node newNode2 = sister;
 
         // Detach parent from original location above sister
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode1() == parent) {
                     conv.setNode1(sister);
                 }
@@ -247,8 +247,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
         }
         parent.addChild(newConv.getNode2());
 
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 if ((conv.getNode1() == newConv.getNode2())
                         && (conv.getHeight1() > parent.getHeight())) {
                     conv.setNode1(parent);
@@ -284,8 +284,8 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         // Reject if move has given us a conversion departing from the
         // root edge:
-        for (Alignment alignment : acg.getAlignments()) {
-            for (Conversion conv : acg.getConversions(alignment)) {
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode1().isRoot())
                     return Double.NEGATIVE_INFINITY;
             }

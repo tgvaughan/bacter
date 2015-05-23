@@ -17,13 +17,10 @@
 
 package bacter.model;
 
-import bacter.ConversionGraph;
-import bacter.MarginalTree;
-import bacter.Region;
-import bacter.TestBase;
-import bacter.util.RandomizedAlignment;
+import bacter.*;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.coalescent.ConstantPopulation;
@@ -43,9 +40,11 @@ public class SimulatedAlignmentTest extends TestBase {
         
         Randomizer.setSeed(7);
 
-        Alignment dummyAlignment = new RandomizedAlignment(10, 10000);
-        dummyAlignment.setID("dummy");
-        
+        Locus locus = new Locus(10000);
+        locus.setID("locus");
+
+        TaxonSet taxonSet = getTaxonSet(10);
+
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
@@ -54,7 +53,8 @@ public class SimulatedAlignmentTest extends TestBase {
                 "rho", 1.0/10000,
                 "delta", 1000.0,
                 "populationModel", popFunc,
-                "alignment", dummyAlignment);
+                "locus", locus,
+                "taxonset", taxonSet);
         
         System.out.println(acg);
 
@@ -74,12 +74,12 @@ public class SimulatedAlignmentTest extends TestBase {
                 "outputFileName", "simulated_alignment.nexus",
                 "useNexus", true);
 
-        for (Region region : acg.getRegions(dummyAlignment))
+        for (Region region : acg.getRegions(locus))
                 System.out.println(new MarginalTree(acg, region));
 
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
-        for (Region region : acg.getRegions(dummyAlignment)) {
+        for (Region region : acg.getRegions(locus)) {
 
             Alignment margAlign = createMarginalAlignment(alignment, acg, region);
             

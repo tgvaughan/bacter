@@ -16,14 +16,10 @@
  */
 package bacter.model;
 
-import bacter.Conversion;
-import bacter.ConversionGraph;
-import bacter.MarginalTree;
-import bacter.Region;
-import bacter.TestBase;
-import bacter.util.RandomizedAlignment;
+import bacter.*;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
@@ -31,11 +27,12 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.ClusterTree;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 /**
- * Tests the calculation of the ARG likelihood given the sequence data.
+ * Tests the calculation of the ACG likelihood given the sequence data.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
@@ -48,6 +45,8 @@ public class ConversionGraphLikelihoodTest extends TestBase {
 
         Alignment alignment = getAlignment();
         alignment.setID("alignment");
+
+        Locus locus = new Locus(alignment.getSiteCount());
         
         // ConversionGraph
         ConversionGraph acg = new ConversionGraph();
@@ -57,7 +56,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
                 "taxa", alignment);
         
         acg.assignFrom(tree);
-        acg.initByName("alignment", alignment);
+        acg.initByName("locus", locus);
         
         // Site model:
         JukesCantor jc = new JukesCantor();
@@ -77,7 +76,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         acg.setEverythingDirty(true);
         
         double logP = argLikelihood.calculateLogP();
-        double logPtrue = slowLikelihood(acg, alignment, siteModel);
+        double logPtrue = slowLikelihood(acg, locus, alignment, siteModel);
         //double logPtrue = -6444.862402765536;
         
         double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
@@ -92,11 +91,11 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         int startLocus = 100;
         int endLocus = 200;
         Conversion recomb1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, alignment);
+                startLocus, endLocus, locus);
         acg.addConversion(recomb1);
         
         logP = argLikelihood.calculateLogP();
-        logPtrue = slowLikelihood(acg, alignment, siteModel);
+        logPtrue = slowLikelihood(acg, locus, alignment, siteModel);
         //logPtrue = -6445.810702954902;
         
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
@@ -111,11 +110,11 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         startLocus = 250;
         endLocus = 300;
         Conversion recomb2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, alignment);
+                startLocus, endLocus, locus);
         acg.addConversion(recomb2);
         
         logP = argLikelihood.calculateLogP();
-        logPtrue = slowLikelihood(acg, alignment, siteModel);
+        logPtrue = slowLikelihood(acg, locus, alignment, siteModel);
         //logPtrue = -6452.466389537251;
         
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
@@ -129,15 +128,16 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        Alignment dummyAlignment = new RandomizedAlignment(10, 10000);
-        dummyAlignment.setID("dummy");
+        Locus locus = new Locus(10000);
+        locus.setID("locus");
+        TaxonSet taxonSet = getTaxonSet(10);
         
         ConversionGraph acg = new SimulatedACG();
         acg.initByName(
-                "rho", 5.0/dummyAlignment.getSiteCount(),
+                "rho", 5.0/locus.getSiteCount(),
                 "delta", 1000.0,
                 "populationModel", popFunc,
-                "alignment", dummyAlignment);
+                "locus", locus);
         
         System.out.println(acg);
 
@@ -168,7 +168,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
 
         // Compare product of likelihoods of "marginal alignments" with
         // likelihod computed using RGL.
-        double logPprime = slowLikelihood(acg, alignment, siteModel);
+        double logPprime = slowLikelihood(acg, locus, alignment, siteModel);
         
         double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
         System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
@@ -177,22 +177,23 @@ public class ConversionGraphLikelihoodTest extends TestBase {
     }
     
     /**
-     * Calculate ARG likelihood using the product of the likelihoods of the
+     * Calculate ACG likelihood using the product of the likelihoods of the
      * marginal trees.
      * 
-     * @param arg
+     * @param acg
+     * @param locus
      * @param alignment
      * @param siteModel
      * @return
      * @throws Exception 
      */
-    private double slowLikelihood(ConversionGraph arg, Alignment alignment,
+    private double slowLikelihood(ConversionGraph acg, Locus locus, Alignment alignment,
             SiteModel siteModel) throws Exception {
 
         double logP = 0.0;
-        for (Region region : arg.getRegions(alignment)) {
-            Alignment margAlign = createMarginalAlignment(alignment, arg, region);
-            Tree margTree = new Tree(new MarginalTree(arg, region).getRoot());
+        for (Region region : acg.getRegions(locus)) {
+            Alignment margAlign = createMarginalAlignment(alignment, acg, region);
+            Tree margTree = new Tree(new MarginalTree(acg, region).getRoot());
             TreeLikelihood treeLikelihood = new TreeLikelihood();
             treeLikelihood.initByName(
                     "data", margAlign,

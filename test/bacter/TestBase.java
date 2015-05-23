@@ -17,17 +17,15 @@
 
 package bacter;
 
-import bacter.util.RandomizedAlignment;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * Base class for ARGBEAST unit tests.
@@ -59,18 +57,42 @@ public abstract class TestBase {
         return new Alignment(sequences, 4, "nucleotide");
     }
 
+    public TaxonSet getTaxonSet(int nTaxa) {
+
+        List<Taxon> taxonList = new ArrayList<>();
+        for (int i=0; i<nTaxa; i++) {
+            try {
+                taxonList.add(new Taxon("t" + i));
+            } catch (Exception e) {
+                System.out.println("Error creating test taxon.");
+                System.exit(1);
+            }
+        }
+
+        TaxonSet taxonSet = null;
+        try {
+            taxonSet = new TaxonSet(taxonList);
+        } catch (Exception e) {
+            System.out.println("Error creating test taxon set.");
+            System.exit(1);
+        }
+
+        return taxonSet;
+
+    }
+
     /**
      * Create Alignment object representing alignment of a region
      * corresponding to a single marginal tree.
      * 
      * @param alignment
-     * @param arg
+     * @param acg
      * @param region
      * @return
      * @throws Exception 
      */
     public Alignment createMarginalAlignment(Alignment alignment,
-            ConversionGraph arg, Region region) throws Exception {
+            ConversionGraph acg, Region region) throws Exception {
         List<Sequence> sequences = Lists.newArrayList();
 
         for (int leafIdx=0; leafIdx<alignment.getTaxonCount(); leafIdx++) {
