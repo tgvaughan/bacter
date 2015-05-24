@@ -61,25 +61,23 @@
 
     <input spec='SimulatedACG' id='acgTruth'
         rho="0.0005" delta="1000.0"
-        outputFileName="simulated_acg.nexus">
-        <alignment spec="RandomizedAlignment" id="da1"
-                   taxonSet="@taxonSet" sequenceLength="3000"/>
-        <alignment spec="RandomizedAlignment" id="da2"
-                   taxonSet="@taxonSet" sequenceLength="7000"/>
+        outputFileName="simulated_acg.nexus" taxonset="@taxonSet">
+        <locus spec="Locus" id="l1" siteCount="3000"/>
+        <locus spec="Locus" id="l2" siteCount="7000"/>
         <populationModel spec='ConstantPopulation' popSize="1.0"/>
     </input>
 
     <!-- Simulated Alignment (Truth) -->
 
-    <input spec='SimulatedAlignment' id='a1' acg="@acgTruth"
-        outputFileName="simulated_alignment1.nexus" useNexus="true" locusID="da1">
+    <input spec='SimulatedAlignment' id='a1' acg="@acgTruth" locus="@l1"
+        outputFileName="simulated_alignment1.nexus" useNexus="true">
         <siteModel spec='SiteModel' mutationRate="0.1">
             <substModel spec='JukesCantor'/>
         </siteModel>
     </input>
 
-    <input spec='SimulatedAlignment' id='a2' acg="@acgTruth"
-        outputFileName="simulated_alignment2.nexus" useNexus="true" locusID="da2">
+    <input spec='SimulatedAlignment' id='a2' acg="@acgTruth" locus="@l2"
+        outputFileName="simulated_alignment2.nexus" useNexus="true">
         <siteModel spec='SiteModel' mutationRate="0.1">
             <substModel spec='JukesCantor'/>
         </siteModel>
@@ -88,10 +86,10 @@
 
     <run spec="MCMC" id="mcmc" chainLength="100000000">
         <state>
-            <stateNode id="acg" spec='SimulatedACG'
+            <stateNode id="acg" spec='SimulatedACG' taxonset="@taxonSet"
                 rho="0.0005" delta="1000.0">
-                <alignment idref="a1"/>
-                <alignment idref="a2"/>
+                <locus idref="l1"/>
+                <locus idref="l2"/>
                 <populationModel spec='ConstantPopulation' popSize="5.0"/>
             </stateNode>
 
@@ -108,14 +106,14 @@
             <!-- ACG likelihood --> 
 
             <distribution spec='ACGLikelihood' id="acgLikelihood1"
-                acg="@acg" data="@a1">
+                acg="@acg" data="@a1" locus="@l1">
                 <siteModel spec='SiteModel' mutationRate="@mutationRate">
                     <substModel spec='JukesCantor'/>
                 </siteModel>
             </distribution>
 
             <distribution spec='ACGLikelihood' id="acgLikelihood2"
-                acg="@acg" data="@a2">
+                acg="@acg" data="@a2" locus="@l2">
                 <siteModel spec='SiteModel' mutationRate="@mutationRate">
                     <substModel spec='JukesCantor'/>
                 </siteModel>

@@ -22,11 +22,9 @@
     </taxonSet>
 
     <input spec='SimulatedACG' id='acg'
-           rho="0.0005" delta="50.0">
-        <alignment id="a1" spec="RandomizedAlignment"
-                   sequenceLength="3000" taxonSet="@taxonSet"/>
-        <alignment id="a2" spec="RandomizedAlignment"
-                   sequenceLength="7000" taxonSet="@taxonSet"/>
+           rho="0.0005" delta="50.0" taxonset="@taxonSet">
+        <locus id="l1" spec="Locus" siteCount="3000"/>
+        <locus id="l2" spec="Locus" siteCount="7000"/>
         <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
         <trait spec='TraitSet' id="timeTrait"
                taxa="@taxonSet"

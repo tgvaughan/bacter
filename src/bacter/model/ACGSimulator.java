@@ -20,7 +20,7 @@ package bacter.model;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.Logger;
-import feast.input.In;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,16 +31,20 @@ import java.util.List;
         + "sampler validation.")
 public class ACGSimulator extends beast.core.Runnable {
 
-    public Input<SimulatedACG> simACGInput =
-            new In<SimulatedACG>("simACG",
-                    "Simulated recombination graph.").setRequired();
+    public Input<SimulatedACG> simACGInput = new Input<>(
+            "simACG",
+            "Simulated recombination graph.",
+            Input.Validate.REQUIRED);
 
-    public Input<Integer> nSimsInput = new In<Integer>("nSims",
-            "Number of ARGs to simulate.").setRequired();
+    public Input<Integer> nSimsInput = new Input<>(
+            "nSims",
+            "Number of ARGs to simulate.",
+            Input.Validate.REQUIRED);
     
-    public Input<List<Logger>> loggersInput = new In<List<Logger>>("logger",
-            "Logger used to write results to screen or disk.")
-            .setDefault(new ArrayList<>());    
+    public Input<List<Logger>> loggersInput = new Input<>(
+            "logger",
+            "Logger used to write results to screen or disk.",
+            new ArrayList<>());
     
     @Override
     public void initAndValidate() { }

@@ -15,12 +15,11 @@
 
     <input spec="SimulatedACG" id="acg"
            rho="0.0005" delta="50.0">
-        <alignment id="alignment" spec="RandomizedAlignment" sequenceLength="10000">
-            <taxonSet spec="TaxonSet">
-                <taxon spec="Taxon" id="A"/>
-                <taxon spec="Taxon" id="B"/>
-            </taxonSet>
-        </alignment>
+        <locus spec="Locus" id="locus" siteCount="10000"/>
+        <taxonset spec="TaxonSet">
+            <taxon spec="Taxon" id="A"/>
+            <taxon spec="Taxon" id="B"/>
+        </taxonset>
         <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
     </input>
 

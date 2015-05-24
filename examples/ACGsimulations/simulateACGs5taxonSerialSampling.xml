@@ -17,9 +17,8 @@
 
     <run spec="ACGSimulator" nSims="100000">
          <simACG spec="SimulatedACG" id="acg"
-                 rho="0.0005" delta="50.0">
-             <alignment spec="RandomizedAlignment" id="alignment"
-                        sequenceLength="10000" taxonSet="@taxonSet"/>
+                 rho="0.0005" delta="50.0" taxonset="@taxonSet">
+             <locus spec="Locus" id="locus" siteCount="10000"/>
              <populationModel spec="ConstantPopulation" popSize="1.0"/>
              <trait spec='TraitSet' id="timeTrait"
                     taxa="@taxonSet"

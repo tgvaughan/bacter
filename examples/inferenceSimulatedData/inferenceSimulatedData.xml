@@ -44,9 +44,8 @@
 
     <input spec='SimulatedACG' id='acgTruth'
         rho="0.0005" delta="1000.0"
-        outputFileName="simulated_acg.nexus">
-        <alignment spec="RandomizedAlignment" id="dummyAlignment"
-                   taxonSet="@taxonSet" sequenceLength="10000"/>
+        outputFileName="simulated_acg.nexus" taxonset="@taxonSet">
+        <locus spec="Locus" id="locus" siteCount="10000"/>
         <populationModel spec='ConstantPopulation' popSize="1.0"/>
     </input>
 
@@ -62,8 +61,8 @@
 
     <run spec="MCMC" id="mcmc" chainLength="100000000">
         <state>
-            <stateNode id="acg" spec='SimulatedACG'
-                alignment="@alignment" rho="0.0005" delta="1000.0">
+            <stateNode id="acg" spec='SimulatedACG' taxonset="@taxonSet"
+                locus="@locus" rho="0.0005" delta="1000.0">
                 <populationModel spec='ConstantPopulation' popSize="5.0"/>
             </stateNode>
 

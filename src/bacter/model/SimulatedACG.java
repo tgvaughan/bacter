@@ -23,14 +23,11 @@ import bacter.ConversionGraph;
 import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
 import com.google.common.collect.Lists;
-import feast.input.In;
 import feast.nexus.NexusBlock;
 import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
@@ -48,19 +45,27 @@ import java.util.List;
     + " for chain initialization or for sampler validation.")
 public class SimulatedACG extends ConversionGraph {
 
-    public Input<Double> rhoInput = new In<Double>("rho",
-            "Conversion rate parameter.").setRequired();
+    public Input<Double> rhoInput = new Input<>(
+            "rho",
+            "Conversion rate parameter.",
+            Input.Validate.REQUIRED);
     
-    public Input<Double> deltaInput = new In<Double>("delta",
-            "Tract length parameter.").setRequired();
+    public Input<Double> deltaInput = new Input<>(
+            "delta",
+            "Tract length parameter.",
+            Input.Validate.REQUIRED);
     
-    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
-            "populationModel", "Demographic model to use.").setRequired();
+    public Input<PopulationFunction> popFuncInput = new Input<>(
+            "populationModel",
+            "Demographic model to use.",
+            Input.Validate.REQUIRED);
 
-    public Input<Tree> clonalFrameInput = new Input<>("clonalFrame",
+    public Input<Tree> clonalFrameInput = new Input<>(
+            "clonalFrame",
             "Optional tree specifying fixed clonal frame.");
 
-    public Input<String> outputFileNameInput = new Input<>("outputFileName",
+    public Input<String> outputFileNameInput = new Input<>(
+            "outputFileName",
             "If provided, simulated ARG is additionally written to this file.");
 
     private double rho, delta;
