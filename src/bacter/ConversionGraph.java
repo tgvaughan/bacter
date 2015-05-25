@@ -17,7 +17,6 @@
 package bacter;
 
 import beast.core.*;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
@@ -33,7 +32,7 @@ import java.util.regex.Pattern;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Conversion graph based around the clonal frame.")
-@Citation("Tim Vaughan, Alexei Drummod and Nigel French, "
+@Citation("Tim Vaughan, Alexei Drummond and Nigel French, "
         + "'Phylogenetic inference\n for bacteria in BEAST 2'. "
         + "In preparation.")
 public class ConversionGraph extends Tree {
@@ -102,15 +101,6 @@ public class ConversionGraph extends Tree {
         acgEventList = new ACGEventList(this);
 
         super.initAndValidate();
-    }
-    
-    /**
-     * Retrieve length of sequence, identifying bounds of converted regions.
-     * 
-     * @return sequence length
-     */
-    public int getSequenceLength(Alignment alignment) {
-        return alignment.getSiteCount();
     }
 
     /**
@@ -328,8 +318,8 @@ public class ConversionGraph extends Tree {
                         conv.endSite,
                         String.valueOf(conv.height2)));
             }
-            sb.append(super.toString());
         }
+        sb.append(super.toString());
 
         // Unfortunately, we must behave differently if we're being
         // called by toXML().
@@ -398,6 +388,10 @@ public class ConversionGraph extends Tree {
             
             addConversion(conv);
         }
+
+        // DEBUG
+        if (!isValid())
+            System.err.println("WTF!?");
     }
     
     @Override
@@ -416,9 +410,13 @@ public class ConversionGraph extends Tree {
         acg.nodeCount = nodeCount;
         acg.internalNodeCount = internalNodeCount;
         acg.leafNodeCount = leafNodeCount;
+
+        acg.m_taxonset = m_taxonset;
         
         acg.convs = new HashMap<>();
         acg.storedConvs = new HashMap<>();
+
+        acg.loci = loci;
         for (Locus locus : getLoci()) {
             acg.convs.put(locus, new ArrayList<>(convs.get(locus)));
             acg.storedConvs.put(locus, new ArrayList<>(storedConvs.get(locus)));
@@ -459,8 +457,9 @@ public class ConversionGraph extends Tree {
             acgEventList.makeDirty();
 
             regionLists.clear();
-            for (Locus locus : loci)
+            for (Locus locus : loci) {
                 regionLists.put(locus, new RegionList(this, locus));
+            }
         }
     }
     
@@ -477,6 +476,7 @@ public class ConversionGraph extends Tree {
             storedConvs.clear();
             for (Locus locus : loci) {
                 convs.put(locus, new ArrayList<>());
+                storedConvs.put(locus, new ArrayList<>());
                 for (Conversion conv : acg.getConversions(locus))
                     convs.get(locus).add(conv.getCopy());
             }
@@ -580,7 +580,7 @@ public class ConversionGraph extends Tree {
             
             if (event.isArrival) {
                 String meta = !includeRegionInfo ? ""
-                        : String.format("[&conv=%d, region={%d,%d}, locusID=\"%s\"]",
+                        : String.format("[&conv=%d, region={%d,%d}, locus=\"%s\"]",
                                 convs.get(event.conv.getLocus()).indexOf(event.conv),
                                 event.conv.getStartSite(),
                                 event.conv.getEndSite(),
@@ -686,38 +686,12 @@ public class ConversionGraph extends Tree {
     /*
      * Loggable implementation.
      */
-    
-    @Override
-    public void init(PrintStream out) throws Exception {
 
-        out.println("#NEXUS");
-        
-        out.println("begin trees;");
-        
-        if (getTaxonset() != null) {
-            StringBuilder translate = new StringBuilder("\ttranslate");
-            for (int i=0; i<getLeafNodeCount(); i++) {
-                if (i>0)
-                    translate.append(",");
-                translate.append(String.format(" %d %s",
-                        i, getTaxonset().asStringList().get(i)));
-            }
-            out.println(translate + ";");
-        }
-        
-    }
-    
-    
     @Override
     public void log(int nSample, PrintStream out) {
         ConversionGraph arg = (ConversionGraph) getCurrent();
         
-        out.print(String.format("\ttree STATE_%d = [&R] %s",
+        out.print(String.format("tree STATE_%d = [&R] %s",
                 nSample, arg.getExtendedNewick(true)));
-    }
-
-    @Override
-    public void close(PrintStream out) {
-        out.println("end;");
     }
 }
