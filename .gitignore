@@ -30,5 +30,6 @@
 *.log
 
 # Other cruft
-/.localrc
+.localrc
+.localrcbye
 .ipynb_checkpoints
