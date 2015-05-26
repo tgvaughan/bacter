@@ -480,8 +480,12 @@ public class ConversionGraph extends Tree {
             for (Locus locus : loci) {
                 convs.put(locus, new ArrayList<>());
                 storedConvs.put(locus, new ArrayList<>());
-                for (Conversion conv : acg.getConversions(locus))
-                    convs.get(locus).add(conv.getCopy());
+                for (Conversion conv : acg.getConversions(locus)) {
+                    Conversion convCopy = conv.getCopy();
+                    convCopy.setNode1(m_nodes[conv.getNode1().getNr()]);
+                    convCopy.setNode2(m_nodes[conv.getNode2().getNr()]);
+                    convs.get(locus).add(convCopy);
+                }
             }
 
             if (cfEventList == null)

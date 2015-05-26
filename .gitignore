@@ -11,6 +11,7 @@
 # IntelliJ cruft:
 /.idea
 /*.iml
+/META-INF
 
 # Build directories:
 /build
