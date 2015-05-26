@@ -10,7 +10,7 @@ body {
   color: #606c71; }
 
 a {
-  color: #1e6bb8;
+  color: #6f00ff;
   text-decoration: none; }
   a:hover {
     text-decoration: underline; }
@@ -18,9 +18,9 @@ a {
 .btn {
   display: inline-block;
   margin-bottom: 1rem;
-  color: #af00ff;
+  color: #6f00ff;
   background-color: rgba(255, 255, 255, 0.08);
-  border-color: #af00ff;
+  border-color: #6f00ff;
   border-style: solid;
   border-width: 1px;
   border-radius: 0.3rem;
@@ -31,8 +31,8 @@ a {
 .btn:hover {
   color: #fff;
   text-decoration: none;
-  background-color: #af00ff;
-  border-color: #af00ff; }
+  background-color: #6f00ff;
+  border-color: #6f00ff; }
 
 @media screen and (min-width: 64em) {
   .btn {
@@ -112,7 +112,7 @@ a {
   margin-top: 2rem;
   margin-bottom: 1rem;
   font-weight: normal;
-  color: #159957; }
+  color: #6f00ff; }
 .main-content p {
   margin-bottom: 1em; }
 .main-content code {
