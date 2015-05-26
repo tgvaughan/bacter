@@ -402,9 +402,9 @@ public class ConversionGraph extends Tree {
     @Override
     public ConversionGraph copy() {
         ConversionGraph acg = new ConversionGraph();
-        
+
         acg.setID(getID());
-        
+
         acg.index = index;
         acg.root = root.copy();
         acg.nodeCount = nodeCount;
@@ -418,18 +418,23 @@ public class ConversionGraph extends Tree {
 
         acg.loci = loci;
         for (Locus locus : getLoci()) {
-            acg.convs.put(locus, new ArrayList<>(convs.get(locus)));
-            acg.storedConvs.put(locus, new ArrayList<>(storedConvs.get(locus)));
+            acg.convs.put(locus, new ArrayList<>());
+            for (Conversion conv : convs.get(locus))
+                acg.convs.get(locus).add(conv.getCopy());
+
+            acg.storedConvs.put(locus, new ArrayList<>());
+            for (Conversion conv : storedConvs.get(locus))
+                acg.storedConvs.get(locus).add(conv.getCopy());
         }
 
         return acg;
     }
 
     /**
-     * Use another StateNode to configure this ARG.  If the other StateNode
+     * Use another StateNode to configure this ACG.  If the other StateNode
      * is merely a tree, only the clonal frame is configured.
      * 
-     * @param other StateNode used to configure ARG
+     * @param other StateNode used to configure ACG
      */
     @Override
     public void assignFrom(StateNode other) {
@@ -450,11 +455,9 @@ public class ConversionGraph extends Tree {
 
             if (cfEventList == null)
                 cfEventList = new CFEventList(this);
-            cfEventList.makeDirty();
 
             if (acgEventList == null)
                 acgEventList = new ACGEventList(this);
-            acgEventList.makeDirty();
 
             regionLists.clear();
             for (Locus locus : loci) {
@@ -483,11 +486,9 @@ public class ConversionGraph extends Tree {
 
             if (cfEventList == null)
                 cfEventList = new CFEventList(null);
-            cfEventList.makeDirty();
 
             if (acgEventList == null)
                 acgEventList = new ACGEventList(this);
-            acgEventList.makeDirty();
 
             regionLists.clear();
             for (Locus locus : loci)
