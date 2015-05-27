@@ -46,7 +46,7 @@ public class Conversion {
      * @param locus
      */
     public Conversion(Node node1, double height1, Node node2, double height2,
-            int startSite, int endSite, Locus locus) {
+            int startSite, int endSite, ConversionGraph acg, Locus locus) {
         this.node1 = node1;
         this.node2 = node2;
         this.height1 = height1;

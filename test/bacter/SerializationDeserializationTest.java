@@ -62,7 +62,7 @@ public class SerializationDeserializationTest extends TestBase {
         int startLocus = 100;
         int endLocus = 200;
         Conversion recomb1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, locus);
+                startLocus, endLocus, acg, locus);
         acg.addConversion(recomb1);
         
         //Add recombination event 2
@@ -73,7 +73,7 @@ public class SerializationDeserializationTest extends TestBase {
         startLocus = 300;
         endLocus = 400;
         Conversion recomb2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, locus);
+                startLocus, endLocus, acg, locus);
         acg.addConversion(recomb2);
         
         // Write ARG out to XML string
@@ -123,39 +123,39 @@ public class SerializationDeserializationTest extends TestBase {
         locus.setID("locus");
         
         // ConversionGraph
-        ConversionGraph arg = new ConversionGraph();
+        ConversionGraph acg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
                 "taxa", alignment);
         
-        arg.assignFrom(tree);
-        arg.initByName("locus", locus);
+        acg.assignFrom(tree);
+        acg.initByName("locus", locus);
         
         //Add recombination event 1
-        Node node1 = arg.getExternalNodes().get(0);
+        Node node1 = acg.getExternalNodes().get(0);
         Node node2 = node1.getParent();
         double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
         double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
         int startLocus = 100;
         int endLocus = 200;
         Conversion conv1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, locus);
-        arg.addConversion(conv1);
+                startLocus, endLocus, acg, locus);
+        acg.addConversion(conv1);
         
         //Add recombination event 2
-        node1 = arg.getExternalNodes().get(0);
-        node2 = arg.getRoot();
+        node1 = acg.getExternalNodes().get(0);
+        node2 = acg.getRoot();
         height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
         height2 = node2.getHeight() + 1.0;
         startLocus = 300;
         endLocus = 400;
         Conversion conv2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, locus);
-        arg.addConversion(conv2);
+                startLocus, endLocus, acg, locus);
+        acg.addConversion(conv2);
         
         // Write ACG out to string
-        String argString = arg.toString();
+        String argString = acg.toString();
         
         // Read ACG back in from string
         ConversionGraph argNew = new ConversionGraph();

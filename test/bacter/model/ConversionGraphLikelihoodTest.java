@@ -91,7 +91,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         int startLocus = 100;
         int endLocus = 200;
         Conversion recomb1 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, locus);
+                startLocus, endLocus, acg, locus);
         acg.addConversion(recomb1);
         
         logP = argLikelihood.calculateLogP();
@@ -110,7 +110,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         startLocus = 250;
         endLocus = 300;
         Conversion recomb2 = new Conversion(node1, height1, node2, height2,
-                startLocus, endLocus, locus);
+                startLocus, endLocus, acg, locus);
         acg.addConversion(recomb2);
         
         logP = argLikelihood.calculateLogP();

@@ -384,14 +384,15 @@ public class ConversionGraph extends Tree {
             Conversion conv = new Conversion(
                     node1, height1,
                     node2, height2,
-                    startLocus, endLocus, locus);
+                    startLocus, endLocus, this, locus);
             
             addConversion(conv);
         }
 
-        // DEBUG
-        if (!isValid())
-            System.err.println("WTF!?");
+        if (!isValid()) {
+            throw new IllegalArgumentException(
+                    "Invalid ACG read from string. Aborting.");
+        }
     }
     
     @Override
@@ -411,6 +412,8 @@ public class ConversionGraph extends Tree {
         acg.internalNodeCount = internalNodeCount;
         acg.leafNodeCount = leafNodeCount;
 
+        acg.initArrays();
+
         acg.m_taxonset = m_taxonset;
         
         acg.convs = new HashMap<>();
@@ -419,12 +422,22 @@ public class ConversionGraph extends Tree {
         acg.loci = loci;
         for (Locus locus : getLoci()) {
             acg.convs.put(locus, new ArrayList<>());
-            for (Conversion conv : convs.get(locus))
-                acg.convs.get(locus).add(conv.getCopy());
+            for (Conversion conv : convs.get(locus)) {
+                Conversion convCopy = conv.getCopy();
+                convCopy.setConversionGraph(acg);
+                convCopy.setNode1(acg.m_nodes[conv.getNode1().getNr()]);
+                convCopy.setNode2(acg.m_nodes[conv.getNode2().getNr()]);
+                acg.convs.get(locus).add(convCopy);
+            }
 
             acg.storedConvs.put(locus, new ArrayList<>());
-            for (Conversion conv : storedConvs.get(locus))
-                acg.storedConvs.get(locus).add(conv.getCopy());
+            for (Conversion conv : storedConvs.get(locus)) {
+                Conversion convCopy = conv.getCopy();
+                convCopy.setConversionGraph(acg);
+                convCopy.setNode1(acg.m_nodes[conv.getNode1().getNr()]);
+                convCopy.setNode2(acg.m_nodes[conv.getNode2().getNr()]);
+                acg.storedConvs.get(locus).add(convCopy);
+            }
         }
 
         return acg;
@@ -449,8 +462,14 @@ public class ConversionGraph extends Tree {
             storedConvs.clear();
             for (Locus locus : loci) {
                 convs.put(locus, new ArrayList<>());
-                for (Conversion conv : acg.getConversions(locus))
-                    convs.get(locus).add(conv.getCopy());
+                storedConvs.put(locus, new ArrayList<>());
+                for (Conversion conv : acg.getConversions(locus)) {
+                    Conversion convCopy = conv.getCopy();
+                    convCopy.setConversionGraph(this);
+                    convCopy.setNode1(m_nodes[conv.getNode1().getNr()]);
+                    convCopy.setNode2(m_nodes[conv.getNode2().getNr()]);
+                    convs.get(locus).add(convCopy);
+                }
             }
 
             if (cfEventList == null)
@@ -482,6 +501,7 @@ public class ConversionGraph extends Tree {
                 storedConvs.put(locus, new ArrayList<>());
                 for (Conversion conv : acg.getConversions(locus)) {
                     Conversion convCopy = conv.getCopy();
+                    convCopy.setConversionGraph(this);
                     convCopy.setNode1(m_nodes[conv.getNode1().getNr()]);
                     convCopy.setNode2(m_nodes[conv.getNode2().getNr()]);
                     convs.get(locus).add(convCopy);

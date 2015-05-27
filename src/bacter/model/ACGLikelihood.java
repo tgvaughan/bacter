@@ -119,8 +119,7 @@ public class ACGLikelihood extends ACGDistribution {
         probabilities = new double[(nStates+1)*(nStates+1)];
 
         // Initialize thread pool using number of available processors.
-        //threadPoolSize = Runtime.getRuntime().availableProcessors();
-        threadPoolSize = 1;
+        threadPoolSize = Runtime.getRuntime().availableProcessors();
         likelihoodThreadPool = Executors.newFixedThreadPool(threadPoolSize);
     }
     
@@ -130,8 +129,6 @@ public class ACGLikelihood extends ACGDistribution {
         
         logP = 0.0;
 
-        HashMap<Set<Conversion>, MarginalTree> margTrees = new HashMap<>();
-        
         updatePatterns();
         updateCores();
 
@@ -156,24 +153,13 @@ public class ACGLikelihood extends ACGDistribution {
 
             List<Set<Conversion>> theseConvSets = convSets.subList(start, end);
 
-            /*
             futures[threadIdx] = likelihoodThreadPool.submit(() -> {
                 for (Set<Conversion> convSet : theseConvSets)
                     traverse(new MarginalTree(acg, convSet).getRoot(), convSet);
             });
-            */
-            margTrees.clear();
-            System.out.println();
-            for (Set<Conversion> convSet : theseConvSets) {
-                MarginalTree marginalTree = new MarginalTree(acg, convSet);
-                System.out.println(marginalTree);
-                margTrees.put(convSet, marginalTree);
-                traverse(marginalTree.getRoot(), convSet);
-            }
         }
 
         // Wait for all tasks to complete.
-        /*
         try {
             for (int i=0; i<usedPoolSize; i++)
                 if (futures[i] != null)
@@ -181,7 +167,6 @@ public class ACGLikelihood extends ACGDistribution {
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException("ACG likelihood calculation task interrupted.");
         }
-        */
 
         // Collate log likelihoods
         for (Set<Conversion> convSet : patterns.keySet()) {
@@ -192,7 +177,7 @@ public class ACGLikelihood extends ACGDistribution {
                 i += 1;
             }
         }
-        
+
         return logP;
     }
     
