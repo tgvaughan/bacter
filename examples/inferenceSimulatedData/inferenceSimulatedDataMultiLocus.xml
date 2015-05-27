@@ -84,7 +84,7 @@
     </input>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="100000000">
+    <run spec="MCMC" id="mcmc" chainLength="100000000" storeEvery="10000">
         <state>
             <stateNode id="acg" spec='SimulatedACG' taxonset="@taxonSet"
                 rho="0.0005" delta="1000.0">
