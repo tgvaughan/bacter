@@ -27,6 +27,7 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.ClusterTree;
+import beast.util.Randomizer;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -124,7 +125,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
     
     @Test
     public void testLikelihoodUsingSimulatedData() throws Exception {
-        
+
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
@@ -174,7 +175,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
         System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
                 logP, logPprime, relError);
-        assertTrue(relError<1e-14);
+        assertTrue(relError<1e-13);
     }
     
     /**
