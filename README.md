@@ -8,5 +8,5 @@ described in
 [Didelot et al.'s 2010 Genetics paper](http://www.genetics.org/content/186/4/1435)
 and is currently under heavy development.  Check back soon!
 
-[![Build Status](https://travis-ci.org/CompEvol/BACTER.svg?branch=master)](https://travis-ci.org/CompEvol/BACTER)
+[![Build Status](https://travis-ci.org/CompEvol/bacter.svg?branch=master)](https://travis-ci.org/CompEvol/bacter)
 
