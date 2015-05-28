@@ -18,12 +18,9 @@ package bacter.operators;
 
 import bacter.Conversion;
 import bacter.Locus;
-import bacter.operators.EdgeCreationOperator;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
 import beast.util.Randomizer;
-import feast.input.In;
 
 /**
  * Abstract class of ACG operators that use the clonal origin model as the
@@ -34,8 +31,10 @@ import feast.input.In;
  */
 public abstract class ConversionCreationOperator extends EdgeCreationOperator {
 
-    public Input<RealParameter> deltaInput = new In<RealParameter>("delta",
-            "Tract length parameter.").setRequired();
+    public Input<RealParameter> deltaInput = new Input<>(
+            "delta",
+            "Tract length parameter.",
+            Input.Validate.REQUIRED);
      
     /**
      * Choose region to be affected by this conversion.

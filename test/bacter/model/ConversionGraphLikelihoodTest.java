@@ -44,17 +44,15 @@ public class ConversionGraphLikelihoodTest extends TestBase {
     @Test
     public void testClonalFrameLikelihood() throws Exception {
 
-        Alignment alignment = getAlignment();
-        alignment.setID("alignment");
+        Locus locus = new Locus(getAlignment());
+        locus.setID("locus");
 
-        Locus locus = new Locus(alignment.getSiteCount());
-        
         // ConversionGraph
         ConversionGraph acg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();
         tree.initByName(
                 "clusterType", "upgma",
-                "taxa", alignment);
+                "taxa", locus.getAlignment());
         
         acg.assignFrom(tree);
         acg.initByName("locus", locus);
@@ -70,14 +68,14 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         
         ACGLikelihood argLikelihood = new ACGLikelihood();
         argLikelihood.initByName(
-                "data", alignment,
+                "locus", locus,
                 "acg", acg,
                 "siteModel", siteModel);
         
         acg.setEverythingDirty(true);
         
         double logP = argLikelihood.calculateLogP();
-        double logPtrue = slowLikelihood(acg, locus, alignment, siteModel);
+        double logPtrue = slowLikelihood(acg, locus, locus.getAlignment(), siteModel);
         //double logPtrue = -6444.862402765536;
         
         double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
@@ -96,7 +94,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         acg.addConversion(recomb1);
         
         logP = argLikelihood.calculateLogP();
-        logPtrue = slowLikelihood(acg, locus, alignment, siteModel);
+        logPtrue = slowLikelihood(acg, locus, locus.getAlignment(), siteModel);
         //logPtrue = -6445.810702954902;
         
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
@@ -115,7 +113,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         acg.addConversion(recomb2);
         
         logP = argLikelihood.calculateLogP();
-        logPtrue = slowLikelihood(acg, locus, alignment, siteModel);
+        logPtrue = slowLikelihood(acg, locus, locus.getAlignment(), siteModel);
         //logPtrue = -6452.466389537251;
         
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
@@ -162,7 +160,8 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         // Calculate likelihood:
         ACGLikelihood argLikelihood = new ACGLikelihood();
         argLikelihood.initByName(
-                "data", alignment,
+                "locus", locus,
+                "alignment", alignment,
                 "acg", acg,
                 "siteModel", siteModel);
         
@@ -184,7 +183,6 @@ public class ConversionGraphLikelihoodTest extends TestBase {
      * 
      * @param acg
      * @param locus
-     * @param alignment
      * @param siteModel
      * @return
      * @throws Exception 

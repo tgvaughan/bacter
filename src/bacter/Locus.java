@@ -38,8 +38,19 @@ public class Locus extends BEASTObject {
             Input.Validate.XOR, siteCountInput);
 
     protected int siteCount;
+    protected Alignment alignment;
 
     public Locus() { }
+
+    /**
+     * Construct locus corresponding to given alignment.
+     *
+     * @param alignment alignment object
+     */
+    public Locus(Alignment alignment) {
+        this.alignment = alignment;
+        this.siteCount = alignment.getSiteCount();
+    }
 
     /**
      * Construct locus with given site count
@@ -47,15 +58,19 @@ public class Locus extends BEASTObject {
      * @param siteCount length of this locus
      */
     public Locus(int siteCount) {
+        this.alignment = null;
         this.siteCount = siteCount;
     }
 
     @Override
     public void initAndValidate() throws Exception {
-        if (siteCountInput.get() != null)
+        if (alignmentInput.get() != null) {
+            alignment = alignmentInput.get();
+            siteCount = alignment.getSiteCount();
+        } else {
+            alignment = null;
             siteCount = siteCountInput.get();
-        else
-            siteCount = alignmentInput.get().getSiteCount();
+        }
     }
 
     /**
@@ -63,5 +78,19 @@ public class Locus extends BEASTObject {
      */
     public int getSiteCount() {
         return siteCount;
+    }
+
+    /**
+     * @return alignment associated with locus
+     */
+    public Alignment getAlignment() {
+        return alignment;
+    }
+
+    /**
+     * @return true if locus is associated with an alignment.
+     */
+    public boolean hasAlignment() {
+        return alignment != null;
     }
 }

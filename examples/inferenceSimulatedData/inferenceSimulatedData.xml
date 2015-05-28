@@ -79,7 +79,7 @@
             <!-- ACG likelihood --> 
 
             <distribution spec='ACGLikelihood' id="acgLikelihood"
-                acg="@acg" data="@alignment">
+                acg="@acg" locus="@locus" alignment="@alignment">
                 <siteModel spec='SiteModel' mutationRate="@mutationRate">
                     <substModel spec='JukesCantor'/>
                 </siteModel>

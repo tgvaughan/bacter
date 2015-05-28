@@ -20,7 +20,6 @@ package bacter.model;
 import bacter.ConversionGraph;
 import beast.core.Distribution;
 import beast.core.Input;
-import feast.input.In;
 
 /**
  * Abstract class of distributions over ConversionGraphs. Concrete
@@ -31,11 +30,15 @@ import feast.input.In;
  */
 public abstract class ACGDistribution extends Distribution {
 
-    public Input<ConversionGraph> acgInput = new In<ConversionGraph>(
-            "acg", "Recombination graph.").setRequired();
+    public Input<ConversionGraph> acgInput = new Input<>(
+            "acg",
+            "Recombination graph.",
+            Input.Validate.REQUIRED);
 
-    public Input<Boolean> checkValidityInput = new In<Boolean>("checkValidity",
-            "Explicitly check validity of conversion graph.").setDefault(false);
+    public Input<Boolean> checkValidityInput = new Input<>(
+            "checkValidity",
+            "Explicitly check validity of conversion graph.",
+            false);
 
     protected ConversionGraph acg;
 

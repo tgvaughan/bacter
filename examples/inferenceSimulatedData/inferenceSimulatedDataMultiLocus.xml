@@ -106,14 +106,14 @@
             <!-- ACG likelihood --> 
 
             <distribution spec='ACGLikelihood' id="acgLikelihood1"
-                acg="@acg" data="@a1" locus="@l1">
+                acg="@acg" alignment="@a1" locus="@l1">
                 <siteModel spec='SiteModel' mutationRate="@mutationRate">
                     <substModel spec='JukesCantor'/>
                 </siteModel>
             </distribution>
 
             <distribution spec='ACGLikelihood' id="acgLikelihood2"
-                acg="@acg" data="@a2" locus="@l2">
+                acg="@acg" alignment="@a2" locus="@l2">
                 <siteModel spec='SiteModel' mutationRate="@mutationRate">
                     <substModel spec='JukesCantor'/>
                 </siteModel>

@@ -47,34 +47,34 @@ import java.util.concurrent.Future;
 @Description("Probability of sequence data given recombination graph.")
 public class ACGLikelihood extends ACGDistribution {
 
-    public Input<Alignment> alignmentInput = new Input<>(
-            "data",
-            "Sequence data to evaluate probability of.",
-            Input.Validate.REQUIRED);
-
     public Input<Locus> locusInput = new Input<>(
             "locus",
-            "Locus alignment is associated with.");
-    
+            "Locus associated with alignment to evaluate probability of.",
+            Input.Validate.REQUIRED);
+
+    public Input<Alignment> alignmentInput = new Input<>(
+            "alignment",
+            "Used to explicitly specify alignment when none is " +
+                    "directly associated with given locus");
+
     public Input<SiteModelInterface> siteModelInput = new Input<>(
             "siteModel",
             "Site model for evolution of alignment.",
             Input.Validate.REQUIRED);
 
-    SiteModel.Base siteModel;
-    SubstitutionModel.Base substitutionModel;
-    Alignment alignment;
-    Locus locus;
-    
-    Map<Set<Conversion>, LikelihoodCore> likelihoodCores;
-    
-    Map<Set<Conversion>, Multiset<int[]>> patterns;
-    Map<Set<Conversion>, double[]> patternLogLikelihoods;
-    Map<Set<Conversion>, double[]> rootPartials;
-    Map<Set<Conversion>, List<Integer>> constantPatterns;
-    
-    int nStates;
+    protected SiteModel.Base siteModel;
+    protected SubstitutionModel.Base substitutionModel;
+    protected Alignment alignment;
+    protected Locus locus;
+    protected int nStates;
 
+    protected Map<Set<Conversion>, LikelihoodCore> likelihoodCores;
+    
+    protected Map<Set<Conversion>, Multiset<int[]>> patterns;
+    protected Map<Set<Conversion>, double[]> patternLogLikelihoods;
+    protected Map<Set<Conversion>, double[]> rootPartials;
+    protected Map<Set<Conversion>, List<Integer>> constantPatterns;
+    
     ExecutorService likelihoodThreadPool;
     int threadPoolSize;
 
@@ -89,21 +89,23 @@ public class ACGLikelihood extends ACGDistribution {
         super.initAndValidate();
         
         acg = acgInput.get();
-        alignment = alignmentInput.get();
-        siteModel = (SiteModel.Base) siteModelInput.get();
-        substitutionModel = (SubstitutionModel.Base) siteModel.getSubstitutionModel();
 
-        if (acg.getLoci().size()==1) {
-            locus = acg.getLoci().get(0);
+        locus = locusInput.get();
+        if (locus.hasAlignment()) {
+            alignment = locus.getAlignment();
         } else {
-            locus = locusInput.get();
-            if (locus == null) {
-                throw new IllegalArgumentException("Must specify locus in " +
-                        "ACGLikelihood for multi-locus ACGs.");
-            }
+            if (alignmentInput.get() != null)
+                alignment = alignmentInput.get();
+            else
+                throw new IllegalArgumentException("No alignment associated with " +
+                        "locus " + locus.getID() + " provided to ACGLikelihood " +
+                        "and none given explicitly.");
         }
 
         nStates = alignment.getMaxStateCount();
+
+        siteModel = (SiteModel.Base) siteModelInput.get();
+        substitutionModel = (SubstitutionModel.Base) siteModel.getSubstitutionModel();
 
         // Initialize patterns
         patterns = new LinkedHashMap<>();
