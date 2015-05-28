@@ -20,6 +20,7 @@ package bacter;
 import beast.core.BEASTObject;
 import beast.core.Description;
 import beast.core.Input;
+import beast.evolution.alignment.Alignment;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -29,8 +30,12 @@ public class Locus extends BEASTObject {
 
     public Input<Integer> siteCountInput = new Input<>(
             "siteCount",
-            "Number of sites contained in alignments associated with this locus",
-            Input.Validate.REQUIRED);
+            "Number of sites contained in alignments associated with this locus");
+
+    public Input<Alignment> alignmentInput = new Input<>(
+            "alignment",
+            "Initialize locus using this alignment.",
+            Input.Validate.XOR, siteCountInput);
 
     protected int siteCount;
 
@@ -47,7 +52,10 @@ public class Locus extends BEASTObject {
 
     @Override
     public void initAndValidate() throws Exception {
-        siteCount = siteCountInput.get();
+        if (siteCountInput.get() != null)
+            siteCount = siteCountInput.get();
+        else
+            siteCount = alignmentInput.get().getSiteCount();
     }
 
     /**
