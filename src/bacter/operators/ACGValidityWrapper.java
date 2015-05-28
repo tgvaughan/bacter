@@ -44,7 +44,7 @@ public class ACGValidityWrapper extends ACGOperator {
     public double proposal() {
         double logP = operatorInput.get().proposal();
         
-        if (!acg.isValid())
+        if (acg.isInvalid())
             return Double.NEGATIVE_INFINITY;
         
         return logP;

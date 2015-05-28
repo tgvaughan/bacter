@@ -285,22 +285,22 @@ public class ConversionGraph extends Tree {
      * 
      * @return true if all conversions are valid w.r.t. clonal frame.
      */
-    public boolean isValid() {
+    public boolean isInvalid() {
         for (Locus locus : loci) {
             for (Conversion conv : convs.get(locus)) {
                 if (!conv.isValid()) {
-                    return false;
+                    return true;
                 }
                 if (conv.getStartSite() < 0
                         || conv.getStartSite() >= locus.getSiteCount()
                         || conv.getEndSite() < 0
                         || conv.getEndSite() >= locus.getSiteCount()) {
-                    return false;
+                    return true;
                 }
             }
         }
         
-        return true;
+        return false;
     }
     
     @Override
@@ -389,7 +389,7 @@ public class ConversionGraph extends Tree {
             addConversion(conv);
         }
 
-        if (!isValid()) {
+        if (isInvalid()) {
             throw new IllegalArgumentException(
                     "Invalid ACG read from string. Aborting.");
         }

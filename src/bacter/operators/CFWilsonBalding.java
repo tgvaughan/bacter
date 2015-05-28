@@ -110,7 +110,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             logHGF -= expandConversions(srcNode, destNode, newTime);
 
             // DEBUG
-            if (!acg.isValid())
+            if (acg.isInvalid())
                 throw new IllegalStateException("CFWB proposed invalid state.");
 
             return logHGF;
@@ -139,7 +139,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             logHGF += collapseConversions(srcNode, destNode, newTime);
 
             // DEBUG
-            if (!acg.isValid())
+            if (acg.isInvalid())
                 throw new IllegalStateException("CFWB proposed invalid state.");
 
             return logHGF;
@@ -166,7 +166,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             logHGF -= expandConversions(srcNode, destNode, newTime);
 
         // DEBUG
-        if (!acg.isValid())
+        if (acg.isInvalid())
             throw new IllegalStateException("CFWB proposed invalid state.");
 
         return logHGF;

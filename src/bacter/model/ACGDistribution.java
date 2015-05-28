@@ -46,7 +46,7 @@ public abstract class ACGDistribution extends Distribution {
 
     @Override
     public final double calculateLogP() throws Exception {
-        if (checkValidityInput.get() && !acg.isValid()) {
+        if (checkValidityInput.get() && acg.isInvalid()) {
             logP = Double.NEGATIVE_INFINITY;
         } else {
             logP = calculateACGLogP();
