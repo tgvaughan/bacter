@@ -641,7 +641,8 @@ public class ConversionGraph extends Tree {
             thisLength = 0.0;
         else
             thisLength = lastTime - node.getHeight();
-        sb.insert(cursor, node.getNr() + ":" + thisLength);
+        sb.insert(cursor, (node.getNr() + taxaTranslationOffset)
+                + ":" + thisLength);
         
         return sb.toString();
     }

@@ -155,7 +155,7 @@ public class SimulatedACG extends ConversionGraph {
         for (int i=0; i<m_taxonset.get().getTaxonCount(); i++) {
             Node leaf = new Node();
             leaf.setNr(i);
-            leaf.setID(m_taxonset.get().asStringList().get(i));
+            leaf.setID(m_taxonset.get().getTaxonId(i));
                         
             if (hasDateTrait())
                 leaf.setHeight(getDateTrait().getValue(leaf.getID()));
