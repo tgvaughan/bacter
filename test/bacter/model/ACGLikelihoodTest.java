@@ -27,7 +27,6 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.ClusterTree;
-import beast.util.Randomizer;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -37,9 +36,9 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ConversionGraphLikelihoodTest extends TestBase {
+public class ACGLikelihoodTest extends TestBase {
     
-    public ConversionGraphLikelihoodTest() { }
+    public ACGLikelihoodTest() { }
     
     @Test
     public void testClonalFrameLikelihood() throws Exception {
@@ -168,7 +167,7 @@ public class ConversionGraphLikelihoodTest extends TestBase {
         double logP = argLikelihood.calculateLogP();
 
         // Compare product of likelihoods of "marginal alignments" with
-        // likelihod computed using RGL.
+        // likelihood computed using RGL.
         double logPprime = slowLikelihood(acg, locus, alignment, siteModel);
         
         double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
@@ -176,15 +175,72 @@ public class ConversionGraphLikelihoodTest extends TestBase {
                 logP, logPprime, relError);
         assertTrue(relError<1e-13);
     }
-    
+
+    @Test
+    public void testMultiThreadedLikelihood() throws Exception {
+
+        ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+
+        Locus locus = new Locus(10000);
+        locus.setID("locus");
+        TaxonSet taxonSet = getTaxonSet(10);
+
+        ConversionGraph acg = new SimulatedACG();
+        acg.initByName(
+                "rho", 5.0/locus.getSiteCount(),
+                "delta", 1000.0,
+                "populationModel", popFunc,
+                "locus", locus,
+                "taxonset", taxonSet);
+
+        System.out.println(acg);
+
+        // Site model:
+        JukesCantor jc = new JukesCantor();
+        jc.initByName();
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName(
+                "mutationRate", new RealParameter("1"),
+                "substModel", jc);
+
+        // Simulate alignment:
+        SimulatedAlignment alignment = new SimulatedAlignment();
+        alignment.initByName(
+                "acg", acg,
+                "siteModel", siteModel,
+                "outputFileName", "simulated_alignment.nexus",
+                "useNexus", true);
+
+        // Calculate likelihood:
+        ACGLikelihood argLikelihood = new ACGLikelihood();
+        argLikelihood.initByName(
+                "locus", locus,
+                "alignment", alignment,
+                "acg", acg,
+                "siteModel", siteModel,
+                "nThreads", 4);
+
+        double logP = argLikelihood.calculateLogP();
+
+        // Compare product of likelihoods of "marginal alignments" with
+        // likelihood computed using RGL.
+        double logPprime = slowLikelihood(acg, locus, alignment, siteModel);
+
+        double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
+        System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
+                logP, logPprime, relError);
+        assertTrue(relError<1e-13);
+    }
+
     /**
      * Calculate ACG likelihood using the product of the likelihoods of the
      * marginal trees.
      * 
-     * @param acg
-     * @param locus
-     * @param siteModel
-     * @return
+     * @param acg conversion graph
+     * @param locus locus to compute likelihood of
+     * @param siteModel sequence evolution model
+     * @return log likelihood
      * @throws Exception 
      */
     private double slowLikelihood(ConversionGraph acg, Locus locus, Alignment alignment,

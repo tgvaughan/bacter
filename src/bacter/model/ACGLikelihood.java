@@ -62,6 +62,11 @@ public class ACGLikelihood extends ACGDistribution {
             "Site model for evolution of alignment.",
             Input.Validate.REQUIRED);
 
+    public Input<Integer> nThreadsInput = new Input<>(
+            "nThreads",
+            "Number of additional threads to use in calculation.",
+            0);
+
     protected SiteModel.Base siteModel;
     protected SubstitutionModel.Base substitutionModel;
     protected Alignment alignment;
@@ -76,7 +81,6 @@ public class ACGLikelihood extends ACGDistribution {
     protected Map<Set<Conversion>, List<Integer>> constantPatterns;
     
     ExecutorService likelihoodThreadPool;
-    int threadPoolSize;
 
     /**
      * Memory for transition probabilities.
@@ -121,21 +125,55 @@ public class ACGLikelihood extends ACGDistribution {
         probabilities = new double[(nStates+1)*(nStates+1)];
 
         // Initialize thread pool using number of available processors.
-        threadPoolSize = Runtime.getRuntime().availableProcessors();
-        likelihoodThreadPool = Executors.newFixedThreadPool(threadPoolSize);
+        if (nThreadsInput.get()>0)
+            likelihoodThreadPool = Executors.newFixedThreadPool(nThreadsInput.get());
     }
-    
-    
+
     @Override
     public double calculateACGLogP() {
-        
-        logP = 0.0;
-
         updatePatterns();
         updateCores();
 
+        if (nThreadsInput.get() > 0)
+            return calculateACGLogPThreads();
+        else
+            return calculateACGLogPNoThreads();
+    }
+
+
+    /**
+     * Compute likelihood using single thread.
+     *
+     * @return logP
+     */
+    public double calculateACGLogPNoThreads() {
+        logP = 0.0;
+
+        for (Set<Conversion> convSet : patterns.keySet()) {
+            traverse(new MarginalTree(acg, convSet).getRoot(), convSet);
+
+            int i=0;
+            for (int[] pattern : patterns.get(convSet).elementSet()) {
+                logP += patternLogLikelihoods.get(convSet)[i]
+                        *patterns.get(convSet).count(pattern);
+                i += 1;
+            }
+        }
+
+        return logP;
+    }
+
+    /**
+     * Compute likelihood using multiple threads.  This allows different
+     * marginal trees to be considered in parallel.
+     *
+     * @return logP
+     */
+    public double calculateACGLogPThreads() {
+        logP = 0.0;
+
         int nRegions = patterns.size();
-        int usedPoolSize = Integer.min(threadPoolSize, nRegions);
+        int usedPoolSize = Integer.min(nThreadsInput.get(), nRegions);
         int chunkSize =  nRegions % usedPoolSize == 0
                 ? nRegions/usedPoolSize
                 : nRegions/usedPoolSize + 1;
@@ -182,8 +220,8 @@ public class ACGLikelihood extends ACGDistribution {
 
         return logP;
     }
-    
-    
+
+
     /**
      * Ensure pattern counts are up to date.
      */
