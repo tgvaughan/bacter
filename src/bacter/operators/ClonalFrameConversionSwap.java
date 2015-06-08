@@ -327,18 +327,18 @@ public class ClonalFrameConversionSwap extends ConversionCreationOperator {
 
         double logHR1, logHR2;
 
-        System.out.println(acg.getExtendedNewick(true));
+        System.out.println(acg.getExtendedNewick());
         do {
             logHR1 = operator.createConversion();
         } while (Double.isInfinite(logHR1));
 
-        System.out.println(acg.getExtendedNewick(true));
+        System.out.println(acg.getExtendedNewick());
 
         do {
             logHR2 = operator.deleteConversion();
         } while (Double.isInfinite(logHR2));
 
-        System.out.println(acg.getExtendedNewick(true));
+        System.out.println(acg.getExtendedNewick());
 
         System.out.println("logHR1 = " + logHR1);
         System.out.println("logHR2 = " + logHR2);

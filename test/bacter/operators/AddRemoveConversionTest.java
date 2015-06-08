@@ -55,8 +55,7 @@ public class AddRemoveConversionTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        Locus locus = new Locus(10000);
-        locus.setID("locus");
+        Locus locus = new Locus("locus", 10000);
         TaxonSet taxonSet = getTaxonSet(10);
 
         SimulatedACG acg = new SimulatedACG();
@@ -113,8 +112,7 @@ public class AddRemoveConversionTest extends TestBase {
         ConstantPopulation popFunc = new ConstantPopulation();
         popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        Locus locus = new Locus(10000);
-        locus.setID("locus");
+        Locus locus = new Locus("locus", 10000);
 
         TaxonSet taxonSet = getTaxonSet(10);
         

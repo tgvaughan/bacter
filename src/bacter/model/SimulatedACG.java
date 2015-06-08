@@ -110,7 +110,7 @@ public class SimulatedACG extends ConversionGraph {
             nexusBuilder.append((new TreesBlock() {
                 @Override
                 public String getTreeString(Tree tree) {
-                    return ((ConversionGraph)tree).getExtendedNewick(true);
+                    return ((ConversionGraph)tree).getExtendedNewick();
                 }
             }).addTree(this, "simulatedARG"));
             

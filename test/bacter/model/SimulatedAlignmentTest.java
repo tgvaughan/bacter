@@ -40,8 +40,7 @@ public class SimulatedAlignmentTest extends TestBase {
         
         Randomizer.setSeed(7);
 
-        Locus locus = new Locus(10000);
-        locus.setID("locus");
+        Locus locus = new Locus("locus", 10000);
 
         TaxonSet taxonSet = getTaxonSet(10);
 

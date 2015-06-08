@@ -47,9 +47,10 @@ public class Locus extends BEASTObject {
      *
      * @param alignment alignment object
      */
-    public Locus(Alignment alignment) {
+    public Locus(String name, Alignment alignment) {
         this.alignment = alignment;
         this.siteCount = alignment.getSiteCount();
+        setID(name);
     }
 
     /**
@@ -57,9 +58,10 @@ public class Locus extends BEASTObject {
      *
      * @param siteCount length of this locus
      */
-    public Locus(int siteCount) {
+    public Locus(String name, int siteCount) {
         this.alignment = null;
         this.siteCount = siteCount;
+        setID(name);
     }
 
     @Override
@@ -92,5 +94,21 @@ public class Locus extends BEASTObject {
      */
     public boolean hasAlignment() {
         return alignment != null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Locus) {
+            Locus locus = (Locus)obj;
+            if (locus.getID() != null)
+                locus.getID().equals(getID());
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return getID() != null ? getID().hashCode() : 0;
     }
 }

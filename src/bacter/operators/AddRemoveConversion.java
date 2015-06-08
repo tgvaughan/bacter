@@ -114,7 +114,7 @@ public class AddRemoveConversion extends ConversionCreationOperator {
         taxonSet.taxonsetInput.setValue(new Taxon("t1"), taxonSet);
         taxonSet.taxonsetInput.setValue(new Taxon("t2"), taxonSet);
 
-        Locus locus = new Locus(10000);
+        Locus locus = new Locus("locus", 10000);
 
         try (PrintStream ps = new PrintStream("out.txt")) {
             for (int i=0; i<100000; i++) {

@@ -131,7 +131,7 @@ public class CFSubtreeSlide extends ACGOperator {
                 
         } else {
 
-            System.out.println(acg.getExtendedNewick(true));
+            System.out.println(acg.getExtendedNewick());
             
             // Disconnect <node,parent>
             if (parent.isRoot()) {
@@ -217,7 +217,7 @@ public class CFSubtreeSlide extends ACGOperator {
         if (delta<0)
             return Double.NEGATIVE_INFINITY;
 
-        System.out.println(acg.getExtendedNewick(true));
+        System.out.println(acg.getExtendedNewick());
         return logHGF;
     }
     

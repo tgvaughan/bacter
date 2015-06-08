@@ -49,7 +49,7 @@ public class TrimmedACGLogger extends CalculationNode implements Loggable {
         ConversionGraph arg = acgInput.get();
 
         out.print("tree STATE_" + nSample + " = ");
-        out.print(arg.getTrimmedExtendedNewick(true));
+        out.print(arg.getTrimmedExtendedNewick());
     }
 
     @Override

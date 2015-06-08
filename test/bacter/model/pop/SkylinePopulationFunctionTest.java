@@ -51,8 +51,7 @@ public class SkylinePopulationFunctionTest extends TestBase {
         ConversionGraph acg;
 
     public SkylinePopulationFunctionTest() throws Exception {
-        Locus locus = new Locus(10000);
-        locus.setID("locus");
+        Locus locus = new Locus("locus", 10000);
 
         acg = new ConversionGraph();
         acg.initByName("locus", locus, "fromString", acgString);

@@ -521,34 +521,31 @@ public class ConversionGraph extends Tree {
     }
     
     /**
-     * Obtain extended Newick representation of ACG.  If includeRegionInfo
-     * is true, include Nexus metadata on hybrid leaf nodes describing the
-     * alignment sites affected by the conversion event.
+     * Obtain extended Newick representation of ACG.  Includes Nexus metadata
+     * on hybrid leaf nodes describing the alignment sites affected by the
+     * conversion event.
      * 
-     * @param includeRegionInfo whether to include region info in output
      * @return Extended Newick string.
      */
-    public String getExtendedNewick(boolean includeRegionInfo) {
+    public String getExtendedNewick() {
 
-        return extendedNewickTraverse(root, includeRegionInfo, false) + ";";
+        return extendedNewickTraverse(root, false) + ";";
     }
 
     /**
      * Obtain extended Newick representation of ACG, including only those
-     * conversions which attach to CF edges above non-root nodes.  If
-     * includeRegionInfo is true, include Nexus metadata on hybrid leaf
-     * nodes describing the alignment sites affected by the conversion event.
+     * conversions which attach to CF edges above non-root nodes.
+     * Includes Nexus metadata on hybrid leaf nodes describing the alignment
+     * sites affected by the conversion event.
      *
-     * @param includeRegionInfo whether to include region info in output
      * @return Extended Newick string.
      */
-    public String getTrimmedExtendedNewick(boolean includeRegionInfo) {
+    public String getTrimmedExtendedNewick() {
 
-        return extendedNewickTraverse(root, includeRegionInfo, true) + ";";
+        return extendedNewickTraverse(root, true) + ";";
     }
     
     private String extendedNewickTraverse(Node node,
-                                          boolean includeRegionInfo,
                                           boolean intraCFOnly) {
         StringBuilder sb = new StringBuilder();
         
@@ -604,8 +601,7 @@ public class ConversionGraph extends Tree {
                 thisLength = lastTime - event.time;
             
             if (event.isArrival) {
-                String meta = !includeRegionInfo ? ""
-                        : String.format("[&conv=%d, region={%d,%d}, locus=\"%s\"]",
+                String meta =  String.format("[&conv=%d, region={%d,%d}, locus=\"%s\"]",
                                 convs.get(event.conv.getLocus()).indexOf(event.conv),
                                 event.conv.getStartSite(),
                                 event.conv.getEndSite(),
@@ -628,10 +624,8 @@ public class ConversionGraph extends Tree {
         // Process this node and its children.
 
         if (!node.isLeaf()) {
-            String subtree1 = extendedNewickTraverse(node.getChild(0),
-                    includeRegionInfo, intraCFOnly);
-            String subtree2 = extendedNewickTraverse(node.getChild(1),
-                    includeRegionInfo, intraCFOnly);
+            String subtree1 = extendedNewickTraverse(node.getChild(0), intraCFOnly);
+            String subtree2 = extendedNewickTraverse(node.getChild(1), intraCFOnly);
             sb.insert(cursor, "(" + subtree1 + "," + subtree2 + ")");
             cursor += subtree1.length() + subtree2.length() + 3;
         }
@@ -718,6 +712,6 @@ public class ConversionGraph extends Tree {
         ConversionGraph arg = (ConversionGraph) getCurrent();
         
         out.print(String.format("tree STATE_%d = [&R] %s",
-                nSample, arg.getExtendedNewick(true)));
+                nSample, arg.getExtendedNewick()));
     }
 }

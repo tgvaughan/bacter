@@ -41,8 +41,7 @@ public class SerializationDeserializationTest extends TestBase {
         Alignment alignment = getAlignment();
         alignment.setID("alignment");
 
-        Locus locus = new Locus(alignment.getSiteCount());
-        locus.setID("locus");
+        Locus locus = new Locus("locus", alignment.getSiteCount());
 
         // ConversionGraph
         ConversionGraph acg = new ConversionGraph();
@@ -119,9 +118,8 @@ public class SerializationDeserializationTest extends TestBase {
         Alignment alignment = getAlignment();
         alignment.setID("alignment");
 
-        Locus locus = new Locus(alignment.getSiteCount());
-        locus.setID("locus");
-        
+        Locus locus = new Locus("locus", alignment.getSiteCount());
+
         // ConversionGraph
         ConversionGraph acg = new ConversionGraph();
         ClusterTree tree = new ClusterTree();

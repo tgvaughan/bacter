@@ -49,7 +49,7 @@ public class MarginalTreeTest extends TestBase {
                 + "15:0.02875407002742475)16:0.21838173019409446)17:1.1073878800617445,"
                 + "2:1.7030807429425328)18:0.0";
 
-        Locus locus = new Locus(10000);
+        Locus locus = new Locus("locus", 10000);
         locus.setID("locus");
 
         ConversionGraph acg = new ConversionGraph();
@@ -101,7 +101,7 @@ public class MarginalTreeTest extends TestBase {
                 + "15:0.02875407002742475)16:0.21838173019409446)17:1.1073878800617445,"
                 + "2:1.7030807429425328)18:0.0";
 
-        Locus locus = new Locus(10000);
+        Locus locus = new Locus("locus", 10000);
         locus.setID("locus");
 
         ConversionGraph acg = new ConversionGraph();
