@@ -668,35 +668,68 @@ public class ConversionGraph extends Tree {
         Map<String, Conversion> convIDMap = new HashMap<>();
         Node root = new ExtendedNewickBaseVisitor<Node>() {
 
+            /**
+             * Convert branch lengths to node heights for all nodes in clade.
+             *
+             * @param node clade parent
+             * @return minimum height assigned in clade.
+             */
+            private double branchLengthsToHeights(Node node) {
+                if (node.isRoot())
+                    node.setHeight(0.0);
+                else
+                    node.setHeight(node.getParent().getHeight() - node.getHeight());
+
+                double minHeight = node.getHeight();
+
+                for (Node child : node.getChildren()) {
+                    minHeight = Math.min(minHeight, branchLengthsToHeights(child));
+                }
+
+                return minHeight;
+            }
+
+            /**
+             * Remove height offset from all nodes in clade
+             * @param node parent of clade
+             * @param offset offset to remove
+             */
+            private void removeOffset(Node node, double offset) {
+                node.setHeight(node.getHeight() - offset);
+
+                for (Node child : node.getChildren())
+                    removeOffset(child, offset);
+            }
+
+            @Override
+            public Node visitTree(@NotNull ExtendedNewickParser.TreeContext ctx) {
+                Node root =  visitNode(ctx.node());
+
+                double minHeight = branchLengthsToHeights(root);
+                removeOffset(root, minHeight);
+
+                return root;
+            }
+
             @Override
             public Node visitNode(@NotNull ExtendedNewickParser.NodeContext ctx) {
+                Node node = new Node();
+
+                for (ExtendedNewickParser.NodeContext childCtx : ctx.node()) {
+                    node.addChild(visitNode(childCtx));
+                }
+
+                if (ctx.post().label() != null)
+                    node.setID(ctx.post().label().getText());
 
                 double branchLength = Double.parseDouble(ctx.post().length.getText());
+                node.setHeight(branchLength);
 
-                if (!ctx.node().isEmpty() && ctx.post().hybrid() != null) {
-                    Node node =  visitNode(ctx.node(0));
-                    node.setHeight(node.getHeight() + branchLength);
-                    return node;
-                }
-
-                if (ctx.node().isEmpty() && ctx.post().hybrid() != null) {
-                    Conversion conv = new Conversion();
-                    conv.setStartSite(Integer.parseInt(ctx.post().meta()
-                            .attrib(1).attribValue().vector().attribValue(0).getText()));
-                    conv.setEndSite(Integer.parseInt(ctx.post().meta()
-                            .attrib(1).attribValue().vector().attribValue(1).getText()));
-                    conv.setLocus(new Locus(ctx.post().meta().attrib(2).attribValue().getText(),
-                            conv.getSiteCount()));
-
-                    convIDMap.put(ctx.post().hybrid().INT().getText(), conv);
-                    return null;
-                }
-
-                for (ExtendedNewickParser.NodeContext nodeCtx : ctx.node()) {
-
-                }
+                return node;
             }
         }.visit(parseTree);
+
+        System.out.println(root.toNewick());
 
     }
 
