@@ -16,10 +16,18 @@
  */
 package bacter;
 
+import bacter.util.parsers.ExtendedNewickBaseVisitor;
+import bacter.util.parsers.ExtendedNewickLexer;
+import bacter.util.parsers.ExtendedNewickParser;
 import beast.core.*;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -641,8 +649,57 @@ public class ConversionGraph extends Tree {
         return sb.toString();
     }
 
+    /**
+     * Read in an ACG from a string in extended newick format.  Assumes
+     * that the network is stored with exactly the same metadata as written
+     * by the getExtendedNewick() method.
+     *
+     * @param string extended newick representation of ACG
+     */
+    public void fromExtendedNewick(String string) {
 
-    
+        // Spin up ANTLR
+        ANTLRInputStream input = new ANTLRInputStream(string);
+        ExtendedNewickLexer lexer = new ExtendedNewickLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        ExtendedNewickParser parser = new ExtendedNewickParser(tokens);
+        ParseTree parseTree = parser.tree();
+
+        Map<String, Conversion> convIDMap = new HashMap<>();
+        Node root = new ExtendedNewickBaseVisitor<Node>() {
+
+            @Override
+            public Node visitNode(@NotNull ExtendedNewickParser.NodeContext ctx) {
+
+                double branchLength = Double.parseDouble(ctx.post().length.getText());
+
+                if (!ctx.node().isEmpty() && ctx.post().hybrid() != null) {
+                    Node node =  visitNode(ctx.node(0));
+                    node.setHeight(node.getHeight() + branchLength);
+                    return node;
+                }
+
+                if (ctx.node().isEmpty() && ctx.post().hybrid() != null) {
+                    Conversion conv = new Conversion();
+                    conv.setStartSite(Integer.parseInt(ctx.post().meta()
+                            .attrib(1).attribValue().vector().attribValue(0).getText()));
+                    conv.setEndSite(Integer.parseInt(ctx.post().meta()
+                            .attrib(1).attribValue().vector().attribValue(1).getText()));
+                    conv.setLocus(new Locus(ctx.post().meta().attrib(2).attribValue().getText(),
+                            conv.getSiteCount()));
+
+                    convIDMap.put(ctx.post().hybrid().INT().getText(), conv);
+                    return null;
+                }
+
+                for (ExtendedNewickParser.NodeContext nodeCtx : ctx.node()) {
+
+                }
+            }
+        }.visit(parseTree);
+
+    }
+
     /*
     * StateNode implementation
     */

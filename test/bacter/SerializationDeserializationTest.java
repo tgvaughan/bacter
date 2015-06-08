@@ -179,4 +179,52 @@ public class SerializationDeserializationTest extends TestBase {
         // Note that there are minor differences in the tree due to
         // rounding errors.  Is this normal!?
     }
+
+    @Test
+    public void testExtendedNewick() throws Exception {
+        Alignment alignment = getAlignment();
+        alignment.setID("alignment");
+
+        Locus locus = new Locus("locus", alignment.getSiteCount());
+
+        // ConversionGraph
+        ConversionGraph acg = new ConversionGraph();
+        ClusterTree tree = new ClusterTree();
+        tree.initByName(
+                "clusterType", "upgma",
+                "taxa", alignment);
+
+        acg.assignFrom(tree);
+        acg.initByName("locus", locus);
+
+        //Add recombination event 1
+        Node node1 = acg.getExternalNodes().get(0);
+        Node node2 = node1.getParent();
+        double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
+        int startLocus = 100;
+        int endLocus = 200;
+        Conversion conv1 = new Conversion(node1, height1, node2, height2,
+                startLocus, endLocus, acg, locus);
+        acg.addConversion(conv1);
+
+        //Add recombination event 2
+        node1 = acg.getExternalNodes().get(8);
+        node2 = acg.getRoot();
+        height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        height2 = node2.getHeight() + 1.0;
+        startLocus = 300;
+        endLocus = 400;
+        Conversion conv2 = new Conversion(node1, height1, node2, height2,
+                startLocus, endLocus, acg, locus);
+        acg.addConversion(conv2);
+
+        String newickString = acg.getExtendedNewick();
+        System.out.println(newickString);
+
+        ConversionGraph argNew = new ConversionGraph();
+        argNew.initByName("locus", locus);
+
+        argNew.fromExtendedNewick(newickString);
+    }
 }
