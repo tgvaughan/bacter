@@ -18,9 +18,8 @@
 package bacter.util;
 
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,12 +53,17 @@ public class ACGAnnotator {
         dialog.setTitle("ACGAnnotator");
 
         JLabel logFileLabel = new JLabel("ACG log file:");
+        JLabel outFileLabel = new JLabel("Output file:");
         JLabel burninLabel = new JLabel("Burn-in percentage:");
         JLabel heightMethodLabel = new JLabel("Node height method:");
 
         JTextField inFilename = new JTextField(20);
         inFilename.setEditable(false);
-        JButton infileButton = new JButton("Choose File");
+        JButton inFileButton = new JButton("Choose File");
+
+        JTextField outFilename = new JTextField(20);
+        outFilename.setEditable(false);
+        JButton outFileButton = new JButton("Choose File");
 
         JSlider burninSlider = new JSlider(JSlider.HORIZONTAL,
                 0, 100, 10);
@@ -71,23 +75,30 @@ public class ACGAnnotator {
         JComboBox<HeightStrategy> heightMethodCombo = new JComboBox<>(HeightStrategy.values());
 
         Container cp = dialog.getContentPane();
+        BoxLayout boxLayout = new BoxLayout(cp, BoxLayout.PAGE_AXIS);
+        cp.setLayout(boxLayout);
 
         JPanel mainPanel = new JPanel();
 
         GroupLayout layout = new GroupLayout(mainPanel);
         mainPanel.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
 
         layout.setHorizontalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
                         .addComponent(logFileLabel)
+                        .addComponent(outFileLabel)
                         .addComponent(burninLabel)
                         .addComponent(heightMethodLabel))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                         .addComponent(inFilename)
+                        .addComponent(outFilename)
                         .addComponent(burninSlider)
                         .addComponent(heightMethodCombo))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                        .addComponent(infileButton)));
+                        .addComponent(inFileButton)
+                        .addComponent(outFileButton)));
 
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
@@ -96,7 +107,14 @@ public class ACGAnnotator {
                                 GroupLayout.PREFERRED_SIZE,
                                 GroupLayout.DEFAULT_SIZE,
                                 GroupLayout.PREFERRED_SIZE)
-                        .addComponent(infileButton))
+                        .addComponent(inFileButton))
+                .addGroup(layout.createParallelGroup()
+                        .addComponent(outFileLabel)
+                        .addComponent(outFilename,
+                                GroupLayout.PREFERRED_SIZE,
+                                GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.PREFERRED_SIZE)
+                        .addComponent(outFileButton))
                 .addGroup(layout.createParallelGroup()
                         .addComponent(burninLabel)
                         .addComponent(burninSlider,
@@ -110,11 +128,12 @@ public class ACGAnnotator {
                                 GroupLayout.DEFAULT_SIZE,
                                 GroupLayout.PREFERRED_SIZE)));
 
-        cp.add(mainPanel, BorderLayout.CENTER);
+        mainPanel.setBorder(new EtchedBorder());
+        cp.add(mainPanel);
 
         JPanel buttonPanel = new JPanel();
 
-        JButton runButton = new JButton("Run");
+        JButton runButton = new JButton("Analyze");
         runButton.addActionListener((e) -> {
             options.burninPercentage = burninSlider.getValue();
             options.heightStrategy = (HeightStrategy)heightMethodCombo.getSelectedItem();
@@ -123,28 +142,43 @@ public class ACGAnnotator {
         runButton.setEnabled(false);
         buttonPanel.add(runButton);
 
-        JButton cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton("Quit");
         cancelButton.addActionListener((e) -> {
             dialog.setVisible(false);
             canceled[0] = true;
         });
         buttonPanel.add(cancelButton);
 
-        infileButton.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setDialogTitle("Select ACG log file to summarize");
-            int returnVal = chooser.showOpenDialog(dialog);
+        JFileChooser inFileChooser = new JFileChooser();
+        inFileButton.addActionListener(e -> {
+            inFileChooser.setDialogTitle("Select ACG log file to summarize");
+            int returnVal = inFileChooser.showOpenDialog(dialog);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                options.inFile = chooser.getSelectedFile();
-                inFilename.setText(chooser.getSelectedFile().getName());
+                options.inFile = inFileChooser.getSelectedFile();
+                inFilename.setText(inFileChooser.getSelectedFile().getName());
                 runButton.setEnabled(true);
             }
         });
 
-        cp.add(buttonPanel, BorderLayout.PAGE_END);
+        JFileChooser outFileChooser = new JFileChooser();
+        outFileButton.addActionListener(e -> {
+            outFileChooser.setDialogTitle("Select output file name.");
+            if (options.inFile != null)
+                outFileChooser.setCurrentDirectory(options.inFile);
 
-                dialog.pack();
+            outFileChooser.setSelectedFile(options.outFile);
+            int returnVal = outFileChooser.showOpenDialog(dialog);
+
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                options.outFile = outFileChooser.getSelectedFile();
+                outFilename.setText(outFileChooser.getSelectedFile().getName());
+            }
+        });
+
+        cp.add(buttonPanel);
+
+        dialog.pack();
         dialog.setResizable(false);
         dialog.setVisible(true);
 
