@@ -27,7 +27,6 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -701,12 +700,107 @@ public class ConversionGraph extends Tree {
                     removeOffset(child, offset);
             }
 
+            private Node getTrueNode(Node node) {
+                if (node.isLeaf()) {
+                    if (convIDMap.containsKey(node.getID()))
+                        return null;
+                    else
+                        return node;
+                }
+
+                if (convIDMap.containsKey(node.getID()))
+                    return getTrueNode(node.getChild(0));
+
+                int hybridIdx = -1;
+                int nonHybridIdx = -1;
+                for (int i=0; i<node.getChildCount(); i++) {
+                    if (node.getChild(i).isLeaf() && convIDMap.containsKey(node.getChild(i).getID()))
+                        hybridIdx = i;
+                    else
+                        nonHybridIdx = i;
+                }
+
+                if (hybridIdx>0)
+                    return getTrueNode(node.getChild(nonHybridIdx));
+
+                return node;
+            }
+
+            /**
+             * Traverse the newly constructed tree looking for
+             * hybrid nodes and using these to set the heights of
+             * Conversion objects.
+             *
+             * @param node parent of clade
+             */
+            private void findConversionAttachments(Node node) {
+                if (convIDMap.containsKey(node.getID())) {
+                    Conversion conv = convIDMap.get(node.getID());
+                    if (node.isLeaf()) {
+                        conv.setHeight1(node.getHeight());
+                        conv.setHeight2(node.getParent().getHeight());
+                        conv.setNode2(getTrueNode(node.getParent()));
+                    } else
+                        conv.setNode1(getTrueNode(node));
+                }
+
+                for (Node child : node.getChildren())
+                    findConversionAttachments(child);
+            }
+
+            /**
+             * Remove all conversion-associated nodes, leaving only
+             * the clonal frame.
+             *
+             * @param node parent of clade
+             * @return new parent of same clade
+             */
+            private Node stripHybridNodes(Node node) {
+                Node trueNode = getTrueNode(node);
+                List<Node> trueChildren = new ArrayList<Node>();
+
+                for (Node child : trueNode.getChildren()) {
+                    trueChildren.add(stripHybridNodes(child));
+                }
+
+                trueNode.removeAllChildren(false);
+                for (Node trueChild : trueChildren)
+                    trueNode.addChild(trueChild);
+
+                return trueNode;
+            }
+
+            private int numberInternalNodes(Node node, int nextNr) {
+                if (node.isLeaf())
+                    return nextNr;
+
+                for (Node child : node.getChildren())
+                    nextNr = numberInternalNodes(child, nextNr);
+
+                node.setNr(nextNr);
+
+                return nextNr + 1;
+            }
+
+
             @Override
             public Node visitTree(@NotNull ExtendedNewickParser.TreeContext ctx) {
                 Node root =  visitNode(ctx.node());
 
                 double minHeight = branchLengthsToHeights(root);
                 removeOffset(root, minHeight);
+
+                findConversionAttachments(root);
+
+                root = stripHybridNodes(root);
+                root.setParent(null);
+
+                int nextNr = 0;
+                for (Node leaf : root.getAllLeafNodes()) {
+                    leaf.setNr(nextNr++);
+                }
+
+                numberInternalNodes(root, nextNr);
 
                 return root;
             }
@@ -715,21 +809,80 @@ public class ConversionGraph extends Tree {
             public Node visitNode(@NotNull ExtendedNewickParser.NodeContext ctx) {
                 Node node = new Node();
 
-                for (ExtendedNewickParser.NodeContext childCtx : ctx.node()) {
-                    node.addChild(visitNode(childCtx));
+                if (ctx.post().hybrid() != null) {
+                    String convID = ctx.post().hybrid().getText();
+                    node.setID(convID);
+
+                    Conversion conv;
+                    if (convIDMap.containsKey(convID))
+                        conv = convIDMap.get(convID);
+                    else {
+                        conv = new Conversion();
+                        convIDMap.put(convID, conv);
+                    }
+
+                    if (ctx.node().isEmpty()) {
+                        String locusID = null;
+                        for (ExtendedNewickParser.AttribContext attribCtx : ctx.post().meta().attrib()) {
+                            switch (attribCtx.attribKey.getText()) {
+                                case "region":
+                                    conv.setStartSite(Integer.parseInt(
+                                            attribCtx.attribValue().vector().attribValue(0).getText()));
+                                    conv.setEndSite(Integer.parseInt(
+                                            attribCtx.attribValue().vector().attribValue(1).getText()));
+                                    break;
+
+                                case "locus":
+                                    locusID = attribCtx.attribValue().getText();
+                                    if (locusID.startsWith("\""))
+                                        locusID = locusID.substring(1,locusID.length()-1);
+
+                                    Locus locus = null;
+                                    for (Locus thisLocus : getLoci()) {
+                                        if (thisLocus.getID().equals(locusID))
+                                            locus = thisLocus;
+                                    }
+
+                                    if (locus == null)
+                                        throw new IllegalArgumentException(
+                                                "Locus with ID " + locusID + " not found.");
+
+                                    conv.setLocus(locus);
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                 }
 
-                if (ctx.post().label() != null)
-                    node.setID(ctx.post().label().getText());
+                for (ExtendedNewickParser.NodeContext childCtx : ctx.node())
+                    node.addChild(visitNode(childCtx));
 
-                double branchLength = Double.parseDouble(ctx.post().length.getText());
-                node.setHeight(branchLength);
+                if (ctx.post().label() != null) {
+                    node.setID(ctx.post().label().getText());
+//                    node.setNr(Integer.parseInt(ctx.post().label().getText()));
+                }
+
+                node.setHeight(Double.parseDouble(ctx.post().length.getText()));
 
                 return node;
             }
         }.visit(parseTree);
 
-        System.out.println(root.toNewick());
+        m_nodes = root.getAllChildNodes().toArray(m_nodes);
+        nodeCount = m_nodes.length;
+        leafNodeCount = root.getAllLeafNodes().size();
+
+        setRoot(root);
+        initArrays();
+
+        for (Locus locus : getLoci())
+            convs.get(locus).clear();
+
+        for (Conversion conv : convIDMap.values())
+            addConversion(conv);
 
     }
 

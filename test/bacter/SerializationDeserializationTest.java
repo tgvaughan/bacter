@@ -17,6 +17,7 @@
 package bacter;
 
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.tree.Node;
 import beast.util.ClusterTree;
 import java.io.ByteArrayInputStream;
@@ -222,9 +223,26 @@ public class SerializationDeserializationTest extends TestBase {
         String newickString = acg.getExtendedNewick();
         System.out.println(newickString);
 
-        ConversionGraph argNew = new ConversionGraph();
-        argNew.initByName("locus", locus);
+        ConversionGraph acgNew = new ConversionGraph();
+        acgNew.initByName("locus", locus);
 
-        argNew.fromExtendedNewick(newickString);
+        acgNew.fromExtendedNewick(newickString);
+
+        // Check that new ACG matches old
+        Conversion newConv1 = acgNew.getConversions(locus).get(0);
+        assertEquals(newConv1.getNode1().getNr(), conv1.getNode1().getNr());
+        assertEquals(newConv1.getNode2().getNr(), conv1.getNode2().getNr());
+        assertEquals(newConv1.getHeight1(),conv1.getHeight1(), 1e-15);
+        assertEquals(newConv1.getHeight2(),conv1.getHeight2(), 1e-15);
+        assertEquals(newConv1.getStartSite(), conv1.getStartSite());
+        assertEquals(newConv1.getEndSite(), conv1.getEndSite());
+
+        Conversion newConv2 = acgNew.getConversions(locus).get(1);
+        assertEquals(newConv2.getNode1().getNr(), conv2.getNode1().getNr());
+        assertEquals(newConv2.getNode2().getNr(), conv2.getNode2().getNr());
+        assertEquals(newConv2.getHeight1(),conv2.getHeight1(), 1e-15);
+        assertEquals(newConv2.getHeight2(),conv2.getHeight2(), 1e-15);
+        assertEquals(newConv2.getStartSite(), conv2.getStartSite());
+        assertEquals(newConv2.getEndSite(), conv2.getEndSite());
     }
 }
