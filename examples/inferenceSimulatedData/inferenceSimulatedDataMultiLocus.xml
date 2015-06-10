@@ -71,14 +71,14 @@
 
     <input spec='SimulatedAlignment' id='a1' acg="@acgTruth" locus="@l1"
         outputFileName="simulated_alignment1.nexus" useNexus="true">
-        <siteModel spec='SiteModel' mutationRate="0.01">
+        <siteModel spec='SiteModel' mutationRate="0.005">
             <substModel spec='JukesCantor'/>
         </siteModel>
     </input>
 
     <input spec='SimulatedAlignment' id='a2' acg="@acgTruth" locus="@l2"
         outputFileName="simulated_alignment2.nexus" useNexus="true">
-        <siteModel spec='SiteModel' mutationRate="0.01">
+        <siteModel spec='SiteModel' mutationRate="0.005">
             <substModel spec='JukesCantor'/>
         </siteModel>
     </input>
@@ -96,7 +96,7 @@
             <stateNode id="rho" spec='RealParameter' value="0.0005" />
             <stateNode id="delta" spec='RealParameter' value="1000.0"/>
             <stateNode id="popSize" spec='RealParameter' value="1.0"/>
-            <stateNode id="mutationRate" spec='RealParameter' value="0.01"/>
+            <stateNode id="mutationRate" spec='RealParameter' value="0.005"/>
         </state>
 
         <!-- Posterior -->

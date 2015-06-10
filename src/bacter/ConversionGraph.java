@@ -949,6 +949,28 @@ public class ConversionGraph extends Tree {
     /*
      * Loggable implementation.
      */
+    @Override
+    public void init(PrintStream out) throws Exception {
+        Node node = getRoot();
+        out.println("#NEXUS\n");
+        out.println("Begin taxa;");
+        out.println("\tDimensions ntax=" + getLeafNodeCount() + ";");
+        out.println("\t\tTaxlabels");
+        printTaxa(node, out, getNodeCount() / 2);
+        out.println("\t\t\t;");
+        out.println("End;\n");
+
+        out.println("Begin bacter;");
+        out.print("\tloci");
+        for (Locus locus : loci)
+            out.print(" " + locus.getID() + ":" + locus.getSiteCount());
+        out.println(";\nEnd;\n");
+
+        out.println("Begin trees;");
+        out.println("\tTranslate");
+        printTranslate(node, out, getNodeCount() / 2);
+        out.print(";");
+    }
 
     @Override
     public void log(int nSample, PrintStream out) {

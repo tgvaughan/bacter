@@ -118,12 +118,18 @@ public class SimulatedACG extends ConversionGraph {
 
                 @Override
                 public String getBlockName() {
-                    return "ARGBEAST";
+                    return "bacter";
                 }
 
                 @Override
                 public List<String> getBlockLines() {
                     List<String> lines = new ArrayList<>();
+
+                    String lociLine = "loci";
+                    for (Locus locus : getLoci())
+                        lociLine += " " + locus.getID() + ":" + locus.getSiteCount();
+                    lines.add(lociLine);
+
                     lines.add("clonalframe " + root.toShortNewick(true));
                     for (Locus locus : getLoci()) {
                         for (Conversion conv : getConversions(locus)) {

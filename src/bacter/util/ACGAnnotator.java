@@ -17,6 +17,8 @@
 
 package bacter.util;
 
+import bacter.Locus;
+
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.BorderLayout;
@@ -51,6 +53,7 @@ public class ACGAnnotator {
                 break;
 
 
+
             //System.out.println("Hello world! (" + (i++) + ")");
         }
 
@@ -58,7 +61,6 @@ public class ACGAnnotator {
 
         // 2. Summarize CF node heights
 
-        // 3. Su
     }
 
     class LogFileReader {
@@ -68,6 +70,8 @@ public class ACGAnnotator {
         List<String> preamble;
         String nextLine;
 
+        List<Locus> loci;
+
         public LogFileReader(File logFile) throws IOException {
             this.logFile = logFile;
 
@@ -75,6 +79,9 @@ public class ACGAnnotator {
             preamble = new ArrayList<>();
 
             skipPreamble();
+
+            loci = new ArrayList<>();
+            extractLociFromPreamble();
         }
 
         private void skipPreamble() throws IOException {
@@ -91,6 +98,18 @@ public class ACGAnnotator {
 
                 if (recordPreamble)
                     preamble.add(nextLine);
+            }
+        }
+
+        private void extractLociFromPreamble() {
+            for (String line : preamble) {
+                line = line.trim();
+                if (line.startsWith("loci ") && line.endsWith(";")) {
+                    for (String locusEntry : line.substring(1,line.length()-1).split(" ")) {
+                        String[] locusPair = locusEntry.split(":");
+                        loci.add(new Locus(locusPair[0], Integer.parseInt(locusPair[1])));
+                    }
+                }
             }
         }
 
@@ -117,6 +136,10 @@ public class ACGAnnotator {
             String treeString = sb.toString();
 
             return treeString.substring(treeString.indexOf("("));
+        }
+
+        public List<Locus> getLoci() {
+            return loci;
         }
 
     }
