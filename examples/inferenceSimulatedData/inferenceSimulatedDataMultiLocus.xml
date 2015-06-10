@@ -57,7 +57,7 @@
     </taxonSet>
 
 
-    <!-- Simulated ACG (Truth) -->  
+    <!-- Simulated ACG (Truth) -->
 
     <input spec='SimulatedACG' id='acgTruth'
         rho="0.0005" delta="1000.0"
@@ -71,14 +71,14 @@
 
     <input spec='SimulatedAlignment' id='a1' acg="@acgTruth" locus="@l1"
         outputFileName="simulated_alignment1.nexus" useNexus="true">
-        <siteModel spec='SiteModel' mutationRate="0.1">
+        <siteModel spec='SiteModel' mutationRate="0.01">
             <substModel spec='JukesCantor'/>
         </siteModel>
     </input>
 
     <input spec='SimulatedAlignment' id='a2' acg="@acgTruth" locus="@l2"
         outputFileName="simulated_alignment2.nexus" useNexus="true">
-        <siteModel spec='SiteModel' mutationRate="0.1">
+        <siteModel spec='SiteModel' mutationRate="0.01">
             <substModel spec='JukesCantor'/>
         </siteModel>
     </input>
@@ -96,14 +96,14 @@
             <stateNode id="rho" spec='RealParameter' value="0.0005" />
             <stateNode id="delta" spec='RealParameter' value="1000.0"/>
             <stateNode id="popSize" spec='RealParameter' value="1.0"/>
-            <stateNode id="mutationRate" spec='RealParameter' value="0.1"/>
+            <stateNode id="mutationRate" spec='RealParameter' value="0.01"/>
         </state>
 
-        <!-- Posterior -->    
+        <!-- Posterior -->
 
         <distribution spec="CompoundDistribution" id="posterior">
 
-            <!-- ACG likelihood --> 
+            <!-- ACG likelihood -->
 
             <distribution spec='ACGLikelihood' id="acgLikelihood1"
                 acg="@acg" alignment="@a1" locus="@l1">

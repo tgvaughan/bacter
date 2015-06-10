@@ -19,11 +19,12 @@ package bacter.util;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Font;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -39,10 +40,89 @@ public class ACGAnnotator {
         public HeightStrategy heightStrategy = HeightStrategy.MEAN;
     }
 
-    public ACGAnnotator(ACGAnnotatorOptions options) {
+    public ACGAnnotator(ACGAnnotatorOptions options) throws IOException {
+
+        LogFileReader logReader = new LogFileReader(options.inFile);
+
+        int i=0;
+        while (true) {
+            String nextTreeString = logReader.getNextTreeString();
+            if (nextTreeString == null)
+                break;
+
+
+            //System.out.println("Hello world! (" + (i++) + ")");
+        }
+
+        // 1. Identify MCC CF topology
+
+        // 2. Summarize CF node heights
+
+        // 3. Su
     }
 
-    public static ACGAnnotatorOptions getOptionsGUI() {
+    class LogFileReader {
+        File logFile;
+        BufferedReader reader;
+
+        List<String> preamble;
+        String nextLine;
+
+        public LogFileReader(File logFile) throws IOException {
+            this.logFile = logFile;
+
+            reader = new BufferedReader(new FileReader(logFile));
+            preamble = new ArrayList<>();
+
+            skipPreamble();
+        }
+
+        private void skipPreamble() throws IOException {
+            boolean recordPreamble = preamble.isEmpty();
+
+            while(true) {
+                nextLine = reader.readLine();
+
+                if (nextLine == null)
+                    throw new IOException("Reached end of file while searching for first tree.");
+
+                if (nextLine.toLowerCase().startsWith("tree"))
+                    break;
+
+                if (recordPreamble)
+                    preamble.add(nextLine);
+            }
+        }
+
+        public void reset() throws IOException {
+            reader.reset();
+            skipPreamble();
+        }
+
+        public String getNextTreeString() throws IOException {
+            StringBuilder sb = new StringBuilder();
+
+            while (true) {
+                if (nextLine == null)
+                    return null;
+
+                sb.append(nextLine.trim());
+                if (nextLine.trim().endsWith(";"))
+                    break;
+
+                nextLine = reader.readLine();
+            }
+            nextLine = reader.readLine();
+
+            String treeString = sb.toString();
+
+            return treeString.substring(treeString.indexOf("("));
+        }
+
+    }
+
+
+    private static ACGAnnotatorOptions getOptionsGUI() {
 
         ACGAnnotatorOptions options = new ACGAnnotatorOptions();
         boolean[] canceled = {false};
@@ -188,7 +268,7 @@ public class ACGAnnotator {
             return options;
     }
 
-    public static void setupGUIOutput() {
+    private static void setupGUIOutput() {
         JFrame frame = new JFrame();
         frame.setTitle("ACGAnnotator");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -208,8 +288,7 @@ public class ACGAnnotator {
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
-                SwingUtilities.invokeLater(
-                        () -> textArea.append(String.valueOf((char)b)));
+                textArea.append(String.valueOf((char)b));
             }
         };
 
@@ -307,30 +386,43 @@ public class ACGAnnotator {
         return options;
     }
 
+    /**
+     * Main method for ACGAnnotator.  Sets up GUI if needed then
+     * uses the ACGAnnotator constructor to actually perform the analysis.
+     *
+     * @param args
+     */
     public static void main(String[] args) {
-
 
         if (args.length == 0) {
             // Retrieve options from GUI:
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    ACGAnnotatorOptions options = getOptionsGUI();
+            SwingUtilities.invokeLater(() -> {
+                ACGAnnotatorOptions options = getOptionsGUI();
 
-                    if (options == null)
-                        System.exit(0);
+                if (options == null)
+                    System.exit(0);
 
-                    setupGUIOutput();
+                setupGUIOutput();
 
-                    // Run ACGAnnotator
+                // Run ACGAnnotator
+                try {
                     new ACGAnnotator(options);
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, e.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    System.exit(1);
                 }
             });
 
         } else {
 
             // Run ACGAnnotator
-            new ACGAnnotator(getCLIOptions(args));
+            try {
+                new ACGAnnotator(getCLIOptions(args));
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
+            }
         }
 
     }
