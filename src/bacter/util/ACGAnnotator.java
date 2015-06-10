@@ -17,6 +17,7 @@
 
 package bacter.util;
 
+import bacter.ConversionGraph;
 import bacter.Locus;
 
 import javax.swing.*;
@@ -42,9 +43,13 @@ public class ACGAnnotator {
         public HeightStrategy heightStrategy = HeightStrategy.MEAN;
     }
 
-    public ACGAnnotator(ACGAnnotatorOptions options) throws IOException {
+    public ACGAnnotator(ACGAnnotatorOptions options) throws Exception {
 
         LogFileReader logReader = new LogFileReader(options.inFile);
+        ConversionGraph acg = new ConversionGraph();
+        for (Locus locus : logReader.getLoci())
+                acg.lociInput.setValue(locus, acg);
+        acg.initAndValidate();
 
         int i=0;
         while (true) {
@@ -52,9 +57,8 @@ public class ACGAnnotator {
             if (nextTreeString == null)
                 break;
 
-
-
-            //System.out.println("Hello world! (" + (i++) + ")");
+            acg.fromExtendedNewick(nextTreeString);
+            System.out.println(acg.getTotalConvCount());
         }
 
         // 1. Identify MCC CF topology
@@ -105,7 +109,7 @@ public class ACGAnnotator {
             for (String line : preamble) {
                 line = line.trim();
                 if (line.startsWith("loci ") && line.endsWith(";")) {
-                    for (String locusEntry : line.substring(1,line.length()-1).split(" ")) {
+                    for (String locusEntry : line.substring(5,line.length()-1).split(" ")) {
                         String[] locusPair = locusEntry.split(":");
                         loci.add(new Locus(locusPair[0], Integer.parseInt(locusPair[1])));
                     }
@@ -165,6 +169,7 @@ public class ACGAnnotator {
         JButton inFileButton = new JButton("Choose File");
 
         JTextField outFilename = new JTextField(20);
+        outFilename.setText(options.outFile.getName());
         outFilename.setEditable(false);
         JButton outFileButton = new JButton("Choose File");
 
@@ -255,6 +260,8 @@ public class ACGAnnotator {
         JFileChooser inFileChooser = new JFileChooser();
         inFileButton.addActionListener(e -> {
             inFileChooser.setDialogTitle("Select ACG log file to summarize");
+            if (options.inFile == null)
+                inFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
             int returnVal = inFileChooser.showOpenDialog(dialog);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -269,6 +276,8 @@ public class ACGAnnotator {
             outFileChooser.setDialogTitle("Select output file name.");
             if (options.inFile != null)
                 outFileChooser.setCurrentDirectory(options.inFile);
+            else
+                outFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
 
             outFileChooser.setSelectedFile(options.outFile);
             int returnVal = outFileChooser.showOpenDialog(dialog);
@@ -430,7 +439,7 @@ public class ACGAnnotator {
                 // Run ACGAnnotator
                 try {
                     new ACGAnnotator(options);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, e.getMessage(),
                             "Error", JOptionPane.ERROR_MESSAGE);
                     System.exit(1);
@@ -442,7 +451,7 @@ public class ACGAnnotator {
             // Run ACGAnnotator
             try {
                 new ACGAnnotator(getCLIOptions(args));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.err.println(e.getMessage());
                 System.exit(1);
             }
