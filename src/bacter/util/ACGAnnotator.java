@@ -19,6 +19,7 @@ package bacter.util;
 
 import bacter.ConversionGraph;
 import bacter.Locus;
+import beast.app.treeannotator.CladeSystem;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -51,15 +52,36 @@ public class ACGAnnotator {
                 acg.lociInput.setValue(locus, acg);
         acg.initAndValidate();
 
-        int i=0;
+        // Count trees
+        int nTrees=0;
+        while (logReader.getNextTreeString() != null)
+            nTrees += 1;
+
+        int burnin = (int)Math.round(options.burninPercentage*nTrees/100.0);
+
+        System.out.println(nTrees + " trees in file.");
+
+        CladeSystem cladeSystem = new CladeSystem();
+
+        logReader.reset();
+        int treeIdx = 0;
         while (true) {
             String nextTreeString = logReader.getNextTreeString();
             if (nextTreeString == null)
                 break;
 
+            if (treeIdx<burnin) {
+                treeIdx += 1;
+                continue;
+            }
+
             acg.fromExtendedNewick(nextTreeString);
-            System.out.println(acg.getTotalConvCount());
+            cladeSystem.add(acg,false);
+
+            treeIdx += 1;
         }
+
+        cladeSystem.calculateCladeCredibilities(nTrees-burnin);
 
         // 1. Identify MCC CF topology
 
@@ -118,7 +140,8 @@ public class ACGAnnotator {
         }
 
         public void reset() throws IOException {
-            reader.reset();
+            reader.close();
+            reader = new BufferedReader(new FileReader(logFile));
             skipPreamble();
         }
 
