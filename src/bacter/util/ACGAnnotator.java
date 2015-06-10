@@ -476,7 +476,7 @@ public class ACGAnnotator {
                 new ACGAnnotator(getCLIOptions(args));
             } catch (Exception e) {
                 System.err.println(e.getMessage());
-                System.exit(1);
+                printUsageAndError();
             }
         }
 
