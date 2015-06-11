@@ -20,6 +20,7 @@ package bacter.util;
 import bacter.ConversionGraph;
 import bacter.Locus;
 import beast.app.treeannotator.CladeSystem;
+import beast.evolution.tree.Tree;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -53,6 +54,7 @@ public class ACGAnnotator {
         acg.initAndValidate();
 
         // Count trees
+
         int nTrees=0;
         while (logReader.getNextTreeString() != null)
             nTrees += 1;
@@ -60,6 +62,8 @@ public class ACGAnnotator {
         int burnin = (int)Math.round(options.burninPercentage*nTrees/100.0);
 
         System.out.println(nTrees + " trees in file.");
+
+        // Compute CF Clade probabilities
 
         CladeSystem cladeSystem = new CladeSystem();
 
@@ -83,12 +87,45 @@ public class ACGAnnotator {
 
         cladeSystem.calculateCladeCredibilities(nTrees-burnin);
 
-        // 1. Identify MCC CF topology
+        // Identify MCC CF topology
 
-        // 2. Summarize CF node heights
+        ConversionGraph acgBest = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
+
+        logReader.reset();
+        treeIdx = 0;
+        while (true) {
+            String nextTreeString = logReader.getNextTreeString();
+            if (nextTreeString == null)
+                break;
+
+            if (treeIdx<burnin) {
+                treeIdx += 1;
+                continue;
+            }
+
+            acg.fromExtendedNewick(nextTreeString);
+
+            double score = cladeSystem.getLogCladeCredibility(acg.getRoot(), null);
+            if (score>bestScore) {
+                acgBest = acg.copy();
+                bestScore = score;
+            }
+
+            treeIdx += 1;
+        }
+
+        System.out.println(acgBest.toString());
+
+        // Summarize CF node heights
 
     }
 
+    /**
+     * Class representing ACG log files.  Includes methods for
+     * iterating over the extended newick ACG strings listed
+     * and acquiring the list of available loci.
+     */
     class LogFileReader {
         File logFile;
         BufferedReader reader;
@@ -98,6 +135,13 @@ public class ACGAnnotator {
 
         List<Locus> loci;
 
+        /**
+         * Construct and initialize the reader.  The Preamble is
+         * read and the list of loci constructed immediately.
+         *
+         * @param logFile ACG log file.
+         * @throws IOException
+         */
         public LogFileReader(File logFile) throws IOException {
             this.logFile = logFile;
 
@@ -110,6 +154,12 @@ public class ACGAnnotator {
             extractLociFromPreamble();
         }
 
+        /**
+         * Internal method for skimming the preamble at the start
+         * of the log, before we get to the tree section.
+         *
+         * @throws IOException
+         */
         private void skipPreamble() throws IOException {
             boolean recordPreamble = preamble.isEmpty();
 
@@ -127,6 +177,9 @@ public class ACGAnnotator {
             }
         }
 
+        /**
+         * Retrieve list of loci from skimmed preamble.
+         */
         private void extractLociFromPreamble() {
             for (String line : preamble) {
                 line = line.trim();
@@ -139,12 +192,21 @@ public class ACGAnnotator {
             }
         }
 
+        /**
+         * Rewind to the beginning of the file.
+         *
+         * @throws IOException
+         */
         public void reset() throws IOException {
             reader.close();
             reader = new BufferedReader(new FileReader(logFile));
             skipPreamble();
         }
 
+        /**
+         * @return the next available tree string or null if none exists
+         * @throws IOException
+         */
         public String getNextTreeString() throws IOException {
             StringBuilder sb = new StringBuilder();
 
@@ -172,6 +234,11 @@ public class ACGAnnotator {
     }
 
 
+    /**
+     * Use a GUI to retrieve ACGAnnotator options.
+     *
+     * @return instance of ACGAnnotatorOptions
+     */
     private static ACGAnnotatorOptions getOptionsGUI() {
 
         ACGAnnotatorOptions options = new ACGAnnotatorOptions();
@@ -323,6 +390,10 @@ public class ACGAnnotator {
             return options;
     }
 
+    /**
+     * Prepare JFrame to which ACGAnnotator output streams will be
+     * directed.
+     */
     private static void setupGUIOutput() {
         JFrame frame = new JFrame();
         frame.setTitle("ACGAnnotator");
@@ -366,17 +437,29 @@ public class ACGAnnotator {
                     + "-burnin percentage       Choose _percentage_ of log to discard\n"
                     + "                         in order to remove burn-in period.";
 
+    /**
+     * Print usage info and exit.
+     */
     public static void printUsageAndExit() {
         System.out.println(helpMessage);
         System.exit(0);
     }
 
+    /**
+     * Display error, print usage and exit with error.
+     */
     public static void printUsageAndError() {
         System.err.println("Error processing command line parameters.\n");
         System.err.println(helpMessage);
         System.exit(1);
     }
 
+    /**
+     * Retrieve ACGAnnotator options from command line.
+     *
+     * @param args command line arguments
+     * @return ACGAnnotatorOptions instance
+     */
     public static ACGAnnotatorOptions getCLIOptions(String[] args) {
         ACGAnnotatorOptions options = new ACGAnnotatorOptions();
 
@@ -445,7 +528,7 @@ public class ACGAnnotator {
      * Main method for ACGAnnotator.  Sets up GUI if needed then
      * uses the ACGAnnotator constructor to actually perform the analysis.
      *
-     * @param args
+     * @param args command line arguments
      */
     public static void main(String[] args) {
 
