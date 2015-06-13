@@ -25,6 +25,7 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,10 +49,10 @@ public class ACGAnnotator {
 
     public ACGAnnotator(ACGAnnotatorOptions options) throws Exception {
 
+        // Initialise reader
+
         LogFileReader logReader = new LogFileReader(options.inFile,
                 options.burninPercentage);
-
-        // Count trees
 
         System.out.println(logReader.getACGCount() + " ACGs in file.");
 
@@ -184,7 +185,7 @@ public class ACGAnnotator {
          *
          * @throws IOException
          */
-        public void reset() throws IOException {
+        private void reset() throws IOException {
             reader.close();
             reader = new BufferedReader(new FileReader(logFile));
             skipPreamble();
@@ -194,7 +195,7 @@ public class ACGAnnotator {
          * @return the next available tree string or null if none exists
          * @throws IOException
          */
-        public String getNextTreeString() throws IOException {
+        private String getNextTreeString() throws IOException {
             StringBuilder sb = new StringBuilder();
 
             while (true) {
@@ -330,11 +331,11 @@ public class ACGAnnotator {
     /**
      * Use a GUI to retrieve ACGAnnotator options.
      *
-     * @return instance of ACGAnnotatorOptions
+     * @param options options object to populate using GUI
+     * @return true if options successfully collected, false otherwise
      */
-    private static ACGAnnotatorOptions getOptionsGUI() {
+    private static boolean getOptionsGUI(ACGAnnotatorOptions options) {
 
-        ACGAnnotatorOptions options = new ACGAnnotatorOptions();
         boolean[] canceled = {false};
 
         JDialog dialog = new JDialog((JDialog)null, true);
@@ -477,10 +478,7 @@ public class ACGAnnotator {
         dialog.setResizable(false);
         dialog.setVisible(true);
 
-        if (canceled[0])
-            return null;
-        else
-            return options;
+        return !canceled[0];
     }
 
     /**
@@ -551,11 +549,10 @@ public class ACGAnnotator {
      * Retrieve ACGAnnotator options from command line.
      *
      * @param args command line arguments
+     * @param options object to populate with options
      * @return ACGAnnotatorOptions instance
      */
-    public static ACGAnnotatorOptions getCLIOptions(String[] args) {
-        ACGAnnotatorOptions options = new ACGAnnotatorOptions();
-
+    public static void getCLIOptions(String[] args, ACGAnnotatorOptions options) {
         int i=0;
         while (args[i].startsWith("-")) {
             switch(args[i]) {
@@ -613,8 +610,6 @@ public class ACGAnnotator {
 
         if (i+1<args.length)
             options.outFile = new File(args[i+1]);
-
-        return options;
     }
 
     /**
@@ -624,39 +619,44 @@ public class ACGAnnotator {
      * @param args command line arguments
      */
     public static void main(String[] args) {
+        ACGAnnotatorOptions options = new ACGAnnotatorOptions();
 
         if (args.length == 0) {
             // Retrieve options from GUI:
+            try {
+                SwingUtilities.invokeAndWait(() -> {
+                            if (!getOptionsGUI(options))
+                                System.exit(0);
+                        });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
             SwingUtilities.invokeLater(() -> {
-                ACGAnnotatorOptions options = getOptionsGUI();
-
-                if (options == null)
-                    System.exit(0);
-
                 setupGUIOutput();
-
-                // Run ACGAnnotator
-                try {
-                    new ACGAnnotator(options);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e.getMessage(),
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                    System.exit(1);
-                }
             });
 
         } else {
+            getCLIOptions(args, options);
+        }
 
-            // Run ACGAnnotator
-            try {
-                new ACGAnnotator(getCLIOptions(args));
-            } catch (Exception e) {
+        // Run ACGAnnotator
+        try {
+            new ACGAnnotator(options);
+
+        } catch (Exception e) {
+            if (args.length == 0) {
+                JOptionPane.showMessageDialog(null, e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
                 System.err.println(e.getMessage());
                 System.err.println();
                 System.err.println(helpMessage);
-                System.exit(1);
             }
-        }
 
+            System.exit(1);
+        }
     }
 }
