@@ -636,14 +636,14 @@ public class ConversionGraph extends Tree {
             sb.insert(cursor, "(" + subtree1 + "," + subtree2 + ")");
             cursor += subtree1.length() + subtree2.length() + 3;
         }
-        
+
         double thisLength;
         if (Double.isInfinite(lastTime))
             thisLength = 0.0;
         else
             thisLength = lastTime - node.getHeight();
         sb.insert(cursor, (node.getNr() + taxaTranslationOffset)
-                + ":" + thisLength);
+                + node.getNewickMetaData() + ":" + thisLength);
         
         return sb.toString();
     }
@@ -757,7 +757,7 @@ public class ConversionGraph extends Tree {
              */
             private Node stripHybridNodes(Node node) {
                 Node trueNode = getTrueNode(node);
-                List<Node> trueChildren = new ArrayList<Node>();
+                List<Node> trueChildren = new ArrayList<>();
 
                 for (Node child : trueNode.getChildren()) {
                     trueChildren.add(stripHybridNodes(child));
@@ -822,7 +822,7 @@ public class ConversionGraph extends Tree {
                     }
 
                     if (ctx.node().isEmpty()) {
-                        String locusID = null;
+                        String locusID;
                         for (ExtendedNewickParser.AttribContext attribCtx : ctx.post().meta().attrib()) {
                             switch (attribCtx.attribKey.getText()) {
                                 case "region":

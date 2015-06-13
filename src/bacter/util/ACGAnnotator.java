@@ -20,14 +20,15 @@ package bacter.util;
 import bacter.ConversionGraph;
 import bacter.Locus;
 import beast.app.treeannotator.CladeSystem;
+import beast.evolution.tree.Node;
+import beast.math.statistic.DiscreteStatistics;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -91,16 +92,78 @@ public class ACGAnnotator {
         if (acgBest == null)
             throw new IllegalStateException("Failed to find best tree topology.");
 
-        // Summarize CF node heights
+        // Remove conversions
+        for (Locus locus : acgBest.getLoci())
+                acgBest.getConversions(locus).clear();
 
-        System.out.println("\nCollecting CF node information...");
+        // Collect CF node heights
 
+        System.out.println("\nCollecting CF node heights...");
+
+        Set<String> attributeNames = new HashSet<>();
+        attributeNames.add("height");
+
+        cladeSystem = new CladeSystem(acgBest);
+        for (ConversionGraph acg : logReader) {
+            cladeSystem.collectAttributes(acg, attributeNames);
+        }
+        cladeSystem.removeClades(acgBest.getRoot(), true);
+        cladeSystem.calculateCladeCredibilities(logReader.getCorrectedACGCount());
+
+        // Annotate node heights of winning CF topology
+        annotateCF(cladeSystem, acgBest.getRoot(), options.heightStrategy);
+
+        System.out.println("\nWriting output to " + options.outFile.getName()
+        + "...");
+
+        try (PrintStream ps = new PrintStream(options.outFile)) {
+            ps.print(logReader.getPreamble());
+            ps.println("tree STATE_0 = " + acgBest.getExtendedNewick());
+            ps.println("End;");
+        }
+
+        System.out.println("\nDone!");
+    }
+
+    private BitSet annotateCF(CladeSystem cladeSystem,
+                              Node node, HeightStrategy strategy) {
+        BitSet bits = new BitSet();
+
+        if (node.isLeaf()) {
+            bits.set(cladeSystem.getTaxonIndex(node)*2);
+        } else {
+            for (Node child : node.getChildren()) {
+                bits.or(annotateCF(cladeSystem, child, strategy));
+            }
+
+            List<Object[]> rawHeights =
+                    cladeSystem.getCladeMap().get(bits).getAttributeValues();
+
+            double[] heights = new double[rawHeights.size()];
+            for (int i = 0; i < rawHeights.size(); i++)
+                heights[i] = (double) rawHeights.get(i)[0];
+
+            if (strategy == HeightStrategy.MEAN)
+                node.setHeight(DiscreteStatistics.mean(heights));
+            else
+                node.setHeight(DiscreteStatistics.median(heights));
+
+            Arrays.sort(heights);
+            double minHPD = heights[(int) Math.round(0.025 * heights.length)];
+            double maxHPD = heights[(int) Math.round(0.975 * heights.length)];
+
+            node.metaDataString = "height_95%_HPD={" + minHPD + "," + maxHPD + "}";
+        }
+
+        return bits;
     }
 
     /**
      * Class representing ACG log files.  Includes methods for
-     * iterating over the extended newick ACG strings listed
-     * and acquiring the list of available loci.
+     * querying the number of ACGs defined, included and excluded
+     * by the given burn-in percentage, as well as implementing an
+     * iterator over all ACGs included after burn-in.  The iterator
+     * automatically displays a progress bar on stdout.
      */
     class LogFileReader implements Iterable<ConversionGraph> {
         File logFile;
@@ -142,6 +205,7 @@ public class ACGAnnotator {
             burnin = (int)Math.round(nACGs*burninPercentage/100);
         }
 
+
         /**
          * Internal method for skimming the preamble at the start
          * of the log, before we get to the tree section.
@@ -163,6 +227,17 @@ public class ACGAnnotator {
                 if (recordPreamble)
                     preamble.add(nextLine);
             }
+        }
+
+        /**
+         * @return Everything read from the log file up until the first tree line.
+         */
+        public String getPreamble() {
+            StringBuilder sb = new StringBuilder();
+            for (String line : preamble)
+                sb.append(line).append("\n");
+
+            return sb.toString();
         }
 
         /**
@@ -298,8 +373,10 @@ public class ACGAnnotator {
                         System.out.println("|--------------|--------------|--------------|--------------|");
                     }
 
-                    if (current % (getCorrectedACGCount()/61) == 0)
+                    if (current % (getCorrectedACGCount()/61) == 0) {
                         System.out.print("*");
+                        System.out.flush();
+                    }
                 }
 
                 @Override
@@ -550,7 +627,6 @@ public class ACGAnnotator {
      *
      * @param args command line arguments
      * @param options object to populate with options
-     * @return ACGAnnotatorOptions instance
      */
     public static void getCLIOptions(String[] args, ACGAnnotatorOptions options) {
         int i=0;
@@ -625,18 +701,14 @@ public class ACGAnnotator {
             // Retrieve options from GUI:
             try {
                 SwingUtilities.invokeAndWait(() -> {
-                            if (!getOptionsGUI(options))
-                                System.exit(0);
-                        });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+                    if (!getOptionsGUI(options))
+                        System.exit(0);
+                });
+            } catch (InterruptedException | InvocationTargetException e) {
                 e.printStackTrace();
             }
 
-            SwingUtilities.invokeLater(() -> {
-                setupGUIOutput();
-            });
+            SwingUtilities.invokeLater(ACGAnnotator::setupGUIOutput);
 
         } else {
             getCLIOptions(args, options);
