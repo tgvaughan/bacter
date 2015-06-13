@@ -48,57 +48,28 @@ public class ACGAnnotator {
 
     public ACGAnnotator(ACGAnnotatorOptions options) throws Exception {
 
-        LogFileReader logReader = new LogFileReader(options.inFile);
+        LogFileReader logReader = new LogFileReader(options.inFile,
+                options.burninPercentage);
 
         // Count trees
 
-        System.out.print("Counting trees... ");
-
-        int nTrees=0;
-        while (logReader.getNextTreeString() != null)
-            nTrees += 1;
-
-        int burnin = (int)Math.round(options.burninPercentage*nTrees/100.0);
-
-        System.out.println(nTrees + " ACGs in file.");
+        System.out.println(logReader.getACGCount() + " ACGs in file.");
 
         System.out.println("The first " +
                 (options.burninPercentage) + "% (" +
-                (burnin) + ") of ACGs will be discarded " +
+                (logReader.getBurnin()) + ") of ACGs will be discarded " +
                 "to account for burnin.");
 
         // Compute CF Clade probabilities
 
         System.out.println("\nComputing CF clade credibilities...");
 
-        ConversionGraph acg = new ConversionGraph();
-        for (Locus locus : logReader.getLoci())
-                acg.lociInput.setValue(locus, acg);
-        acg.initAndValidate();
-
         CladeSystem cladeSystem = new CladeSystem();
 
-        logReader.reset();
-        int treeIdx = 0;
-        while (true) {
-            String nextTreeString = logReader.getNextTreeString();
-            if (nextTreeString == null)
-                break;
+        for (ConversionGraph acg : logReader)
+            cladeSystem.add(acg, false);
 
-            if (treeIdx<burnin) {
-                treeIdx += 1;
-                continue;
-            }
-
-            acg.fromExtendedNewick(nextTreeString);
-            cladeSystem.add(acg,false);
-
-            printProgressBar(treeIdx-burnin, nTrees-burnin);
-            treeIdx += 1;
-        }
-        System.out.println();
-
-        cladeSystem.calculateCladeCredibilities(nTrees-burnin);
+        cladeSystem.calculateCladeCredibilities(logReader.getCorrectedACGCount());
 
         // Identify MCC CF topology
 
@@ -107,30 +78,14 @@ public class ACGAnnotator {
         ConversionGraph acgBest = null;
         double bestScore = Double.NEGATIVE_INFINITY;
 
-        logReader.reset();
-        treeIdx = 0;
-        while (true) {
-            String nextTreeString = logReader.getNextTreeString();
-            if (nextTreeString == null)
-                break;
-
-            if (treeIdx<burnin) {
-                treeIdx += 1;
-                continue;
-            }
-
-            acg.fromExtendedNewick(nextTreeString);
-
+        for (ConversionGraph acg : logReader ) {
             double score = cladeSystem.getLogCladeCredibility(acg.getRoot(), null);
+
             if (score>bestScore) {
                 acgBest = acg.copy();
                 bestScore = score;
             }
-
-            printProgressBar(treeIdx - burnin, nTrees - burnin);
-            treeIdx += 1;
         }
-        System.out.println();
 
         if (acgBest == null)
             throw new IllegalStateException("Failed to find best tree topology.");
@@ -139,17 +94,6 @@ public class ACGAnnotator {
 
         System.out.println("\nCollecting CF node information...");
 
-    }
-
-    private void printProgressBar(int current, int max) {
-
-        if (current==0) {
-            System.out.println("0%             25%            50%            75%           100%");
-            System.out.println("|--------------|--------------|--------------|--------------|");
-        }
-
-        if (current % (max/61) == 0)
-            System.out.print("*");
     }
 
     /**
@@ -166,6 +110,8 @@ public class ACGAnnotator {
 
         List<Locus> loci;
 
+        int nACGs, burnin;
+
         /**
          * Construct and initialize the reader.  The Preamble is
          * read and the list of loci constructed immediately.
@@ -173,7 +119,7 @@ public class ACGAnnotator {
          * @param logFile ACG log file.
          * @throws IOException
          */
-        public LogFileReader(File logFile) throws IOException {
+        public LogFileReader(File logFile, double burninPercentage) throws IOException {
             this.logFile = logFile;
 
             reader = new BufferedReader(new FileReader(logFile));
@@ -183,6 +129,16 @@ public class ACGAnnotator {
 
             loci = new ArrayList<>();
             extractLociFromPreamble();
+
+            nACGs = 0;
+            while (true) {
+                if (getNextTreeString() == null)
+                    break;
+
+                nACGs += 1;
+            }
+
+            burnin = (int)Math.round(nACGs*burninPercentage/100);
         }
 
         /**
@@ -259,16 +215,48 @@ public class ACGAnnotator {
         }
 
         /**
+         * Skip burn-in portion of log.
+         *
+         * @throws IOException
+         */
+        private void skipBurnin() throws IOException {
+            for (int i=0; i<burnin; i++)
+                getNextTreeString();
+        }
+
+        /**
          * @return loci read from the preamble
          */
         public List<Locus> getLoci() {
             return loci;
         }
 
+        /**
+         * @return total number of ACGs defined by file.
+         */
+        public int getACGCount() {
+            return nACGs;
+        }
+
+        /**
+         * @return number of ACGs excluded as burn-in
+         */
+        public int getBurnin() {
+            return burnin;
+        }
+
+        /**
+         * @return number of ACGs excluding burn-in
+         */
+        public int getCorrectedACGCount() {
+            return nACGs - burnin;
+        }
+
         @Override
         public Iterator<ConversionGraph> iterator() {
             try {
                 reset();
+                skipBurnin();
             } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage());
             }
@@ -287,6 +275,8 @@ public class ACGAnnotator {
                 boolean lineConsumed = true;
                 String nextLine = null;
 
+                int current = 0;
+
                 private String getNextLineNoConsume() {
                     if (lineConsumed) {
                         try {
@@ -300,9 +290,25 @@ public class ACGAnnotator {
                     return nextLine;
                 }
 
+                private void printProgressBar() {
+
+                    if (current==0) {
+                        System.out.println("0%             25%            50%            75%           100%");
+                        System.out.println("|--------------|--------------|--------------|--------------|");
+                    }
+
+                    if (current % (getCorrectedACGCount()/61) == 0)
+                        System.out.print("*");
+                }
+
                 @Override
                 public boolean hasNext() {
-                    return getNextLineNoConsume() != null;
+                    if (getNextLineNoConsume() != null)
+                        return true;
+                    else {
+                        System.out.println();
+                        return false;
+                    }
                 }
 
                 @Override
@@ -310,6 +316,9 @@ public class ACGAnnotator {
                     String result = getNextLineNoConsume();
                     lineConsumed = true;
                     acg.fromExtendedNewick(result);
+
+                    printProgressBar();
+                    current += 1;
 
                     return acg;
                 }
