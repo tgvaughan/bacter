@@ -57,9 +57,8 @@ public class ACGAnnotator {
 
         System.out.println(logReader.getACGCount() + " ACGs in file.");
 
-        System.out.println("The first " +
-                (options.burninPercentage) + "% (" +
-                (logReader.getBurnin()) + ") of ACGs will be discarded " +
+        System.out.println("The first " + logReader.getBurnin() +
+                 " (" + options.burninPercentage + "%) ACGs will be discarded " +
                 "to account for burnin.");
 
         // Compute CF Clade probabilities
@@ -119,7 +118,12 @@ public class ACGAnnotator {
         try (PrintStream ps = new PrintStream(options.outFile)) {
             ps.print(logReader.getPreamble());
             ps.println("tree STATE_0 = " + acgBest.getExtendedNewick());
-            ps.println("End;");
+
+            String postamble = logReader.getPostamble();
+            if (postamble.length() > 0)
+                ps.println(postamble);
+            else
+                ps.println("End;");
         }
 
         System.out.println("\nDone!");
@@ -149,8 +153,8 @@ public class ACGAnnotator {
                 node.setHeight(DiscreteStatistics.median(heights));
 
             Arrays.sort(heights);
-            double minHPD = heights[(int) Math.round(0.025 * heights.length)];
-            double maxHPD = heights[(int) Math.round(0.975 * heights.length)];
+            double minHPD = heights[(int)(0.025 * heights.length)];
+            double maxHPD = heights[(int)(0.975 * heights.length)];
 
             node.metaDataString = "height_95%_HPD={" + minHPD + "," + maxHPD + "}";
         }
@@ -169,7 +173,7 @@ public class ACGAnnotator {
         File logFile;
         BufferedReader reader;
 
-        List<String> preamble;
+        List<String> preamble, postamble;
         String nextLine;
 
         List<Locus> loci;
@@ -187,12 +191,9 @@ public class ACGAnnotator {
             this.logFile = logFile;
 
             reader = new BufferedReader(new FileReader(logFile));
+
             preamble = new ArrayList<>();
-
             skipPreamble();
-
-            loci = new ArrayList<>();
-            extractLociFromPreamble();
 
             nACGs = 0;
             while (true) {
@@ -201,8 +202,13 @@ public class ACGAnnotator {
 
                 nACGs += 1;
             }
-
             burnin = (int)Math.round(nACGs*burninPercentage/100);
+
+            postamble = new ArrayList<>();
+            readPostamble();
+
+            loci = new ArrayList<>();
+            extractLoci();
         }
 
 
@@ -221,11 +227,29 @@ public class ACGAnnotator {
                 if (nextLine == null)
                     throw new IOException("Reached end of file while searching for first tree.");
 
+                nextLine = nextLine.trim();
+
                 if (nextLine.toLowerCase().startsWith("tree"))
                     break;
 
                 if (recordPreamble)
                     preamble.add(nextLine);
+            }
+        }
+
+        /**
+         * Internal method for extracting postamble following trees.
+         *
+         * @throws IOException
+         */
+        private void readPostamble() throws IOException {
+            while (true) {
+                if (nextLine == null)
+                    break;
+
+                postamble.add(nextLine);
+
+                nextLine = reader.readLine();
             }
         }
 
@@ -241,10 +265,25 @@ public class ACGAnnotator {
         }
 
         /**
-         * Retrieve list of loci from skimmed preamble.
+         * @return Everything read from the log file following the last tree line.
          */
-        private void extractLociFromPreamble() {
-            for (String line : preamble) {
+        public String getPostamble() {
+            StringBuilder sb = new StringBuilder();
+            for (String line : postamble)
+                sb.append(line).append("\n");
+
+            return sb.toString();
+        }
+
+        /**
+         * Retrieve list of loci from preamble or postamble.
+         */
+        private void extractLoci() {
+            List<String> prepost = new ArrayList<>();
+            prepost.addAll(preamble);
+            prepost.addAll(postamble);
+
+            for (String line : prepost) {
                 line = line.trim();
                 if (line.startsWith("loci ") && line.endsWith(";")) {
                     for (String locusEntry : line.substring(5,line.length()-1).split(" ")) {
@@ -274,7 +313,7 @@ public class ACGAnnotator {
             StringBuilder sb = new StringBuilder();
 
             while (true) {
-                if (nextLine == null)
+                if (nextLine == null || nextLine.trim().toLowerCase().equals("end;"))
                     return null;
 
                 sb.append(nextLine.trim());
@@ -368,12 +407,16 @@ public class ACGAnnotator {
 
                 private void printProgressBar() {
 
+                    int step = getCorrectedACGCount()/61;
+                    if (step == 0)
+                        return;
+
                     if (current==0) {
                         System.out.println("0%             25%            50%            75%           100%");
                         System.out.println("|--------------|--------------|--------------|--------------|");
                     }
 
-                    if (current % (getCorrectedACGCount()/61) == 0) {
+                    if (current % step == 0) {
                         System.out.print("*");
                         System.out.flush();
                     }

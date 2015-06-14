@@ -795,12 +795,7 @@ public class ConversionGraph extends Tree {
                 root = stripHybridNodes(root);
                 root.setParent(null);
 
-                int nextNr = 0;
-                for (Node leaf : root.getAllLeafNodes()) {
-                    leaf.setNr(nextNr++);
-                }
-
-                numberInternalNodes(root, nextNr);
+                numberInternalNodes(root, root.getAllLeafNodes().size());
 
                 return root;
             }
@@ -862,7 +857,8 @@ public class ConversionGraph extends Tree {
 
                 if (ctx.post().label() != null) {
                     node.setID(ctx.post().label().getText());
-//                    node.setNr(Integer.parseInt(ctx.post().label().getText()));
+                    node.setNr(Integer.parseInt(ctx.post().label().getText())
+                            - taxaTranslationOffset);
                 }
 
                 node.setHeight(Double.parseDouble(ctx.post().length.getText()));
