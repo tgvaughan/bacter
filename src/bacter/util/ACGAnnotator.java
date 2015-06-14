@@ -92,6 +92,7 @@ public class ACGAnnotator {
             throw new IllegalStateException("Failed to find best tree topology.");
 
         // Remove conversions
+
         for (Locus locus : acgBest.getLoci())
                 acgBest.getConversions(locus).clear();
 
@@ -110,7 +111,12 @@ public class ACGAnnotator {
         cladeSystem.calculateCladeCredibilities(logReader.getCorrectedACGCount());
 
         // Annotate node heights of winning CF topology
+
         annotateCF(cladeSystem, acgBest.getRoot(), options.heightStrategy);
+
+
+
+        // Write output
 
         System.out.println("\nWriting output to " + options.outFile.getName()
         + "...");
@@ -626,7 +632,14 @@ public class ACGAnnotator {
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
-                textArea.append(String.valueOf((char)b));
+                SwingUtilities.invokeLater(() -> {
+                    if ((char)b == '\r') {
+                        int from = textArea.getText().lastIndexOf("\n") + 1;
+                        int to = textArea.getText().length();
+                        textArea.replaceRange(null, from, to);
+                    } else
+                        textArea.append(String.valueOf((char) b));
+                });
             }
         };
 
@@ -747,12 +760,13 @@ public class ACGAnnotator {
                 SwingUtilities.invokeAndWait(() -> {
                     if (!getOptionsGUI(options))
                         System.exit(0);
+
+                    setupGUIOutput();
                 });
             } catch (InterruptedException | InvocationTargetException e) {
                 e.printStackTrace();
             }
 
-            SwingUtilities.invokeLater(ACGAnnotator::setupGUIOutput);
 
         } else {
             getCLIOptions(args, options);
