@@ -407,29 +407,30 @@ public class ACGAnnotator {
 
                 private void printProgressBar() {
 
-                    int step = getCorrectedACGCount()/61;
-                    if (step == 0)
-                        return;
-
                     if (current==0) {
                         System.out.println("0%             25%            50%            75%           100%");
                         System.out.println("|--------------|--------------|--------------|--------------|");
                     }
 
-                    if (current % step == 0) {
-                        System.out.print("*");
-                        System.out.flush();
+                    if (current < getCorrectedACGCount()-1) {
+                        if (current % (int) Math.ceil(getCorrectedACGCount() / 61.0) == 0) {
+                            System.out.print("\r");
+                            for (int i = 0; i < Math.round(61.0 * current / getCorrectedACGCount()); i++)
+                                System.out.print("*");
+                            System.out.flush();
+                        }
+                    } else {
+                        System.out.print("\r");
+                        for (int i=0; i<61; i++)
+                            System.out.print("*");
+                        System.out.println();
                     }
+
                 }
 
                 @Override
                 public boolean hasNext() {
-                    if (getNextLineNoConsume() != null)
-                        return true;
-                    else {
-                        System.out.println();
-                        return false;
-                    }
+                    return getNextLineNoConsume() != null;
                 }
 
                 @Override
