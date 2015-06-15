@@ -17,9 +17,9 @@
 
 package bacter;
 
-import beast.evolution.alignment.Alignment;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -93,11 +93,11 @@ public class RegionList {
 
         regions.clear();
 
-        List<Conversion> convOrderedByStart = Lists.newArrayList();
+        List<Conversion> convOrderedByStart = new ArrayList<>();
         convOrderedByStart.addAll(acg.getConversions(locus));
         convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
 
-        List<Conversion> convOrderedByEnd = Lists.newArrayList();
+        List<Conversion> convOrderedByEnd = new ArrayList<>();
         convOrderedByEnd.addAll(acg.getConversions(locus));
         convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
 

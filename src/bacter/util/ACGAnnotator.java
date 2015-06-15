@@ -19,7 +19,6 @@ package bacter.util;
 
 import bacter.ConversionGraph;
 import bacter.Locus;
-import beast.app.treeannotator.CladeSystem;
 import beast.evolution.tree.Node;
 import beast.math.statistic.DiscreteStatistics;
 
@@ -65,10 +64,10 @@ public class ACGAnnotator {
 
         System.out.println("\nComputing CF clade credibilities...");
 
-        CladeSystem cladeSystem = new CladeSystem();
+        ACGCladeSystem cladeSystem = new ACGCladeSystem();
 
         for (ConversionGraph acg : logReader)
-            cladeSystem.add(acg, false);
+            cladeSystem.add(acg, true);
 
         cladeSystem.calculateCladeCredibilities(logReader.getCorrectedACGCount());
 
@@ -103,9 +102,10 @@ public class ACGAnnotator {
         Set<String> attributeNames = new HashSet<>();
         attributeNames.add("height");
 
-        cladeSystem = new CladeSystem(acgBest);
+        cladeSystem = new ACGCladeSystem(acgBest);
         for (ConversionGraph acg : logReader) {
             cladeSystem.collectAttributes(acg, attributeNames);
+            cladeSystem.collectConversions(acg);
         }
         cladeSystem.removeClades(acgBest.getRoot(), true);
         cladeSystem.calculateCladeCredibilities(logReader.getCorrectedACGCount());
@@ -135,17 +135,10 @@ public class ACGAnnotator {
         System.out.println("\nDone!");
     }
 
-    private BitSet annotateCF(CladeSystem cladeSystem,
-                              Node node, HeightStrategy strategy) {
-        BitSet bits = new BitSet();
+    protected void annotateCF(ACGCladeSystem cladeSystem,
+                              Node root, HeightStrategy strategy) {
 
-        if (node.isLeaf()) {
-            bits.set(cladeSystem.getTaxonIndex(node)*2);
-        } else {
-            for (Node child : node.getChildren()) {
-                bits.or(annotateCF(cladeSystem, child, strategy));
-            }
-
+        cladeSystem.applyToClades(root, (node, bits) -> {
             List<Object[]> rawHeights =
                     cladeSystem.getCladeMap().get(bits).getAttributeValues();
 
@@ -163,10 +156,10 @@ public class ACGAnnotator {
             double maxHPD = heights[(int)(0.975 * heights.length)];
 
             node.metaDataString = "height_95%_HPD={" + minHPD + "," + maxHPD + "}";
-        }
 
-        return bits;
-    }
+            return null;
+        });
+   }
 
     /**
      * Class representing ACG log files.  Includes methods for
