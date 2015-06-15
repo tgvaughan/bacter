@@ -235,6 +235,21 @@ class ACGLogFileReader implements Iterable<ConversionGraph> {
         return nACGs - burnin;
     }
 
+    /**
+     * Retrieve an iterator for iterating over the ACGs represented
+     * by this log file.  Important points
+     *
+     * 1. The iterator only iterates over as many (non-burnin) ACGs as exist
+     * in the file when the ACGLogFileReader is constructed.  This is to avoid
+     * problems associated with summarising ongoing analyses.
+     *
+     * 2. The iterator reuses a single ConversionGraph object during
+     * the iteration.  This means that if you want to collect these
+     * graphs as the iteration progresses you'll need to use
+     * ConversionGraph::copy.
+     *
+     * @return ConversionGraph iterator
+     */
     @Override
     public Iterator<ConversionGraph> iterator() {
         try {
@@ -298,7 +313,7 @@ class ACGLogFileReader implements Iterable<ConversionGraph> {
 
             @Override
             public boolean hasNext() {
-                return getNextLineNoConsume() != null;
+                return current<getCorrectedACGCount() && getNextLineNoConsume() != null;
             }
 
             @Override
