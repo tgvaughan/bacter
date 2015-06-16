@@ -67,6 +67,8 @@ public class ACGCladeSystem extends CladeSystem {
     public void collectConversions(ConversionGraph acg) {
         getBitSets(acg);
 
+        conversionLists.clear();
+
         // Assemble list of conversions for each pair of clades on each locus
         for (Locus locus : acg.getLoci()) {
             for (Conversion conv : acg.getConversions(locus))  {
@@ -79,7 +81,77 @@ public class ACGCladeSystem extends CladeSystem {
 
                 conversionLists.get(bsPair).get(locus).add(conv);
             }
+
+            // Merge overlapping conversions:
+            for (BitSetPair bsPair : conversionLists.keySet()) {
+                if (conversionLists.get(bsPair).containsKey(locus)) {
+                    List<Conversion> merged = mergeOverlappingConvs(
+                            conversionLists.get(bsPair).get(locus));
+
+                    conversionLists.get(bsPair).put(locus, merged);
+                }
+            }
         }
+    }
+
+    private List<Conversion> mergeOverlappingConvs(List<Conversion> conversions) {
+        List<Conversion> mergedList = new ArrayList<>();
+
+        List<Conversion> convOrderedByStart = new ArrayList<>(conversions);
+        convOrderedByStart.sort((o1, o2) -> o1.getStartSite() - o2.getStartSite());
+
+        List<Conversion> convOrderedByEnd = new ArrayList<>(conversions);
+        convOrderedByEnd.sort((o1, o2) -> o1.getEndSite() - o2.getEndSite());
+
+
+        int nActive = 0;
+        Conversion currentMergedConv = null;
+        int mergedConvCount = 0;
+        double mergedConvHeight1 = 0.0;
+        double mergedConvHeight2 = 0.0;
+
+        while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
+
+            int nextStart = convOrderedByStart.isEmpty()
+                    ? Integer.MAX_VALUE
+                    : convOrderedByStart.get(0).getStartSite();
+
+            int nextEnd = convOrderedByEnd.isEmpty()
+                    ? Integer.MAX_VALUE
+                    : convOrderedByEnd.get(0).getEndSite();
+
+            if (nextStart < nextEnd) {
+                nActive += 1;
+
+                if (nActive == 1) {
+                    currentMergedConv = convOrderedByStart.get(0).getCopy();
+                    mergedConvCount = 1;
+                    mergedConvHeight1 = currentMergedConv.getHeight1();
+                    mergedConvHeight2 = currentMergedConv.getHeight2();
+                } else {
+                    mergedConvCount += 1;
+                    mergedConvHeight1 += convOrderedByStart.get(0).getHeight1();
+                    mergedConvHeight2 += convOrderedByStart.get(0).getHeight2();
+                }
+
+                convOrderedByStart.remove(0);
+
+            } else {
+                nActive -= 1;
+
+                if (nActive == 0 ) {
+                    assert currentMergedConv != null;
+                    currentMergedConv.setEndSite(nextEnd);
+                    currentMergedConv.setHeight1(mergedConvHeight1/mergedConvCount);
+                    currentMergedConv.setHeight2(mergedConvHeight2 / mergedConvCount);
+                    mergedList.add(currentMergedConv);
+                }
+
+                convOrderedByEnd.remove(0);
+            }
+        }
+
+        return mergedList;
     }
 
     /**
