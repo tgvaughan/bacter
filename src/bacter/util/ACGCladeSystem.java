@@ -35,6 +35,7 @@ import java.util.function.BiFunction;
 public class ACGCladeSystem extends CladeSystem {
 
     protected Map<BitSetPair, Map<Locus, List<Conversion>>> conversionLists = new HashMap<>();
+    protected Map<BitSetPair, List<Conversion>> conversionListsTemp = new HashMap<>();
     protected BitSet[] bitSets;
 
     public ACGCladeSystem() { }
@@ -67,29 +68,31 @@ public class ACGCladeSystem extends CladeSystem {
     public void collectConversions(ConversionGraph acg) {
         getBitSets(acg);
 
-        conversionLists.clear();
-
         // Assemble list of conversions for each pair of clades on each locus
         for (Locus locus : acg.getLoci()) {
+
+            conversionListsTemp.clear();
             for (Conversion conv : acg.getConversions(locus))  {
                 BitSetPair bsPair = new BitSetPair(conv);
+
+                if (!conversionListsTemp.containsKey(bsPair))
+                    conversionListsTemp.put(bsPair, new ArrayList<>());
+
+                conversionListsTemp.get(bsPair).add(conv);
+            }
+
+            // Merge overlapping conversions:
+            for (BitSetPair bsPair : conversionListsTemp.keySet()) {
+                List<Conversion> merged = mergeOverlappingConvs(
+                            conversionListsTemp.get(bsPair));
 
                 if (!conversionLists.containsKey(bsPair))
                     conversionLists.put(bsPair, new HashMap<>());
                 if (!conversionLists.get(bsPair).containsKey(locus))
                     conversionLists.get(bsPair).put(locus, new ArrayList<>());
 
-                conversionLists.get(bsPair).get(locus).add(conv);
-            }
+                conversionLists.get(bsPair).get(locus).addAll(merged);
 
-            // Merge overlapping conversions:
-            for (BitSetPair bsPair : conversionLists.keySet()) {
-                if (conversionLists.get(bsPair).containsKey(locus)) {
-                    List<Conversion> merged = mergeOverlappingConvs(
-                            conversionLists.get(bsPair).get(locus));
-
-                    conversionLists.get(bsPair).put(locus, merged);
-                }
             }
         }
     }
