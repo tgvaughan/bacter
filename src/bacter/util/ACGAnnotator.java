@@ -17,6 +17,7 @@
 
 package bacter.util;
 
+import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
 import beast.evolution.tree.Node;
@@ -44,6 +45,7 @@ public class ACGAnnotator {
         public File inFile;
         public File outFile = new File("summary.tree");
         public double burninPercentage = 10.0;
+        public double convPosteriorThreshold = 0.95;
         public HeightStrategy heightStrategy = HeightStrategy.MEAN;
     }
 
@@ -114,6 +116,10 @@ public class ACGAnnotator {
 
         annotateCF(cladeSystem, acgBest.getRoot(), options.heightStrategy);
 
+        // Add conversion summaries
+
+        summarizeConversions(cladeSystem, acgBest, logReader.getCorrectedACGCount(),
+                options.convPosteriorThreshold, options.heightStrategy);
 
 
         // Write output
@@ -135,8 +141,15 @@ public class ACGAnnotator {
         System.out.println("\nDone!");
     }
 
+    /**
+     * Annotate nodes of given clonal frame with summarized height information.
+     *
+     * @param cladeSystem information summarizing ACG posterior
+     * @param root root of clonal frame to annotate
+     * @param heightStrategy strategy used when summarizing CF node ages/heights
+     */
     protected void annotateCF(ACGCladeSystem cladeSystem,
-                              Node root, HeightStrategy strategy) {
+                              Node root, HeightStrategy heightStrategy) {
 
         cladeSystem.applyToClades(root, (node, bits) -> {
             List<Object[]> rawHeights =
@@ -146,7 +159,7 @@ public class ACGAnnotator {
             for (int i = 0; i < rawHeights.size(); i++)
                 heights[i] = (double) rawHeights.get(i)[0];
 
-            if (strategy == HeightStrategy.MEAN)
+            if (heightStrategy == HeightStrategy.MEAN)
                 node.setHeight(DiscreteStatistics.mean(heights));
             else
                 node.setHeight(DiscreteStatistics.median(heights));
@@ -159,6 +172,75 @@ public class ACGAnnotator {
 
             return null;
         });
+    }
+
+    /**
+     * Add summarized conversions to given ACG.
+     *
+     * @param cladeSystem information summarizing ACG posterior
+     * @param acg conversion graph
+     * @param threshold significance threshold
+     * @param heightStrategy strategy used when summarizing event ages/heights
+     */
+    protected void summarizeConversions(ACGCladeSystem cladeSystem,
+                                        ConversionGraph acg,
+                                        int nACGs,
+                                        double threshold,
+                                        HeightStrategy heightStrategy) {
+
+        BitSet[] bitSets = cladeSystem.getBitSets(acg);
+        for (int fromNr=0; fromNr<acg.getNodeCount(); fromNr++) {
+            BitSet from = bitSets[fromNr];
+            for (int toNr=0; toNr<acg.getNodeCount(); toNr++) {
+                BitSet to = bitSets[toNr];
+
+                for (Locus locus : acg.getLoci()) {
+                    List<ACGCladeSystem.ConversionSummary> conversionSummaries =
+                            cladeSystem.getConversionSummaries(from, to, locus,
+                                    nACGs, threshold);
+
+                    for (ACGCladeSystem.ConversionSummary conversionSummary
+                            : conversionSummaries) {
+
+
+                        Conversion conv = new Conversion();
+                        conv.setNode1(acg.getNode(fromNr));
+                        conv.setNode2(acg.getNode(toNr));
+                        conv.setStartSite(conversionSummary.startSite);
+                        conv.setEndSite(conversionSummary.endSite);
+
+                        double[] height1s = new double[conversionSummary.summarizedConvCount()];
+                        double[] height2s = new double[conversionSummary.summarizedConvCount()];
+                        for (int i=0; i<conversionSummary.summarizedConvCount(); i++) {
+                            height1s[i] = conversionSummary.height1s.get(i);
+                            height2s[i] = conversionSummary.height2s.get(i);
+                        }
+
+                        if (heightStrategy == HeightStrategy.MEAN) {
+                            conv.setHeight1(DiscreteStatistics.mean(height1s));
+                            conv.setHeight2(DiscreteStatistics.mean(height2s));
+                        } else {
+                            conv.setHeight1(DiscreteStatistics.median(height1s));
+                            conv.setHeight2(DiscreteStatistics.median(height2s));
+                        }
+
+                        Arrays.sort(height1s);
+                        double minHPD1 = height1s[(int)(0.025 * height1s.length)];
+                        double maxHPD1 = height1s[(int)(0.975 * height1s.length)];
+
+                        Arrays.sort(height2s);
+                        double minHPD2 = height2s[(int)(0.025 * height2s.length)];
+                        double maxHPD2 = height2s[(int)(0.975 * height2s.length)];
+
+                        conv.newickMetaData1 = "height_95%_HPD={" + minHPD1 + "," + maxHPD1 + "}";
+                        conv.newickMetaData2 = "height_95%_HPD={" + minHPD2 + "," + maxHPD2 + "}";
+
+                        acg.addConversion(conv);
+                    }
+                }
+
+            }
+        }
     }
 
     /**

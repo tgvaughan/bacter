@@ -20,7 +20,6 @@ package bacter.util;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
-import bacter.Region;
 import beast.app.treeannotator.CladeSystem;
 import beast.evolution.tree.Node;
 
@@ -47,7 +46,7 @@ public class ACGCladeSystem extends CladeSystem {
     /**
      * Assemble list of bitSets for this ACG.
      */
-    protected void getBitSets(ConversionGraph acg) {
+    public BitSet[] getBitSets(ConversionGraph acg) {
 
         if (bitSets == null)
             bitSets = new BitSet[acg.getNodeCount()];
@@ -57,6 +56,7 @@ public class ACGCladeSystem extends CladeSystem {
             return null;
         });
 
+        return bitSets;
     }
 
     /**
@@ -161,14 +161,27 @@ public class ACGCladeSystem extends CladeSystem {
      * Determine contiguous regions on specified locus where the fraction of
      * ACGs having a conversion active is greater than the given threshold.
      *
-     * @param bsPair location of conversions on tree
+     * @param from BitSet representing source clade
+     * @param to BitSet representing destination clade
      * @param locus locus to consider
      * @param threshold minimum fraction of sampled conversions included
      * @return List of regions
      */
-    public List<Region> getSignificantRegions(BitSetPair bsPair, Locus locus, double threshold) {
+    public List<ConversionSummary> getConversionSummaries(BitSet from, BitSet to,
+                                                          Locus locus,
+                                                          int nACGs,
+                                                          double threshold) {
 
-        List<Region> regions = new ArrayList<>();
+        BitSetPair bsPair = new BitSetPair(from, to);
+
+        List<ConversionSummary> convSummaryList = new ArrayList<>();
+
+        // Return empty list if on conversions meet the criteria.
+        if (!conversionLists.containsKey(bsPair)
+                || !conversionLists.get(bsPair).containsKey(locus))
+            return convSummaryList;
+
+        int thresholdCount = (int)Math.ceil(nACGs*threshold);
 
         List<Conversion> convOrderedByStart = new ArrayList<>();
         convOrderedByStart.addAll(conversionLists.get(bsPair).get(locus));
@@ -180,52 +193,44 @@ public class ACGCladeSystem extends CladeSystem {
         convOrderedByEnd.sort((Conversion o1, Conversion o2) ->
                 o1.getEndSite() - o2.getEndSite());
 
-        Set<Conversion> activeConversions = new HashSet<>();
-
-        int lastBoundary = 0;
+        List<Conversion> activeConversions = new ArrayList<>();
+        ConversionSummary conversionSummary = null;
 
         while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
-            int nextStart;
-            if (!convOrderedByStart.isEmpty())
-                nextStart = convOrderedByStart.get(0).getStartSite();
-            else
-                nextStart = Integer.MAX_VALUE;
+            int nextStart = convOrderedByStart.isEmpty()
+                    ? Integer.MAX_VALUE
+                    : convOrderedByStart.get(0).getStartSite();
 
-            int nextEnd;
-            if (!convOrderedByEnd.isEmpty())
-                nextEnd = convOrderedByEnd.get(0).getEndSite() + 1;
-            else
-                nextEnd = Integer.MAX_VALUE;
-
-            int nextBoundary = Math.min(nextStart, nextEnd);
-            if (nextBoundary > lastBoundary) {
-                Region region = new Region();
-                region.leftBoundary = lastBoundary;
-                region.rightBoundary = nextBoundary;
-                region.activeConversions.addAll(activeConversions);
-                regions.add(region);
-            }
+            int nextEnd = convOrderedByEnd.isEmpty()
+                    ? Integer.MAX_VALUE
+                    : convOrderedByEnd.get(0).getEndSite();
 
             if (nextStart < nextEnd) {
                 activeConversions.add(convOrderedByStart.get(0));
+
+                if (activeConversions.size() >= thresholdCount) {
+                    if ( conversionSummary == null) {
+                        conversionSummary = new ConversionSummary();
+                        conversionSummary.startSite = nextStart;
+                        convSummaryList.add(conversionSummary);
+                        conversionSummary.addHeights(activeConversions);
+                    } else
+                        conversionSummary.addHeights(convOrderedByStart.get(0));
+                }
                 convOrderedByStart.remove(0);
-                lastBoundary = nextStart;
             } else {
                 activeConversions.remove(convOrderedByEnd.get(0));
+                if (activeConversions.size() == thresholdCount-1) {
+                    assert conversionSummary != null;
+                    conversionSummary.endSite = nextEnd;
+                    conversionSummary = null;
+                }
                 convOrderedByEnd.remove(0);
-                lastBoundary = nextEnd;
             }
         }
 
-        if (lastBoundary < locus.getSiteCount()) {
-            Region region = new Region();
-            region.leftBoundary = lastBoundary;
-            region.rightBoundary = locus.getSiteCount();
-            regions.add(region);
-        }
-
-        return null;
+        return convSummaryList;
     }
 
     /**
@@ -256,8 +261,13 @@ public class ACGCladeSystem extends CladeSystem {
     /**
      * Class representing an ordered pair of BitSets.
      */
-    public class BitSetPair {
+    protected class BitSetPair {
         public BitSet from, to;
+
+        public BitSetPair(BitSet from, BitSet to) {
+            this.from = from;
+            this.to = to;
+        }
 
         public BitSetPair(Conversion conv) {
             this.from = bitSets[conv.getNode1().getNr()];
@@ -285,6 +295,46 @@ public class ACGCladeSystem extends CladeSystem {
         @Override
         public String toString() {
             return from.toString() + " -> " + to.toString();
+        }
+    }
+
+    /**
+     * Class representing a summary of similar conversions between two
+     * points in the summarized clonal frame.
+     */
+    public class ConversionSummary {
+
+        public int startSite, endSite;
+
+        List<Double> height1s = new ArrayList<>();
+        List<Double> height2s = new ArrayList<>();
+
+        /**
+         * Add heights associated with given conversion to summary.
+         *
+         * @param conv conversion
+         */
+        public void addHeights(Conversion conv) {
+            height1s.add(conv.getHeight1());
+            height2s.add(conv.getHeight2());
+        }
+
+        /**
+         * Add heights associated with each of the conversions in the
+         * given list to the summary.
+         *
+         * @param convs list of conversions
+         */
+        public void addHeights(List<Conversion> convs) {
+            for (Conversion conv : convs)
+                addHeights(conv);
+        }
+
+        /**
+         * @return number of conversions included in summary.
+         */
+        public int summarizedConvCount() {
+            return height1s.size();
         }
     }
 }

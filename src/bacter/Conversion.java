@@ -32,8 +32,34 @@ public class Conversion {
     
     protected ConversionGraph acg;
 
-    public Conversion() { }
+    /**
+     * Nodes below branches to which recombinant edge connects.
+     */
+    protected Node node1, node2;
     
+    /**
+     * Heights on branches at which recombinant edge connects.
+     */
+    protected double height1, height2;
+    
+    /**
+     * Range of nucleotides affected by homologous gene conversion.
+     */
+    protected int startSite, endSite;
+
+    /**
+     * Locus with which conversion is associated.
+     */
+    protected Locus locus;
+
+    /**
+     * Used by ACGAnnotator to incoroporate additional metadata into
+     * the summary ACG.
+     */
+    public String newickMetaData1, newickMetaData2;
+
+    public Conversion() { }
+
     /**
      * Construct new recombination with specified properties.
      *
@@ -55,26 +81,6 @@ public class Conversion {
         this.endSite = endSite;
         this.locus = locus;
     }
-
-    /**
-     * Nodes below branches to which recombinant edge connects.
-     */
-    protected Node node1, node2;
-    
-    /**
-     * Heights on branches at which recombinant edge connects.
-     */
-    protected double height1, height2;
-    
-    /**
-     * Range of nucleotides affected by homologous gene conversion.
-     */
-    protected int startSite, endSite;
-
-    /**
-     * Locus with which conversion is associated.
-     */
-    protected Locus locus;
 
     /**
      * Obtain node below most recent point at which recombinant edge

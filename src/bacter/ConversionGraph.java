@@ -608,11 +608,16 @@ public class ConversionGraph extends Tree {
                 thisLength = lastTime - event.time;
             
             if (event.isArrival) {
-                String meta =  String.format("[&conv=%d, region={%d,%d}, locus=\"%s\"]",
+                String meta =  String.format("[&conv=%d, region={%d,%d}, locus=\"%s\"",
                                 convs.get(event.conv.getLocus()).indexOf(event.conv),
                                 event.conv.getStartSite(),
                                 event.conv.getEndSite(),
                                 event.conv.getLocus().getID());
+
+                if (event.conv.newickMetaData1 != null)
+                    meta += ", " + event.conv.newickMetaData1;
+
+                meta += "]";
 
                 sb.insert(cursor, "(,#" + getConversionIndex(event.conv)
                         + meta
@@ -620,7 +625,14 @@ public class ConversionGraph extends Tree {
                         + "):" + thisLength);
                 cursor += 1;
             } else {
+                String meta;
+                if (event.conv.newickMetaData2 != null)
+                    meta = "[&" + event.conv.newickMetaData2 + "]";
+                else
+                    meta = "";
+
                 sb.insert(cursor, "()#" + getConversionIndex(event.conv)
+                        + meta
                         + ":" + thisLength);
                 cursor += 1;
             }
