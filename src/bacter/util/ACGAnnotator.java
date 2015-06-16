@@ -204,6 +204,7 @@ public class ACGAnnotator {
 
 
                         Conversion conv = new Conversion();
+                        conv.setLocus(locus);
                         conv.setNode1(acg.getNode(fromNr));
                         conv.setNode2(acg.getNode(toNr));
                         conv.setStartSite(conversionSummary.startSite);
@@ -569,7 +570,8 @@ public class ACGAnnotator {
                 JOptionPane.showMessageDialog(null, e.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                System.err.println(e.getMessage());
+                System.err.println("Error: " + e.getMessage());
+                e.printStackTrace();
                 System.err.println();
                 System.err.println(helpMessage);
             }

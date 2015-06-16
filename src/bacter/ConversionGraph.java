@@ -619,20 +619,21 @@ public class ConversionGraph extends Tree {
 
                 meta += "]";
 
+                String parentMeta;
+                if (event.conv.newickMetaData2 != null)
+                    parentMeta = "[&" + event.conv.newickMetaData2 + "]";
+                else
+                    parentMeta = "";
+
                 sb.insert(cursor, "(,#" + getConversionIndex(event.conv)
                         + meta
                         + ":" + (event.conv.height2-event.conv.height1)
-                        + "):" + thisLength);
+                        + ")"
+                        + parentMeta
+                        + ":" + thisLength);
                 cursor += 1;
             } else {
-                String meta;
-                if (event.conv.newickMetaData2 != null)
-                    meta = "[&" + event.conv.newickMetaData2 + "]";
-                else
-                    meta = "";
-
                 sb.insert(cursor, "()#" + getConversionIndex(event.conv)
-                        + meta
                         + ":" + thisLength);
                 cursor += 1;
             }
