@@ -285,7 +285,7 @@ public class ACGAnnotator {
         JComboBox<HeightStrategy> heightMethodCombo = new JComboBox<>(HeightStrategy.values());
 
         JSlider thresholdSlider = new JSlider(JSlider.HORIZONTAL,
-                0, 100, 10);
+                0, 100, 95);
         thresholdSlider.setMajorTickSpacing(50);
         thresholdSlider.setMinorTickSpacing(10);
         thresholdSlider.setPaintTicks(true);
@@ -347,8 +347,8 @@ public class ACGAnnotator {
                                 GroupLayout.DEFAULT_SIZE,
                                 GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(burninLabel)
-                        .addComponent(burninSlider,
+                        .addComponent(thresholdLabel)
+                        .addComponent(thresholdSlider,
                                 GroupLayout.PREFERRED_SIZE,
                                 GroupLayout.DEFAULT_SIZE,
                                 GroupLayout.PREFERRED_SIZE)));
