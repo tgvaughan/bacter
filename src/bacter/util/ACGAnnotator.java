@@ -45,7 +45,7 @@ public class ACGAnnotator {
         public File inFile;
         public File outFile = new File("summary.tree");
         public double burninPercentage = 10.0;
-        public double convPosteriorThreshold = 0.95;
+        public double convPosteriorThresholdPercentage = 95;
         public HeightStrategy heightStrategy = HeightStrategy.MEAN;
     }
 
@@ -119,7 +119,8 @@ public class ACGAnnotator {
         // Add conversion summaries
 
         summarizeConversions(cladeSystem, acgBest, logReader.getCorrectedACGCount(),
-                options.convPosteriorThreshold, options.heightStrategy);
+                options.convPosteriorThresholdPercentage/100.0,
+                options.heightStrategy);
 
 
         // Write output
@@ -263,6 +264,7 @@ public class ACGAnnotator {
         JLabel outFileLabel = new JLabel("Output file:");
         JLabel burninLabel = new JLabel("Burn-in percentage:");
         JLabel heightMethodLabel = new JLabel("Node height method:");
+        JLabel thresholdLabel = new JLabel("Posterior conversion support threshold:");
 
         JTextField inFilename = new JTextField(20);
         inFilename.setEditable(false);
@@ -282,6 +284,13 @@ public class ACGAnnotator {
 
         JComboBox<HeightStrategy> heightMethodCombo = new JComboBox<>(HeightStrategy.values());
 
+        JSlider thresholdSlider = new JSlider(JSlider.HORIZONTAL,
+                0, 100, 10);
+        thresholdSlider.setMajorTickSpacing(50);
+        thresholdSlider.setMinorTickSpacing(10);
+        thresholdSlider.setPaintTicks(true);
+        thresholdSlider.setPaintLabels(true);
+
         Container cp = dialog.getContentPane();
         BoxLayout boxLayout = new BoxLayout(cp, BoxLayout.PAGE_AXIS);
         cp.setLayout(boxLayout);
@@ -298,12 +307,14 @@ public class ACGAnnotator {
                         .addComponent(logFileLabel)
                         .addComponent(outFileLabel)
                         .addComponent(burninLabel)
-                        .addComponent(heightMethodLabel))
+                        .addComponent(heightMethodLabel)
+                        .addComponent(thresholdLabel))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                         .addComponent(inFilename)
                         .addComponent(outFilename)
                         .addComponent(burninSlider)
-                        .addComponent(heightMethodCombo))
+                        .addComponent(heightMethodCombo)
+                        .addComponent(thresholdSlider))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                         .addComponent(inFileButton)
                         .addComponent(outFileButton)));
@@ -334,6 +345,12 @@ public class ACGAnnotator {
                         .addComponent(heightMethodCombo,
                                 GroupLayout.PREFERRED_SIZE,
                                 GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup()
+                        .addComponent(burninLabel)
+                        .addComponent(burninSlider,
+                                GroupLayout.PREFERRED_SIZE,
+                                GroupLayout.DEFAULT_SIZE,
                                 GroupLayout.PREFERRED_SIZE)));
 
         mainPanel.setBorder(new EtchedBorder());
@@ -344,6 +361,7 @@ public class ACGAnnotator {
         JButton runButton = new JButton("Analyze");
         runButton.addActionListener((e) -> {
             options.burninPercentage = burninSlider.getValue();
+            options.convPosteriorThresholdPercentage = thresholdSlider.getValue();
             options.heightStrategy = (HeightStrategy)heightMethodCombo.getSelectedItem();
             dialog.setVisible(false);
         });
@@ -449,7 +467,9 @@ public class ACGAnnotator {
                     + "-help                    Display usage info.\n"
                     + "-heights {mean,median}   Choose node height method.\n"
                     + "-burnin percentage       Choose _percentage_ of log to discard\n"
-                    + "                         in order to remove burn-in period.";
+                    + "                         in order to remove burn-in period.\n"
+                    + "-threshold percentage    Choose minimum posterior probability\n" +
+                    "                           for including conversion in summary.";
 
     /**
      * Print usage info and exit.
@@ -517,6 +537,17 @@ public class ACGAnnotator {
                     }
 
                     printUsageAndError();
+
+                case "-threshold":
+                    if (args.length<=i+1)
+                        printUsageAndError();
+
+                    try {
+                        options.convPosteriorThresholdPercentage =
+                                Double.parseDouble(args[i + 1]);
+                    } catch (NumberFormatException e) {
+                        printUsageAndError();
+                    }
 
                 default:
                     printUsageAndError();
