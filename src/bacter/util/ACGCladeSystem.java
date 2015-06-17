@@ -309,6 +309,8 @@ public class ACGCladeSystem extends CladeSystem {
         List<Double> height1s = new ArrayList<>();
         List<Double> height2s = new ArrayList<>();
 
+        public int maxOverlaps = 0;
+
         /**
          * Add heights associated with given conversion to summary.
          *
@@ -317,6 +319,7 @@ public class ACGCladeSystem extends CladeSystem {
         public void addHeights(Conversion conv) {
             height1s.add(conv.getHeight1());
             height2s.add(conv.getHeight2());
+            maxOverlaps += 1;
         }
 
         /**

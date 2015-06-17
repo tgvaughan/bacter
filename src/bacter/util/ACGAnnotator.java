@@ -45,8 +45,13 @@ public class ACGAnnotator {
         public File inFile;
         public File outFile = new File("summary.tree");
         public double burninPercentage = 10.0;
-        public double convPosteriorThresholdPercentage = 95;
+        public double convPosteriorThresholdPercentage = 50.0;
         public HeightStrategy heightStrategy = HeightStrategy.MEAN;
+
+        @Override
+        public String toString() {
+
+        }
     }
 
     public ACGAnnotator(ACGAnnotatorOptions options) throws IOException {
@@ -156,6 +161,9 @@ public class ACGAnnotator {
             List<Object[]> rawHeights =
                     cladeSystem.getCladeMap().get(bits).getAttributeValues();
 
+            double cladeCredibility = cladeSystem.getCladeMap()
+                    .get(bits).getCredibility();
+
             double[] heights = new double[rawHeights.size()];
             for (int i = 0; i < rawHeights.size(); i++)
                 heights[i] = (double) rawHeights.get(i)[0];
@@ -169,7 +177,8 @@ public class ACGAnnotator {
             double minHPD = heights[(int)(0.025 * heights.length)];
             double maxHPD = heights[(int)(0.975 * heights.length)];
 
-            node.metaDataString = "height_95%_HPD={" + minHPD + "," + maxHPD + "}";
+            node.metaDataString = "posterior=" + cladeCredibility
+                    + ", height_95%_HPD={" + minHPD + "," + maxHPD + "}";
 
             return null;
         });
@@ -211,6 +220,8 @@ public class ACGAnnotator {
                         conv.setStartSite(conversionSummary.startSite);
                         conv.setEndSite(conversionSummary.endSite);
 
+                        double posteriorSupport = conversionSummary.maxOverlaps/(double)nACGs;
+
                         double[] height1s = new double[conversionSummary.summarizedConvCount()];
                         double[] height2s = new double[conversionSummary.summarizedConvCount()];
                         for (int i=0; i<conversionSummary.summarizedConvCount(); i++) {
@@ -234,7 +245,8 @@ public class ACGAnnotator {
                         double minHPD2 = height2s[(int)(0.025 * height2s.length)];
                         double maxHPD2 = height2s[(int)(0.975 * height2s.length)];
 
-                        conv.newickMetaData1 = "height_95%_HPD={" + minHPD1 + "," + maxHPD1 + "}";
+                        conv.newickMetaData1 = "posterior=" + posteriorSupport
+                                + ", height_95%_HPD={" + minHPD1 + "," + maxHPD1 + "}";
                         conv.newickMetaData2 = "height_95%_HPD={" + minHPD2 + "," + maxHPD2 + "}";
 
                         acg.addConversion(conv);
@@ -548,6 +560,9 @@ public class ACGAnnotator {
                     } catch (NumberFormatException e) {
                         printUsageAndError();
                     }
+
+                    i += 1;
+                    break;
 
                 default:
                     printUsageAndError();
