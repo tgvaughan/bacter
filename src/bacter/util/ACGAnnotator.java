@@ -39,14 +39,14 @@ import java.util.List;
  */
 public class ACGAnnotator {
 
-    public enum HeightStrategy { MEAN, MEDIAN }
+    public enum SummaryStrategy { MEAN, MEDIAN }
 
     static class ACGAnnotatorOptions {
         public File inFile;
         public File outFile = new File("summary.tree");
         public double burninPercentage = 10.0;
         public double convSupportThresh = 50.0;
-        public HeightStrategy heightStrategy = HeightStrategy.MEAN;
+        public SummaryStrategy summaryStrategy = SummaryStrategy.MEAN;
 
         @Override
         public String toString() {
@@ -55,7 +55,7 @@ public class ACGAnnotator {
                     "Output file: " + outFile + "\n" +
                     "Burn-in percentage: " + burninPercentage + "%\n" +
                     "Conversion support threshold: " + convSupportThresh + "%\n" +
-                    "Clonal frame node height summary: " + heightStrategy;
+                    "Node height and conv. site summary: " + summaryStrategy;
         }
     }
 
@@ -129,7 +129,7 @@ public class ACGAnnotator {
 
         // Annotate node heights of winning CF topology
 
-        annotateCF(cladeSystem, acgBest.getRoot(), options.heightStrategy);
+        annotateCF(cladeSystem, acgBest.getRoot(), options.summaryStrategy);
 
         System.out.println("\nAdding summary conversions...");
 
@@ -137,7 +137,7 @@ public class ACGAnnotator {
 
         summarizeConversions(cladeSystem, acgBest, logReader.getCorrectedACGCount(),
                 options.convSupportThresh /100.0,
-                options.heightStrategy);
+                options.summaryStrategy);
 
 
         // Write output
@@ -164,10 +164,10 @@ public class ACGAnnotator {
      *
      * @param cladeSystem information summarizing ACG posterior
      * @param root root of clonal frame to annotate
-     * @param heightStrategy strategy used when summarizing CF node ages/heights
+     * @param summaryStrategy strategy used when summarizing CF node ages/heights
      */
     protected void annotateCF(ACGCladeSystem cladeSystem,
-                              Node root, HeightStrategy heightStrategy) {
+                              Node root, SummaryStrategy summaryStrategy) {
 
         cladeSystem.applyToClades(root, (node, bits) -> {
             List<Object[]> rawHeights =
@@ -180,7 +180,7 @@ public class ACGAnnotator {
             for (int i = 0; i < rawHeights.size(); i++)
                 heights[i] = (double) rawHeights.get(i)[0];
 
-            if (heightStrategy == HeightStrategy.MEAN)
+            if (summaryStrategy == SummaryStrategy.MEAN)
                 node.setHeight(DiscreteStatistics.mean(heights));
             else
                 node.setHeight(DiscreteStatistics.median(heights));
@@ -202,13 +202,13 @@ public class ACGAnnotator {
      * @param cladeSystem information summarizing ACG posterior
      * @param acg conversion graph
      * @param threshold significance threshold
-     * @param heightStrategy strategy used when summarizing event ages/heights
+     * @param summaryStrategy strategy used when summarizing event ages/heights
      */
     protected void summarizeConversions(ACGCladeSystem cladeSystem,
                                         ConversionGraph acg,
                                         int nACGs,
                                         double threshold,
-                                        HeightStrategy heightStrategy) {
+                                        SummaryStrategy summaryStrategy) {
 
         BitSet[] bitSets = cladeSystem.getBitSets(acg);
         for (int fromNr=0; fromNr<acg.getNodeCount(); fromNr++) {
@@ -243,7 +243,7 @@ public class ACGAnnotator {
                             endSites[i] = conversionSummary.ends.get(i);
                         }
 
-                        if (heightStrategy == HeightStrategy.MEAN) {
+                        if (summaryStrategy == SummaryStrategy.MEAN) {
                             conv.setHeight1(DiscreteStatistics.mean(height1s));
                             conv.setHeight2(DiscreteStatistics.mean(height2s));
                             conv.setStartSite((int)Math.round(DiscreteStatistics.mean(startSites)));
@@ -303,7 +303,7 @@ public class ACGAnnotator {
         JLabel logFileLabel = new JLabel("ACG log file:");
         JLabel outFileLabel = new JLabel("Output file:");
         JLabel burninLabel = new JLabel("Burn-in percentage:");
-        JLabel heightMethodLabel = new JLabel("Node height method:");
+        JLabel summaryMethodLabel = new JLabel("Position summary method:");
         JLabel thresholdLabel = new JLabel("Posterior conversion support threshold:");
 
         JTextField inFilename = new JTextField(20);
@@ -316,16 +316,16 @@ public class ACGAnnotator {
         JButton outFileButton = new JButton("Choose File");
 
         JSlider burninSlider = new JSlider(JSlider.HORIZONTAL,
-                0, 100, 10);
+                0, 100, (int)(options.burninPercentage));
         burninSlider.setMajorTickSpacing(50);
         burninSlider.setMinorTickSpacing(10);
         burninSlider.setPaintTicks(true);
         burninSlider.setPaintLabels(true);
 
-        JComboBox<HeightStrategy> heightMethodCombo = new JComboBox<>(HeightStrategy.values());
+        JComboBox<SummaryStrategy> heightMethodCombo = new JComboBox<>(SummaryStrategy.values());
 
         JSlider thresholdSlider = new JSlider(JSlider.HORIZONTAL,
-                0, 100, 95);
+                0, 100, (int)(options.convSupportThresh));
         thresholdSlider.setMajorTickSpacing(50);
         thresholdSlider.setMinorTickSpacing(10);
         thresholdSlider.setPaintTicks(true);
@@ -347,7 +347,7 @@ public class ACGAnnotator {
                         .addComponent(logFileLabel)
                         .addComponent(outFileLabel)
                         .addComponent(burninLabel)
-                        .addComponent(heightMethodLabel)
+                        .addComponent(summaryMethodLabel)
                         .addComponent(thresholdLabel))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                         .addComponent(inFilename)
@@ -381,7 +381,7 @@ public class ACGAnnotator {
                                 GroupLayout.DEFAULT_SIZE,
                                 GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup()
-                        .addComponent(heightMethodLabel)
+                        .addComponent(summaryMethodLabel)
                         .addComponent(heightMethodCombo,
                                 GroupLayout.PREFERRED_SIZE,
                                 GroupLayout.DEFAULT_SIZE,
@@ -402,7 +402,7 @@ public class ACGAnnotator {
         runButton.addActionListener((e) -> {
             options.burninPercentage = burninSlider.getValue();
             options.convSupportThresh = thresholdSlider.getValue();
-            options.heightStrategy = (HeightStrategy)heightMethodCombo.getSelectedItem();
+            options.summaryStrategy = (SummaryStrategy)heightMethodCombo.getSelectedItem();
             dialog.setVisible(false);
         });
         runButton.setEnabled(false);
@@ -505,11 +505,14 @@ public class ACGAnnotator {
                     + "Option                   Description\n"
                     + "--------------------------------------------------------------\n"
                     + "-help                    Display usage info.\n"
-                    + "-heights {mean,median}   Choose node height method.\n"
+                    + "-positions {mean,median} Choose position summary method.\n"
+                    + "                         (default mean)\n"
                     + "-burnin percentage       Choose _percentage_ of log to discard\n"
                     + "                         in order to remove burn-in period.\n"
-                    + "-threshold percentage    Choose minimum posterior probability\n" +
-                    "                           for including conversion in summary.";
+                    + "                         (Default 10%)\n"
+                    + "-threshold percentage    Choose minimum posterior probability\n"
+                    + "                         for including conversion in summary.\n"
+                    + "                         (Default 50%)";
 
     /**
      * Print usage info and exit.
@@ -563,14 +566,14 @@ public class ACGAnnotator {
                         printUsageAndError();
 
                     if (args[i+1].toLowerCase().equals("mean")) {
-                        options.heightStrategy = HeightStrategy.MEAN;
+                        options.summaryStrategy = SummaryStrategy.MEAN;
 
                         i += 1;
                         break;
                     }
 
                     if (args[i+1].toLowerCase().equals("median")) {
-                        options.heightStrategy = HeightStrategy.MEDIAN;
+                        options.summaryStrategy = SummaryStrategy.MEDIAN;
 
                         i += 1;
                         break;
