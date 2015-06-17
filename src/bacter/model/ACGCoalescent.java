@@ -191,12 +191,12 @@ public class ACGCoalescent extends ACGDistribution {
 
     @Override
     public List<String> getArguments() {
-        return null; // Doesn't seem to be used...
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public List<String> getConditions() {
-        return null; // Doesn't seem to be used...
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
