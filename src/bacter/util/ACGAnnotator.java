@@ -45,16 +45,24 @@ public class ACGAnnotator {
         public File inFile;
         public File outFile = new File("summary.tree");
         public double burninPercentage = 10.0;
-        public double convPosteriorThresholdPercentage = 50.0;
+        public double convSupportThresh = 50.0;
         public HeightStrategy heightStrategy = HeightStrategy.MEAN;
 
         @Override
         public String toString() {
-
+            return "Active options:\n" +
+                    "Input file: " + inFile + "\n" +
+                    "Output file: " + outFile + "\n" +
+                    "Burn-in percentage: " + burninPercentage + "%\n" +
+                    "Conversion support threshold: " + convSupportThresh + "%\n" +
+                    "Clonal frame node height summary: " + heightStrategy;
         }
     }
 
     public ACGAnnotator(ACGAnnotatorOptions options) throws IOException {
+
+        // Display options:
+        System.out.println(options + "\n");
 
         // Initialise reader
 
@@ -124,7 +132,7 @@ public class ACGAnnotator {
         // Add conversion summaries
 
         summarizeConversions(cladeSystem, acgBest, logReader.getCorrectedACGCount(),
-                options.convPosteriorThresholdPercentage/100.0,
+                options.convSupportThresh /100.0,
                 options.heightStrategy);
 
 
@@ -373,7 +381,7 @@ public class ACGAnnotator {
         JButton runButton = new JButton("Analyze");
         runButton.addActionListener((e) -> {
             options.burninPercentage = burninSlider.getValue();
-            options.convPosteriorThresholdPercentage = thresholdSlider.getValue();
+            options.convSupportThresh = thresholdSlider.getValue();
             options.heightStrategy = (HeightStrategy)heightMethodCombo.getSelectedItem();
             dialog.setVisible(false);
         });
@@ -555,7 +563,7 @@ public class ACGAnnotator {
                         printUsageAndError();
 
                     try {
-                        options.convPosteriorThresholdPercentage =
+                        options.convSupportThresh =
                                 Double.parseDouble(args[i + 1]);
                     } catch (NumberFormatException e) {
                         printUsageAndError();
