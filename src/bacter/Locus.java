@@ -95,20 +95,4 @@ public class Locus extends BEASTObject {
     public boolean hasAlignment() {
         return alignment != null;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Locus) {
-            Locus locus = (Locus)obj;
-            if (locus.getID() != null)
-                locus.getID().equals(getID());
-        }
-
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return getID() != null ? getID().hashCode() : 0;
-    }
 }
