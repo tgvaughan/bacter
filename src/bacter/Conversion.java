@@ -56,7 +56,7 @@ public class Conversion {
      * Used by ACGAnnotator to incoroporate additional metadata into
      * the summary ACG.
      */
-    public String newickMetaData1, newickMetaData2;
+    public String newickMetaDataBottom, newickMetaDataMiddle, newickMetaDataTop;
 
     public Conversion() { }
 

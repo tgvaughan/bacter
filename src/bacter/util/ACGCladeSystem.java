@@ -212,18 +212,16 @@ public class ACGCladeSystem extends CladeSystem {
                 if (activeConversions.size() >= thresholdCount) {
                     if ( conversionSummary == null) {
                         conversionSummary = new ConversionSummary();
-                        conversionSummary.startSite = nextStart;
                         convSummaryList.add(conversionSummary);
-                        conversionSummary.addHeights(activeConversions);
+                        conversionSummary.addConvs(activeConversions);
                     } else
-                        conversionSummary.addHeights(convOrderedByStart.get(0));
+                        conversionSummary.addConv(convOrderedByStart.get(0));
                 }
                 convOrderedByStart.remove(0);
             } else {
                 activeConversions.remove(convOrderedByEnd.get(0));
                 if (activeConversions.size() == thresholdCount-1) {
                     assert conversionSummary != null;
-                    conversionSummary.endSite = nextEnd;
                     conversionSummary = null;
                 }
                 convOrderedByEnd.remove(0);
@@ -304,33 +302,35 @@ public class ACGCladeSystem extends CladeSystem {
      */
     public class ConversionSummary {
 
-        public int startSite, endSite;
-
         List<Double> height1s = new ArrayList<>();
         List<Double> height2s = new ArrayList<>();
+        List<Integer> startSites = new ArrayList<>();
+        List<Integer> ends = new ArrayList<>();
 
         public int maxOverlaps = 0;
 
         /**
-         * Add heights associated with given conversion to summary.
+         * Add metrics associated with given conversion to summary.
          *
          * @param conv conversion
          */
-        public void addHeights(Conversion conv) {
+        public void addConv(Conversion conv) {
             height1s.add(conv.getHeight1());
             height2s.add(conv.getHeight2());
+            startSites.add(conv.getStartSite());
+            ends.add(conv.getEndSite());
             maxOverlaps += 1;
         }
 
         /**
-         * Add heights associated with each of the conversions in the
+         * Add metrics associated with each of the conversions in the
          * given list to the summary.
          *
          * @param convs list of conversions
          */
-        public void addHeights(List<Conversion> convs) {
+        public void addConvs(List<Conversion> convs) {
             for (Conversion conv : convs)
-                addHeights(conv);
+                addConv(conv);
         }
 
         /**

@@ -112,7 +112,7 @@ public class ACGAnnotator {
 
         // Collect CF node heights
 
-        System.out.println("\nCollecting CF node heights...");
+        System.out.println("\nCollecting CF node heights and conversions...");
 
         Set<String> attributeNames = new HashSet<>();
         attributeNames.add("height");
@@ -125,9 +125,13 @@ public class ACGAnnotator {
         cladeSystem.removeClades(acgBest.getRoot(), true);
         cladeSystem.calculateCladeCredibilities(logReader.getCorrectedACGCount());
 
+        System.out.println("\nProducing summary CF...");
+
         // Annotate node heights of winning CF topology
 
         annotateCF(cladeSystem, acgBest.getRoot(), options.heightStrategy);
+
+        System.out.println("\nAdding summary conversions...");
 
         // Add conversion summaries
 
@@ -225,37 +229,53 @@ public class ACGAnnotator {
                         conv.setLocus(locus);
                         conv.setNode1(acg.getNode(fromNr));
                         conv.setNode2(acg.getNode(toNr));
-                        conv.setStartSite(conversionSummary.startSite);
-                        conv.setEndSite(conversionSummary.endSite);
 
                         double posteriorSupport = conversionSummary.maxOverlaps/(double)nACGs;
 
                         double[] height1s = new double[conversionSummary.summarizedConvCount()];
                         double[] height2s = new double[conversionSummary.summarizedConvCount()];
+                        double[] startSites = new double[conversionSummary.summarizedConvCount()];
+                        double[] endSites = new double[conversionSummary.summarizedConvCount()];
                         for (int i=0; i<conversionSummary.summarizedConvCount(); i++) {
                             height1s[i] = conversionSummary.height1s.get(i);
                             height2s[i] = conversionSummary.height2s.get(i);
+                            startSites[i] = conversionSummary.startSites.get(i);
+                            endSites[i] = conversionSummary.ends.get(i);
                         }
 
                         if (heightStrategy == HeightStrategy.MEAN) {
                             conv.setHeight1(DiscreteStatistics.mean(height1s));
                             conv.setHeight2(DiscreteStatistics.mean(height2s));
+                            conv.setStartSite((int)Math.round(DiscreteStatistics.mean(startSites)));
+                            conv.setEndSite((int) Math.round(DiscreteStatistics.mean(endSites)));
                         } else {
                             conv.setHeight1(DiscreteStatistics.median(height1s));
                             conv.setHeight2(DiscreteStatistics.median(height2s));
+                            conv.setStartSite((int)Math.round(DiscreteStatistics.median(startSites)));
+                            conv.setEndSite((int) Math.round(DiscreteStatistics.median(endSites)));
                         }
 
                         Arrays.sort(height1s);
-                        double minHPD1 = height1s[(int)(0.025 * height1s.length)];
-                        double maxHPD1 = height1s[(int)(0.975 * height1s.length)];
+                        double minHeight1HPD = height1s[(int)(0.025 * height1s.length)];
+                        double maxHeight1HPD = height1s[(int)(0.975 * height1s.length)];
 
                         Arrays.sort(height2s);
-                        double minHPD2 = height2s[(int)(0.025 * height2s.length)];
-                        double maxHPD2 = height2s[(int)(0.975 * height2s.length)];
+                        double minHeight2HPD = height2s[(int)(0.025 * height2s.length)];
+                        double maxHeight2HPD = height2s[(int)(0.975 * height2s.length)];
 
-                        conv.newickMetaData1 = "posterior=" + posteriorSupport
-                                + ", height_95%_HPD={" + minHPD1 + "," + maxHPD1 + "}";
-                        conv.newickMetaData2 = "height_95%_HPD={" + minHPD2 + "," + maxHPD2 + "}";
+                        Arrays.sort(startSites);
+                        int minStartHPD = (int)startSites[(int)(0.025 * startSites.length)];
+                        int maxStartHPD = (int)startSites[(int)(0.975 * startSites.length)];
+
+                        Arrays.sort(endSites);
+                        int minEndHPD = (int)endSites[(int)(0.025 * endSites.length)];
+                        int maxEndHPD = (int)endSites[(int)(0.975 * endSites.length)];
+
+                        conv.newickMetaDataBottom = "height_95%_HPD={" + minHeight1HPD + "," + maxHeight1HPD + "}";
+                        conv.newickMetaDataMiddle = "posterior=" + posteriorSupport +
+                                ", startSite_95%_HPD={" + minStartHPD + "," + maxStartHPD + "}" +
+                                ", endSite_95%_HPD={" + minEndHPD + "," + maxEndHPD + "}";
+                        conv.newickMetaDataTop = "height_95%_HPD={" + minHeight2HPD + "," + maxHeight2HPD + "}";
 
                         acg.addConversion(conv);
                     }

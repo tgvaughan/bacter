@@ -91,7 +91,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
     }
 
     /**
-     * Obtain average position of conversion starts.
+     * Obtain average position of conversion startSites.
      * 
      * @param acg
      * @param locus

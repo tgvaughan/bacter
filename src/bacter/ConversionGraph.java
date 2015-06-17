@@ -614,14 +614,14 @@ public class ConversionGraph extends Tree {
                                 event.conv.getEndSite(),
                                 event.conv.getLocus().getID());
 
-                if (event.conv.newickMetaData1 != null)
-                    meta += ", " + event.conv.newickMetaData1;
+                if (event.conv.newickMetaDataMiddle != null)
+                    meta += ", " + event.conv.newickMetaDataMiddle;
 
                 meta += "]";
 
                 String parentMeta;
-                if (event.conv.newickMetaData2 != null)
-                    parentMeta = "[&" + event.conv.newickMetaData2 + "]";
+                if (event.conv.newickMetaDataTop != null)
+                    parentMeta = "[&" + event.conv.newickMetaDataTop + "]";
                 else
                     parentMeta = "";
 
@@ -633,7 +633,14 @@ public class ConversionGraph extends Tree {
                         + ":" + thisLength);
                 cursor += 1;
             } else {
+                String meta;
+                if (event.conv.newickMetaDataBottom != null)
+                    meta = "[&" + event.conv.newickMetaDataBottom + "]";
+                else
+                    meta = "";
+
                 sb.insert(cursor, "()#" + getConversionIndex(event.conv)
+                        + meta
                         + ":" + thisLength);
                 cursor += 1;
             }
