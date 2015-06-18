@@ -100,86 +100,167 @@
 
         <partitiontemplate id='StandardPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
-            <taxonSet spec="beast.evolution.alignment.TaxonSet" id="taxonSet.$(n)" alignment="@data"/>
+            <plugin spec="beast.evolution.alignment.TaxonSet" id="taxonSet.$(n)" alignment="@data"/>
+            <plugin spec="bacter.Locus" id="locus.$(n)" alignment="@data"/>
 
-            <locus spec="bacter.Locus" id="locus.
-
-            <!-- site model                                                              -->
-            <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
-                <!--substModel will be automatically detected /-->
-                <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' lower='0' upper='1' estimate='false'/>
-                <mutationRate        spec='parameter.RealParameter' id='mutationRate.s:$(n)' value='1.0'        estimate='false'/>
-                <shape               spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0'         estimate='false'/>
+            <!-- ACG: maybe define this in main template!? -->
+            <plugin id="Tree.t:$(n)" spec='bacter.model.SimulatedACG' taxonset="@taxonSet.$(n)"
+                rho="0.001" delta="1000.0" locus="@locus.$(n)">
+                <populationModel spec='ConstantPopulation' popSize="1.0"/>
             </plugin>
 
-            <plugin spec='TreeLikelihood' id="treeLikelihood.$(n)">
-                <data idref="data"/>
-                <tree idref="Tree.t:$(n)"/>
-                <siteModel idref="SiteModel.s:$(n)"/>
+            <!-- ACG Likelihood -->
+
+            <plugin spec='bacter.model.ACGLikelihood' id="treeLikelihood.$(n)"
+                    acg="@Tree.t:$(n)" locus="@locus.$(n)">
+                <siteModel spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
+                    <!--substModel will be automatically detected /-->
+                    <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' lower='0' upper='1' estimate='false'/>
+                    <mutationRate spec='parameter.RealParameter' id='mutationRate.s:$(n)' value='1.0' estimate='false'/>
+                    <shape spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0' estimate='false'/>
+                </siteModel>
                 <branchRateModel spec='StrictClockModel' id='StrictClock.c:$(n)'>
                     <clock.rate id='clockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
                 </branchRateModel>
             </plugin>
 
-	        <prior id='ClockPrior.c:$(n)' x='@clockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
-	        <prior id='MutationRatePrior.s:$(n)' x='@mutationRate.s:$(n)'><distr spec="OneOnX"/></prior>
+            <!-- ACG Prior: maybe define this in main template? -->
 
-            <!-- tree and its properties -->
-            <taxonset id='TaxonSet.$(n)' spec='beast.evolution.alignment.TaxonSet' alignment='@$(n)' />
-            <plugin spec='beast.evolution.tree.Tree' id='Tree.t:$(n)' taxonset='@TaxonSet.$(n)'/>
-
-            <!--plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' trait='@datetrait.$(n)' initial='@Tree.t:$(n)'-->
-            <plugin spec='beast.evolution.tree.RandomTree' id='RandomTree.t:$(n)' estimate='false' initial='@Tree.t:$(n)'>
-                <taxa spec='Alignment' idref='data'/>
-                <populationModel id='ConstantPopulation0.t:$(n)' spec='ConstantPopulation'>
-            		<popSize id='randomPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
-	            </populationModel>
+            <plugin spec='bacter.model.ACGCoalescent' id="ACGCoalescent.t:$(n)">
+                <acg idref="Tree.t:$(n)"/>
+                <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.0001" estimate="true"/>
+                <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000.0" estimate="true"/>
+                <populationModel spec="beast.evolution.tree.coalescent.ConstantPopulation" id="popModel.t:$(n)">
+                    <popSize spec="parameter.RealParameter" value="1.0" estimate="true"/>
+                </populationModel>
             </plugin>
 
-            <!-- default tree prior -->
-            <plugin spec='YuleModel' id="YuleModel.t:$(n)" tree='@Tree.t:$(n)'>
-                <parameter name='birthDiffRate' id="birthRate.t:$(n)" value='1.0' estimate='true'/>
-            </plugin>
+            <!-- Parameter priors -->
 
-            <plugin id='TreeHeight.t:$(n)' spec='beast.evolution.tree.TreeHeightLogger' tree='@Tree.t:$(n)'/>
+	        <prior id='ClockPrior.c:$(n)' x='@clockRate.c:$(n)'>
+	            <distr spec="beast.math.distributions.Uniform" upper='Infinity'/>
+            </prior>
 
-            <logger id='treelog.t:$(n)' spec='beast.core.Logger' logEvery="1000" fileName="$(tree).trees" mode='tree'>
-	            <log id='TreeWithMetaDataLogger.t:$(n)' spec='beast.evolution.tree.TreeWithMetaDataLogger' tree='@Tree.t:$(n)'>
-	            </log>
-            </logger>
+	        <prior id='RhoPrior.t:$(n)' x='@rho.t:$(n)'>
+	            <distr spec="beast.math.distributions.OneOnX" />
+            </prior>
+
+	        <prior id='DeltaPrior.t:$(n)' x='@delta.t:$(n)'>
+	            <distr spec="beast.math.distributions.OneOnX" />
+            </prior>
+
+	        <prior id='MutationRatePrior.s:$(n)' x='@mutationRate.s:$(n)'>
+	            <distr spec="OneOnX"/>
+	        </prior>
+
+            <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'>
+                <distr spec="beast.math.distributions.Exponential" mean='1'/>
+            </prior>
+
+            <prior id='PropInvariantPrior.s:$(n)' x='@proportionInvariant.s:$(n)'>
+                <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+            </prior>
+
+            <!-- Parameter operators -->
 
             <operator id='proportionInvariantScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@proportionInvariant.s:$(n)"/>
             <operator id='mutationRateScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@mutationRate.s:$(n)"/>
             <operator id='gammaShapeScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@gammaShape.s:$(n)"/>
             <operator id='allTipDatesRandomWalker.t:$(n)' spec='TipDatesRandomWalker' windowSize="1" weight="0" tree="@Tree.t:$(n)"/>
-
-            <operator id='YuleModelTreeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)"/>
-            <operator id='YuleModelTreeRootScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="3" tree="@Tree.t:$(n)" rootOnly='true'/>
-            <operator id='YuleModelUniformOperator.t:$(n)' spec='Uniform' weight="30" tree="@Tree.t:$(n)"/>
-            <operator id='YuleModelSubtreeSlide.t:$(n)' spec='SubtreeSlide' weight="15" gaussian="true" size="1.0" tree="@Tree.t:$(n)"/>
-            <operator id='YuleModelNarrow.t:$(n)' spec='Exchange' isNarrow='true' weight="15" tree="@Tree.t:$(n)"/>
-            <operator id='YuleModelWide.t:$(n)' spec='Exchange' isNarrow='false' weight="3" tree="@Tree.t:$(n)"/>
-            <operator id='YuleModelWilsonBalding.t:$(n)' spec='WilsonBalding' weight="3" tree="@Tree.t:$(n)"/>
-
-
-            <prior id='YuleBirthRatePrior.t:$(n)' x='@birthRate.t:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='Infinity'/></prior>
-            <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'><distr spec="beast.math.distributions.Exponential" mean='1'/></prior>
-            <prior id='PropInvariantPrior.s:$(n)' x='@proportionInvariant.s:$(n)'><distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/></prior>
-  		    <operator id='YuleBirthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter="@birthRate.t:$(n)"/>
 			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
+
+            <operator id="rhoScaler.t:$(n)" spec="ScaleOperator" weight="1.0"
+                scaleFactor="0.8" parameter="@rho.t:$(n)"/>
+
+            <operator id="deltaScaler.t:$(n)" spec="ScaleOperator" weight="1.0"
+                scaleFactor="0.8" parameter="@delta.t:$(n)"/>
+
+            <operator id="popSizeScaler.t:$(n)" spec="ScaleOperator" weight="1.0"
+                scaleFactor="0.8" parameter="@popSize.t:$(n)"/>
+
+
 			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
 			<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
 				<up idref="clockRate.c:$(n)"/>
 				<down idref="Tree.t:$(n)"/>
 			</upDownOperator>
 
+			<!-- ACG Operators: Move to main template? -->
+
+            <operator id="addRemove" spec="AddRemoveConversion" weight="10.0">
+                <acg idref="Tree.t:$(n)"/>
+                <delta idref="delta.t:$(n)"/>
+                <populationModel idref="popModel.t:$(n)"/>
+            </operator>
+
+            <operator id="scale" spec="ACGScaler" weight="1.0"
+                scaleFactor="0.8">
+                <acg idref="Tree.t:$(n)"/>
+            </operator>
+
+            <operator id="CRswap.t:$(n)" spec="ConvertedRegionSwap" weight="1.0"
+                acg="@Tree.t:$(n)"/>
+
+            <operator id="CRshift.t:$(n)" spec="ConvertedRegionShift" weight="1.0"
+                acg="@Tree.t:$(n)" apertureSize="0.01" />
+
+            <operator id="CRBshift.t:$(n)" spec="ConvertedRegionBoundaryShift" weight="1.0"
+                acg="@Tree.t:$(n)" apertureSize="0.01" />
+
+            <operator id="mergeSplit.t:$(n)" spec="MergeSplitConversion" weight="1.0"
+                acg="@Tree.t:$(n)" />
+
+             <operator id="addRemoveDetour.t:$(n)" spec="AddRemoveDetour" weight="10.0"
+                     acg="@Tree.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel"/>
+
+            <operator id="CEhop.t:$(n)" spec="ConvertedEdgeHop" weight="1.0"
+                acg="@Tree.t:$(n)" />
+
+            <operator id="CEflip.t:$(n)" spec="ConvertedEdgeFlip" weight="1.0"
+                acg="@Tree.t:$(n)" />
+
+            <operator id="CEslide.t:$(n)" spec="ConvertedEdgeSlide" weight="1.0"
+                acg="@Tree.t:$(n)" scaleBound="0.8" />
+
+            <operator id="CFUniform.t:$(n)" spec='CFUniform' acg="@Tree.t:$(n)"
+                      rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel.t:$(n)" weight="10"/>
+
+            <operator id="CFWB.t:$(n)" spec='CFWilsonBalding'
+                      acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel.t:$(n)"
+                      alpha="0.1" weight="10"/>
+
+            <operator id="STS.t:$(n)" spec='ACGValidityWrapper' acg="@Tree.t:$(n)">
+                <operator spec='SubtreeSlide' weight="5" gaussian="true" size="0.1">
+                    <tree idref="Tree.t:$(n)"/>
+                </operator>
+            </operator>
+
+            <operator id="STXnarrow.t:$(n)" spec='ACGValidityWrapper' acg="@Tree.t:$(n)">
+                <operator id='narrow' spec='Exchange' isNarrow='true' weight="10">
+                    <tree idref="Tree.t:$(n)"/>
+                </operator>
+            </operator>
+
+            <operator id="STXwide.t:$(n)" spec='ACGValidityWrapper' acg="@Tree.t:$(n)">
+                <operator id='wide' spec='Exchange' isNarrow='false' weight="10">
+                    <tree idref="Tree.t:$(n)"/>
+                </operator>
+            </operator>
+
+            <!-- ACG log: Move to main template? -->
+
+            <logger id='treelog.t:$(n)' spec='beast.core.Logger'
+                    logEvery="1000" fileName="$(filebase).$(tree).trees"
+                    mode='tree' log="@Tree.t:$(n)"/>
+
+            <!-- Trace log elements -->
+            <log id="convStats.t:$(n)" spec="bacter.util.ConversionGraphStatsLogger" acg="@Tree.t:$(n)"/>
 ]]>
             <connect srcID='treeLikelihood.$(n)'            targetID='likelihood' inputName='distribution' if="isInitializing"/>
             <connect srcID='YuleModel.t:$(n)'               targetID='prior' inputName='distribution' if="isInitializing"/>
 			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
 
             <connect srcID='treelog.t:$(n)'                 targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='RandomTree.t:$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.t:$(n))'/>
 
             <connect srcID='ClockPrior.c:$(n)'                targetID='prior' inputName='distribution' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
 <!-- when FixMeanMutationRatesOperator, the prior is uniform due to the operator -->
