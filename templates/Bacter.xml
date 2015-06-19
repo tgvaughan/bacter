@@ -45,16 +45,7 @@
                 <shape               spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0'         estimate='false'/>
             </plugin>
 
-            <!--
-            <plugin spec='TreeLikelihood' id="treeLikelihood.$(n)">
-                <data idref="data"/>
-                <tree idref="Tree.t:$(n)"/>
-                <siteModel idref="SiteModel.s:$(n)"/>
-                <branchRateModel spec='StrictClockModel' id='StrictClock.c:$(n)'>
-                    <clock.rate id='clockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
-                </branchRateModel>
-            </plugin>
-            -->
+            <!-- ACG Likelihood -->
             <plugin spec='bacter.model.ACGLikelihood' id="treeLikelihood.$(n)">
                 <data idref="data"/>
                 <locus idref="locus.$(n)"/>
@@ -65,13 +56,18 @@
                 </branchRateModel>
             </plugin>
 
+            <!-- ACG Coalescent -->
+
+            <plugin spec='bacter.model.ACGCoalescent' id="treePrior.t:$(n)">
+                <acg idref="Tree.t:$(n)"/>
+                <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.001"/>
+                <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000.0"/>
+                <populationModel id="popModel.t:$(n)" spec="beast.evolution.tree.coalescent.ConstantPopulation">
+                    <popSize id="popSize.t:$(n)" spec="parameter.RealParameter" value="1" />
+                </populationModel>
+            </plugin>
+
             <!-- tree and its properties -->
-            <!--plugin spec='beast.evolution.tree.RandomTree' id='Tree.t:$(n)' estimate='true'>
-                <taxa spec='Alignment' idref='data'/>
-                <populationModel id='ConstantPopulation0.t:$(n)' spec='ConstantPopulation'>
-            		<popSize id='randomPopSize.t:$(n)' spec='parameter.RealParameter' value='1'/>
-	            </populationModel>
-            </plugin-->
             <plugin spec='bacter.model.SimulatedACG' id='Tree.t:$(n)' estimate='true' rho="0.001" delta="1000">
                 <locus idref="locus.$(n)"/>
                 <taxonset spec='beast.evolution.alignment.TaxonSet' alignment="@data"/>
@@ -81,11 +77,15 @@
             </plugin>
 
 ]]>
-            <connect srcID='treeLikelihood.$(n)'            targetID='likelihood' inputName='distribution' if="isInitializing"/>
+            <connect srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution' if="isInitializing"/>
 			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
-            <connect srcID='Tree.t:$(n)'                targetID='mcmc' inputName='init'   if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='Tree.t:$(n)' targetID='mcmc' inputName='init'   if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='treePrior.t:$(n)' targetID='prior' inputName='distribution' if="isInitializing"/>
+            <connect srcID='rho.t:$(n)' targetID='state' inputName='stateNode' if="inposterior(rho.t:$(n))"/>
+            <connect srcID='delta.t:$(n)' targetID='state' inputName='stateNode' if="inposterior(delta.t:$(n))"/>
+            <connect srcID='popSize.t:$(n)' targetID='state' inputName='stateNode' if="inposterior(popSize.t:$(n))"/>
 
-            <connect srcID='Tree.t:$(n)'                      targetID='state' inputName='stateNode' if='inposterior(Tree.t:$(n))'/>
+            <connect srcID='Tree.t:$(n)' targetID='state' inputName='stateNode' if='inposterior(Tree.t:$(n))'/>
         </partitiontemplate>
 
 		<mergepoint id='substModelTemplates'/>
