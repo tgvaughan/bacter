@@ -109,16 +109,18 @@
                 <populationModel spec='ConstantPopulation' popSize="1.0"/>
             </plugin>
 
+            <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
+                <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' lower='0' upper='1' estimate='false'/>
+                <mutationRate spec='parameter.RealParameter' id='mutationRate.s:$(n)' value='1.0' estimate='false'/>
+                <shape spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0' estimate='false'/>
+            </plugin>
+
             <!-- ACG Likelihood -->
 
             <plugin spec='bacter.model.ACGLikelihood' id="treeLikelihood.$(n)"
                     tree="@Tree.t:$(n)" locus="@locus.$(n)" data="@data">
-                <siteModel spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
-                    <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' lower='0' upper='1' estimate='false'/>
-                    <mutationRate spec='parameter.RealParameter' id='mutationRate.s:$(n)' value='1.0' estimate='false'/>
-                    <shape spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0' estimate='false'/>
-                </siteModel>
-            </plugin>
+                    <siteModel idref="SiteModel.s:$(n)"/>
+                </plugin>
 
             <!-- ACG Prior: maybe define this in main template? -->
 

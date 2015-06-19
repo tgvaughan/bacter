@@ -67,7 +67,7 @@ public class ACGLikelihoodTest extends TestBase {
         ACGLikelihood argLikelihood = new ACGLikelihood();
         argLikelihood.initByName(
                 "locus", locus,
-                "acg", acg,
+                "tree", acg,
                 "siteModel", siteModel);
         
         acg.setEverythingDirty(true);
@@ -158,8 +158,8 @@ public class ACGLikelihoodTest extends TestBase {
         ACGLikelihood argLikelihood = new ACGLikelihood();
         argLikelihood.initByName(
                 "locus", locus,
-                "alignment", alignment,
-                "acg", acg,
+                "data", alignment,
+                "tree", acg,
                 "siteModel", siteModel);
         
         double logP = argLikelihood.calculateLogP();
@@ -213,8 +213,8 @@ public class ACGLikelihoodTest extends TestBase {
         ACGLikelihood argLikelihood = new ACGLikelihood();
         argLikelihood.initByName(
                 "locus", locus,
-                "alignment", alignment,
-                "acg", acg,
+                "data", alignment,
+                "tree", acg,
                 "siteModel", siteModel,
                 "nThreads", 4);
 
