@@ -112,16 +112,12 @@
             <!-- ACG Likelihood -->
 
             <plugin spec='bacter.model.ACGLikelihood' id="treeLikelihood.$(n)"
-                    acg="@Tree.t:$(n)" locus="@locus.$(n)">
+                    tree="@Tree.t:$(n)" locus="@locus.$(n)" data="@data">
                 <siteModel spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
-                    <!--substModel will be automatically detected /-->
                     <proportionInvariant spec='parameter.RealParameter' id='proportionInvariant.s:$(n)' value='0.0' lower='0' upper='1' estimate='false'/>
                     <mutationRate spec='parameter.RealParameter' id='mutationRate.s:$(n)' value='1.0' estimate='false'/>
                     <shape spec='parameter.RealParameter' id='gammaShape.s:$(n)' value='1.0' estimate='false'/>
                 </siteModel>
-                <branchRateModel spec='StrictClockModel' id='StrictClock.c:$(n)'>
-                    <clock.rate id='clockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
-                </branchRateModel>
             </plugin>
 
             <!-- ACG Prior: maybe define this in main template? -->
@@ -131,15 +127,11 @@
                 <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.0001" estimate="true"/>
                 <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000.0" estimate="true"/>
                 <populationModel spec="beast.evolution.tree.coalescent.ConstantPopulation" id="popModel.t:$(n)">
-                    <popSize spec="parameter.RealParameter" value="1.0" estimate="true"/>
+                    <popSize id="popSize.t:$(n)" spec="parameter.RealParameter" value="1.0" estimate="true"/>
                 </populationModel>
             </plugin>
 
             <!-- Parameter priors -->
-
-	        <prior id='ClockPrior.c:$(n)' x='@clockRate.c:$(n)'>
-	            <distr spec="beast.math.distributions.Uniform" upper='Infinity'/>
-            </prior>
 
 	        <prior id='RhoPrior.t:$(n)' x='@rho.t:$(n)'>
 	            <distr spec="beast.math.distributions.OneOnX" />
@@ -150,7 +142,7 @@
             </prior>
 
 	        <prior id='MutationRatePrior.s:$(n)' x='@mutationRate.s:$(n)'>
-	            <distr spec="OneOnX"/>
+	            <distr spec="beast.math.distributions.OneOnX"/>
 	        </prior>
 
             <prior id='GammaShapePrior.s:$(n)' x='@gammaShape.s:$(n)'>
@@ -167,7 +159,6 @@
             <operator id='mutationRateScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@mutationRate.s:$(n)"/>
             <operator id='gammaShapeScaler.s:$(n)' spec='ScaleOperator' scaleFactor="0.5" weight="0.1" parameter="@gammaShape.s:$(n)"/>
             <operator id='allTipDatesRandomWalker.t:$(n)' spec='TipDatesRandomWalker' windowSize="1" weight="0" tree="@Tree.t:$(n)"/>
-			<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
 
             <operator id="rhoScaler.t:$(n)" spec="ScaleOperator" weight="1.0"
                 scaleFactor="0.8" parameter="@rho.t:$(n)"/>
@@ -179,69 +170,63 @@
                 scaleFactor="0.8" parameter="@popSize.t:$(n)"/>
 
 
-			<!-- need updown operator for clockRate?!? Also in SubstModel.xml -->
-			<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
-				<up idref="clockRate.c:$(n)"/>
-				<down idref="Tree.t:$(n)"/>
-			</upDownOperator>
-
 			<!-- ACG Operators: Move to main template? -->
 
-            <operator id="addRemove" spec="AddRemoveConversion" weight="10.0">
+            <operator id="addRemove" spec="bacter.operators.AddRemoveConversion" weight="10.0">
                 <acg idref="Tree.t:$(n)"/>
                 <delta idref="delta.t:$(n)"/>
                 <populationModel idref="popModel.t:$(n)"/>
             </operator>
 
-            <operator id="scale" spec="ACGScaler" weight="1.0"
+            <operator id="scale" spec="bacter.operators.ACGScaler" weight="1.0"
                 scaleFactor="0.8">
                 <acg idref="Tree.t:$(n)"/>
             </operator>
 
-            <operator id="CRswap.t:$(n)" spec="ConvertedRegionSwap" weight="1.0"
+            <operator id="CRswap.t:$(n)" spec="bacter.operators.ConvertedRegionSwap" weight="1.0"
                 acg="@Tree.t:$(n)"/>
 
-            <operator id="CRshift.t:$(n)" spec="ConvertedRegionShift" weight="1.0"
+            <operator id="CRshift.t:$(n)" spec="bacter.operators.ConvertedRegionShift" weight="1.0"
                 acg="@Tree.t:$(n)" apertureSize="0.01" />
 
-            <operator id="CRBshift.t:$(n)" spec="ConvertedRegionBoundaryShift" weight="1.0"
+            <operator id="CRBshift.t:$(n)" spec="bacter.operators.ConvertedRegionBoundaryShift" weight="1.0"
                 acg="@Tree.t:$(n)" apertureSize="0.01" />
 
-            <operator id="mergeSplit.t:$(n)" spec="MergeSplitConversion" weight="1.0"
+            <operator id="mergeSplit.t:$(n)" spec="bacter.operators.MergeSplitConversion" weight="1.0"
                 acg="@Tree.t:$(n)" />
 
-             <operator id="addRemoveDetour.t:$(n)" spec="AddRemoveDetour" weight="10.0"
-                     acg="@Tree.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel"/>
+             <operator id="addRemoveDetour.t:$(n)" spec="bacter.operators.AddRemoveDetour" weight="10.0"
+                     acg="@Tree.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel.t:$(n)"/>
 
-            <operator id="CEhop.t:$(n)" spec="ConvertedEdgeHop" weight="1.0"
+            <operator id="CEhop.t:$(n)" spec="bacter.operators.ConvertedEdgeHop" weight="1.0"
                 acg="@Tree.t:$(n)" />
 
-            <operator id="CEflip.t:$(n)" spec="ConvertedEdgeFlip" weight="1.0"
+            <operator id="CEflip.t:$(n)" spec="bacter.operators.ConvertedEdgeFlip" weight="1.0"
                 acg="@Tree.t:$(n)" />
 
-            <operator id="CEslide.t:$(n)" spec="ConvertedEdgeSlide" weight="1.0"
+            <operator id="CEslide.t:$(n)" spec="bacter.operators.ConvertedEdgeSlide" weight="1.0"
                 acg="@Tree.t:$(n)" scaleBound="0.8" />
 
-            <operator id="CFUniform.t:$(n)" spec='CFUniform' acg="@Tree.t:$(n)"
+            <operator id="CFUniform.t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
                       rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel.t:$(n)" weight="10"/>
 
-            <operator id="CFWB.t:$(n)" spec='CFWilsonBalding'
+            <operator id="CFWB.t:$(n)" spec='bacter.operators.CFWilsonBalding'
                       acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel.t:$(n)"
                       alpha="0.1" weight="10"/>
 
-            <operator id="STS.t:$(n)" spec='ACGValidityWrapper' acg="@Tree.t:$(n)">
+            <operator id="STS.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
                 <operator spec='SubtreeSlide' weight="5" gaussian="true" size="0.1">
                     <tree idref="Tree.t:$(n)"/>
                 </operator>
             </operator>
 
-            <operator id="STXnarrow.t:$(n)" spec='ACGValidityWrapper' acg="@Tree.t:$(n)">
+            <operator id="STXnarrow.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
                 <operator id='narrow' spec='Exchange' isNarrow='true' weight="10">
                     <tree idref="Tree.t:$(n)"/>
                 </operator>
             </operator>
 
-            <operator id="STXwide.t:$(n)" spec='ACGValidityWrapper' acg="@Tree.t:$(n)">
+            <operator id="STXwide.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
                 <operator id='wide' spec='Exchange' isNarrow='false' weight="10">
                     <tree idref="Tree.t:$(n)"/>
                 </operator>
@@ -257,20 +242,15 @@
             <log id="convStats.t:$(n)" spec="bacter.util.ConversionGraphStatsLogger" acg="@Tree.t:$(n)"/>
 ]]>
             <connect srcID='treeLikelihood.$(n)'            targetID='likelihood' inputName='distribution' if="isInitializing"/>
-            <connect srcID='YuleModel.t:$(n)'               targetID='prior' inputName='distribution' if="isInitializing"/>
+            <connect srcID='ACGCoalescent.t:$(n)'               targetID='prior' inputName='distribution' if="isInitializing"/>
 			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
 
             <connect srcID='treelog.t:$(n)'                 targetID='mcmc' inputName='logger' if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-
-            <connect srcID='ClockPrior.c:$(n)'                targetID='prior' inputName='distribution' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
-<!-- when FixMeanMutationRatesOperator, the prior is uniform due to the operator -->
-            <connect srcID='MutationRatePrior.s:$(n)'         targetID='prior' inputName='distribution' if='nooperator(FixMeanMutationRatesOperator) and inlikelihood(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
 
             <connect srcID='Tree.t:$(n)'                      targetID='state' inputName='stateNode' if='inposterior(Tree.t:$(n))'/>
             <connect srcID='proportionInvariant.s:$(n)'       targetID='state' inputName='stateNode' if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'/>
             <connect srcID='mutationRate.s:$(n)'              targetID='state' inputName='stateNode' if='inlikelihood(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
             <connect srcID='gammaShape.s:$(n)'                targetID='state' inputName='stateNode' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'/>
-            <connect srcID='clockRate.c:$(n)'                 targetID='state' inputName='stateNode' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
             <connect srcID='birthRate.t:$(n)'                 targetID='state' inputName='stateNode' if='inposterior(YuleModel.t:$(n)) and inposterior(Tree.t:$(n)) and birthRate.t:$(n)/estimate=true'/>
 
 
@@ -278,7 +258,6 @@
             <connect srcID='mutationRateScaler.s:$(n)'        targetID='mcmc' inputName='operator' if='nooperator(FixMeanMutationRatesOperator) and inlikelihood(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'>Scales mutation rate of partition s:$(n)</connect>
             <connect srcID='gammaShapeScaler.s:$(n)'          targetID='mcmc' inputName='operator' if='inlikelihood(gammaShape.s:$(n)) and gammaShape.s:$(n)/estimate=true'>Scales gamma shape parameter of partition s:$(n)</connect>
             <connect srcID='StrictClockRateScaler.c:$(n)'     targetID='mcmc' inputName='operator' if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale clock rate of partition c:$(n)</connect>
-            <connect srcID='YuleBirthRateScaler.t:$(n)'       targetID='mcmc' inputName='operator' if='inposterior(birthRate.t:$(n)) and birthRate.t:$(n)/estimate=true'>Scales birth rate of Yule prior for partition t:$(n)</connect>
             <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator'
                      if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
                 Scale up substitution rate c:$(n) and scale down tree t:($n)

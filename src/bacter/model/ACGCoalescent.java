@@ -18,8 +18,10 @@ package bacter.model;
 
 import bacter.CFEventList;
 import bacter.Conversion;
+import bacter.ConversionGraph;
 import bacter.Locus;
 import beast.core.Description;
+import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
@@ -32,7 +34,10 @@ import java.util.Random;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Appoximation to the coalescent with gene conversion.")
-public class ACGCoalescent extends ACGDistribution {
+public class ACGCoalescent extends Distribution {
+
+    public Input<ConversionGraph> acgInput = new Input<>(
+            "acg", "Conversion graph.", Input.Validate.REQUIRED);
     
     public Input<PopulationFunction> popFuncInput = new Input<>(
             "populationModel", "Population model.", Input.Validate.REQUIRED);
@@ -49,19 +54,19 @@ public class ACGCoalescent extends ACGDistribution {
     public Input<Integer> upperCCBoundInput = new Input<>("upperConvCountBound",
             "Upper bound on conversion count.", Integer.MAX_VALUE);
 
+    ConversionGraph acg;
     PopulationFunction popFunc;
 
     public ACGCoalescent() { }
     
     @Override
     public void initAndValidate() throws Exception {
-        super.initAndValidate();
-        
+        acg = acgInput.get();
         popFunc = popFuncInput.get();
     }
     
     @Override
-    public double calculateACGLogP() {
+    public double calculateLogP() {
 
         // Check whether conversion count exceeds bounds.
         if (acg.getTotalConvCount()<lowerCCBoundInput.get()

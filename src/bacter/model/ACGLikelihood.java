@@ -16,16 +16,14 @@
  */
 package bacter.model;
 
-import bacter.Conversion;
-import bacter.Locus;
-import bacter.MarginalTree;
-import bacter.Region;
+import bacter.*;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.likelihood.BeerLikelihoodCore;
 import beast.evolution.likelihood.BeerLikelihoodCore4;
+import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.likelihood.LikelihoodCore;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.sitemodel.SiteModelInterface;
@@ -45,17 +43,12 @@ import java.util.concurrent.Future;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Probability of sequence data given recombination graph.")
-public class ACGLikelihood extends ACGDistribution {
+public class ACGLikelihood extends GenericTreeLikelihood {
 
     public Input<Locus> locusInput = new Input<>(
             "locus",
             "Locus associated with alignment to evaluate probability of.",
             Input.Validate.REQUIRED);
-
-    public Input<Alignment> alignmentInput = new Input<>(
-            "alignment",
-            "Used to explicitly specify alignment when none is " +
-                    "directly associated with given locus");
 
     public Input<SiteModelInterface> siteModelInput = new Input<>(
             "siteModel",
@@ -66,6 +59,8 @@ public class ACGLikelihood extends ACGDistribution {
             "nThreads",
             "Number of additional threads to use in calculation.",
             0);
+
+    protected ConversionGraph acg;
 
     protected SiteModel.Base siteModel;
     protected SubstitutionModel.Base substitutionModel;
@@ -86,20 +81,26 @@ public class ACGLikelihood extends ACGDistribution {
      * Memory for transition probabilities.
      */
     double [] probabilities;
-    
+
+    public ACGLikelihood() {
+
+    }
+
     @Override
     public void initAndValidate() throws Exception {
 
-        super.initAndValidate();
-        
-        acg = acgInput.get();
+        if (treeInput.get() instanceof ConversionGraph)
+            acg = (ConversionGraph)treeInput.get();
+        else
+        throw new IllegalArgumentException("Tree input to ACGLikelihood must " +
+                "be of type ConversionGraph.");
 
         locus = locusInput.get();
         if (locus.hasAlignment()) {
             alignment = locus.getAlignment();
         } else {
-            if (alignmentInput.get() != null)
-                alignment = alignmentInput.get();
+            if (dataInput.get() != null)
+                alignment = dataInput.get();
             else
                 throw new IllegalArgumentException("No alignment associated with " +
                         "locus " + locus.getID() + " provided to ACGLikelihood " +
@@ -130,14 +131,14 @@ public class ACGLikelihood extends ACGDistribution {
     }
 
     @Override
-    public double calculateACGLogP() {
+    public double calculateLogP() {
         updatePatterns();
         updateCores();
 
         if (nThreadsInput.get() > 0)
-            return calculateACGLogPThreads();
+            return calculateLogPThreads();
         else
-            return calculateACGLogPNoThreads();
+            return calculateLogPNoThreads();
     }
 
 
@@ -146,7 +147,7 @@ public class ACGLikelihood extends ACGDistribution {
      *
      * @return logP
      */
-    public double calculateACGLogPNoThreads() {
+    public double calculateLogPNoThreads() {
         logP = 0.0;
 
         for (Set<Conversion> convSet : patterns.keySet()) {
@@ -169,7 +170,7 @@ public class ACGLikelihood extends ACGDistribution {
      *
      * @return logP
      */
-    public double calculateACGLogPThreads() {
+    public double calculateLogPThreads() {
         logP = 0.0;
 
         int nRegions = patterns.size();
