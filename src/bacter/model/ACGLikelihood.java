@@ -21,6 +21,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.BeerLikelihoodCore;
 import beast.evolution.likelihood.BeerLikelihoodCore4;
 import beast.evolution.likelihood.GenericTreeLikelihood;
@@ -48,11 +49,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     public Input<Locus> locusInput = new Input<>(
             "locus",
             "Locus associated with alignment to evaluate probability of.",
-            Input.Validate.REQUIRED);
-
-    public Input<SiteModelInterface> siteModelInput = new Input<>(
-            "siteModel",
-            "Site model for evolution of alignment.",
             Input.Validate.REQUIRED);
 
     public Input<Integer> nThreadsInput = new Input<>(
@@ -111,6 +107,11 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
         siteModel = (SiteModel.Base) siteModelInput.get();
         substitutionModel = (SubstitutionModel.Base) siteModel.getSubstitutionModel();
+
+        if (branchRateModelInput.get() != null &&
+                !(branchRateModelInput.get() instanceof StrictClockModel))
+            throw new IllegalArgumentException("ACGLikelihood currently only" +
+                    "supports strict clock models.");
 
         // Initialize patterns
         patterns = new LinkedHashMap<>();
