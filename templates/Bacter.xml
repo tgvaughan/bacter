@@ -177,13 +177,13 @@
 
             <!-- ACG operators -->
 
-            <!--operator id="addRemove.t:$(n)" spec="bacter.operators.AddRemoveConversion" weight="10.0">
+            <operator id="addRemove.t:$(n)" spec="bacter.operators.AddRemoveConversion" weight="10.0">
                 <acg idref="Tree.t:$(n)"/>
                 <delta idref="delta.t:$(n)"/>
                 <populationModel idref="popModel.t:$(n)"/>
             </operator>
 
-            <operator id="scale.t:$(n)" spec="bacter.operators.ACGScaler" weight="1.0"
+            <operator id="ACGscale.t:$(n)" spec="bacter.operators.ACGScaler" weight="1.0"
                 scaleFactor="0.8">
                 <acg idref="Tree.t:$(n)"/>
             </operator>
@@ -212,12 +212,30 @@
             <operator id="CEslide.t:$(n)" spec="bacter.operators.ConvertedEdgeSlide" weight="1.0"
                 acg="@Tree.t:$(n)" scaleBound="0.8" />
 
-            <operator id="CFUniform.t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
+            <operator id="CFuniform.t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
                 rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel.t:$(n)" weight="10"/>
 
             <operator id="CFWB.t:$(n)" spec='bacter.operators.CFWilsonBalding'
                 acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModel.t:$(n)"
-                alpha="0.1" weight="10"/-->
+                alpha="0.1" weight="10"/>
+
+            <operator id="STS.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
+                <operator spec='beast.evolution.operators.SubtreeSlide' weight="5" gaussian="true" size="0.1">
+                    <tree idref="Tree.t:$(n)"/>
+                </operator>
+            </operator>
+
+            <operator id="STXnarrow.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
+                <operator id='narrow' spec='beast.evolution.operators.Exchange' isNarrow='true' weight="10">
+                    <tree idref="Tree.t:$(n)"/>
+                </operator>
+            </operator>
+
+            <operator id="STXwide.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
+                <operator id='wide' spec='beast.evolution.operators.Exchange' isNarrow='false' weight="10">
+                    <tree idref="Tree.t:$(n)"/>
+                </operator>
+            </operator>
 
             <!-- Parameter operators -->
             <operator id='popSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
@@ -251,14 +269,42 @@
                 if="inposterior(delta.t:$(n)) and delta.t:$(n)/estimate=true"/>
 
             <!-- CONNECT: Operators -->
-            <!--connect srcID='addRemove.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(Tree.t:(n)) and Tree.t:$(n)/estimate=true'/-->
             <connect srcID='rhoScaler.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(rho.t:$(n)) and rho.t:$(n)/estimate=true'/>
             <connect srcID='deltaScaler.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(delta.t:$(n)) and delta.t:$(n)/estimate=true'/>
             <connect srcID='popSizeScaler.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+            <connect srcID='addRemove.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='ACGscale.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CRswap.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CRshift.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CRBshift.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='mergeSplit.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='addRemoveDetour.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CEhop.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CEflip.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CEslide.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CFuniform.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CFWB.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='STS.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='STXnarrow.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='STXwide.t:$(n)' targetID='mcmc' inputName='operator'
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 
             <!-- CONNECT: Logs -->
             <connect srcID='rho.t:$(n)' targetID='tracelog' inputName='log'
