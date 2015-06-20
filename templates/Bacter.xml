@@ -24,85 +24,93 @@
             beast.evolution.tree.coalescent.ExponentialGrowth,
             beast.evolution.tree.coalescent.ConstantPopulation,
             beast.evolution.tree.coalescent.Coalescent,
-            beast.core.State.stateNode'
+            beast.core.State.stateNode,
+            bacter.model.ACGCoalescent.populationModel'
             collapsedPlugins ='beast.core.MCMC.logger'
             suppressPlugins = 'beast.core.MCMC.operator,
-                beast.core.MCMC.operatorschedule,
-                beast.evolution.tree.coalescent.Coalescent.treeIntervals,
-                beast.evolution.tree.coalescent.Coalescent.tree,
-                beast.core.MCMC.state,
-                beast.core.MCMC.distribution,
-                beast.core.MCMC.init,
-                beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
-                beast.evolution.speciation.BirthDeathGernhard08Model.tree,
-                beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
-                        beast.evolution.speciation.YuleModel.treeIntervals,
-                        beast.evolution.speciation.YuleModel.useTipDates,
-                        beast.evolution.speciation.YuleModel.tree,
-                beast.evolution.tree.Tree,
-                beast.evolution.tree.Tree.trait,
-                beast.evolution.tree.Tree.taxa,
-                beast.evolution.tree.Tree.taxonset,
-                beast.evolution.tree.RandomTree.trait,
-                beast.evolution.tree.RandomTree.initial,
-                beast.evolution.tree.RandomTree.taxa,
-                beast.evolution.tree.RandomTree.taxonset,
-                beast.evolution.tree.RandomTree.estimate,
-                beast.util.TreeParser.initial,
-                beast.util.TreeParser.taxa,
-                beast.util.TreeParser.taxonset,
-                beast.util.TreeParser.trait,
-                beast.util.TreeParser.estimate,
-                beast.util.ClusterTree.initial,
-                beast.util.ClusterTree.taxa,
-                beast.util.ClusterTree.taxonset,
-                beast.util.ClusterTree.trait,
-                beast.util.ClusterTree.estimate,
-                beast.evolution.substitutionmodel.WAG.rates,
-                beast.evolution.substitutionmodel.WAG.frequencies,
-                beast.evolution.substitutionmodel.JTT.rates,
-                beast.evolution.substitutionmodel.JTT.frequencies,
-                beast.evolution.substitutionmodel.Blosum62.rates,
-                beast.evolution.substitutionmodel.Blosum62.frequencies,
-                beast.evolution.substitutionmodel.Dayhoff.rates,
-                beast.evolution.substitutionmodel.Dayhoff.frequencies,
-                beast.evolution.substitutionmodel.CPREV.rates,
-                beast.evolution.substitutionmodel.CPREV.frequencies,
-                beast.evolution.substitutionmodel.MTREV.rates,
-                beast.evolution.substitutionmodel.MTREV.frequencies,
-                beast.evolution.substitutionmodel.GTR.rates,
-                beast.evolution.substitutionmodel.JukesCantor.frequencies,
+            beast.core.MCMC.operatorschedule,
+            beast.evolution.tree.coalescent.Coalescent.treeIntervals,
+            beast.evolution.tree.coalescent.Coalescent.tree,
+            beast.core.MCMC.state,
+            beast.core.MCMC.distribution,
+            beast.core.MCMC.init,
+            beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
+            beast.evolution.speciation.BirthDeathGernhard08Model.tree,
+            beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
+            beast.evolution.speciation.YuleModel.treeIntervals,
+            beast.evolution.speciation.YuleModel.useTipDates,
+            beast.evolution.speciation.YuleModel.tree,
+            beast.evolution.tree.Tree,
+            beast.evolution.tree.Tree.trait,
+            beast.evolution.tree.Tree.taxa,
+            beast.evolution.tree.Tree.taxonset,
+            beast.evolution.tree.RandomTree.trait,
+            beast.evolution.tree.RandomTree.initial,
+            beast.evolution.tree.RandomTree.taxa,
+            beast.evolution.tree.RandomTree.taxonset,
+            beast.evolution.tree.RandomTree.estimate,
+            beast.util.TreeParser.initial,
+            beast.util.TreeParser.taxa,
+            beast.util.TreeParser.taxonset,
+            beast.util.TreeParser.trait,
+            beast.util.TreeParser.estimate,
+            beast.util.ClusterTree.initial,
+            beast.util.ClusterTree.taxa,
+            beast.util.ClusterTree.taxonset,
+            beast.util.ClusterTree.trait,
+            beast.util.ClusterTree.estimate,
+            beast.evolution.substitutionmodel.WAG.rates,
+            beast.evolution.substitutionmodel.WAG.frequencies,
+            beast.evolution.substitutionmodel.JTT.rates,
+            beast.evolution.substitutionmodel.JTT.frequencies,
+            beast.evolution.substitutionmodel.Blosum62.rates,
+            beast.evolution.substitutionmodel.Blosum62.frequencies,
+            beast.evolution.substitutionmodel.Dayhoff.rates,
+            beast.evolution.substitutionmodel.Dayhoff.frequencies,
+            beast.evolution.substitutionmodel.CPREV.rates,
+            beast.evolution.substitutionmodel.CPREV.frequencies,
+            beast.evolution.substitutionmodel.MTREV.rates,
+            beast.evolution.substitutionmodel.MTREV.frequencies,
+            beast.evolution.substitutionmodel.GTR.rates,
+            beast.evolution.substitutionmodel.JukesCantor.frequencies,
             beast.math.distributions.Prior.x,
             beast.math.distributions.MRCAPrior.tree,
             beast.math.distributions.MRCAPrior.monophyletic,
             beast.math.distributions.MRCAPrior.taxonset,
             beast.evolution.branchratemodel.UCRelaxedClockModel.tree,
             beast.evolution.branchratemodel.UCRelaxedClockModel.rateCategories,
-                        beast.evolution.branchratemodel.UCRelaxedClockModel.distr,
+            beast.evolution.branchratemodel.UCRelaxedClockModel.distr,
             beast.evolution.branchratemodel.RandomLocalClockModel.tree,
             beast.evolution.branchratemodel.RandomLocalClockModel.meanRate,
             beast.evolution.branchratemodel.RandomLocalClockModel.indicators,
             beast.evolution.operators.ScaleOperator.indicator,
-                beast.core.Operator.weight,
+            beast.core.Operator.weight,
             beast.core.Logger.model,
             beast.evolution.tree.coalescent.BayesianSkyline.treeIntervals,
             beast.evolution.tree.coalescent.BayesianSkyline.groupSizes,
             beast.evolution.tree.coalescent.BayesianSkyline.popSizes,
-            beast.evolution.speciation.YuleModel.originHeight'>
+            beast.evolution.speciation.YuleModel.originHeight,
+            bacter.model.ACGCoalescent.acg'>
 
         <panel spec='BeautiPanelConfig' panelname="Partitions" tiptext="Data Partitions"
             path='distribution/distribution[id="likelihood"]/distribution/data'
             hasPartitions="none" icon='2220.png.x' forceExpansion='FALSE'
             type='beast.evolution.alignment.Alignment' />
 
-		<panel spec='BeautiPanelConfig' panelname="Tip Dates" tiptext="Allows to specify data that a taxon was sampled"
+        <panel spec='BeautiPanelConfig' panelname="Tip Dates"
+            tiptext="Allows to specify data that a taxon was sampled"
             path='tree'
             hasPartitions="Tree" icon='2.png.x' forceExpansion='TRUE'
             isVisible='true' />
 
-        <panel spec='BeautiPanelConfig' panelname="Site Model" tiptext="Site model and substitution model specifications"
+        <panel spec='BeautiPanelConfig' panelname="Site Model"
+            tiptext="Site model and substitution model specifications"
             path='siteModel'
             hasPartitions="SiteModel" icon='3.png.x' forceExpansion='TRUE' />
+
+        <panel spec='BeautiPanelConfig' panelname="Clock Model" tiptext="Clock model"
+            path='branchRateModel'
+            hasPartitions="ClockModel" icon='4.png.x' forceExpansion='TRUE' />
 
         <panel spec='BeautiPanelConfig' panelname="Priors" tiptext="Other priors"
             path='distribution/distribution[id="prior"]/distribution'
@@ -120,7 +128,8 @@
 
 		<alignmentProvider id="Add Alignment" spec='BeautiAlignmentProvider' template='@StandardPartitionTemplate'/>
 
-        <partitiontemplate id='StandardPartitionTemplate' spec='BeautiSubTemplate' class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
+        <partitiontemplate id='StandardPartitionTemplate' spec='BeautiSubTemplate'
+            class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
             <plugin spec="bacter.Locus" id="locus.$(n)" alignment="@data"/>
