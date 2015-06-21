@@ -88,8 +88,8 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         if (treeInput.get() instanceof ConversionGraph)
             acg = (ConversionGraph)treeInput.get();
         else
-        throw new IllegalArgumentException("Tree input to ACGLikelihood must " +
-                "be of type ConversionGraph.");
+            throw new IllegalArgumentException("'Tree' input to ACGLikelihood must " +
+                    "be of type ConversionGraph.");
 
         locus = locusInput.get();
         if (locus.hasAlignment()) {
