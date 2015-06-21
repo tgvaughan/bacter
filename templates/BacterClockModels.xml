@@ -1,0 +1,47 @@
+
+<beast version='2.0'
+       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+
+    <!-- Clock models -->
+    <mergewith point='bacterClockModelTemplates'>
+
+        <!-- Strict clock -->
+        <subtemplate id='StrictClock' class='beast.evolution.branchratemodel.StrictClockModel'
+                     mainid='StrictClock.c:$(n)'>
+            <![CDATA[
+                <branchRateModel spec='StrictClockModel' id='StrictClock.c:$(n)'>
+                    <clock.rate id='clockRate.c:$(n)' spec='parameter.RealParameter' value='1.0' estimate='false'/>
+                </branchRateModel>
+
+				<operator id='StrictClockRateScaler.c:$(n)' spec='ScaleOperator' scaleFactor="0.75" weight="3" parameter='@clockRate.c:$(n)'/>
+
+				<upDownOperator id='strictClockUpDownOperator.c:$(n)' spec='UpDownOperator' scaleFactor="0.75" weight="3">
+					<up idref="clockRate.c:$(n)"/>
+					<down idref="Tree.t:$(n)"/>
+				</upDownOperator>
+
+		        <prior id='ClockPrior.c:$(n)' x='@clockRate.c:$(n)'><distr spec="beast.math.distributions.Uniform" upper='Infinity'/></prior>
+]]>
+            <connect srcID='clockRate.c:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+
+            <connect srcID='clockRate.c:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='ClockPrior.c:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>substitution rate of
+                partition c:$(n)
+            </connect>
+            <connect srcID='StrictClockRateScaler.c:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'>Scale substitution rate of
+                partition c:$(n)
+            </connect>
+            <connect srcID='strictClockUpDownOperator.c:$(n)' targetID='mcmc' inputName='operator'
+                     if='nooperator(FixMeanRatesOperator) and inlikelihood(clockRate.c:$(n)) and inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and clockRate.c:$(n)/estimate=true'>
+                Scale up substitution rate c:$(n) and scale down tree t:($n)
+            </connect>
+        </subtemplate>
+    </mergewith>
+
+</beast>
+
+

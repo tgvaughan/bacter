@@ -324,7 +324,7 @@
         </partitiontemplate>
 
 		<mergepoint id='substModelTemplates'/>
-		<mergepoint id='clockModelTemplates'/>
+		<mergepoint id='bacterClockModelTemplates'/>
 		<mergepoint id='parametricDistributions'/>
     </beauticonfig>
 
