@@ -259,17 +259,18 @@
 			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
 
             <!-- CONNECT: Priors -->
-            <connect srcID='treePrior.t:$(n)' targetID='prior' inputName='distribution' if="isInitializing"/>
+            <connect srcID='treePrior.t:$(n)' targetID='prior' inputName='distribution'
+                     if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
             <connect srcID='rhoPrior.t:$(n)' targetID='prior' inputName='distribution'
-                if="inposterior(Tree.t:$(n))"/>
+                if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
             <connect srcID='deltaPrior.t:$(n)' targetID='prior' inputName='distribution'
-                if="inposterior(Tree.t:$(n))"/>
+                if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
             <connect srcID='popSizePrior.t:$(n)' targetID='prior' inputName='distribution'
-                if="inposterior(Tree.t:$(n))"/>
+                if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
 
             <!-- CONNECT: State -->
             <connect srcID='Tree.t:$(n)' targetID='state' inputName='stateNode'
-                if='inposterior(Tree.t:$(n))'/>
+                if='inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='popSize.t:$(n)' targetID='state' inputName='stateNode'
                 if="inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true"/>
             <connect srcID='rho.t:$(n)' targetID='state' inputName='stateNode'
