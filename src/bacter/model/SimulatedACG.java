@@ -27,7 +27,6 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
-import com.google.common.collect.Lists;
 import feast.nexus.NexusBlock;
 import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
@@ -157,7 +156,7 @@ public class SimulatedACG extends ConversionGraph {
     private void simulateClonalFrame() {
 
         // Initialize leaf nodes
-        List<Node> leafNodes = Lists.newArrayList();
+        List<Node> leafNodes = new ArrayList<>();
         for (int i=0; i<m_taxonset.get().getTaxonCount(); i++) {
             Node leaf = new Node();
             leaf.setNr(i);
@@ -172,18 +171,18 @@ public class SimulatedACG extends ConversionGraph {
         }
         
         // Create and sort list of inactive nodes
-        List<Node> inactiveNodes = Lists.newArrayList(leafNodes);
+        List<Node> inactiveNodes = new ArrayList<>(leafNodes);
         Collections.sort(inactiveNodes, (Node n1, Node n2) -> {
             if (n1.getHeight()<n2.getHeight())
                 return -1;
             
-            if (n2.getHeight()>n1.getHeight())
+            if (n1.getHeight()>n2.getHeight())
                 return 1;
             
             return 0;
         });
         
-        List<Node> activeNodes = Lists.newArrayList();
+        List<Node> activeNodes = new ArrayList<>();
         
         double tau = 0.0;
         int nextNr = leafNodes.size();
