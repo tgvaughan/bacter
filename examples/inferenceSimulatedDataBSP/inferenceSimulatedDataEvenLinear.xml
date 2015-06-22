@@ -43,9 +43,8 @@
 
     <input spec='SimulatedACG' id='acgTruth'
         rho="0.05" delta="500.0"
-        outputFileName="simulated_acg.nexus">
-        <alignment id="dummyAlignment" spec="RandomizedAlignment"
-                   taxonSet="@taxonSet" sequenceLength="10000"/>
+        outputFileName="simulated_acg.nexus" taxonset="@taxonSet">
+        <locus spec="Locus" id="locus" siteCount="10000"/>
         <populationModel spec='ExponentialGrowth'>
             <popSize spec="RealParameter" value="1.0"/>
             <growthRate spec="RealParameter" value="1000.0"/>
@@ -65,7 +64,7 @@
     <run spec="MCMC" id="mcmc" chainLength="100000000">
         <state>
             <stateNode id="acg" spec='SimulatedACG'
-                alignment="@alignment" rho="0" delta="500.0">
+                locus="@locus" taxonset="@taxonSet" rho="0" delta="500.0">
                 <populationModel spec='ConstantPopulation' popSize="5.0"/>
             </stateNode>
 
@@ -83,7 +82,7 @@
             <!-- ACG likelihood --> 
 
             <distribution spec='ACGLikelihood' id="acgLikelihood"
-                acg="@acg" data="@alignment">
+                tree="@acg" locus="@locus" data="@alignment">
                 <siteModel spec='SiteModel' mutationRate="@mutationRate">
                     <substModel spec='JukesCantor'/>
                 </siteModel>
@@ -93,7 +92,7 @@
 
             <distribution spec='ACGCoalescent' id="acgPrior"
                 rho="@rho" delta="@delta">
-                <acg idref="acg"/>
+                <tree idref="acg"/>
                 <populationModel spec='SkylinePopulationFunction' id="popModel"
                                  acg="@acg"
                                  popSizes="@popSizes"
