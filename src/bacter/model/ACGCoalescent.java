@@ -25,6 +25,7 @@ import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
+import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.coalescent.PopulationFunction;
 
 import java.util.List;
@@ -34,10 +35,10 @@ import java.util.Random;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Appoximation to the coalescent with gene conversion.")
-public class ACGCoalescent extends Distribution {
+public class ACGCoalescent extends TreeDistribution {
 
-    public Input<ConversionGraph> acgInput = new Input<>(
-            "acg", "Conversion graph.", Input.Validate.REQUIRED);
+    //public Input<ConversionGraph> acgInput = new Input<>(
+    //        "acg", "Conversion graph.", Input.Validate.REQUIRED);
     
     public Input<PopulationFunction> popFuncInput = new Input<>(
             "populationModel", "Population model.", Input.Validate.REQUIRED);
@@ -57,11 +58,21 @@ public class ACGCoalescent extends Distribution {
     ConversionGraph acg;
     PopulationFunction popFunc;
 
-    public ACGCoalescent() { }
+    public ACGCoalescent() {
+        treeInput.setRule(Input.Validate.REQUIRED);
+    }
     
     @Override
     public void initAndValidate() throws Exception {
-        acg = acgInput.get();
+        if (!(treeInput.get() instanceof ConversionGraph))
+            throw new IllegalArgumentException("Tree input to ACGCoalescent " +
+                    "must specify a ConversionGraph.");
+
+        if (treeIntervalsInput.get() != null)
+            throw new IllegalArgumentException("ACGCoalescent does not accept " +
+                    "the treeIntervals input.");
+
+        acg = (ConversionGraph)treeInput.get();
         popFunc = popFuncInput.get();
     }
     

@@ -29,26 +29,13 @@
             collapsedPlugins ='beast.core.MCMC.logger'
             suppressPlugins = 'beast.core.MCMC.operator,
             beast.core.MCMC.operatorschedule,
-            beast.evolution.tree.coalescent.Coalescent.treeIntervals,
-            beast.evolution.tree.coalescent.Coalescent.tree,
             beast.core.MCMC.state,
             beast.core.MCMC.distribution,
             beast.core.MCMC.init,
-            beast.evolution.speciation.BirthDeathGernhard08Model.treeIntervals,
-            beast.evolution.speciation.BirthDeathGernhard08Model.tree,
-            beast.evolution.speciation.BirthDeathGernhard08Model.sampleProbability,
-            beast.evolution.speciation.YuleModel.treeIntervals,
-            beast.evolution.speciation.YuleModel.useTipDates,
-            beast.evolution.speciation.YuleModel.tree,
             beast.evolution.tree.Tree,
             beast.evolution.tree.Tree.trait,
             beast.evolution.tree.Tree.taxa,
             beast.evolution.tree.Tree.taxonset,
-            beast.evolution.tree.RandomTree.trait,
-            beast.evolution.tree.RandomTree.initial,
-            beast.evolution.tree.RandomTree.taxa,
-            beast.evolution.tree.RandomTree.taxonset,
-            beast.evolution.tree.RandomTree.estimate,
             beast.util.TreeParser.initial,
             beast.util.TreeParser.taxa,
             beast.util.TreeParser.taxonset,
@@ -77,19 +64,9 @@
             beast.math.distributions.MRCAPrior.tree,
             beast.math.distributions.MRCAPrior.monophyletic,
             beast.math.distributions.MRCAPrior.taxonset,
-            beast.evolution.branchratemodel.UCRelaxedClockModel.tree,
-            beast.evolution.branchratemodel.UCRelaxedClockModel.rateCategories,
-            beast.evolution.branchratemodel.UCRelaxedClockModel.distr,
-            beast.evolution.branchratemodel.RandomLocalClockModel.tree,
-            beast.evolution.branchratemodel.RandomLocalClockModel.meanRate,
-            beast.evolution.branchratemodel.RandomLocalClockModel.indicators,
             beast.evolution.operators.ScaleOperator.indicator,
             beast.core.Operator.weight,
             beast.core.Logger.model,
-            beast.evolution.tree.coalescent.BayesianSkyline.treeIntervals,
-            beast.evolution.tree.coalescent.BayesianSkyline.groupSizes,
-            beast.evolution.tree.coalescent.BayesianSkyline.popSizes,
-            beast.evolution.speciation.YuleModel.originHeight,
             bacter.model.ACGCoalescent.acg'>
 
         <panel spec='BeautiPanelConfig' panelname="Partitions" tiptext="Data Partitions"
@@ -155,8 +132,8 @@
 
             <!-- ACG Coalescent -->
 
-            <plugin spec='bacter.model.ACGCoalescent' id="treePrior.t:$(n)">
-                <acg idref="Tree.t:$(n)"/>
+            <plugin spec='bacter.model.ACGCoalescent' id="CoalescentConstant.t:$(n)">
+                <tree idref="Tree.t:$(n)"/>
                 <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.001"/>
                 <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000"/>
                 <populationModel id="popModel.t:$(n)" spec="beast.evolution.tree.coalescent.ConstantPopulation">
@@ -259,12 +236,12 @@
 			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
 
             <!-- CONNECT: Priors -->
-            <connect srcID='treePrior.t:$(n)' targetID='prior' inputName='distribution'
-                     if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
             <connect srcID='rhoPrior.t:$(n)' targetID='prior' inputName='distribution'
                 if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
             <connect srcID='deltaPrior.t:$(n)' targetID='prior' inputName='distribution'
                 if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
+            <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
+                     if="isInitializing"/>
             <connect srcID='popSizePrior.t:$(n)' targetID='prior' inputName='distribution'
                 if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
 
@@ -275,20 +252,19 @@
             <!-- CONNECT: State -->
             <connect srcID='Tree.t:$(n)' targetID='state' inputName='stateNode'
                 if='inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='popSize.t:$(n)' targetID='state' inputName='stateNode'
-                if="inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true"/>
             <connect srcID='rho.t:$(n)' targetID='state' inputName='stateNode'
                 if="inposterior(rho.t:$(n)) and rho.t:$(n)/estimate=true"/>
             <connect srcID='delta.t:$(n)' targetID='state' inputName='stateNode'
                 if="inposterior(delta.t:$(n)) and delta.t:$(n)/estimate=true"/>
+            <connect srcID='popSize.t:$(n)' targetID='state' inputName='stateNode'
+                     if="inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true"/>
 
             <!-- CONNECT: Operators -->
             <connect srcID='rhoScaler.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(rho.t:$(n)) and rho.t:$(n)/estimate=true'/>
             <connect srcID='deltaScaler.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(delta.t:$(n)) and delta.t:$(n)/estimate=true'/>
-            <connect srcID='popSizeScaler.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+
             <connect srcID='addRemove.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='ACGscale.t:$(n)' targetID='mcmc' inputName='operator'
@@ -320,6 +296,9 @@
             <connect srcID='STXwide.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 
+            <connect srcID='popSizeScaler.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+
             <!-- CONNECT: Logs -->
             <connect srcID='rho.t:$(n)' targetID='tracelog' inputName='log'
                 if="inposterior(Tree.t:$(n)) and rho.t:$(n)/estimate=true"/>
@@ -331,6 +310,7 @@
 		<mergepoint id='substModelTemplates'/>
 		<mergepoint id='bacterClockModelTemplates'/>
 		<mergepoint id='parametricDistributions'/>
+        <mergepoint id='ACGPriorTemplates'/>
     </beauticonfig>
 
 
