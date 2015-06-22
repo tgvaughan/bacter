@@ -136,7 +136,7 @@ public class AddRemoveConversionTest extends TestBase {
 
         ACGCoalescent coal = new ACGCoalescent();
         coal.initByName(
-            "acg", acg,
+            "tree", acg,
             "populationModel", popFunc,
             "rho", rho,
             "delta", delta);
