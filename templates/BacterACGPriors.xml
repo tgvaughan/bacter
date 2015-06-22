@@ -1,37 +1,6 @@
 <beast version='2.0'
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
-
-    <!--mergewith point="operatorMergePoint">
-        <fragment id='popModelDependentACGOperators' spec="beast.app.beauti.Fragment">
-            <![CDATA[
-            <operator id="addRemove_$(model).t:$(n)" spec="bacter.operators.AddRemoveConversion" weight="10.0">
-                <acg idref="Tree.t:$(n)"/>
-                <delta idref="delta.t:$(n)"/>
-                <populationModel idref="$(model).t:$(n)"/>
-            </operator>
-
-            <operator id="addRemoveDetour_$(model).t:$(n)" spec="bacter.operators.AddRemoveDetour" weight="10.0"
-                acg="@Tree.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"/>
-
-            <operator id="CFuniform_$(model).t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
-                rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)" weight="10"/>
-
-            <operator id="CFWB_$(model).t:$(n)" spec='bacter.operators.CFWilsonBalding'
-                acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
-                alpha="0.1" weight="10"/>
-            ]]>
-            <connect srcID='addRemove_$(model).t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='addRemoveDetour_$(model).t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='CFuniform_$(model).t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='CFWB_$(model).t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
-        </fragment>
-    </mergewith-->
-
     <mergewith point='ACGPriorTemplates'>
 
         <!-- Coalescent for Constant population -->
@@ -57,9 +26,7 @@
             <plate fragment="popModelDependentACGOperators" var="model" range="popModelConstant"/>
 
             <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with
-                constant rate on tree t:$(n)
-            </connect>
+                     if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='popSizePrior.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'>
                 Coalescent population size parameter of partition t:$(n)
@@ -108,9 +75,7 @@
             <plate fragment="popModelDependentACGOperators" var="model" range="popModelExponentialGrowth"/>
 
             <connect srcID='CoalescentExponential.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with
-                exponential rate on tree t:$(n)
-            </connect>
+                     if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='popFinalSizePrior.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popFinalSize.t:$(n)) and popFinalSize.t:$(n)/estimate=true'>
                 Coalescent population size parameter of partition t:$(n)
@@ -138,6 +103,56 @@
                      if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popFinalSize.t:$(n)) and popFinalSize.t:$(n)/estimate=true'/>
             <connect srcID='popGrowthRate.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popGrowthRate.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'/>
+        </subtemplate>
+
+        <!-- Coalescent  with Piecewise Constant population -->
+        <subtemplate id='CoalescentBayesianSkyline' class='bacter.model.ACGCoalescent'
+                     mainid='BSP.t:$(n)'>
+            <![CDATA[
+            <plugin spec='bacter.model.ACGCoalescent' id="BSP.t:$(n)">
+                <tree idref="Tree.t:$(n)"/>
+                <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.001"/>
+                <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000"/>
+                <populationModel spec='bacter.model.pop.SkylinePopulationFunction' id="popModelBSP.t:$(n)"
+                                 acg="@Tree.t:$(n)"
+                                 nGridPoints="10"
+                                 piecewiseLinear="true">
+                    <popSizes id="popSizes.t:$(n)" spec='parameter.RealParameter' value="1.0" dimension="5"/>
+                    <groupSizes id="groupSizes.t:$(n)" spec='parameter.IntegerParameter' value="0"/>
+                </populationModel>
+            </plugin>
+
+            <distribution id="popSizesPrior.t:$(n)"
+                spec="beast.math.distributions.MarkovChainDistribution"
+                jeffreys="true" parameter="@popSizes.t:$(n)"/>
+
+            <operator id="popSizesScaler.t:$(n)" spec="ScaleOperator" weight="1.0"
+                scaleFactor="0.8" parameter="@popSizes.t:$(n)"/>
+
+            <operator id="groupSizesExchanger.t:$(n)" spec='DeltaExchangeOperator' weight="1"
+                delta="1" integer="true"
+                intparameter="@groupSizes.t:$(n)"/>
+            ]]>
+
+            <plate fragment="popModelDependentACGOperators" var="model" range="popModelBSP"/>
+
+            <connect srcID='BSP.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(BSP.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='popSizesPrior.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(BSP.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+
+            <connect srcID='popSizes.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(BSP.t:$(n)) and inposterior(popSizes.t:$(n))  and popSizes.t:$(n)/estimate=true'/>
+            <connect srcID='groupSizes.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(BSP.t:$(n)) and inposterior(groupSizes.t:$(n)) and groupSizes.t:$(n)/estimate=true'/>
+
+            <connect srcID='popSizesScaler.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(BSP.t:$(n)) and inposterior(popSizes.t:$(n)) and popSizes.t:$(n)/estimate=true'/>
+            <connect srcID='groupSizesExchanger.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(BSP.t:$(n)) and inposterior(groupSizes.t:$(n)) and groupSizes.t:$(n)/estimate=true'/>
+
+            <connect srcID='popModelBSP.t:$(n)' targetID='tracelog' inputName='log'
+                     if='inposterior(BSP.t:$(n)) and inposterior(popSizes.t:$(n)) and popSizes.t:$(n)/estimate=true'/>
         </subtemplate>
 
     </mergewith>
