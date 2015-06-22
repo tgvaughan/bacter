@@ -2,8 +2,8 @@
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
 
-    <mergewith point="popModelDependentOperators">
-        <fragment id='PopModelDependentACGOperators' spec="beast.app.beauti.Fragment">
+    <mergewith point="operatorMergePoint">
+        <fragment id='popModelDependentACGOperators' spec="beast.app.beauti.Fragment">
             <![CDATA[
             <operator id="addRemove_$(model).t:$(n)" spec="bacter.operators.AddRemoveConversion" weight="10.0">
                 <acg idref="Tree.t:$(n)"/>
@@ -22,13 +22,13 @@
                 alpha="0.1" weight="10"/>
             ]]>
             <connect srcID='addRemove_$(model).t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
+                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='addRemoveDetour_$(model).t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'>Scales root node for tree t:$(n)</connect>
-            <connect srcID='CFUniform_$(model).t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'>Draws new internal node heights uniformally for tree t:$(n)</connect>
+                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID='CFuniform_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='CFWB_$(model).t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'>Performs subtree slide rearrangement of tree t:$(n)</connect>
+                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
         </fragment>
     </mergewith>
 
@@ -54,7 +54,7 @@
             <operator id='popSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
                 weight="1" parameter="@popSize.t:$(n)"/>
             ]]>
-            <plate fragment="PopModelDependentACGOperators" var="model" range="popModelConstant"/>
+            <plate fragment="popModelDependentACGOperators" var="model" range="popModelConstant"/>
 
             <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with
@@ -108,7 +108,7 @@
             <operator id='popGrowthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
                 weight="1" parameter="@popGrowthRate.t:$(n)"/>
             ]]>
-            <plate fragment="PopModelDependentACGOperators" var="model" range="popModelExponentialGrowth"/>
+            <plate fragment="popModelDependentACGOperators" var="model" range="popModelExponentialGrowth"/>
 
             <connect srcID='CoalescentExponential.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with
