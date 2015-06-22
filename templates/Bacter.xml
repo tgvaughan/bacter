@@ -163,22 +163,6 @@
 
             <!-- ACG operators -->
 
-            <operator id="addRemove_popModelConstant.t:$(n)" spec="bacter.operators.AddRemoveConversion" weight="10.0">
-                <acg idref="Tree.t:$(n)"/>
-                <delta idref="delta.t:$(n)"/>
-                <populationModel idref="popModelConstant.t:$(n)"/>
-            </operator>
-
-            <operator id="addRemoveDetour_popModelConstant.t:$(n)" spec="bacter.operators.AddRemoveDetour" weight="10.0"
-                acg="@Tree.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModelConstant.t:$(n)"/>
-
-            <operator id="CFuniform_popModelConstant.t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
-                rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModelConstant.t:$(n)" weight="10"/>
-
-            <operator id="CFWB_popModelConstant.t:$(n)" spec='bacter.operators.CFWilsonBalding'
-                acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@popModelConstant.t:$(n)"
-                alpha="0.1" weight="10"/>
-
             <operator id="ACGscale.t:$(n)" spec="bacter.operators.ACGScaler" weight="1.0"
                 scaleFactor="0.8">
                 <acg idref="Tree.t:$(n)"/>
@@ -232,6 +216,8 @@
                 weight="1" parameter="@delta.t:$(n)"/>
 
 ]]>
+            <plate fragment="popModelDependentACGOperators" var="model" range="popModelConstant"/>
+
             <connect srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution' if="isInitializing"/>
 			<connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
 
@@ -265,15 +251,6 @@
             <connect srcID='deltaScaler.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(delta.t:$(n)) and delta.t:$(n)/estimate=true'/>
 
-            <connect srcID='addRemove_popModelConstant.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(popModelConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='addRemoveDetour_popModelConstant.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(popModelConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='CFuniform_popModelConstant.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(popModelConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='CFWB_popModelConstant.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(popModelConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-
             <connect srcID='ACGscale.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='CRswap.t:$(n)' targetID='mcmc' inputName='operator'
@@ -306,6 +283,9 @@
             <connect srcID='delta.t:$(n)' targetID='tracelog' inputName='log'
                 if="inposterior(Tree.t:$(n)) and delta.t:$(n)/estimate=true"/>
 
+            <connect srcID='popSize.t:$(n)' targetID='tracelog' inputName='log'
+                     if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+
         </partitiontemplate>
 
 		<mergepoint id='substModelTemplates'/>
@@ -314,7 +294,34 @@
         <mergepoint id='ACGPriorTemplates'/>
     </beauticonfig>
 
-    <mergepoint id="operatorMergePoint"/>
+    <!--mergepoint id="operatorMergePoint"/-->
+    <fragment id='popModelDependentACGOperators' spec="beast.app.beauti.Fragment">
+        <![CDATA[
+            <operator id="addRemove_$(model).t:$(n)" spec="bacter.operators.AddRemoveConversion" weight="10.0">
+                <acg idref="Tree.t:$(n)"/>
+                <delta idref="delta.t:$(n)"/>
+                <populationModel idref="$(model).t:$(n)"/>
+            </operator>
+
+            <operator id="addRemoveDetour_$(model).t:$(n)" spec="bacter.operators.AddRemoveDetour" weight="10.0"
+                acg="@Tree.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"/>
+
+            <operator id="CFuniform_$(model).t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
+                rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)" weight="10"/>
+
+            <operator id="CFWB_$(model).t:$(n)" spec='bacter.operators.CFWilsonBalding'
+                acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
+                alpha="0.1" weight="10"/>
+            ]]>
+        <connect srcID='addRemove_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                 if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+        <connect srcID='addRemoveDetour_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                 if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+        <connect srcID='CFuniform_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                 if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+        <connect srcID='CFWB_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                 if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+    </fragment>
 
 <!--
 <operator spec='DeltaExchangeOperator' id='FixMeanRatesOperator' weight='2' delta='0.75'/>

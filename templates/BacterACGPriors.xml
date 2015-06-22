@@ -2,7 +2,7 @@
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
 
-    <mergewith point="operatorMergePoint">
+    <!--mergewith point="operatorMergePoint">
         <fragment id='popModelDependentACGOperators' spec="beast.app.beauti.Fragment">
             <![CDATA[
             <operator id="addRemove_$(model).t:$(n)" spec="bacter.operators.AddRemoveConversion" weight="10.0">
@@ -30,7 +30,7 @@
             <connect srcID='CFWB_$(model).t:$(n)' targetID='mcmc' inputName='operator'
                      if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
         </fragment>
-    </mergewith>
+    </mergewith-->
 
     <mergewith point='ACGPriorTemplates'>
 
@@ -75,9 +75,6 @@
 
             <connect srcID='popSize.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
-
-            <connect srcID='CoalescentConstant.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
         </subtemplate>
 
         <!-- Coalescent for Exponential population -->
@@ -137,8 +134,6 @@
                 Scale growth rate of Coalescent prior of tree t:$(n)
             </connect>
 
-            <connect srcID='CoalescentExponential.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='popFinalSize.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popFinalSize.t:$(n)) and popFinalSize.t:$(n)/estimate=true'/>
             <connect srcID='popGrowthRate.t:$(n)' targetID='tracelog' inputName='log'
