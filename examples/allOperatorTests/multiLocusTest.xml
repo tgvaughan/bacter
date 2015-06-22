@@ -47,7 +47,7 @@
             <distribution spec='ACGCoalescent' id="acgPrior">
                 <rho spec='RealParameter' value="0.0005" id="rho" estimate="false"/>
                 <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
-                <acg idref="acg"/>
+                <tree idref="acg"/>
                 <populationModel idref="popFunc"/>
             </distribution>
         </distribution>
@@ -111,17 +111,8 @@
             <log spec='TreeHeightLogger' tree="@acg"/>
         </logger>
 
-        <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
+        <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
             <log idref="acg"/>
-        </logger>
-
-        <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
-            <log spec="ClonalFrameLogger" acg="@acg"/>
-        </logger>
-
-        <logger logEvery="1000" fileName="$(filebase).converted">
-            <log idref="posterior"/>
-            <log spec="ConvertedRegionLogger" acg="@acg"/>
         </logger>
 
         <logger logEvery="10000" fileName="$(filebase).stats">
