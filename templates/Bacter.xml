@@ -215,6 +215,14 @@
             <operator id='deltaScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
                 weight="1" parameter="@delta.t:$(n)"/>
 
+            <!-- ACG logger -->
+            <plugin id='ACGlogger.t:$(n)' spec='beast.core.Logger' logEvery='10000'
+                fileName='$(filebase).$(tree).trees' mode='tree'
+                log='@Tree.t:$(n)'/>
+
+            <plugin id='ACGStatsLog.t:$(n)'
+                spec='bacter.util.ConversionGraphStatsLogger'
+                acg='@Tree.t:$(n)'/>
 ]]>
             <plate fragment="popModelDependentACGOperators" var="model" range="popModelConstant"/>
 
@@ -223,13 +231,13 @@
 
             <!-- CONNECT: Priors -->
             <connect srcID='rhoPrior.t:$(n)' targetID='prior' inputName='distribution'
-                if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
+                if="inlikelihood(Tree.t:$(n)) and rho.t:$(n)/estimate=true"/>
             <connect srcID='deltaPrior.t:$(n)' targetID='prior' inputName='distribution'
-                if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
+                if="inlikelihood(Tree.t:$(n)) and delta.t:$(n)/estimate=true"/>
             <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
                      if="isInitializing"/>
             <connect srcID='popSizePrior.t:$(n)' targetID='prior' inputName='distribution'
-                if="inlikelihood(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
+                if="inlikelihood(ConstantCoalescent.t:$(n)) and Tree.t:$(n)/estimate=true"/>
 
             <!-- Ensure locus is present in tree -->
             <connect srcID="locus.$(n)" targetID="Tree.t:$(n)" inputName="locus"
@@ -243,7 +251,7 @@
             <connect srcID='delta.t:$(n)' targetID='state' inputName='stateNode'
                 if="inposterior(delta.t:$(n)) and delta.t:$(n)/estimate=true"/>
             <connect srcID='popSize.t:$(n)' targetID='state' inputName='stateNode'
-                     if="inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true"/>
+                     if="inposterior(ConstantCoalescent.t:$(n)) and popSize.t:$(n)/estimate=true"/>
 
             <!-- CONNECT: Operators -->
             <connect srcID='rhoScaler.t:$(n)' targetID='mcmc' inputName='operator'
@@ -278,13 +286,17 @@
                      if='inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
 
             <!-- CONNECT: Logs -->
+            <connect srcID="ACGlogger.t:$(n)" targetID="mcmc" inputName="logger"
+                     if="inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
+            <connect srcID="ACGStatsLog.t:$(n)" targetID="tracelog" inputName="log"
+                     if="inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true"/>
             <connect srcID='rho.t:$(n)' targetID='tracelog' inputName='log'
                 if="inposterior(Tree.t:$(n)) and rho.t:$(n)/estimate=true"/>
             <connect srcID='delta.t:$(n)' targetID='tracelog' inputName='log'
                 if="inposterior(Tree.t:$(n)) and delta.t:$(n)/estimate=true"/>
 
             <connect srcID='popSize.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+                     if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'/>
 
         </partitiontemplate>
 

@@ -28,20 +28,20 @@
             <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='popSizePrior.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'>
+                     if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'>
                 Coalescent population size parameter of partition t:$(n)
             </connect>
 
             <connect srcID='popSize.t:$(n)' targetID='state' inputName='stateNode'
-                     if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+                     if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'/>
 
             <connect srcID='popSizeScaler.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'>
+                     if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'>
                 Scale population size of Coalescent prior of tree t:$(n)
             </connect>
 
             <connect srcID='popSize.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+                     if='inposterior(CoalescentConstant.t:$(n)) and popSize.t:$(n)/estimate=true'/>
         </subtemplate>
 
         <!-- Coalescent for Exponential population -->
@@ -77,32 +77,32 @@
             <connect srcID='CoalescentExponential.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='popFinalSizePrior.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popFinalSize.t:$(n)) and popFinalSize.t:$(n)/estimate=true'>
+                     if='inposterior(CoalescentExponential.t:$(n)) and popFinalSize.t:$(n)/estimate=true'>
                 Coalescent population size parameter of partition t:$(n)
             </connect>
             <connect srcID='popGrowthRatePrior.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popGrowthRate.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'>
+                     if='inposterior(CoalescentExponential.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'>
                 Coalescent growth rate of partition t:$(n)
             </connect>
 
             <connect srcID='popFinalSize.t:$(n)' targetID='state' inputName='stateNode'
-                     if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popFinalSize.t:$(n))  and popFinalSize.t:$(n)/estimate=true'/>
+                     if='inposterior(CoalescentExponential.t:$(n)) and popFinalSize.t:$(n)/estimate=true'/>
             <connect srcID='popGrowthRate.t:$(n)' targetID='state' inputName='stateNode'
-                     if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popGrowthRate.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'/>
+                     if='inposterior(CoalescentExponential.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'/>
 
             <connect srcID='popFinalSizeScaler.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popFinalSize.t:$(n))  and popFinalSize.t:$(n)/estimate=true'>
+                     if='inposterior(CoalescentExponential.t:$(n)) and popFinalSize.t:$(n)/estimate=true'>
                 Scale population size of Coalescent prior of tree t:$(n)
             </connect>
             <connect srcID='popGrowthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popGrowthRate.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'>
+                     if='inposterior(CoalescentExponential.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'>
                 Scale growth rate of Coalescent prior of tree t:$(n)
             </connect>
 
             <connect srcID='popFinalSize.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popFinalSize.t:$(n)) and popFinalSize.t:$(n)/estimate=true'/>
+                     if='inposterior(CoalescentExponential.t:$(n)) and popFinalSize.t:$(n)/estimate=true'/>
             <connect srcID='popGrowthRate.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(CoalescentExponential.t:$(n)) and inposterior(popGrowthRate.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'/>
+                     if='inposterior(CoalescentExponential.t:$(n)) and popGrowthRate.t:$(n)/estimate=true'/>
         </subtemplate>
 
         <!-- Coalescent  with Piecewise Constant population -->
@@ -142,17 +142,17 @@
                      if='inposterior(BSP.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 
             <connect srcID='popSizes.t:$(n)' targetID='state' inputName='stateNode'
-                     if='inposterior(BSP.t:$(n)) and inposterior(popSizes.t:$(n))  and popSizes.t:$(n)/estimate=true'/>
+                     if='inposterior(BSP.t:$(n)) and popSizes.t:$(n)/estimate=true'/>
             <connect srcID='groupSizes.t:$(n)' targetID='state' inputName='stateNode'
-                     if='inposterior(BSP.t:$(n)) and inposterior(groupSizes.t:$(n)) and groupSizes.t:$(n)/estimate=true'/>
+                     if='inposterior(BSP.t:$(n)) and groupSizes.t:$(n)/estimate=true'/>
 
             <connect srcID='popSizesScaler.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(BSP.t:$(n)) and inposterior(popSizes.t:$(n)) and popSizes.t:$(n)/estimate=true'/>
+                     if='inposterior(BSP.t:$(n)) and popSizes.t:$(n)/estimate=true'/>
             <connect srcID='groupSizesExchanger.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(BSP.t:$(n)) and inposterior(groupSizes.t:$(n)) and groupSizes.t:$(n)/estimate=true'/>
+                     if='inposterior(BSP.t:$(n)) and groupSizes.t:$(n)/estimate=true'/>
 
             <connect srcID='popModelBSP.t:$(n)' targetID='tracelog' inputName='log'
-                     if='inposterior(BSP.t:$(n)) and inposterior(popSizes.t:$(n)) and popSizes.t:$(n)/estimate=true'/>
+                     if='inposterior(BSP.t:$(n)) and popSizes.t:$(n)/estimate=true'/>
         </subtemplate>
 
     </mergewith>
