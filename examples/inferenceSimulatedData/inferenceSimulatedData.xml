@@ -53,7 +53,7 @@
 
     <input spec='SimulatedAlignment' id='alignment' acg="@acgTruth"
         outputFileName="simulated_alignment.nexus" useNexus="true">
-        <siteModel spec='SiteModel' mutationRate="0.1">
+        <siteModel spec='SiteModel' mutationRate="0.005">
             <substModel spec='JukesCantor'/>
         </siteModel>
     </input>
@@ -69,7 +69,7 @@
             <stateNode id="rho" spec='RealParameter' value="0.0005" />
             <stateNode id="delta" spec='RealParameter' value="1000.0"/>
             <stateNode id="popSize" spec='RealParameter' value="1.0"/>
-            <stateNode id="mutationRate" spec='RealParameter' value="0.1"/>
+            <stateNode id="mutationRate" spec='RealParameter' value="0.005"/>
         </state>
 
         <!-- Posterior -->    
@@ -79,7 +79,7 @@
             <!-- ACG likelihood --> 
 
             <distribution spec='ACGLikelihood' id="acgLikelihood"
-                acg="@acg" locus="@locus" alignment="@alignment">
+                tree="@acg" locus="@locus" data="@alignment">
                 <siteModel spec='SiteModel' mutationRate="@mutationRate">
                     <substModel spec='JukesCantor'/>
                 </siteModel>
@@ -89,7 +89,7 @@
 
             <distribution spec='ACGCoalescent' id="acgPrior"
                           rho="@rho" delta="@delta">
-                <acg idref="acg"/>
+                <tree idref="acg"/>
                 <populationModel spec='ConstantPopulation'
                                  popSize='@popSize' id='popModel'/>
             </distribution>
