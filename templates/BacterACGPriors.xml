@@ -1,7 +1,37 @@
 <beast version='2.0'
        namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
 
-       
+
+    <mergewith point="popModelDependentOperators">
+        <fragment id='PopModelDependentACGOperators' spec="beast.app.beauti.Fragment">
+            <![CDATA[
+            <operator id="addRemove_$(model).t:$(n)" spec="bacter.operators.AddRemoveConversion" weight="10.0">
+                <acg idref="Tree.t:$(n)"/>
+                <delta idref="delta.t:$(n)"/>
+                <populationModel idref="$(model).t:$(n)"/>
+            </operator>
+
+            <operator id="addRemoveDetour_$(model).t:$(n)" spec="bacter.operators.AddRemoveDetour" weight="10.0"
+                acg="@Tree.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"/>
+
+            <operator id="CFuniform_$(model).t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
+                rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)" weight="10"/>
+
+            <operator id="CFWB_$(model).t:$(n)" spec='bacter.operators.CFWilsonBalding'
+                acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
+                alpha="0.1" weight="10"/>
+            ]]>
+            <connect srcID='addRemove_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'>Scales all internal nodes for tree t:$(n)</connect>
+            <connect srcID='addRemoveDetour_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'>Scales root node for tree t:$(n)</connect>
+            <connect srcID='CFUniform_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'>Draws new internal node heights uniformally for tree t:$(n)</connect>
+            <connect srcID='CFWB_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'>Performs subtree slide rearrangement of tree t:$(n)</connect>
+        </fragment>
+    </mergewith>
+
     <mergewith point='ACGPriorTemplates'>
 
         <!-- Coalescent for Constant population -->
@@ -12,7 +42,7 @@
                 <tree idref="Tree.t:$(n)"/>
                 <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.001"/>
                 <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000"/>
-                <populationModel id="popModel.t:$(n)" spec="beast.evolution.tree.coalescent.ConstantPopulation">
+                <populationModel id="popModelConstant.t:$(n)" spec="beast.evolution.tree.coalescent.ConstantPopulation">
                     <popSize id="popSize.t:$(n)" spec="parameter.RealParameter" value="1" />
                 </populationModel>
             </plugin>
@@ -23,7 +53,9 @@
 
             <operator id='popSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
                 weight="1" parameter="@popSize.t:$(n)"/>
-]]>
+            ]]>
+            <plate fragment="PopModelDependentACGOperators" var="model" range="popModelConstant"/>
+
             <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with
                 constant rate on tree t:$(n)
@@ -43,6 +75,7 @@
 
             <connect srcID='popSize.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(CoalescentConstant.t:$(n)) and inposterior(popSize.t:$(n)) and popSize.t:$(n)/estimate=true'/>
+
             <connect srcID='CoalescentConstant.t:$(n)' targetID='tracelog' inputName='log'
                      if='inposterior(CoalescentConstant.t:$(n)) and Tree.t:$(n)/estimate=true'/>
         </subtemplate>
@@ -51,13 +84,13 @@
         <subtemplate id='CoalescentExponentialPopulation' class='bacter.model.ACGCoalescent'
                      mainid='CoalescentExponential.t:$(n)'>
             <![CDATA[
-            <plugin spec='bacter.model.ACGCoalescent' id="CoalescentConstant.t:$(n)">
+            <plugin spec='bacter.model.ACGCoalescent' id="CoalescentExponential.t:$(n)">
                 <tree idref="Tree.t:$(n)"/>
                 <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.001"/>
                 <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000"/>
-                <populationModel id="popModel.t:$(n)" spec="beast.evolution.tree.coalescent.ExponentialGrowth">
-                    <popSize id="popFinalSize.t:$(n)" spec="parameter.RealParameter" value="1" />
-                    <growthRate id="popGrowthRate.t:$(n)" spec="parameter.RealParameter" value="0.1" />
+                <populationModel id="popModelExponentialGrowth.t:$(n)" spec="beast.evolution.tree.coalescent.ExponentialGrowth">
+                    <popSize id="popFinalSize.t:$(n)" spec="parameter.RealParameter" value="1" estimate="true"/>
+                    <growthRate id="popGrowthRate.t:$(n)" spec="parameter.RealParameter" value="0.1" estimate="true"/>
                 </populationModel>
             </plugin>
 
@@ -75,9 +108,10 @@
             <operator id='popGrowthRateScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
                 weight="1" parameter="@popGrowthRate.t:$(n)"/>
             ]]>
+            <plate fragment="PopModelDependentACGOperators" var="model" range="popModelExponentialGrowth"/>
 
             <connect srcID='CoalescentExponential.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalesenct prior with
+                     if='inposterior(CoalescentExponential.t:$(n)) and Tree.t:$(n)/estimate=true'>Coalescent prior with
                 exponential rate on tree t:$(n)
             </connect>
             <connect srcID='popFinalSizePrior.t:$(n)' targetID='prior' inputName='distribution'
