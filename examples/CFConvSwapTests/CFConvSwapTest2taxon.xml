@@ -31,7 +31,7 @@
             <distribution spec='ACGCoalescent' id="acgPrior">
                 <rho spec='RealParameter' value="0.001" id="rho" estimate="false"/>
                 <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
-                <acg idref="acg"/>
+                <tree idref="acg"/>
                 <populationModel idref="popFunc"/>
             </distribution>
         </distribution>

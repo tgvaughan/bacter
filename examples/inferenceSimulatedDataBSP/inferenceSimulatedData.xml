@@ -84,7 +84,7 @@
             <!-- ACG likelihood --> 
 
             <distribution spec='ACGLikelihood' id="acgLikelihood"
-                acg="@acg" data="@alignment">
+                tree="@acg" data="@alignment">
                 <siteModel spec='SiteModel' mutationRate="@mutationRate">
                     <substModel spec='JukesCantor'/>
                 </siteModel>
@@ -94,7 +94,7 @@
 
             <distribution spec='ACGCoalescent' id="acgPrior"
                 rho="@rho" delta="@delta">
-                <acg idref="acg"/>
+                <tree idref="acg"/>
                 <populationModel spec='SkylinePopulationFunction' id="popModel"
                                  acg="@acg"
                                  popSizes="@popSizes"

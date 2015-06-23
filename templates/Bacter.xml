@@ -109,7 +109,9 @@
             class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
 <![CDATA[
 
-            <plugin spec="bacter.Locus" id="locus.$(n)" alignment="@data"/>
+            <plugin spec="bacter.Locus" id="locus.$(n)">
+                <alignment idref="data"/>
+            </plugin>
 
             <!-- site model                                                              -->
             <plugin spec='SiteModel' id="SiteModel.s:$(n)" gammaCategoryCount='0'>
@@ -144,7 +146,9 @@
             <!-- ACG -->
             <plugin spec='bacter.model.SimulatedACG' id='Tree.t:$(n)' estimate='true' rho="0.001" delta="1000">
                 <locus idref="locus.$(n)"/>
-                <taxonset spec='beast.evolution.alignment.TaxonSet' alignment="@data"/>
+                <taxonset spec='beast.evolution.alignment.TaxonSet'>
+                    <alignment idref="data"/>
+                </taxonset>
                 <populationModel spec="beast.evolution.tree.coalescent.ConstantPopulation">
                     <popSize spec="parameter.RealParameter" value="1" />
                 </populationModel>
