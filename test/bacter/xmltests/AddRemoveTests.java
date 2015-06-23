@@ -34,7 +34,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class SimulatedACGTest {
+public class AddRemoveTests {
 
     @Test
     public void test2Taxon() throws Exception {
@@ -42,15 +42,15 @@ public class SimulatedACGTest {
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
-                new File("examples/ACGsimulations/simulateACGs2taxon.xml"));
+                new File("examples/addRemoveTests/addRemoveTest2taxon.xml"));
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
-        expectations.add(new Expectation("acg.CFheight", 1.0, 1e-2));
-        expectations.add(new Expectation("acg.CFlength", 2.0, 1e-2));
-        expectations.add(new Expectation("acg.nConv", 10.0, 5e-2));
+        expectations.add(new Expectation("acg.CFheight", 1.008, 5e-2));
+        expectations.add(new Expectation("acg.CFlength", 2.015, 5e-2));
+        expectations.add(new Expectation("acg.nConv", 10.104, 0.3));
 
-        LogAnalyser logAnalyser = new LogAnalyser("simulateACGs2taxon.stats",
+        LogAnalyser logAnalyser = new LogAnalyser("addRemoveTest2taxon.stats",
                 expectations);
 
         for (int i=0; i<expectations.size(); i++) {
@@ -58,9 +58,11 @@ public class SimulatedACGTest {
             assertTrue(expectations.get(i).isPassed());
         }
 
-        Files.deleteIfExists(Paths.get("simulateACGs2taxon.stats"));
-        Files.deleteIfExists(Paths.get("simulateACGs2taxon.converted"));
-        Files.deleteIfExists(Paths.get("simulateACGs2taxon.trees"));
+        Files.deleteIfExists(Paths.get("addRemoveTest2taxon.stats"));
+        Files.deleteIfExists(Paths.get("addRemoveTest2taxon.converted"));
+        Files.deleteIfExists(Paths.get("addRemoveTest2taxon.trees"));
+        Files.deleteIfExists(Paths.get("addRemoveTest2taxon.cf"));
+        Files.deleteIfExists(Paths.get("addRemoveTest2taxon.xml.state"));
     }
 
     @Test
@@ -69,15 +71,15 @@ public class SimulatedACGTest {
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
-                new File("examples/ACGsimulations/simulateACGs5taxon.xml"));
+                new File("examples/addRemoveTests/addRemoveTest5taxon.xml"));
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
-        expectations.add(new Expectation("acg.CFheight", 1.606, 1e-2));
-        expectations.add(new Expectation("acg.CFlength", 4.181, 1e-2));
-        expectations.add(new Expectation("acg.nConv", 21.0, 5e-2));
+        expectations.add(new Expectation("acg.CFheight", 1.606, 0.2));
+        expectations.add(new Expectation("acg.CFlength", 4.181, 0.5));
+        expectations.add(new Expectation("acg.nConv", 21.0, 0.5));
 
-        LogAnalyser logAnalyser = new LogAnalyser("simulateACGs5taxon.stats",
+        LogAnalyser logAnalyser = new LogAnalyser("addRemoveTest5taxon.stats",
                 expectations);
 
         for (int i=0; i<expectations.size(); i++) {
@@ -85,9 +87,11 @@ public class SimulatedACGTest {
             assertTrue(expectations.get(i).isPassed());
         }
 
-        Files.deleteIfExists(Paths.get("simulateACGs5taxon.stats"));
-        Files.deleteIfExists(Paths.get("simulateACGs5taxon.converted"));
-        Files.deleteIfExists(Paths.get("simulateACGs5taxon.trees"));
+        Files.deleteIfExists(Paths.get("addRemoveTest5taxon.stats"));
+        Files.deleteIfExists(Paths.get("addRemoveTest5taxon.converted"));
+        Files.deleteIfExists(Paths.get("addRemoveTest5taxon.trees"));
+        Files.deleteIfExists(Paths.get("addRemoveTest5taxon.cf"));
+        Files.deleteIfExists(Paths.get("addRemoveTest5taxon.xml.state"));
     }
 
     @Test
@@ -96,15 +100,15 @@ public class SimulatedACGTest {
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
-                new File("examples/ACGsimulations/simulateACGs5taxonDynamicPopSize.xml"));
+                new File("examples/addRemoveTests/addRemoveDynamicPopSize5taxon.xml"));
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
         expectations.add(new Expectation("acg.CFheight", 8.840, 1e-2));
-        expectations.add(new Expectation("acg.CFlength", 25.312, 1e-2));
-        expectations.add(new Expectation("acg.nConv", 25.464, 5e-2));
+        expectations.add(new Expectation("acg.CFlength", 25.312, 0.5));
+        expectations.add(new Expectation("acg.nConv", 25.464, 0.5));
 
-        LogAnalyser logAnalyser = new LogAnalyser("simulateACGs5taxonDynamicPopSize.stats",
+        LogAnalyser logAnalyser = new LogAnalyser("addRemoveDynamicPopSize5taxon.stats",
                 expectations);
 
         for (int i=0; i<expectations.size(); i++) {
@@ -112,26 +116,28 @@ public class SimulatedACGTest {
             assertTrue(expectations.get(i).isPassed());
         }
 
-        Files.deleteIfExists(Paths.get("simulateACGs5taxonDynamicPopSize.stats"));
-        Files.deleteIfExists(Paths.get("simulateACGs5taxonDynamicPopSize.converted"));
-        Files.deleteIfExists(Paths.get("simulateACGs5taxonDynamicPopSize.trees"));
+        Files.deleteIfExists(Paths.get("addRemoveDynamicPopSize5taxon.stats"));
+        Files.deleteIfExists(Paths.get("addRemoveDynamicPopSize5taxon.converted"));
+        Files.deleteIfExists(Paths.get("addRemoveDynamicPopSize5taxon.trees"));
+        Files.deleteIfExists(Paths.get("addRemoveDynamicPopSize5taxon.cf"));
+        Files.deleteIfExists(Paths.get("addRemoveDynamicPopSize5taxon.xml.state"));
     }
 
     @Test
     public void test5TaxonSerialSampling() throws Exception {
-        Randomizer.setSeed(1);
+        Randomizer.setSeed(53);
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
-                new File("examples/ACGsimulations/simulateACGs5taxonSerialSampling.xml"));
+                new File("examples/addRemoveTests/addRemoveSerialSamplingTest5taxon.xml"));
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
-        expectations.add(new Expectation("acg.CFheight", 1.909, 1e-2));
-        expectations.add(new Expectation("acg.CFlength", 4.655, 1e-2));
-        expectations.add(new Expectation("acg.nConv", 23.381, 5e-2));
+        expectations.add(new Expectation("acg.CFheight", 1.909, 0.1));
+        expectations.add(new Expectation("acg.CFlength", 4.655, 0.2));
+        expectations.add(new Expectation("acg.nConv", 23.381, 1.0));
 
-        LogAnalyser logAnalyser = new LogAnalyser("simulateACGs5taxonSerialSampling.stats",
+        LogAnalyser logAnalyser = new LogAnalyser("addRemoveSerialSamplingTest5taxon.stats",
                 expectations);
 
         for (int i=0; i<expectations.size(); i++) {
@@ -139,8 +145,10 @@ public class SimulatedACGTest {
             assertTrue(expectations.get(i).isPassed());
         }
 
-        Files.deleteIfExists(Paths.get("simulateACGs5taxonSerialSampling.stats"));
-        Files.deleteIfExists(Paths.get("simulateACGs5taxonSerialSampling.converted"));
-        Files.deleteIfExists(Paths.get("simulateACGs5taxonSerialSampling.trees"));
+        Files.deleteIfExists(Paths.get("addRemoveSerialSamplingTest5taxon.stats"));
+        Files.deleteIfExists(Paths.get("addRemoveSerialSamplingTest5taxon.converted"));
+        Files.deleteIfExists(Paths.get("addRemoveSerialSamplingTest5taxon.trees"));
+        Files.deleteIfExists(Paths.get("addRemoveSerialSamplingTest5taxon.cf"));
+        Files.deleteIfExists(Paths.get("addRemoveSerialSamplingTest5taxon.xml.state"));
     }
 }
