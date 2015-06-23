@@ -26,7 +26,7 @@
         <populationModel spec="ConstantPopulation" popSize="1.0" />
     </input>
 
-    <run spec="MCMC" id="mcmc" chainLength="100000000">
+    <run spec="MCMC" id="mcmc" chainLength="10000000">
         <state>
             <stateNode idref='acg'/>
         </state>

@@ -12,20 +12,29 @@
                  :bacter.operators
                  :bacter.util'>
 
+    <taxonset spec="TaxonSet" id="taxonSet">
+        <taxon spec="Taxon" id="t1"/>
+        <taxon spec="Taxon" id="t2"/>
+        <taxon spec="Taxon" id="t3"/>
+        <taxon spec="Taxon" id="t4"/>
+        <taxon spec="Taxon" id="t5"/>
+    </taxonset>
+
     <input spec="SimulatedACG" id="acg"
-           rho="0.0005" delta="50.0">
+           rho="0.0005" delta="50.0" taxonset="@taxonSet">
         <locus spec="Locus" id="locus" siteCount="10000"/>
-        <taxonset spec="TaxonSet">
-            <taxon spec="Taxon" id="t1"/>
-            <taxon spec="Taxon" id="t2"/>
-            <taxon spec="Taxon" id="t3"/>
-            <taxon spec="Taxon" id="t4"/>
-            <taxon spec="Taxon" id="t5"/>
-        </taxonset>
         <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
+        <trait spec='TraitSet' id="timeTrait" taxa="@taxonSet"
+            traitname="date-backward">
+            t1=0.0,
+            t2=0.1,
+            t3=0.2,
+            t4=0.3,
+            t5=0.4
+        </trait>
     </input>
 
-  <run spec="MCMC" id="mcmc" chainLength="10000000">
+  <run spec="MCMC" id="mcmc" chainLength="20000000">
     <state>
       <stateNode idref='acg'/>
     </state>
