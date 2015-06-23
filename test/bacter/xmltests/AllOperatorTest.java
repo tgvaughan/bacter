@@ -75,7 +75,7 @@ public class AllOperatorTest {
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
-        expectations.add(new Expectation("acg.CFheight", 1.606, 0.2));
+        expectations.add(new Expectation("acg.CFheight", 1.909, 0.2));
         expectations.add(new Expectation("acg.CFlength", 4.655, 0.5));
         expectations.add(new Expectation("acg.nConv", 23.381, 0.5));
 
