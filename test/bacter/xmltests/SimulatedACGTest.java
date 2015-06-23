@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.XMLTests;
+package bacter.xmltests;
 
 import beast.util.Randomizer;
 import beast.util.XMLParser;
