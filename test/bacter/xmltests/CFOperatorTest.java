@@ -34,15 +34,15 @@ import static junit.framework.Assert.assertTrue;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class RegionShiftTests {
+public class CFOperatorTest {
 
     @Test
-    public void testRegionShift() throws Exception {
+    public void testCFUniform() throws Exception {
         Randomizer.setSeed(1);
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
-                new File("examples/regionShiftTests/regionShiftTest5taxon.xml"));
+                new File("examples/CFOperatorTests/CFUniformTest5taxon.xml"));
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -50,28 +50,29 @@ public class RegionShiftTests {
         expectations.add(new Expectation("acg.CFlength", 4.181, 0.5));
         expectations.add(new Expectation("acg.nConv", 21.0, 0.5));
 
-        LogAnalyser logAnalyser = new LogAnalyser("regionShiftTest5taxon.stats",
+        LogAnalyser logAnalyser = new LogAnalyser("CFUniformTest5taxon.stats",
                 expectations);
 
-        for (int i=0; i<expectations.size(); i++) {
-            assertTrue(expectations.get(i).isValid());
-            assertTrue(expectations.get(i).isPassed());
+        for (Expectation expectation : expectations) {
+            assertTrue(expectation.isValid());
+            assertTrue(expectation.isPassed());
         }
 
-        Files.deleteIfExists(Paths.get("regionShiftTest5taxon.stats"));
-        Files.deleteIfExists(Paths.get("regionShiftTest5taxon.converted"));
-        Files.deleteIfExists(Paths.get("regionShiftTest5taxon.trees"));
-        Files.deleteIfExists(Paths.get("regionShiftTest5taxon.cf"));
-        Files.deleteIfExists(Paths.get("regionShiftTest5taxon.xml.state"));
+        Files.deleteIfExists(Paths.get("CFUniformTest5taxon.stats"));
+        Files.deleteIfExists(Paths.get("CFUniformTest5taxon.converted"));
+        Files.deleteIfExists(Paths.get("CFUniformTest5taxon.trees"));
+        Files.deleteIfExists(Paths.get("CFUniformTest5taxon.cf"));
+        Files.deleteIfExists(Paths.get("CFUniformTest5taxon.xml.state"));
     }
 
+
     @Test
-    public void testBoundaryShift() throws Exception {
+    public void testCFWB() throws Exception {
         Randomizer.setSeed(1);
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
-                new File("examples/regionShiftTests/boundaryShiftTest5taxon.xml"));
+                new File("examples/CFOperatorTests/CFWilsonBaldingTest5taxon.xml"));
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -79,19 +80,19 @@ public class RegionShiftTests {
         expectations.add(new Expectation("acg.CFlength", 4.181, 0.5));
         expectations.add(new Expectation("acg.nConv", 21.0, 0.5));
 
-        LogAnalyser logAnalyser = new LogAnalyser("boundaryShiftTest5taxon.stats",
+        LogAnalyser logAnalyser = new LogAnalyser("CFWilsonBaldingTest5taxon.stats",
                 expectations);
 
-        for (int i=0; i<expectations.size(); i++) {
-            assertTrue(expectations.get(i).isValid());
-            assertTrue(expectations.get(i).isPassed());
+        for (Expectation expectation : expectations) {
+            assertTrue(expectation.isValid());
+            assertTrue(expectation.isPassed());
         }
 
-        Files.deleteIfExists(Paths.get("boundaryShiftTest5taxon.stats"));
-        Files.deleteIfExists(Paths.get("boundaryShiftTest5taxon.converted"));
-        Files.deleteIfExists(Paths.get("boundaryShiftTest5taxon.trees"));
-        Files.deleteIfExists(Paths.get("boundaryShiftTest5taxon.cf"));
-        Files.deleteIfExists(Paths.get("boundaryShiftTest5taxon.xml.state"));
+        Files.deleteIfExists(Paths.get("CFWilsonBaldingTest5taxon.stats"));
+        Files.deleteIfExists(Paths.get("CFWilsonBaldingTest5taxon.converted"));
+        Files.deleteIfExists(Paths.get("CFWilsonBaldingTest5taxon.trees"));
+        Files.deleteIfExists(Paths.get("CFWilsonBaldingTest5taxon.cf"));
+        Files.deleteIfExists(Paths.get("CFWilsonBaldingTest5taxon.xml.state"));
     }
 
 }
