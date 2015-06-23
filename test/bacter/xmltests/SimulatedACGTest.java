@@ -143,4 +143,31 @@ public class SimulatedACGTest {
         Files.deleteIfExists(Paths.get("simulateACGs5taxonSerialSampling.converted"));
         Files.deleteIfExists(Paths.get("simulateACGs5taxonSerialSampling.trees"));
     }
+
+    @Test
+    public void test5TaxonMultiLocus() throws Exception {
+        Randomizer.setSeed(1);
+
+        XMLParser parser = new XMLParser();
+        beast.core.Runnable runnable = parser.parseFile(
+                new File("examples/ACGsimulations/simulateACGs5taxonMultiLocus.xml"));
+        runnable.run();
+
+        List<Expectation> expectations = new ArrayList<>();
+        expectations.add(new Expectation("acg.CFheight", 1.917, 1e-2));
+        expectations.add(new Expectation("acg.CFlength", 4.672, 1e-2));
+        expectations.add(new Expectation("acg.nConv", 23.614, 5e-2));
+
+        LogAnalyser logAnalyser = new LogAnalyser("simulateACGs5taxonMultiLocus.stats",
+                expectations);
+
+        for (int i=0; i<expectations.size(); i++) {
+            assertTrue(expectations.get(i).isValid());
+            assertTrue(expectations.get(i).isPassed());
+        }
+
+        Files.deleteIfExists(Paths.get("simulateACGs5taxonMultiLocus.stats"));
+        Files.deleteIfExists(Paths.get("simulateACGs5taxonMultiLocus.converted"));
+        Files.deleteIfExists(Paths.get("simulateACGs5taxonMultiLocus.trees"));
+    }
 }
