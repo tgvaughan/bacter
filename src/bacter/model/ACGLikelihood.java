@@ -79,7 +79,8 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     double [] probabilities;
 
     public ACGLikelihood() {
-
+        // We allow alignments to be specified using Locus objects.
+        dataInput.setRule(Input.Validate.OPTIONAL);
     }
 
     @Override
