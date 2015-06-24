@@ -5,6 +5,7 @@
     font-size: 21px;
 
     margin-bottom: 0px;
+    padding-bottom: 20px;
 }
 
 .jumbotron a {
@@ -54,4 +55,8 @@ a {
 
 a:hover {
     color: #6f00ff;
+}
+
+hr.short-rule {
+    width: 200px;
 }
