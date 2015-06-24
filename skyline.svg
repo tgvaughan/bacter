@@ -102,10 +102,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="958"
-     inkscape:window-height="1059"
-     inkscape:window-x="1920"
-     inkscape:window-y="120"
+     inkscape:window-width="1920"
+     inkscape:window-height="1200"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      units="px">
     <inkscape:grid
@@ -122,7 +122,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -131,20 +131,19 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-94.932212,-212.61496)">
-    <text
-       xml:space="preserve"
+    <g
+       transform="matrix(0,-1,1,0,0,0)"
        style="font-style:normal;font-weight:normal;font-size:26.06452179px;line-height:125%;font-family:Sans;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="-349.48819"
-       y="118.48604"
-       id="text4612"
-       sodipodi:linespacing="125%"
-       transform="matrix(0,-1,1,0,0,0)"><tspan
-         sodipodi:role="line"
-         id="tspan4614"
-         x="-349.48819"
-         y="118.48604">N<tspan
-   style="font-size:64.99999762%;baseline-shift:sub"
-   id="tspan6503">e</tspan></tspan></text>
+       id="text4612">
+      <path
+         d="m -346.9301,99.4849 3.46169,0 8.42516,15.89579 0,-15.89579 2.49445,0 0,19.00114 -3.46169,0 -8.42515,-15.8958 0,15.8958 -2.49446,0 0,-19.00114 z"
+         style=""
+         id="path3351" />
+      <path
+         d="m -320.46914,118.68585 0,0.74452 -6.99847,0 q 0.0993,1.57176 0.94305,2.399 0.85206,0.81897 2.36592,0.81897 0.87688,0 1.69585,-0.21508 0.82724,-0.21508 1.63794,-0.64525 l 0,1.4394 q -0.81897,0.34745 -1.67931,0.52944 -0.86033,0.18199 -1.74548,0.18199 -2.21701,0 -3.51578,-1.2905 -1.2905,-1.2905 -1.2905,-3.49096 0,-2.27492 1.22432,-3.60678 1.23259,-1.34014 3.31724,-1.34014 1.86957,0 2.95326,1.20778 1.09196,1.1995 1.09196,3.26761 z m -1.52212,-0.44671 q -0.0165,-1.24914 -0.70316,-1.99366 -0.67834,-0.74452 -1.80339,-0.74452 -1.27396,0 -2.04329,0.71971 -0.76107,0.7197 -0.87688,2.02674 l 5.42672,-0.008 z"
+         style="font-size:64.99999762%;baseline-shift:sub"
+         id="path3353" />
+    </g>
     <path
        id="path5577-5"
        style="fill:#6f00ff;fill-opacity:0.53333327;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -163,16 +162,21 @@
        id="path4138"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc" />
-    <text
-       xml:space="preserve"
+    <g
        style="font-style:normal;font-weight:normal;font-size:26.06452179px;line-height:125%;font-family:Sans;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="230.19739"
-       y="438.94846"
-       id="text4612-8"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4614-8"
-         x="230.19739"
-         y="438.94846">Age</tspan></text>
+       id="text4612-8">
+      <path
+         d="m 239.10616,422.47995 -3.48715,9.45603 6.98702,0 -3.49987,-9.45603 z m -1.45086,-2.53263 2.91444,0 7.24156,19.00114 -2.67263,0 -1.73085,-4.87438 -8.56514,0 -1.73085,4.87438 -2.71081,0 7.25428,-19.00114 z"
+         style=""
+         id="path3356" />
+      <path
+         d="m 259.85087,431.65599 q 0,-2.54536 -1.05632,-3.94531 -1.0436,-1.39995 -2.9399,-1.39995 -1.88357,0 -2.93989,1.39995 -1.0436,1.39995 -1.0436,3.94531 0,2.53264 1.0436,3.93259 1.05632,1.39995 2.93989,1.39995 1.8963,0 2.9399,-1.39995 1.05632,-1.39995 1.05632,-3.93259 z m 2.34174,5.52344 q 0,3.63987 -1.61631,5.4089 -1.6163,1.78175 -4.95073,1.78175 -1.2345,0 -2.32901,-0.1909 -1.0945,-0.17818 -2.12538,-0.55998 l 0,-2.2781 q 1.03088,0.55998 2.03629,0.82724 1.00542,0.26726 2.04902,0.26726 2.30356,0 3.44897,-1.20904 1.14541,-1.19632 1.14541,-3.62715 l 0,-1.15814 q -0.72543,1.25996 -1.85811,1.88357 -1.13269,0.62362 -2.71081,0.62362 -2.62173,0 -4.22531,-1.99811 -1.60358,-1.99811 -1.60358,-5.29436 0,-3.30897 1.60358,-5.30708 1.60358,-1.99811 4.22531,-1.99811 1.57812,0 2.71081,0.62361 1.13268,0.62361 1.85811,1.88357 l 0,-2.16356 2.34174,0 0,12.48501 z"
+         style=""
+         id="path3358" />
+      <path
+         d="m 279.20836,431.236 0,1.14542 -10.76689,0 q 0.15273,2.41809 1.45086,3.69078 1.31086,1.25995 3.63987,1.25995 1.34904,0 2.609,-0.3309 1.27268,-0.33089 2.51991,-0.99269 l 0,2.21447 q -1.25996,0.53452 -2.58354,0.81451 -1.32359,0.27999 -2.68536,0.27999 -3.41079,0 -5.4089,-1.98538 -1.98538,-1.98538 -1.98538,-5.37072 0,-3.49987 1.88356,-5.54889 1.8963,-2.06174 5.10346,-2.06174 2.87626,0 4.54347,1.85811 1.67994,1.84539 1.67994,5.02709 z m -2.34173,-0.68724 q -0.0255,-1.92175 -1.08178,-3.06717 -1.0436,-1.14541 -2.77445,-1.14541 -1.95993,0 -3.14352,1.10723 -1.17087,1.10724 -1.34904,3.11807 l 8.34879,-0.0127 z"
+         style=""
+         id="path3360" />
+    </g>
   </g>
 </svg>
