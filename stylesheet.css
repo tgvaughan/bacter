@@ -3,6 +3,8 @@
     background-color: transparent;
     color: #666;
     font-size: 21px;
+
+    margin-bottom: 0px;
 }
 
 .jumbotron a {
@@ -40,6 +42,9 @@
 
 p {
     color: #666;
+}
+
+p .lead {
     font-size: 20px;
 }
 
