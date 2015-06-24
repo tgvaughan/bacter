@@ -8,11 +8,11 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="SVG"
-   viewBox="0 0 517 443"
-   style="stroke-width: 4px; font-size: 11px; font-family: sans-serif; shape-rendering: crispedges;"
+   viewBox="0 0 300 257"
+   style="font-size:11px;font-family:sans-serif;stroke-width:4px"
    preserveAspectRatio="none"
-   height="443"
-   width="517"
+   height="257"
+   width="300"
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="arg.svg">
@@ -24,6 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -39,193 +40,171 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="958"
-     inkscape:window-height="1179"
+     inkscape:window-height="1059"
      id="namedview29"
      showgrid="true"
-     inkscape:zoom="3.0135837"
-     inkscape:cx="507.63059"
-     inkscape:cy="269.68181"
-     inkscape:window-x="960"
-     inkscape:window-y="0"
+     inkscape:zoom="1.5067919"
+     inkscape:cx="242.38272"
+     inkscape:cy="181.83789"
+     inkscape:window-x="2880"
+     inkscape:window-y="120"
      inkscape:window-maximized="0"
      inkscape:current-layer="SVG"
      inkscape:snap-grids="true"
-     inkscape:snap-bbox="true" />
-  <path
-     id="node#0"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 30.45693069306926 164.54285714285717 H 25.85 V 164.54285714285717" />
-  <path
-     id="node#7"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 275.0395618337879 264.21785714285716 H 30.45693069306926 V 164.54285714285717" />
-  <path
-     id="node#8"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 363.66676099889304 335.4142857142857 H 275.0395618337879 V 264.21785714285716" />
-  <path
-     id="node#9"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 431.484002492986 392.37142857142857 H 363.66676099889304 V 335.4142857142857" />
-  <path
-     id="node#10"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 481.1005845010743 420.84999999999997 H 431.484002492986 V 392.37142857142857" />
-  <path
-     id="node#11"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 491.15000000000003 420.84999999999997 H 481.1005845010743 V 420.84999999999997" />
-  <path
-     id="node#13"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 369.30907931093435 278.45714285714286 H 363.66676099889304 V 335.4142857142857" />
-  <path
-     id="node#14"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 470.4473120896302 278.45714285714286 H 369.30907931093435 V 278.45714285714286" />
-  <path
-     id="node#15"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 491.15 306.93571428571425 H 470.4473120896302 V 278.45714285714286" />
-  <path
-     id="node#16"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 491.15 249.97857142857143 H 470.4473120896302 V 278.45714285714286" />
-  <path
-     id="node#1"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 271.0864513971318 64.86785714285718 H 30.45693069306926 V 164.54285714285717" />
-  <path
-     id="node#2"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     stroke-opacity="1"
-     stroke="black"
-     fill="none"
-     d="M 447.0083950699794 107.58571428571429 H 271.0864513971318 V 64.86785714285718" />
-  <path
-     id="node#3"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     d="m 475.42734,107.58571 -28.41894,0 0,0"
-     inkscape:connector-curvature="0"
-     style="fill:none;stroke:#000000;stroke-opacity:1"
-     sodipodi:nodetypes="ccc" />
-  <path
-     id="node#4"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     d="m 491.15,136.06429 -15.72266,0 0,-28.47858"
-     inkscape:connector-curvature="0"
-     style="fill:none;stroke:#000000;stroke-opacity:1"
-     sodipodi:nodetypes="ccc" />
-  <path
-     id="node#5"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge"
-     d="m 491.15,79.107143 -15.72266,0 0,28.478567"
-     inkscape:connector-curvature="0"
-     style="fill:none;stroke:#000000;stroke-opacity:1"
-     sodipodi:nodetypes="ccc" />
-  <path
-     stroke="blue"
-     id="node#6"
-     stroke-dasharray="5, 2"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge trait_MA=="
-     stroke-opacity="1"
-     fill="none"
-     d="M 369.30907931093435 278.45714285714286 L 369.30907931093435 22.150000000000002 H 271.0864513971318 V 64.86785714285718"
-     style="stroke:#6f00ff;stroke-opacity:1" />
-  <path
-     stroke="red"
-     id="node#17"
-     stroke-dasharray="5, 2"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge trait_MQ=="
-     stroke-opacity="1"
-     fill="none"
-     d="M 481.1005845010743 420.84999999999997 L 481.1005845010743 193.02142857142857 H 275.0395618337879 V 264.21785714285716"
-     style="stroke:#6f00ff;stroke-opacity:1" />
-  <path
-     stroke="green"
-     id="node#12"
-     stroke-dasharray="5, 2"
-     vector-effect="non-scaling-stroke"
-     class="treeEdge trait_Mg=="
-     stroke-opacity="1"
-     fill="none"
-     d="M 447.0083950699794 107.58571428571429 L 447.0083950699795 363.8928571428571 H 431.484002492986 V 392.37142857142857"
-     style="stroke:#6f00ff;stroke-opacity:1" />
-  <ellipse
-     class="internalNodeMark"
-     shape-rendering="auto"
-     fill="black"
-     ry="8"
-     rx="8"
-     cy="278.45714285714286"
-     cx="369.30907931093435"
-     id="ellipse23" />
-  <ellipse
-     class="internalNodeMark"
-     shape-rendering="auto"
-     fill="black"
-     ry="8"
-     rx="8"
-     cy="420.84999999999997"
-     cx="481.1005845010743"
-     id="ellipse25" />
-  <ellipse
-     class="internalNodeMark"
-     shape-rendering="auto"
-     fill="black"
-     ry="8"
-     rx="8"
-     cy="107.58571428571429"
-     cx="447.0083950699794"
-     id="ellipse27" />
+     inkscape:snap-bbox="true"
+     borderlayer="false" />
+  <g
+     id="g5376"
+     transform="matrix(0.5501854,0,0,0.5501854,11.627707,109.23748)">
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 30.456931,-21.45714 -4.606931,0 0,0"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 275.03956,78.21786 -244.582629,0 0,-99.675"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#7" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 363.66676,149.41429 -88.6272,0 0,-71.19643"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#8" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 431.484,206.37143 -67.81724,0 0,-56.95714"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#9" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 481.10058,234.85 -49.61658,0 0,-28.47857"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#10" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 491.15,234.85 -10.04942,0 0,0"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#11" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 369.30908,92.45714 -5.64232,0 0,56.95715"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#13" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 470.44731,92.45714 -101.13823,0 0,0"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#14" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 491.15,120.93571 -20.70269,0 0,-28.47857"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#15" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 491.15,63.97857 -20.70269,0 0,28.47857"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#16" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 271.08645,-121.13214 -240.629519,0 0,99.675"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#1" />
+    <path
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 447.0084,-78.41429 -175.92195,0 0,-42.71785"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#2" />
+    <path
+       sodipodi:nodetypes="ccc"
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 475.42734,-78.41429 -28.41894,0 0,0"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#3" />
+    <path
+       sodipodi:nodetypes="ccc"
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 491.15,-49.93571 -15.72266,0 0,-28.47858"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#4" />
+    <path
+       sodipodi:nodetypes="ccc"
+       style="fill:none;stroke:#000000;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 491.15,-106.89286 -15.72266,0 0,28.47857"
+       class="treeEdge"
+       vector-effect="non-scaling-stroke"
+       id="node#5" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:none;stroke:#6f00ff;stroke-dasharray:5, 2;stroke-opacity:1"
+       d="m 369.30908,92.45714 0,-256.30714 -98.22263,0 0,42.71786"
+       class="treeEdge trait_MA=="
+       vector-effect="non-scaling-stroke"
+       id="node#6" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:none;stroke:#6f00ff;stroke-dasharray:5, 2;stroke-opacity:1"
+       d="m 481.10058,234.85 0,-227.82857 -206.06102,0 0,71.19643"
+       class="treeEdge trait_MQ=="
+       vector-effect="non-scaling-stroke"
+       id="node#17" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:none;stroke:#6f00ff;stroke-dasharray:5, 2;stroke-opacity:1"
+       d="m 447.0084,-78.41429 0,256.30715 -15.5244,0 0,28.47857"
+       class="treeEdge trait_Mg=="
+       vector-effect="non-scaling-stroke"
+       id="node#12" />
+    <circle
+       style="fill:#000000;shape-rendering:auto"
+       r="8"
+       id="ellipse23"
+       cx="369.30908"
+       cy="92.457153"
+       class="internalNodeMark" />
+    <circle
+       style="fill:#000000;shape-rendering:auto"
+       r="8"
+       id="ellipse25"
+       cx="481.10059"
+       cy="234.85001"
+       class="internalNodeMark" />
+    <circle
+       style="fill:#000000;shape-rendering:auto"
+       r="8"
+       id="ellipse27"
+       cx="447.00839"
+       cy="-78.414284"
+       class="internalNodeMark" />
+  </g>
 </svg>
