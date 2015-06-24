@@ -4,37 +4,86 @@
     <meta charset="UTF-8">
     <title>bacter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <style>
+        .jumbotron {
+            text-align: center;
+            background-color: transparent;
+            color: #666;
+            font-size: 21px;
+        }
+
+        .jumbotron a {
+            margin-top: 20px;
+        }
+
+        .jumbotron h1 .img-responsive {
+            margin: 0 auto;
+        }
+
+        .btn {
+            display: inline-block;
+            background-image: none;
+        }
+
+        .btn-default {
+            color: #6f00ff;
+            border: 1px solid #6f00ff;
+            transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+        }
+
+        .btn-default:hover {
+            color: white;
+            background-color: #6f00ff;
+            border: 1px solid #6f00ff;
+        }
+
+        @media (max-width: 767px) {
+            .btn-responsive {
+                display: inline-block;
+                width: 100%;
+            }
+        }
+
+        p {
+            color: #666;
+            font-size: 20px;
+        }
+
+        a {
+            color: #6f00ff;
+        }
+
+        a:hover {
+            color: #6f00ff;
+        }
+    </style>
+
   </head>
   <body>
-    <section class="page-header">
-      <!--h1 class="project-name">bacter</h1-->
-      <img class="logo" src="logo.svg" alt="bacter">
-      <h2 class="project-tagline">Bacterial phylogenetics in BEAST 2</h2>
-      <a href="https://github.com/CompEvol/bacter" class="btn">View on GitHub</a>
-      <!--a href="https://github.com/CompEvol/bacter/zipball/master" class="btn">Download .zip</a-->
-      <!--a href="https://github.com/CompEvol/bacter/tarball/master" class="btn">Download .tar.gz</a-->
-    </section>
 
-    <section class="main-content">
+      <div class="container">
 
-        <p>Bacter is a <a href="http://beast2.org">BEAST 2</a> package which
-        facilitates inference of ancestral recombination graphs (ARG) and
-        related parameters from bacterial sequence alignments.  It is based on
-        the model described in
-        <a href="http://www.genetics.org/content/186/4/1435">Didelot et al.'s
-            2010 Genetics paper</a> and is currently under heavy development.
-        Check back soon!</p>
+          <div class="jumbotron">
+              <h1><img src="logo.svg" class="img-responsive" alt="Bacter"></h1>
+              Bacterial phylogenetics in BEAST 2
+              <div>
+              <a class="btn btn-default btn-lg btn-responsive" href="https://github.com/CompEvol/bacter">View on GitHub</a>
+              </div>
+          </div>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/CompEvol/bacter">bacter</a> is maintained by <a href="https://github.com/tgvaughan">Tim Vaughan</a>.</span>
-      </footer>
+          <p> Bacter is a <a href="http://www.beast2.org/">BEAST 2</a> package which facilitates inference of
+          ancestral recombination graphs (ARG) and related parameters from
+          bacterial sequence alignments. It is based on the model described in
+          <a href="http://www.genetics.org/content/186/4/1435">Didelot et al.'s 2010 Genetics paper</a> and is currently under heavy
+          development.  Check back soon!</p>
 
-    </section>
-
+      </div>
   </body>
 </html>
 
