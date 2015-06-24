@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="SVG"
+   viewBox="0 0 517 443"
+   style="stroke-width: 4px; font-size: 11px; font-family: sans-serif; shape-rendering: crispedges;"
+   preserveAspectRatio="none"
+   height="443"
+   width="517"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="arg.svg">
+  <metadata
+     id="metadata33">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs31" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="958"
+     inkscape:window-height="1179"
+     id="namedview29"
+     showgrid="true"
+     inkscape:zoom="3.0135837"
+     inkscape:cx="507.63059"
+     inkscape:cy="269.68181"
+     inkscape:window-x="960"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="SVG"
+     inkscape:snap-grids="true"
+     inkscape:snap-bbox="true" />
+  <path
+     id="node#0"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 30.45693069306926 164.54285714285717 H 25.85 V 164.54285714285717" />
+  <path
+     id="node#7"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 275.0395618337879 264.21785714285716 H 30.45693069306926 V 164.54285714285717" />
+  <path
+     id="node#8"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 363.66676099889304 335.4142857142857 H 275.0395618337879 V 264.21785714285716" />
+  <path
+     id="node#9"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 431.484002492986 392.37142857142857 H 363.66676099889304 V 335.4142857142857" />
+  <path
+     id="node#10"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 481.1005845010743 420.84999999999997 H 431.484002492986 V 392.37142857142857" />
+  <path
+     id="node#11"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 491.15000000000003 420.84999999999997 H 481.1005845010743 V 420.84999999999997" />
+  <path
+     id="node#13"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 369.30907931093435 278.45714285714286 H 363.66676099889304 V 335.4142857142857" />
+  <path
+     id="node#14"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 470.4473120896302 278.45714285714286 H 369.30907931093435 V 278.45714285714286" />
+  <path
+     id="node#15"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 491.15 306.93571428571425 H 470.4473120896302 V 278.45714285714286" />
+  <path
+     id="node#16"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 491.15 249.97857142857143 H 470.4473120896302 V 278.45714285714286" />
+  <path
+     id="node#1"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 271.0864513971318 64.86785714285718 H 30.45693069306926 V 164.54285714285717" />
+  <path
+     id="node#2"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     stroke-opacity="1"
+     stroke="black"
+     fill="none"
+     d="M 447.0083950699794 107.58571428571429 H 271.0864513971318 V 64.86785714285718" />
+  <path
+     id="node#3"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     d="m 475.42734,107.58571 -28.41894,0 0,0"
+     inkscape:connector-curvature="0"
+     style="fill:none;stroke:#000000;stroke-opacity:1"
+     sodipodi:nodetypes="ccc" />
+  <path
+     id="node#4"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     d="m 491.15,136.06429 -15.72266,0 0,-28.47858"
+     inkscape:connector-curvature="0"
+     style="fill:none;stroke:#000000;stroke-opacity:1"
+     sodipodi:nodetypes="ccc" />
+  <path
+     id="node#5"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge"
+     d="m 491.15,79.107143 -15.72266,0 0,28.478567"
+     inkscape:connector-curvature="0"
+     style="fill:none;stroke:#000000;stroke-opacity:1"
+     sodipodi:nodetypes="ccc" />
+  <path
+     stroke="blue"
+     id="node#6"
+     stroke-dasharray="5, 2"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge trait_MA=="
+     stroke-opacity="1"
+     fill="none"
+     d="M 369.30907931093435 278.45714285714286 L 369.30907931093435 22.150000000000002 H 271.0864513971318 V 64.86785714285718"
+     style="stroke:#6f00ff;stroke-opacity:1" />
+  <path
+     stroke="red"
+     id="node#17"
+     stroke-dasharray="5, 2"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge trait_MQ=="
+     stroke-opacity="1"
+     fill="none"
+     d="M 481.1005845010743 420.84999999999997 L 481.1005845010743 193.02142857142857 H 275.0395618337879 V 264.21785714285716"
+     style="stroke:#6f00ff;stroke-opacity:1" />
+  <path
+     stroke="green"
+     id="node#12"
+     stroke-dasharray="5, 2"
+     vector-effect="non-scaling-stroke"
+     class="treeEdge trait_Mg=="
+     stroke-opacity="1"
+     fill="none"
+     d="M 447.0083950699794 107.58571428571429 L 447.0083950699795 363.8928571428571 H 431.484002492986 V 392.37142857142857"
+     style="stroke:#6f00ff;stroke-opacity:1" />
+  <ellipse
+     class="internalNodeMark"
+     shape-rendering="auto"
+     fill="black"
+     ry="8"
+     rx="8"
+     cy="278.45714285714286"
+     cx="369.30907931093435"
+     id="ellipse23" />
+  <ellipse
+     class="internalNodeMark"
+     shape-rendering="auto"
+     fill="black"
+     ry="8"
+     rx="8"
+     cy="420.84999999999997"
+     cx="481.1005845010743"
+     id="ellipse25" />
+  <ellipse
+     class="internalNodeMark"
+     shape-rendering="auto"
+     fill="black"
+     ry="8"
+     rx="8"
+     cy="107.58571428571429"
+     cx="447.0083950699794"
+     id="ellipse27" />
+</svg>
