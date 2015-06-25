@@ -185,6 +185,11 @@
                 <acg idref="Tree.t:$(n)"/>
             </operator>
 
+            <operator id="ACGupDown.t:$(n)" spec="bacter.operators.ACGScaler" weight="1.0"
+                scaleFactor="0.8">
+                <acg idref="Tree.t:$(n)"/>
+            </operator>
+
             <operator id="CRswap.t:$(n)" spec="bacter.operators.ConvertedRegionSwap" weight="1.0"
                 acg="@Tree.t:$(n)"/>
 
@@ -262,12 +267,13 @@
                      if="inlikelihood(Tree.t:$(n))"/>
 
             <!-- CONNECT: Priors -->
+            <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
+                     if="isInitializing"/>
+
             <connect srcID='rhoPrior.t:$(n)' targetID='prior' inputName='distribution'
                 if="inlikelihood(Tree.t:$(n)) and rho.t:$(n)/estimate=true"/>
             <connect srcID='deltaPrior.t:$(n)' targetID='prior' inputName='distribution'
                 if="inlikelihood(Tree.t:$(n)) and delta.t:$(n)/estimate=true"/>
-            <connect srcID='CoalescentConstant.t:$(n)' targetID='prior' inputName='distribution'
-                     if="isInitializing"/>
             <connect srcID='popSizePrior.t:$(n)' targetID='prior' inputName='distribution'
                 if="inlikelihood(ConstantCoalescent.t:$(n)) and Tree.t:$(n)/estimate=true"/>
 
@@ -277,6 +283,10 @@
             <connect srcID='PropInvariantPrior.s:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(proportionInvariant.s:$(n)) and proportionInvariant.s:$(n)/estimate=true'>
                 Prior on proportion invariant for partition s:$(n)</connect>
+            <connect srcID='ClockPrior.c:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='MutationRatePrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='nooperator(FixMeanMutationRatesOperator) and inlikelihood(mutationRate.s:$(n)) and mutationRate.s:$(n)/estimate=true'/>
 
             <!-- CONNECT: State -->
             <connect srcID='Tree.t:$(n)' targetID='state' inputName='stateNode'
@@ -318,6 +328,13 @@
             <connect srcID='allTipDatesRandomWalker.t:$(n)'   targetID='mcmc' inputName='operator'
                      if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and allTipDatesRandomWalker.t:$(n)/weight!=0.0'>
                 Estimates tip dates for tree t:$(n)</connect>
+
+            <connect srcID='ACGupDown.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+            <connect srcID="rho.t:$(n)" targetID="ACGupDown.t:$(n)" inputName="parameterInverse"
+                     if="inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(rho.t:$(n)) and rho.t:$(n)/estimate=true"/>
+            <connect srcID="clockRate.c:$(n)" targetID="ACGupDown.t:$(n)" inputName="parameterInverse"
+                     if="inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true"/>
 
             <connect srcID='ACGscale.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
@@ -369,7 +386,7 @@
         </partitiontemplate>
 
         <mergepoint id='substModelTemplates'/>
-        <mergepoint id='bacterClockModelTemplates'/>
+        <!--mergepoint id='bacterClockModelTemplates'/-->
         <mergepoint id='parametricDistributions'/>
         <mergepoint id='ACGPriorTemplates'/>
     </beauticonfig>
