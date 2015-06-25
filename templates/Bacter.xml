@@ -185,9 +185,23 @@
                 <acg idref="Tree.t:$(n)"/>
             </operator>
 
-            <operator id="ACGupDown.t:$(n)" spec="bacter.operators.ACGScaler" weight="1.0"
+            <operator id="ACGupDown1.t:$(n)" spec="bacter.operators.ACGScaler" weight="1.0"
                 scaleFactor="0.8">
                 <acg idref="Tree.t:$(n)"/>
+                <parameterInverse idref="rho.t:$(n)"/>
+                <parameterInverse idref="clockRate.c:$(n)"/>
+            </operator>
+
+            <operator id="ACGupDown2.t:$(n)" spec="bacter.operators.ACGScaler" weight="1.0"
+                scaleFactor="0.8">
+                <acg idref="Tree.t:$(n)"/>
+                <parameterInverse idref="clockRate.c:$(n)"/>
+            </operator>
+
+            <operator id="ACGupDown3.t:$(n)" spec="bacter.operators.ACGScaler" weight="1.0"
+                scaleFactor="0.8">
+                <acg idref="Tree.t:$(n)"/>
+                <parameterInverse idref="rho.t:$(n)"/>
             </operator>
 
             <operator id="CRswap.t:$(n)" spec="bacter.operators.ConvertedRegionSwap" weight="1.0"
@@ -329,12 +343,12 @@
                      if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and allTipDatesRandomWalker.t:$(n)/weight!=0.0'>
                 Estimates tip dates for tree t:$(n)</connect>
 
-            <connect srcID='ACGupDown.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID="rho.t:$(n)" targetID="ACGupDown.t:$(n)" inputName="parameterInverse"
-                     if="inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(rho.t:$(n)) and rho.t:$(n)/estimate=true"/>
-            <connect srcID="clockRate.c:$(n)" targetID="ACGupDown.t:$(n)" inputName="parameterInverse"
-                     if="inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true"/>
+            <connect srcID='ACGupDown1.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(rho.t:$(n)) and rho.t:$(n)/estimate=true and inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='ACGupDown2.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(clockRate.c:$(n)) and clockRate.c:$(n)/estimate=true'/>
+            <connect srcID='ACGupDown3.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(rho.t:$(n)) and rho.t:$(n)/estimate=true'/>
 
             <connect srcID='ACGscale.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
