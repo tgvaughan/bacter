@@ -65,7 +65,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 //        System.out.println(acg.getExtendedNewick(true));
 
         // Determine whether we can apply this operator:
-        if (acg.getNodeCount()<3)
+        if (acg.getLeafNodeCount()<3)
             return Double.NEGATIVE_INFINITY;
 
         // Select non-root node:
