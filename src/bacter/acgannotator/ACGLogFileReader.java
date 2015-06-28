@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.util;
+package bacter.acgannotator;
 
 import bacter.ConversionGraph;
 import bacter.Locus;
