@@ -147,6 +147,46 @@ public class RegionList {
         }
 
         dirty = false;
-    } 
-    
+    }
+
+    /**
+     * Update the region list by adding a new conversion.
+     *
+     * @param conv conversion to add
+     */
+    public void addConversion(Conversion conv) {
+
+    }
+
+    /**
+     * Update the region list by deleting a new conversion.
+     *
+     * @param conv conversion to delete
+     */
+    public void deleteConversion(Conversion conv) {
+
+    }
+
+    /**
+     * Finds first region (left to right) affected by a change in the given
+     * conversion.
+     *
+     * @param conv conversion changed
+     * @param fromIdx first index of region list to consider
+     * @param toIdx last-1 index of region list to consider
+     * @return index of first affected region
+     */
+    private int findFirstAffectedRegionIndex(Conversion conv, int fromIdx, int toIdx) {
+        int midpoint = fromIdx + (toIdx-fromIdx)/2;
+        Region midRegion = regions.get(midpoint);
+
+        if (midRegion.rightBoundary<=conv.getStartSite())
+            return findFirstAffectedRegionIndex(conv, fromIdx, midpoint);
+
+        if (midRegion.leftBoundary>conv.getEndSite())
+            return findFirstAffectedRegionIndex(conv, midpoint, toIdx);
+
+        return midpoint;
+    }
+
 }

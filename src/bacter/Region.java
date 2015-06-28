@@ -29,9 +29,11 @@ public class Region {
 
     public int leftBoundary, rightBoundary;
     public Set<Conversion> activeConversions;
+    public boolean dirty;
 
     public Region() {
         activeConversions = new HashSet<>();
+        dirty = true;
     }
 
     public int getRegionLength() {
