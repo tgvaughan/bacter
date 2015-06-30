@@ -20,6 +20,7 @@ package bacter.model.pop;
 import bacter.CFEventList;
 import bacter.CFEventList.Event;
 import bacter.ConversionGraph;
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Loggable;
 import beast.core.parameter.IntegerParameter;
@@ -44,6 +45,7 @@ import java.util.List;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
+@Description("Piecewise constant/linear population function.")
 public class SkylinePopulationFunction extends PopulationFunction.Abstract implements Loggable {
 
     public Input<ConversionGraph> acgInput = new Input<>("acg",
@@ -65,6 +67,11 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
     public Input<Boolean> piecewiseLinearInput = new Input<>("piecewiseLinear",
             "Use piecewise linear rather than piecewise constant " +
                     "population function.", false);
+
+    public Input<Double> relativeOriginHeightInput = new Input<>(
+            "relativeFirstChangeHeight",
+            "Height first change time relative to CF root for grid.",
+            1.0);
 
     ConversionGraph acg;
     RealParameter popSizes;
@@ -145,7 +152,8 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
         } else {
             for (int i=1; i<groupBoundaries.length; i++) {
                 groupBoundaries[i] = groupBoundaries[i-1]
-                        + acg.getRoot().getHeight()*groupSizes.getValue(i-1)/nGridPointsInput.get();
+                        + acg.getRoot().getHeight()*relativeOriginHeightInput.get()
+                        *groupSizes.getValue(i-1)/nGridPointsInput.get();
             }
         }
 
