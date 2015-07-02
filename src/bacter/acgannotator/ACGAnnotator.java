@@ -272,7 +272,7 @@ public class ACGAnnotator {
                         int maxEndHPD = (int)endSites[(int)(0.975 * endSites.length)];
 
                         conv.newickMetaDataBottom = "height_95%_HPD={" + minHeight1HPD + "," + maxHeight1HPD + "}";
-                        conv.newickMetaDataMiddle = "posterior=" + posteriorSupport +
+                        conv.newickMetaDataMiddle = "posterior=" + String.format("%2.2f", posteriorSupport) +
                                 ", startSite_95%_HPD={" + minStartHPD + "," + maxStartHPD + "}" +
                                 ", endSite_95%_HPD={" + minEndHPD + "," + maxEndHPD + "}";
                         conv.newickMetaDataTop = "height_95%_HPD={" + minHeight2HPD + "," + maxHeight2HPD + "}";
