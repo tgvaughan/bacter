@@ -16,7 +16,10 @@
  */
 package bacter.model;
 
-import bacter.*;
+import bacter.ConversionGraph;
+import bacter.Locus;
+import bacter.MarginalTree;
+import bacter.Region;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -27,7 +30,6 @@ import beast.evolution.likelihood.BeerLikelihoodCore4;
 import beast.evolution.likelihood.GenericTreeLikelihood;
 import beast.evolution.likelihood.LikelihoodCore;
 import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.sitemodel.SiteModelInterface;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
 import com.google.common.collect.LinkedHashMultiset;
@@ -64,12 +66,12 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected Locus locus;
     protected int nStates;
 
-    protected Map<Set<Conversion>, LikelihoodCore> likelihoodCores;
+    protected Map<Region, LikelihoodCore> likelihoodCores;
     
-    protected Map<Set<Conversion>, Multiset<int[]>> patterns;
-    protected Map<Set<Conversion>, double[]> patternLogLikelihoods;
-    protected Map<Set<Conversion>, double[]> rootPartials;
-    protected Map<Set<Conversion>, List<Integer>> constantPatterns;
+    protected Map<Region, Multiset<int[]>> patterns;
+    protected Map<Region, double[]> patternLogLikelihoods;
+    protected Map<Region, double[]> rootPartials;
+    protected Map<Region, List<Integer>> constantPatterns;
     
     ExecutorService likelihoodThreadPool;
 
@@ -152,13 +154,13 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     public double calculateLogPNoThreads() {
         logP = 0.0;
 
-        for (Set<Conversion> convSet : patterns.keySet()) {
-            traverse(new MarginalTree(acg, convSet).getRoot(), convSet);
+        for (Region region : patterns.keySet()) {
+            traverse(new MarginalTree(acg, region.activeConversions).getRoot(), region);
 
             int i=0;
-            for (int[] pattern : patterns.get(convSet).elementSet()) {
-                logP += patternLogLikelihoods.get(convSet)[i]
-                        *patterns.get(convSet).count(pattern);
+            for (int[] pattern : patterns.get(region).elementSet()) {
+                logP += patternLogLikelihoods.get(region)[i]
+                        *patterns.get(region).count(pattern);
                 i += 1;
             }
         }
@@ -182,7 +184,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 : nRegions/usedPoolSize + 1;
 
 
-        List<Set<Conversion>> convSets = new ArrayList<>(patterns.keySet());
+        List<Region> convSets = new ArrayList<>(patterns.keySet());
         Future<?>[] futures = new Future[usedPoolSize];
 
         // Submit likelihood calculations to thread pool members
@@ -194,11 +196,12 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             if (end<=start)
                 continue;
 
-            List<Set<Conversion>> theseConvSets = convSets.subList(start, end);
+            List<Region> theseRegions = convSets.subList(start, end);
 
             futures[threadIdx] = likelihoodThreadPool.submit(() -> {
-                for (Set<Conversion> convSet : theseConvSets)
-                    traverse(new MarginalTree(acg, convSet).getRoot(), convSet);
+                for (Region region : theseRegions)
+                    traverse(new MarginalTree(acg, region.activeConversions).getRoot(),
+                            region);
             });
         }
 
@@ -212,11 +215,11 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         }
 
         // Collate log likelihoods
-        for (Set<Conversion> convSet : patterns.keySet()) {
+        for (Region region : patterns.keySet()) {
             int i=0;
-            for (int[] pattern : patterns.get(convSet).elementSet()) {
-                logP += patternLogLikelihoods.get(convSet)[i]
-                        *patterns.get(convSet).count(pattern);
+            for (int[] pattern : patterns.get(region).elementSet()) {
+                logP += patternLogLikelihoods.get(region)[i]
+                        *patterns.get(region).count(pattern);
                 i += 1;
             }
         }
@@ -237,11 +240,11 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         for (Region region : acg.getRegions(locus)) {
 
             Multiset<int[]> patSet;
-            if (patterns.containsKey(region.activeConversions))
-                patSet = patterns.get(region.activeConversions);
+            if (patterns.containsKey(region))
+                patSet = patterns.get(region);
             else {
                 patSet = LinkedHashMultiset.create();
-                patterns.put(region.activeConversions, patSet);
+                patterns.put(region, patSet);
             }
 
             for (int j=region.leftBoundary; j<region.rightBoundary; j++) {
@@ -253,15 +256,15 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         // Allocate memory for likelihoods and partials, and construct list
         // of constant patterns.
         constantPatterns.clear();
-        for (Set<Conversion> convSet : patterns.keySet()) {
-            Multiset<int[]> patSet = patterns.get(convSet);
-            patternLogLikelihoods.put(convSet, new double[patSet.elementSet().size()]);
-            rootPartials.put(convSet, new double[patSet.elementSet().size()*nStates]);
+        for (Region region : patterns.keySet()) {
+            Multiset<int[]> patSet = patterns.get(region);
+            patternLogLikelihoods.put(region, new double[patSet.elementSet().size()]);
+            rootPartials.put(region, new double[patSet.elementSet().size()*nStates]);
 
             List<Integer> constantPatternList = Lists.newArrayList();
             
             int patternIdx = 0;
-            for (int[] pattern : patterns.get(convSet).elementSet()) {
+            for (int[] pattern : patterns.get(region).elementSet()) {
                 boolean isConstant = true;
                 for (int i=1; i<pattern.length; i++)
                     if (pattern[i] != pattern[0]) {
@@ -275,7 +278,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 patternIdx += 1;
             }
             
-            constantPatterns.put(convSet, constantPatternList);
+            constantPatterns.put(region, constantPatternList);
        }
     }
     
@@ -287,24 +290,24 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         
         likelihoodCores.clear();
         
-        for (Set<Conversion> convSet : patterns.keySet()) {
+        for (Region region : patterns.keySet()) {
             
             LikelihoodCore likelihoodCore;
-            if (!likelihoodCores.keySet().contains(convSet)) {
+            if (!likelihoodCores.keySet().contains(region)) {
                 if (nStates==4)
                     likelihoodCore = new BeerLikelihoodCore4();
                 else
                     likelihoodCore = new BeerLikelihoodCore(nStates);
                 
-                likelihoodCores.put(convSet, likelihoodCore);
+                likelihoodCores.put(region, likelihoodCore);
             } else
-                likelihoodCore = likelihoodCores.get(convSet);
+                likelihoodCore = likelihoodCores.get(region);
             
             likelihoodCore.initialize(acg.getNodeCount(),
-                patterns.get(convSet).elementSet().size(),
+                patterns.get(region).elementSet().size(),
                 siteModel.getCategoryCount(),
                 true, false);
-            setStates(likelihoodCore, patterns.get(convSet));
+            setStates(likelihoodCore, patterns.get(region));
             
             int intNodeCount = acg.getNodeCount()/2;
             for (int i=0; i<intNodeCount; i++)
@@ -342,13 +345,13 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     
     /**
      * Traverse a marginal tree, computing partial likelihoods on the way.
-     * 
+     *
      * @param node Tree node
-     * @param convSet Set of active conversions.
+     * @param region region
      */
-    void traverse(Node node, Set<Conversion> convSet) {
+    void traverse(Node node, Region region) {
 
-        LikelihoodCore lhc = likelihoodCores.get(convSet);
+        LikelihoodCore lhc = likelihoodCores.get(region);
         
         if (!node.isRoot()) {
             lhc.setNodeMatrixForUpdate(node.getNr());
@@ -373,8 +376,8 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             
             // LikelihoodCore only supports binary trees.
             List<Node> children = node.getChildren();
-            traverse(children.get(0), convSet);
-            traverse(children.get(1), convSet);
+            traverse(children.get(0), region);
+            traverse(children.get(1), region);
 
             lhc.setNodePartialsForUpdate(node.getNr());
             lhc.setNodeStatesForUpdate(node.getNr());
@@ -385,15 +388,15 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 double [] frequencies = substitutionModel.getFrequencies();
                 double [] proportions = siteModel.getCategoryProportions(node);
                 lhc.integratePartials(node.getNr(), proportions,
-                        rootPartials.get(convSet));
+                        rootPartials.get(region));
 
-                for (int idx : constantPatterns.get(convSet)) {
-                    rootPartials.get(convSet)[idx]
+                for (int idx : constantPatterns.get(region)) {
+                    rootPartials.get(region)[idx]
                             += siteModel.getProportionInvariant();
                 }
 
-                lhc.calculateLogLikelihoods(rootPartials.get(convSet),
-                        frequencies, patternLogLikelihoods.get(convSet));
+                lhc.calculateLogLikelihoods(rootPartials.get(region),
+                        frequencies, patternLogLikelihoods.get(region));
             }
         }
     }

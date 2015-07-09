@@ -29,11 +29,9 @@ public class Region {
 
     public int leftBoundary, rightBoundary;
     public Set<Conversion> activeConversions;
-    public boolean dirty;
 
     public Region() {
         activeConversions = new HashSet<>();
-        dirty = true;
     }
 
     public int getRegionLength() {
@@ -56,5 +54,26 @@ public class Region {
                 .append(" active conversions)");
 
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Region region = (Region) o;
+
+        if (leftBoundary != region.leftBoundary) return false;
+        if (rightBoundary != region.rightBoundary) return false;
+        return activeConversions.equals(region.activeConversions);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = leftBoundary;
+        result = 31 * result + rightBoundary;
+        result = 31 * result + activeConversions.hashCode();
+        return result;
     }
 }
