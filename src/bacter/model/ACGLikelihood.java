@@ -233,19 +233,16 @@ public class ACGLikelihood extends GenericTreeLikelihood {
      */
     private void updatePatterns() {
 
-        patterns.clear();
-        patternLogLikelihoods.clear();
-        rootPartials.clear();
-        
-        for (Region region : acg.getRegions(locus)) {
+        List<Region> regionList = acg.getRegions(locus);
+        patterns.entrySet().retainAll(regionList);
 
-            Multiset<int[]> patSet;
+        for (Region region : regionList) {
+
             if (patterns.containsKey(region))
-                patSet = patterns.get(region);
-            else {
-                patSet = LinkedHashMultiset.create();
-                patterns.put(region, patSet);
-            }
+                continue;
+
+            Multiset<int[]> patSet = LinkedHashMultiset.create();
+            patterns.put(region, patSet);
 
             for (int j=region.leftBoundary; j<region.rightBoundary; j++) {
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
@@ -253,10 +250,17 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             }
         }
 
+
         // Allocate memory for likelihoods and partials, and construct list
         // of constant patterns.
-        constantPatterns.clear();
+        constantPatterns.keySet().retainAll(regionList);
+        patternLogLikelihoods.keySet().retainAll(regionList);
+        rootPartials.keySet().retainAll(regionList);
+
         for (Region region : patterns.keySet()) {
+            if (constantPatterns.containsKey(region))
+                continue;
+
             Multiset<int[]> patSet = patterns.get(region);
             patternLogLikelihoods.put(region, new double[patSet.elementSet().size()]);
             rootPartials.put(region, new double[patSet.elementSet().size()*nStates]);
