@@ -29,36 +29,37 @@ import java.util.Objects;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class Conversion {
-    
-    protected ConversionGraph acg;
+
+    /**
+     * Conversion graph this node corresponds to.
+     */
+    public ConversionGraph acg;
 
     /**
      * Nodes below branches to which recombinant edge connects.
      */
-    protected Node node1, node2;
+    final public Node node1, node2;
     
     /**
      * Heights on branches at which recombinant edge connects.
      */
-    protected double height1, height2;
+    final public double height1, height2;
     
     /**
      * Range of nucleotides affected by homologous gene conversion.
      */
-    protected int startSite, endSite;
+    final public int startSite, endSite;
 
     /**
      * Locus with which conversion is associated.
      */
-    protected Locus locus;
+    final public Locus locus;
 
     /**
      * Used by ACGAnnotator to incoroporate additional metadata into
      * the summary ACG.
      */
     public String newickMetaDataBottom, newickMetaDataMiddle, newickMetaDataTop;
-
-    public Conversion() { }
 
     /**
      * Construct new recombination with specified properties.
@@ -80,140 +81,7 @@ public class Conversion {
         this.startSite = startSite;
         this.endSite = endSite;
         this.locus = locus;
-    }
-
-    /**
-     * Obtain node below most recent point at which recombinant edge
-     * attaches to clonal frame.
-     * 
-     * @return node
-     */
-    public Node getNode1() {
-        return node1;
-    }
-
-    /**
-     * Obtain node below oldest point at which recombinant edge attaches
-     * to clonal frame.
-     * 
-     * @return node
-     */
-    public Node getNode2() {
-        return node2;
-    }
-    
-    /**
-     * Return height at most recent attachment of recombinant edge to
-     * clonal frame.
-     * 
-     * @return height
-     */
-    public double getHeight1() {
-        return height1;
-    }
-    
-    /**
-     * Return height at oldest attachment of recombinant edge to clonal
-     * frame.
-     * @return height
-     */
-    public double getHeight2() {
-        return height2;
-    }
-    
-    /**
-     * Return site of start of alignment region affected by recombination.
-     * @return site
-     */
-    public int getStartSite() {
-        return startSite;
-    }
-
-    /**
-     * Set site of start of alignment region affected by conversion event.
-     * 
-     * @param startSite 
-     */
-    public void setStartSite(int startSite) {
-        startEditing();
-        this.startSite = startSite;
-    }
-    
-    /**
-     * Return site  of end of alignment region affected by recombination.
-     * @return site
-     */
-    public int getEndSite() {
-        return endSite;
-    }
-
-    /**
-     * Set site of end of region affected by conversion event.
-     * 
-     * @param endSite 
-     */
-    public void setEndSite(int endSite) {
-        startEditing();
-        this.endSite = endSite;
-    }
-
-    /**
-     * Set node below most recent point at which recombinant edge attaches
-     * to clonal frame.
-     * 
-     * @param node1 
-     */
-    public void setNode1(Node node1) {
-        startEditing();
-        this.node1 = node1;
-    }
-
-    /**
-     * Set node below oldest point at which recombinant edge attaches to
-     * clonal frame.
-     * 
-     * @param node2 
-     */
-    public void setNode2(Node node2) {
-        startEditing();
-        this.node2 = node2;
-    }
-
-    /**
-     * Set height at most recent attachment of recombinant edge to clonal
-     * frame.
-     * 
-     * @param height1 
-     */
-    public void setHeight1(double height1) {
-        startEditing();
-        this.height1 = height1;
-    }
-
-    /**
-     * Set height at oldest attachment of recombinant edge to clonal frame.
-     * 
-     * @param height2 
-     */
-    public void setHeight2(double height2) {
-        startEditing();
-        this.height2 = height2;
-    }
-
-    /**
-     * @return Locus with which this conversion is associated.
-     */
-    public Locus getLocus() {
-        return locus;
-    }
-
-    /**
-     * Set locus that this conversion is associated with.
-     *
-     * @param locus locus with which this conversion will be associated.
-     */
-    public void setLocus(Locus locus) {
-        this.locus = locus;
+        this.acg = acg;
     }
 
     /**
@@ -253,23 +121,7 @@ public class Conversion {
         
         return true;
     }
-    
-    /**
-     * Assign conversion graph.
-     * @param acg 
-     */
-    public void setConversionGraph(ConversionGraph acg) {
-        this.acg = acg;
-    }
-    
-    /**
-     * Mark ARG statenode as dirty if available.
-     */
-    public void startEditing() {
-        if (acg != null)
-            acg.startEditing(null);
-    }
-    
+
     /**
      * Obtain new recombination with exactly the same
      * field values as this one.
@@ -277,17 +129,16 @@ public class Conversion {
      * @return copy of Conversion object
      */
     public Conversion getCopy() {
-        Conversion copy = new Conversion();
-        copy.locus = locus;
-        copy.acg = acg;
-        copy.startSite = startSite;
-        copy.endSite = endSite;
-        copy.node1 = node1;
-        copy.node2 = node2;
-        copy.height1 = height1;
-        copy.height2 = height2;
-
-        return copy;
+        return new Conversion(
+                node1,
+                height1,
+                node2,
+                height2,
+                startSite,
+                endSite,
+                acg,
+                locus
+        );
     }
 
     @Override
@@ -301,10 +152,10 @@ public class Conversion {
         if (Double.compare(that.height2, height2) != 0) return false;
         if (startSite != that.startSite) return false;
         if (endSite != that.endSite) return false;
-        if (acg != null ? !acg.equals(that.acg) : that.acg != null)
-            return false;
+        if (!acg.equals(that.acg)) return false;
         if (!node1.equals(that.node1)) return false;
-        return node2.equals(that.node2);
+        if (!node2.equals(that.node2)) return false;
+        return locus.equals(that.locus);
 
     }
 
@@ -312,7 +163,7 @@ public class Conversion {
     public int hashCode() {
         int result;
         long temp;
-        result = acg != null ? acg.hashCode() : 0;
+        result = acg.hashCode();
         result = 31 * result + node1.hashCode();
         result = 31 * result + node2.hashCode();
         temp = Double.doubleToLongBits(height1);
@@ -321,6 +172,7 @@ public class Conversion {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + startSite;
         result = 31 * result + endSite;
+        result = 31 * result + locus.hashCode();
         return result;
     }
 

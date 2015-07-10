@@ -27,12 +27,34 @@ import java.util.Set;
  */
 public class Region {
 
-    public int leftBoundary, rightBoundary;
-    public Set<Conversion> activeConversions;
+    final public int leftBoundary, rightBoundary;
+    final public Set<Conversion> activeConversions;
 
-    public Region() {
-        activeConversions = new HashSet<>();
+    /**
+     * Construct new region.
+     *
+     * @param leftBoundary leftmost boundary
+     * @param rightBoundary rightmost boundary
+     * @param activeConversions set of active conversions
+     */
+    public Region(int leftBoundary, int rightBoundary, Set<Conversion> activeConversions) {
+        this.leftBoundary = leftBoundary;
+        this.rightBoundary = rightBoundary;
+        this.activeConversions = new HashSet<>(activeConversions);
     }
+
+    /**
+     * Construct new clonal frame region.
+     *
+     * @param leftBoundary leftmost boundary
+     * @param rightBoundary rightmost boundary
+     */
+    public Region(int leftBoundary, int rightBoundary) {
+        this.leftBoundary = leftBoundary;
+        this.rightBoundary = rightBoundary;
+        this.activeConversions = new HashSet<>();
+    }
+
 
     public int getRegionLength() {
         return rightBoundary - leftBoundary;
