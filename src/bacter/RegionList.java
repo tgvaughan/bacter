@@ -23,8 +23,11 @@ import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
+ * This class is used to maintain a list of marginal tree regions
+ * corresponding to a given ACG.
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
@@ -93,12 +96,20 @@ public class RegionList {
 
         regions.clear();
 
+        /* Assemble lists of conversions ordered by start and end sites.
+        Note that these are COPIES of the conversion objects attached
+        to the ACG. This ensures that subsequent modifications of these
+        objects won't break our contract with the HashSet<Conversion>
+        objects in the likelihood code.
+        */
         List<Conversion> convOrderedByStart = new ArrayList<>();
+        acg.getConversions(locus).forEach(conversion ->
+                convOrderedByStart.add(conversion.getCopy()));
         convOrderedByStart.addAll(acg.getConversions(locus));
         convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
 
         List<Conversion> convOrderedByEnd = new ArrayList<>();
-        convOrderedByEnd.addAll(acg.getConversions(locus));
+        convOrderedByEnd.addAll(convOrderedByStart);
         convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
 
         Set<Conversion> activeConversions = Sets.newHashSet();
@@ -148,45 +159,4 @@ public class RegionList {
 
         dirty = false;
     }
-
-    /**
-     * Update the region list by adding a new conversion.
-     *
-     * @param conv conversion to add
-     */
-    public void addConversion(Conversion conv) {
-
-    }
-
-    /**
-     * Update the region list by deleting a new conversion.
-     *
-     * @param conv conversion to delete
-     */
-    public void deleteConversion(Conversion conv) {
-
-    }
-
-    /**
-     * Finds first region (left to right) affected by a change in the given
-     * conversion.
-     *
-     * @param conv conversion changed
-     * @param fromIdx first index of region list to consider
-     * @param toIdx last-1 index of region list to consider
-     * @return index of first affected region
-     */
-    private int findFirstAffectedRegionIndex(Conversion conv, int fromIdx, int toIdx) {
-        int midpoint = fromIdx + (toIdx-fromIdx)/2;
-        Region midRegion = regions.get(midpoint);
-
-        if (midRegion.rightBoundary<=conv.getStartSite())
-            return findFirstAffectedRegionIndex(conv, fromIdx, midpoint);
-
-        if (midRegion.leftBoundary>conv.getEndSite())
-            return findFirstAffectedRegionIndex(conv, midpoint, toIdx);
-
-        return midpoint;
-    }
-
 }
