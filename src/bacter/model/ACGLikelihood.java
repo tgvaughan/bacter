@@ -23,7 +23,10 @@ import bacter.Region;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.alignment.Taxon;
+import beast.evolution.alignment.TaxonSet;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.BeerLikelihoodCore;
 import beast.evolution.likelihood.BeerLikelihoodCore4;
@@ -32,6 +35,8 @@ import beast.evolution.likelihood.LikelihoodCore;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.util.Randomizer;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
@@ -308,9 +313,9 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 likelihoodCore = likelihoodCores.get(region);
             
             likelihoodCore.initialize(acg.getNodeCount(),
-                patterns.get(region).elementSet().size(),
-                siteModel.getCategoryCount(),
-                true, false);
+                    patterns.get(region).elementSet().size(),
+                    siteModel.getCategoryCount(),
+                    true, false);
             setStates(likelihoodCore, patterns.get(region));
             
             int intNodeCount = acg.getNodeCount()/2;
@@ -419,5 +424,36 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     @Override
     public void sample(State state, Random random) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * Main method for debugging only.
+     *
+     * @param args arguments (not used)
+     */
+    public static void main(String[] args) throws Exception {
+
+        Randomizer.setSeed(1);
+
+        ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
+
+        Locus locus = new Locus("locus", 10000);
+        List<Taxon> taxonList = new ArrayList<>();
+        taxonList.add(new Taxon("t1"));
+        taxonList.add(new Taxon("t2"));
+        taxonList.add(new Taxon("t3"));
+        TaxonSet taxonSet = new TaxonSet(taxonList);
+
+        SimulatedACG acg = new SimulatedACG();
+        acg.initByName(
+                "rho", 1.0/locus.getSiteCount(),
+                "delta", 50.0,
+                "locus", locus,
+                "taxonset", taxonSet,
+                "populationModel", popFunc);
+
+
+
     }
 }
