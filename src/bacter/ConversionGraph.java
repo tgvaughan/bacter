@@ -151,9 +151,9 @@ public class ConversionGraph extends Tree {
     public void addConversion(Conversion conv) {
         startEditing(null);
         
-        conv.acg = this;
+        conv.setConversionGraph(this);
 
-        Locus locus = conv.locus;
+        Locus locus = conv.getLocus();
 
         int i;
         for (i=0; i<convs.get(locus).size(); i++)
@@ -171,7 +171,7 @@ public class ConversionGraph extends Tree {
     public void deleteConversion(Conversion conv) {
         startEditing(null);
         
-        convs.get(conv.locus).remove(conv);
+        convs.get(conv.getLocus()).remove(conv);
     }
     
     /**
@@ -217,7 +217,7 @@ public class ConversionGraph extends Tree {
     public int getConversionIndex(Conversion conv) {
         int index = 0;
         for (Locus locus : getLoci()) {
-            if (locus == conv.locus) {
+            if (locus == conv.getLocus()) {
                 index += getConversions(locus).indexOf(conv);
                 break;
             } else
@@ -298,10 +298,10 @@ public class ConversionGraph extends Tree {
                 if (!conv.isValid()) {
                     return true;
                 }
-                if (conv.startSite < 0
-                        || conv.startSite >= locus.getSiteCount()
-                        || conv.endSite < 0
-                        || conv.endSite >= locus.getSiteCount()) {
+                if (conv.getStartSite() < 0
+                        || conv.getStartSite() >= locus.getSiteCount()
+                        || conv.getEndSite() < 0
+                        || conv.getEndSite() >= locus.getSiteCount()) {
                     return true;
                 }
             }
@@ -430,29 +430,19 @@ public class ConversionGraph extends Tree {
         for (Locus locus : getLoci()) {
             acg.convs.put(locus, new ArrayList<>());
             for (Conversion conv : convs.get(locus)) {
-                Conversion convCopy = new Conversion(
-                        acg.m_nodes[conv.node1.getNr()],
-                        conv.height1,
-                        acg.m_nodes[conv.node2.getNr()],
-                        conv.height2,
-                        conv.startSite,
-                        conv.endSite,
-                        acg,
-                        locus);
+                Conversion convCopy = conv.getCopy();
+                convCopy.setConversionGraph(acg);
+                convCopy.setNode1(acg.m_nodes[conv.getNode1().getNr()]);
+                convCopy.setNode2(acg.m_nodes[conv.getNode2().getNr()]);
                 acg.convs.get(locus).add(convCopy);
             }
 
             acg.storedConvs.put(locus, new ArrayList<>());
             for (Conversion conv : storedConvs.get(locus)) {
-                Conversion convCopy = new Conversion(
-                        acg.m_storedNodes[conv.node1.getNr()],
-                        conv.height1,
-                        acg.m_storedNodes[conv.node2.getNr()],
-                        conv.height2,
-                        conv.startSite,
-                        conv.endSite,
-                        acg,
-                        locus);
+                Conversion convCopy = conv.getCopy();
+                convCopy.setConversionGraph(acg);
+                convCopy.setNode1(acg.m_nodes[conv.getNode1().getNr()]);
+                convCopy.setNode2(acg.m_nodes[conv.getNode2().getNr()]);
                 acg.storedConvs.get(locus).add(convCopy);
             }
         }
@@ -481,16 +471,10 @@ public class ConversionGraph extends Tree {
                 convs.put(locus, new ArrayList<>());
                 storedConvs.put(locus, new ArrayList<>());
                 for (Conversion conv : acg.getConversions(locus)) {
-                    Conversion convCopy = new Conversion(
-                            acg.m_nodes[conv.node1.getNr()],
-                            conv.height1,
-                            acg.m_nodes[conv.node2.getNr()],
-                            conv.height2,
-                            conv.startSite,
-                            conv.endSite,
-                            acg,
-                            locus);
-
+                    Conversion convCopy = conv.getCopy();
+                    convCopy.setConversionGraph(this);
+                    convCopy.setNode1(m_nodes[conv.getNode1().getNr()]);
+                    convCopy.setNode2(m_nodes[conv.getNode2().getNr()]);
                     convs.get(locus).add(convCopy);
                 }
             }
@@ -523,16 +507,10 @@ public class ConversionGraph extends Tree {
                 convs.put(locus, new ArrayList<>());
                 storedConvs.put(locus, new ArrayList<>());
                 for (Conversion conv : acg.getConversions(locus)) {
-                    Conversion convCopy = new Conversion(
-                            acg.m_nodes[conv.node1.getNr()],
-                            conv.height1,
-                            acg.m_nodes[conv.node2.getNr()],
-                            conv.height2,
-                            conv.startSite,
-                            conv.endSite,
-                            acg,
-                            locus);
-
+                    Conversion convCopy = conv.getCopy();
+                    convCopy.setConversionGraph(this);
+                    convCopy.setNode1(m_nodes[conv.getNode1().getNr()]);
+                    convCopy.setNode2(m_nodes[conv.getNode2().getNr()]);
                     convs.get(locus).add(convCopy);
                 }
             }
@@ -597,9 +575,9 @@ public class ConversionGraph extends Tree {
                     continue;
 
                 if (conv.node1 == node)
-                    events.add(new Event(false, conv.height1, conv));
+                    events.add(new Event(false, conv.getHeight1(), conv));
                 if (conv.node2 == node)
-                    events.add(new Event(true, conv.height2, conv));
+                    events.add(new Event(true, conv.getHeight2(), conv));
             }
         }
         
@@ -631,10 +609,10 @@ public class ConversionGraph extends Tree {
             
             if (event.isArrival) {
                 String meta =  String.format("[&conv=%d, region={%d,%d}, locus=\"%s\"",
-                                convs.get(event.conv.locus).indexOf(event.conv),
-                                event.conv.startSite,
-                                event.conv.endSite,
-                                event.conv.locus.getID());
+                                convs.get(event.conv.getLocus()).indexOf(event.conv),
+                                event.conv.getStartSite(),
+                                event.conv.getEndSite(),
+                                event.conv.getLocus().getID());
 
                 if (event.conv.newickMetaDataMiddle != null)
                     meta += ", " + event.conv.newickMetaDataMiddle;

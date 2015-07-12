@@ -117,7 +117,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                     "supports strict clock models.");
 
         // Initialize patterns
-        patterns = new HashMap<>();
+        patterns = new LinkedHashMap<>();
         patternLogLikelihoods = new HashMap<>();
         rootPartials = new HashMap<>();
         constantPatterns = new HashMap<>();
@@ -262,10 +262,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 continue;
 
             Multiset<int[]> patSet = patterns.get(region);
-
-            if (patSet == null)
-                patSet = patterns.get(region);
-
             patternLogLikelihoods.put(region, new double[patSet.elementSet().size()]);
             rootPartials.put(region, new double[patSet.elementSet().size()*nStates]);
 

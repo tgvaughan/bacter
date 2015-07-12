@@ -17,6 +17,7 @@
 
 package bacter;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
@@ -65,12 +66,23 @@ public class RegionList {
     }
 
     /**
+     * Retrieve number of regions in region list.
+     * 
+     * @return region count
+     */
+    public int getRegionCount() {
+        updateRegionList();
+
+        return regions.size();
+    }
+
+    /**
      * Mark the region list as dirty.
      */
     public void makeDirty() {
         dirty = true;
     }
-
+   
     /**
      * Assemble list of regions of contiguous sites that possess a single
      * marginal tree.
@@ -97,19 +109,22 @@ public class RegionList {
 
             int nextStart;
             if (!convOrderedByStart.isEmpty())
-                nextStart = convOrderedByStart.get(0).startSite;
+                nextStart = convOrderedByStart.get(0).getStartSite();
             else
                 nextStart = Integer.MAX_VALUE;
 
             int nextEnd;
             if (!convOrderedByEnd.isEmpty())
-                nextEnd = convOrderedByEnd.get(0).endSite + 1;
+                nextEnd = convOrderedByEnd.get(0).getEndSite() + 1;
             else
                 nextEnd = Integer.MAX_VALUE;
 
             int nextBoundary = Math.min(nextStart, nextEnd);
             if (nextBoundary > lastBoundary) {
-                Region region = new Region(lastBoundary, nextBoundary, activeConversions);
+                Region region = new Region();
+                region.leftBoundary = lastBoundary;
+                region.rightBoundary = nextBoundary;
+                region.activeConversions.addAll(activeConversions);
                 regions.add(region);
             }
 
@@ -125,10 +140,53 @@ public class RegionList {
         }
 
         if (lastBoundary < locus.getSiteCount()) {
-            Region region = new Region(lastBoundary, locus.getSiteCount());
+            Region region = new Region();
+            region.leftBoundary = lastBoundary;
+            region.rightBoundary = locus.getSiteCount();
             regions.add(region);
         }
 
         dirty = false;
     }
+
+    /**
+     * Update the region list by adding a new conversion.
+     *
+     * @param conv conversion to add
+     */
+    public void addConversion(Conversion conv) {
+
+    }
+
+    /**
+     * Update the region list by deleting a new conversion.
+     *
+     * @param conv conversion to delete
+     */
+    public void deleteConversion(Conversion conv) {
+
+    }
+
+    /**
+     * Finds first region (left to right) affected by a change in the given
+     * conversion.
+     *
+     * @param conv conversion changed
+     * @param fromIdx first index of region list to consider
+     * @param toIdx last-1 index of region list to consider
+     * @return index of first affected region
+     */
+    private int findFirstAffectedRegionIndex(Conversion conv, int fromIdx, int toIdx) {
+        int midpoint = fromIdx + (toIdx-fromIdx)/2;
+        Region midRegion = regions.get(midpoint);
+
+        if (midRegion.rightBoundary<=conv.getStartSite())
+            return findFirstAffectedRegionIndex(conv, fromIdx, midpoint);
+
+        if (midRegion.leftBoundary>conv.getEndSite())
+            return findFirstAffectedRegionIndex(conv, midpoint, toIdx);
+
+        return midpoint;
+    }
+
 }
