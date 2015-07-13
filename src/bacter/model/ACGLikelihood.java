@@ -16,10 +16,7 @@
  */
 package bacter.model;
 
-import bacter.ConversionGraph;
-import bacter.Locus;
-import bacter.MarginalTree;
-import bacter.Region;
+import bacter.*;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -239,7 +236,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     private void updatePatterns() {
 
         List<Region> regionList = acg.getRegions(locus);
-        patterns.entrySet().retainAll(regionList);
+        patterns.keySet().retainAll(regionList);
 
         for (Region region : regionList) {
 
@@ -262,7 +259,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         patternLogLikelihoods.keySet().retainAll(regionList);
         rootPartials.keySet().retainAll(regionList);
 
-        for (Region region : patterns.keySet()) {
+        for (Region region : regionList) {
             if (constantPatterns.containsKey(region))
                 continue;
 
@@ -426,34 +423,4 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    /**
-     * Main method for debugging only.
-     *
-     * @param args arguments (not used)
-     */
-    public static void main(String[] args) throws Exception {
-
-        Randomizer.setSeed(1);
-
-        ConstantPopulation popFunc = new ConstantPopulation();
-        popFunc.initByName("popSize", new RealParameter("1.0"));
-
-        Locus locus = new Locus("locus", 10000);
-        List<Taxon> taxonList = new ArrayList<>();
-        taxonList.add(new Taxon("t1"));
-        taxonList.add(new Taxon("t2"));
-        taxonList.add(new Taxon("t3"));
-        TaxonSet taxonSet = new TaxonSet(taxonList);
-
-        SimulatedACG acg = new SimulatedACG();
-        acg.initByName(
-                "rho", 1.0/locus.getSiteCount(),
-                "delta", 50.0,
-                "locus", locus,
-                "taxonset", taxonSet,
-                "populationModel", popFunc);
-
-
-
-    }
 }
