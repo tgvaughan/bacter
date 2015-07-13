@@ -296,22 +296,23 @@ public class ACGLikelihood extends GenericTreeLikelihood {
      * Initialize likelihood cores.
      */
     private void updateCores() {
+
+        List<Region> regionList = acg.getRegions(locus);
+        likelihoodCores.keySet().retainAll(regionList);
         
-        likelihoodCores.clear();
-        
-        for (Region region : patterns.keySet()) {
-            
+        for (Region region : regionList) {
+
+            if (likelihoodCores.containsKey(region))
+                continue;
+
             LikelihoodCore likelihoodCore;
-            if (!likelihoodCores.keySet().contains(region)) {
-                if (nStates==4)
-                    likelihoodCore = new BeerLikelihoodCore4();
-                else
-                    likelihoodCore = new BeerLikelihoodCore(nStates);
+            if (nStates==4)
+                likelihoodCore = new BeerLikelihoodCore4();
+            else
+                likelihoodCore = new BeerLikelihoodCore(nStates);
                 
-                likelihoodCores.put(region, likelihoodCore);
-            } else
-                likelihoodCore = likelihoodCores.get(region);
-            
+            likelihoodCores.put(region, likelihoodCore);
+
             likelihoodCore.initialize(acg.getNodeCount(),
                     patterns.get(region).elementSet().size(),
                     siteModel.getCategoryCount(),
