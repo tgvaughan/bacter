@@ -188,11 +188,11 @@
         <log idref='delta'/>
         <log idref='popSize'/>
         <log idref='mutationRate'/>
-        <!--log spec="ConversionGraphStatsLogger" acg="@acg"/-->
+        <log spec="ConversionGraphStatsLogger" acg="@acg"/>
     </logger>
 
     <logger logEvery="1000" fileName="$(filebase).log">
-        <!--model idref='posterior'/-->
+        <model idref='posterior'/>
         <log idref="posterior"/>
         <log idref="acgLikelihood"/>
         <log idref="acgPrior"/>
