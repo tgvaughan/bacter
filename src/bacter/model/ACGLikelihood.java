@@ -65,12 +65,11 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected Locus locus;
     protected int nStates;
 
-    protected Map<Region, LikelihoodCore> likelihoodCores;
-    
     protected Map<Region, Multiset<int[]>> patterns;
     protected Map<Region, double[]> patternLogLikelihoods;
     protected Map<Region, double[]> rootPartials;
     protected Map<Region, List<Integer>> constantPatterns;
+    protected Map<Region, LikelihoodCore> likelihoodCores;
 
     ExecutorService likelihoodThreadPool;
 
@@ -115,45 +114,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             throw new IllegalArgumentException("ACGLikelihood currently only" +
                     "supports strict clock models.");
 
-        // Initialize patterns
-//        patterns = new TreeMap<>((r1, r2) -> {
-//            if (r1.leftBoundary<r2.leftBoundary)
-//                return -1;
-//            if (r1.leftBoundary>r1.rightBoundary)
-//                return 1;
-//            return 0;
-//        });
-//        patternLogLikelihoods = new TreeMap<>((r1, r2) -> {
-//        if (r1.leftBoundary<r2.leftBoundary)
-//            return -1;
-//            if (r1.leftBoundary>r1.rightBoundary)
-//                return 1;
-//            return 0;
-//        });
-//        rootPartials = new TreeMap<>((r1, r2) -> {
-//            if (r1.leftBoundary<r2.leftBoundary)
-//                return -1;
-//            if (r1.leftBoundary>r1.rightBoundary)
-//                return 1;
-//            return 0;
-//        });
-//        constantPatterns = new TreeMap<>((r1, r2) -> {
-//            if (r1.leftBoundary<r2.leftBoundary)
-//                return -1;
-//            if (r1.leftBoundary>r1.rightBoundary)
-//                return 1;
-//            return 0;
-//        });
-//
-//        // Initialise cores
-//        likelihoodCores = new TreeMap<>((r1, r2) -> {
-//            if (r1.leftBoundary<r2.leftBoundary)
-//                return -1;
-//            if (r1.leftBoundary>r1.rightBoundary)
-//                return 1;
-//            return 0;
-//        });
-
         patterns = new HashMap<>();
         patternLogLikelihoods = new HashMap<>();
         rootPartials = new HashMap<>();
@@ -171,29 +131,13 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
     @Override
     public double calculateLogP() {
-//        updatePatterns();
-//        updateCores();
-//
-//        if (nThreadsInput.get() > 0)
-//            calculateLogPThreads();
-//        else
-//            calculateLogPNoThreads();
-//
-//        double logP1 = logP;
-
-        //clearPatterns();
-
         updatePatterns();
         updateCores();
 
         if (nThreadsInput.get() > 0)
-            calculateLogPThreads();
+            return calculateLogPThreads();
         else
-            calculateLogPNoThreads();
-
-        double logP2 = logP;
-
-        return logP;
+            return calculateLogPNoThreads();
     }
 
 
@@ -277,15 +221,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
         return logP;
     }
-
-    private void clearPatterns() {
-        patterns.clear();
-        constantPatterns.clear();
-        patternLogLikelihoods.clear();
-        rootPartials.clear();
-        likelihoodCores.clear();
-    }
-
 
     /**
      * Ensure pattern counts are up to date.
