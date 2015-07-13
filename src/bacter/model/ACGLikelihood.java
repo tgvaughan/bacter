@@ -16,14 +16,14 @@
  */
 package bacter.model;
 
-import bacter.*;
+import bacter.ConversionGraph;
+import bacter.Locus;
+import bacter.MarginalTree;
+import bacter.Region;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
-import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.BeerLikelihoodCore;
 import beast.evolution.likelihood.BeerLikelihoodCore4;
@@ -32,10 +32,7 @@ import beast.evolution.likelihood.LikelihoodCore;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.SubstitutionModel;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.util.Randomizer;
 import com.google.common.collect.LinkedHashMultiset;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 
 import java.util.*;
@@ -74,7 +71,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected Map<Region, double[]> patternLogLikelihoods;
     protected Map<Region, double[]> rootPartials;
     protected Map<Region, List<Integer>> constantPatterns;
-    
+
     ExecutorService likelihoodThreadPool;
 
     /**
@@ -186,19 +183,19 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 : nRegions/usedPoolSize + 1;
 
 
-        List<Region> convSets = new ArrayList<>(patterns.keySet());
+        List<Region> regions = new ArrayList<>(patterns.keySet());
         Future<?>[] futures = new Future[usedPoolSize];
 
         // Submit likelihood calculations to thread pool members
         for (int threadIdx=0; threadIdx<usedPoolSize; threadIdx++) {
 
             int start = threadIdx*chunkSize;
-            int end = Integer.min((threadIdx+1)*chunkSize, convSets.size());
+            int end = Integer.min((threadIdx + 1) * chunkSize, regions.size());
 
             if (end<=start)
                 continue;
 
-            List<Region> theseRegions = convSets.subList(start, end);
+            List<Region> theseRegions = regions.subList(start, end);
 
             futures[threadIdx] = likelihoodThreadPool.submit(() -> {
                 for (Region region : theseRegions)
@@ -239,9 +236,14 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
         // Remove stale pattern sets
         patterns.keySet().retainAll(regionList);
-        constantPatterns.keySet().retainAll(regionList);
         patternLogLikelihoods.keySet().retainAll(regionList);
         rootPartials.keySet().retainAll(regionList);
+        constantPatterns.keySet().retainAll(regionList);
+
+//        patterns.clear();
+//        constantPatterns.clear();
+//        patternLogLikelihoods.clear();
+//        rootPartials.clear();
 
         for (Region region : regionList) {
 
@@ -261,7 +263,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             rootPartials.put(region, new double[patSet.elementSet().size()*nStates]);
 
             // Compute corresponding constant pattern list
-            List<Integer> constantPatternList = Lists.newArrayList();
+            List<Integer> constantPatternList = new ArrayList<>();
 
             int patternIdx = 0;
             for (int[] pattern : patterns.get(region).elementSet()) {
@@ -281,14 +283,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             constantPatterns.put(region, constantPatternList);
         }
 
-
-        // Allocate memory for likelihoods and partials, and construct list
-        // of constant patterns.
-
-        for (Region region : regionList) {
-            if (constantPatterns.containsKey(region))
-                continue;
-       }
     }
     
     
@@ -299,7 +293,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
         List<Region> regionList = acg.getRegions(locus);
         likelihoodCores.keySet().retainAll(regionList);
-        
+
         for (Region region : regionList) {
 
             if (likelihoodCores.containsKey(region))
