@@ -236,39 +236,33 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     private void updatePatterns() {
 
         List<Region> regionList = acg.getRegions(locus);
+
+        // Remove stale pattern sets
         patterns.keySet().retainAll(regionList);
+        constantPatterns.keySet().retainAll(regionList);
+        patternLogLikelihoods.keySet().retainAll(regionList);
+        rootPartials.keySet().retainAll(regionList);
 
         for (Region region : regionList) {
 
             if (patterns.containsKey(region))
                 continue;
 
+            // Add new pattern set
             Multiset<int[]> patSet = LinkedHashMultiset.create();
-            patterns.put(region, patSet);
-
             for (int j=region.leftBoundary; j<region.rightBoundary; j++) {
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
                 patSet.add(pat);
             }
-        }
+            patterns.put(region, patSet);
 
-
-        // Allocate memory for likelihoods and partials, and construct list
-        // of constant patterns.
-        constantPatterns.keySet().retainAll(regionList);
-        patternLogLikelihoods.keySet().retainAll(regionList);
-        rootPartials.keySet().retainAll(regionList);
-
-        for (Region region : regionList) {
-            if (constantPatterns.containsKey(region))
-                continue;
-
-            Multiset<int[]> patSet = patterns.get(region);
+            // Allocate memory for corresponding log likelihoods and root partials
             patternLogLikelihoods.put(region, new double[patSet.elementSet().size()]);
             rootPartials.put(region, new double[patSet.elementSet().size()*nStates]);
 
+            // Compute corresponding constant pattern list
             List<Integer> constantPatternList = Lists.newArrayList();
-            
+
             int patternIdx = 0;
             for (int[] pattern : patterns.get(region).elementSet()) {
                 boolean isConstant = true;
@@ -277,14 +271,23 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                         isConstant = false;
                         break;
                     }
-                
+
                 if (isConstant && !alignment.getDataType().isAmbiguousState(pattern[0]))
                     constantPatternList.add(patternIdx*nStates + pattern[0]);
-                
+
                 patternIdx += 1;
             }
-            
+
             constantPatterns.put(region, constantPatternList);
+        }
+
+
+        // Allocate memory for likelihoods and partials, and construct list
+        // of constant patterns.
+
+        for (Region region : regionList) {
+            if (constantPatterns.containsKey(region))
+                continue;
        }
     }
     
