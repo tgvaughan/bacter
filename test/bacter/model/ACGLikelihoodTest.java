@@ -174,62 +174,6 @@ public class ACGLikelihoodTest extends TestBase {
         assertTrue(relError<1e-13);
     }
 
-    @Test
-    public void testMultiThreadedLikelihood() throws Exception {
-
-        ConstantPopulation popFunc = new ConstantPopulation();
-        popFunc.initByName("popSize", new RealParameter("1.0"));
-
-        Locus locus = new Locus("locus", 10000);
-        TaxonSet taxonSet = getTaxonSet(10);
-
-        ConversionGraph acg = new SimulatedACG();
-        acg.initByName(
-                "rho", 5.0/locus.getSiteCount(),
-                "delta", 1000.0,
-                "populationModel", popFunc,
-                "locus", locus,
-                "taxonset", taxonSet);
-
-        System.out.println(acg);
-
-        // Site model:
-        JukesCantor jc = new JukesCantor();
-        jc.initByName();
-        SiteModel siteModel = new SiteModel();
-        siteModel.initByName(
-                "mutationRate", new RealParameter("1"),
-                "substModel", jc);
-
-        // Simulate alignment:
-        SimulatedAlignment alignment = new SimulatedAlignment();
-        alignment.initByName(
-                "acg", acg,
-                "siteModel", siteModel,
-                "outputFileName", "simulated_alignment.nexus",
-                "useNexus", true);
-
-        // Calculate likelihood:
-        ACGLikelihood argLikelihood = new ACGLikelihood();
-        argLikelihood.initByName(
-                "locus", locus,
-                "data", alignment,
-                "tree", acg,
-                "siteModel", siteModel,
-                "nThreads", 4);
-
-        double logP = argLikelihood.calculateLogP();
-
-        // Compare product of likelihoods of "marginal alignments" with
-        // likelihood computed using RGL.
-        double logPprime = slowLikelihood(acg, locus, alignment, siteModel);
-
-        double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
-        System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
-                logP, logPprime, relError);
-        assertTrue(relError<1e-13);
-    }
-
     /**
      * Calculate ACG likelihood using the product of the likelihoods of the
      * marginal trees.
