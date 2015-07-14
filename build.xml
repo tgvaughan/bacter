@@ -148,7 +148,7 @@
 
     <mkdir dir="${examples}" />
     <copy todir="${pack}/examples">
-      <fileset dir="${examples}" includes="*.xml" />
+      <fileset dir="${examples}" includes="**/*.xml" />
     </copy>
 
     <mkdir dir="${templates}" />
