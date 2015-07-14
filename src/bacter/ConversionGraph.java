@@ -722,10 +722,8 @@ public class ConversionGraph extends Tree {
 
             private Node getTrueNode(Node node) {
                 if (node.isLeaf()) {
-                    if (convIDMap.containsKey(node.getID()))
-                        return null;
-                    else
-                        return node;
+                    assert !convIDMap.containsKey(node.getID());
+                    return node;
                 }
 
                 if (convIDMap.containsKey(node.getID()))

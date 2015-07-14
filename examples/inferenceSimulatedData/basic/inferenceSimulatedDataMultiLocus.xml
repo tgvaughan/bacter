@@ -249,7 +249,7 @@
 
     <!-- Output logging -->
 
-    <logger logEvery="10000">
+    <logger logEvery="1000">
         <log idref="posterior"/>
         <log spec='TreeHeightLogger' tree="@acg"/>
         <log idref='delta'/>
