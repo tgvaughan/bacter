@@ -36,10 +36,6 @@ import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -51,11 +47,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             "locus",
             "Locus associated with alignment to evaluate probability of.",
             Input.Validate.REQUIRED);
-
-    public Input<Integer> nThreadsInput = new Input<>(
-            "nThreads",
-            "Number of additional threads to use in calculation.",
-            0);
 
     protected ConversionGraph acg;
 
@@ -77,8 +68,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected Map<Region, LikelihoodCore> storedLikelihoodCores;
     protected Map<Region, Double> regionLogLikelihoods;
     protected Map<Region, Double> storedRegionLogLikelihoods;
-
-    protected ExecutorService likelihoodThreadPool;
 
     /**
      * Memory for transition probabilities.
@@ -137,10 +126,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         // Allocate transition probability memory:
         // (Only the first nStates*nStates elements are usually used.)
         probabilities = new double[(nStates+1)*(nStates+1)];
-
-        // Initialize thread pool using number of available processors.
-        if (nThreadsInput.get()>0)
-            likelihoodThreadPool = Executors.newFixedThreadPool(nThreadsInput.get());
     }
 
     @Override
@@ -148,24 +133,8 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         updatePatterns();
         updateCores();
 
-        if (nThreadsInput.get() > 0)
-            return calculateLogPThreads();
-        else
-            return calculateLogPNoThreads();
-    }
-
-
-    /**
-     * Compute likelihood using single thread.
-     *
-     * @return logP
-     */
-    public double calculateLogPNoThreads() {
         logP = 0.0;
 
-//        System.out.println(acg.getExtendedNewick());
-
-//        regionLogLikelihoods.clear();
         regionLogLikelihoods.keySet().retainAll(acg.getRegions(locus));
 
         for (Region region : acg.getRegions(locus)) {
@@ -180,11 +149,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                             * patterns.get(region).count(pattern);
                     i += 1;
                 }
-//                if (regionLogLikelihoods.containsKey(region)) {
-//                    double diff = regionLogLikelihoods.get(region) - regionLogP;
-//                    if (Math.abs(diff) > 0.0)
-//                        System.out.println("Diff: " + diff);
-//                }
                 regionLogLikelihoods.put(region, regionLogP);
 
                 logP += regionLogP;
@@ -197,69 +161,9 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     }
 
     /**
-     * Compute likelihood using multiple threads.  This allows different
-     * marginal trees to be considered in parallel.
-     *
-     * @return logP
-     */
-    public double calculateLogPThreads() {
-        logP = 0.0;
-
-        int nRegions = patterns.size();
-        int usedPoolSize = Integer.min(nThreadsInput.get(), nRegions);
-        int chunkSize =  nRegions % usedPoolSize == 0
-                ? nRegions/usedPoolSize
-                : nRegions/usedPoolSize + 1;
-
-
-        List<Region> regions = new ArrayList<>(patterns.keySet());
-        Future<?>[] futures = new Future[usedPoolSize];
-
-        // Submit likelihood calculations to thread pool members
-        for (int threadIdx=0; threadIdx<usedPoolSize; threadIdx++) {
-
-            int start = threadIdx*chunkSize;
-            int end = Integer.min((threadIdx + 1) * chunkSize, regions.size());
-
-            if (end<=start)
-                continue;
-
-            List<Region> theseRegions = regions.subList(start, end);
-
-            futures[threadIdx] = likelihoodThreadPool.submit(() -> {
-                for (Region region : theseRegions)
-                    traverse(new MarginalTree(acg, region.activeConversions).getRoot(),
-                            region);
-            });
-        }
-
-        // Wait for all tasks to complete.
-        try {
-            for (int i=0; i<usedPoolSize; i++)
-                if (futures[i] != null)
-                    futures[i].get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new IllegalStateException("ACG likelihood calculation task interrupted.");
-        }
-
-        // Collate log likelihoods
-        for (Region region : patterns.keySet()) {
-            int i=0;
-            for (int[] pattern : patterns.get(region).elementSet()) {
-                logP += patternLogLikelihoods.get(region)[i]
-                        *patterns.get(region).count(pattern);
-                i += 1;
-            }
-        }
-
-        return logP;
-    }
-
-    /**
      * Ensure pattern counts are up to date.
      */
     private void updatePatterns() {
-
         List<Region> regionList = acg.getRegions(locus);
 
         // Remove stale pattern sets
@@ -289,7 +193,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             List<Integer> constantPatternList = new ArrayList<>();
 
             int patternIdx = 0;
-            for (int[] pattern : patterns.get(region).elementSet()) {
+            for (int[] pattern : patSet.elementSet()) {
                 boolean isConstant = true;
                 for (int i=1; i<pattern.length; i++)
                     if (pattern[i] != pattern[0]) {
