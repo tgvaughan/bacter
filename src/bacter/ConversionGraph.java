@@ -73,7 +73,7 @@ public class ConversionGraph extends Tree {
 
     protected List<Locus> loci;
     protected int totalSequenceLength;
-    
+
     @Override
     public void initAndValidate() throws Exception {
 
@@ -960,6 +960,17 @@ public class ConversionGraph extends Tree {
         if (regionLists != null)
             for (RegionList regionList : regionLists.values())
                 regionList.makeDirty();
+    }
+
+    /**
+     * @return true iff clonal frame is dirty
+     */
+    public boolean clonalFrameIsDirty() {
+        for (Node node : getNodesAsArray())
+            if (node.isDirty() > Tree.IS_CLEAN)
+                return true;
+
+        return false;
     }
     
     /*

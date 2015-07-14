@@ -66,17 +66,24 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected int nStates;
 
     protected Map<Region, Multiset<int[]>> patterns;
+    protected Map<Region, Multiset<int[]>> storedPatterns;
     protected Map<Region, double[]> patternLogLikelihoods;
+    protected Map<Region, double[]> storedPatternLogLikelihoods;
     protected Map<Region, double[]> rootPartials;
+    protected Map<Region, double[]> storedRootPartials;
     protected Map<Region, List<Integer>> constantPatterns;
+    protected Map<Region, List<Integer>> storedConstantPatterns;
     protected Map<Region, LikelihoodCore> likelihoodCores;
+    protected Map<Region, LikelihoodCore> storedLikelihoodCores;
+    protected Map<Region, Double> regionLogLikelihoods;
+    protected Map<Region, Double> storedRegionLogLikelihoods;
 
-    ExecutorService likelihoodThreadPool;
+    protected ExecutorService likelihoodThreadPool;
 
     /**
      * Memory for transition probabilities.
      */
-    double [] probabilities;
+    protected double [] probabilities;
 
     public ACGLikelihood() {
         // We allow alignments to be specified using Locus objects.
@@ -115,10 +122,17 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                     "supports strict clock models.");
 
         patterns = new HashMap<>();
+        storedPatterns = new HashMap<>();
         patternLogLikelihoods = new HashMap<>();
+        storedPatternLogLikelihoods = new HashMap<>();
         rootPartials = new HashMap<>();
+        storedRootPartials = new HashMap<>();
         constantPatterns = new HashMap<>();
+        storedConstantPatterns = new HashMap<>();
         likelihoodCores = new HashMap<>();
+        storedLikelihoodCores = new HashMap<>();
+        regionLogLikelihoods = new HashMap<>();
+        storedRegionLogLikelihoods = new HashMap<>();
 
         // Allocate transition probability memory:
         // (Only the first nStates*nStates elements are usually used.)
@@ -149,14 +163,33 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     public double calculateLogPNoThreads() {
         logP = 0.0;
 
-        for (Region region : acg.getRegions(locus)) {
-            traverse(new MarginalTree(acg, region.activeConversions).getRoot(), region);
+//        System.out.println(acg.getExtendedNewick());
 
-            int i=0;
-            for (int[] pattern : patterns.get(region).elementSet()) {
-                logP += patternLogLikelihoods.get(region)[i]
-                        *patterns.get(region).count(pattern);
-                i += 1;
+//        regionLogLikelihoods.clear();
+        regionLogLikelihoods.keySet().retainAll(acg.getRegions(locus));
+
+        for (Region region : acg.getRegions(locus)) {
+
+            if (!regionLogLikelihoods.containsKey(region)) {
+                traverse(new MarginalTree(acg, region.activeConversions).getRoot(), region);
+
+                double regionLogP = 0.0;
+                int i = 0;
+                for (int[] pattern : patterns.get(region).elementSet()) {
+                    regionLogP += patternLogLikelihoods.get(region)[i]
+                            * patterns.get(region).count(pattern);
+                    i += 1;
+                }
+//                if (regionLogLikelihoods.containsKey(region)) {
+//                    double diff = regionLogLikelihoods.get(region) - regionLogP;
+//                    if (Math.abs(diff) > 0.0)
+//                        System.out.println("Diff: " + diff);
+//                }
+                regionLogLikelihoods.put(region, regionLogP);
+
+                logP += regionLogP;
+            } else {
+                logP += regionLogLikelihoods.get(region);
             }
         }
 
@@ -410,4 +443,63 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    protected boolean requiresRecalculation() {
+        if (acg.clonalFrameIsDirty() || siteModel.isDirtyCalculation())
+            regionLogLikelihoods.clear();
+
+        return true;
+    }
+
+    @Override
+    public void store() {
+        storedPatterns.clear();
+        storedPatterns.putAll(patterns);
+
+        storedPatternLogLikelihoods.clear();
+        storedPatternLogLikelihoods.putAll(patternLogLikelihoods);
+
+        storedConstantPatterns.clear();
+        storedConstantPatterns.putAll(constantPatterns);
+
+        storedRootPartials.clear();
+        storedRootPartials.putAll(rootPartials);
+
+        storedLikelihoodCores.clear();
+        storedLikelihoodCores.putAll(likelihoodCores);
+
+        storedRegionLogLikelihoods.clear();
+        storedRegionLogLikelihoods.putAll(regionLogLikelihoods);
+
+        super.store();
+    }
+
+    @Override
+    public void restore() {
+        Map<Region, Multiset<int[]>> tmpPatterns = patterns;
+        patterns = storedPatterns;
+        storedPatterns = tmpPatterns;
+
+        Map<Region, double[]> tmpPatternLogLikelihoods = patternLogLikelihoods;
+        patternLogLikelihoods = storedPatternLogLikelihoods;
+        storedPatternLogLikelihoods = tmpPatternLogLikelihoods;
+
+        Map<Region, double[]> tmpRootPartials = rootPartials;
+        rootPartials = storedRootPartials;
+        storedRootPartials = tmpRootPartials;
+
+        Map<Region, LikelihoodCore> tmpLikelihoodCores = likelihoodCores;
+        likelihoodCores = storedLikelihoodCores;
+        storedLikelihoodCores = tmpLikelihoodCores;
+
+        Map<Region, List<Integer>> tmpConstantPatterns = constantPatterns;
+        constantPatterns = storedConstantPatterns;
+        storedConstantPatterns = tmpConstantPatterns;
+
+        Map<Region, Double> tmpRegionLogLikelihoods = regionLogLikelihoods;
+        regionLogLikelihoods = storedRegionLogLikelihoods;
+        storedRegionLogLikelihoods = tmpRegionLogLikelihoods;
+
+        super.restore();
+    }
 }
