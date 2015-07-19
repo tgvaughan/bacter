@@ -20,7 +20,6 @@ import bacter.Conversion;
 import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
@@ -39,6 +38,10 @@ public class CFSubtreeSlide extends ACGOperator {
 
     @Override
     public double proposal() {
+        throw new IllegalStateException("CF/conv swap operator is buggy.  Do not use!");
+    }
+
+    public double buggyProposal() {
 
         double logHGF = 0.0;
         double logHalf = Math.log(0.5);
