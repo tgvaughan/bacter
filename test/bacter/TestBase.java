@@ -86,13 +86,12 @@ public abstract class TestBase {
      * corresponding to a single marginal tree.
      * 
      * @param alignment
-     * @param acg
      * @param region
      * @return
      * @throws Exception 
      */
     public Alignment createMarginalAlignment(Alignment alignment,
-            ConversionGraph acg, Region region) throws Exception {
+                                             Region region) throws Exception {
         List<Sequence> sequences = Lists.newArrayList();
 
         for (int leafIdx=0; leafIdx<alignment.getTaxonCount(); leafIdx++) {

@@ -16,15 +16,16 @@
  */
 package bacter.model;
 
-import bacter.*;
+import bacter.Conversion;
+import bacter.ConversionGraph;
+import bacter.Locus;
+import bacter.TestBase;
+import beast.core.State;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.TaxonSet;
-import beast.evolution.likelihood.TreeLikelihood;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.JukesCantor;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
 import beast.evolution.tree.coalescent.ConstantPopulation;
 import beast.util.ClusterTree;
 import org.junit.Test;
@@ -61,23 +62,29 @@ public class ACGLikelihoodTest extends TestBase {
         SiteModel siteModel = new SiteModel();
         siteModel.initByName(
                 "substModel", jc);
-        
+
         // Likelihood
-        
+
         ACGLikelihood argLikelihood = new ACGLikelihood();
         argLikelihood.initByName(
                 "locus", locus,
                 "tree", acg,
                 "siteModel", siteModel);
-        
+
+
+        ACGLikelihoodSlow argLikelihoodSlow = new ACGLikelihoodSlow();
+        argLikelihoodSlow.initByName(
+                "locus", locus,
+                "tree", acg,
+                "siteModel", siteModel);
+
         acg.setEverythingDirty(true);
-        
+
         double logP = argLikelihood.calculateLogP();
-        double logPtrue = slowLikelihood(acg, locus, locus.getAlignment(), siteModel);
-        //double logPtrue = -6444.862402765536;
-        
+        double logPtrue = argLikelihoodSlow.calculateLogP();
+
         double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
-        
+
         assertTrue(relativeDiff<1e-14);
         
         //Add a single recombination event
@@ -92,9 +99,8 @@ public class ACGLikelihoodTest extends TestBase {
         acg.addConversion(recomb1);
         
         logP = argLikelihood.calculateLogP();
-        logPtrue = slowLikelihood(acg, locus, locus.getAlignment(), siteModel);
-        //logPtrue = -6445.810702954902;
-        
+        logPtrue = argLikelihoodSlow.calculateLogP();
+
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
@@ -111,9 +117,8 @@ public class ACGLikelihoodTest extends TestBase {
         acg.addConversion(recomb2);
         
         logP = argLikelihood.calculateLogP();
-        logPtrue = slowLikelihood(acg, locus, locus.getAlignment(), siteModel);
-        //logPtrue = -6452.466389537251;
-        
+        logPtrue = argLikelihoodSlow.calculateLogP();
+
         relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
         
         assertTrue(relativeDiff<1e-14);
@@ -166,40 +171,112 @@ public class ACGLikelihoodTest extends TestBase {
 
         // Compare product of likelihoods of "marginal alignments" with
         // likelihood computed using RGL.
-        double logPprime = slowLikelihood(acg, locus, alignment, siteModel);
-        
+        ACGLikelihoodSlow argLikelihoodSlow = new ACGLikelihoodSlow();
+        argLikelihoodSlow.initByName(
+                "locus", locus,
+                "data", alignment,
+                "tree", acg,
+                "siteModel", siteModel);
+
+        double logPprime = argLikelihoodSlow.calculateLogP();
+
+
         double relError = 2.0*Math.abs(logP-logPprime)/Math.abs(logP + logPprime);
         System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
                 logP, logPprime, relError);
         assertTrue(relError<1e-13);
     }
 
-    /**
-     * Calculate ACG likelihood using the product of the likelihoods of the
-     * marginal trees.
-     * 
-     * @param acg conversion graph
-     * @param locus locus to compute likelihood of
-     * @param siteModel sequence evolution model
-     * @return log likelihood
-     * @throws Exception 
-     */
-    private double slowLikelihood(ConversionGraph acg, Locus locus, Alignment alignment,
-            SiteModel siteModel) throws Exception {
+    @Test
+    public void testLikelihoodCaching() throws Exception {
+        ConstantPopulation popFunc = new ConstantPopulation();
+        popFunc.initByName("popSize", new RealParameter("1.0"));
 
-        double logP = 0.0;
-        for (Region region : acg.getRegions(locus)) {
-            Alignment margAlign = createMarginalAlignment(alignment, acg, region);
-            Tree margTree = new Tree(new MarginalTree(acg, region).getRoot());
-            TreeLikelihood treeLikelihood = new TreeLikelihood();
-            treeLikelihood.initByName(
-                    "data", margAlign,
-                    "tree", margTree,
-                    "siteModel", siteModel);
-            
-            logP += treeLikelihood.calculateLogP();
-        }
-        
-        return logP;
+        Locus locus = new Locus("locus", 10000);
+        TaxonSet taxonSet = getTaxonSet(10);
+
+
+        ConversionGraph acg = new SimulatedACG();
+        acg.initByName(
+                "rho", 5.0/locus.getSiteCount(),
+                "delta", 1000.0,
+                "populationModel", popFunc,
+                "locus", locus,
+                "taxonset", taxonSet);
+
+        State state = new State();
+        state.initByName("stateNode", acg);
+        state.initialise();
+
+        System.out.println(acg);
+
+        // Site model:
+        JukesCantor jc = new JukesCantor();
+        jc.initByName();
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName(
+                "mutationRate", new RealParameter("1"),
+                "substModel", jc);
+
+        // Simulate alignment:
+        SimulatedAlignment alignment = new SimulatedAlignment();
+        alignment.initByName(
+                "acg", acg,
+                "siteModel", siteModel,
+                "outputFileName", "simulated_alignment.nexus",
+                "useNexus", true);
+
+        // Calculate likelihood 1:
+        ACGLikelihood argLikelihood = new ACGLikelihood();
+        argLikelihood.initByName(
+                "locus", locus,
+                "data", alignment,
+                "tree", acg,
+                "siteModel", siteModel);
+
+        ACGLikelihoodSlow argLikelihoodSlow = new ACGLikelihoodSlow();
+        argLikelihoodSlow.initByName(
+                "locus", locus,
+                "data", alignment,
+                "tree", acg,
+                "siteModel", siteModel);
+
+        double logP1 = argLikelihood.calculateLogP();
+        double logP1prime = argLikelihoodSlow.calculateLogP();
+
+        double relError = 2.0*Math.abs(logP1-logP1prime)/Math.abs(logP1 + logP1prime);
+        System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
+                logP1, logP1prime, relError);
+        assertTrue(relError<1e-13);
+
+        //Add a single recombination event
+        Node node1 = acg.getExternalNodes().get(0);
+        Node node2 = node1.getParent();
+        double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
+        int startLocus = 500;
+        int endLocus = 600;
+        Conversion recomb1 = new Conversion(node1, height1, node2, height2,
+                startLocus, endLocus, acg, locus);
+        acg.addConversion(recomb1);
+
+        double logP2 = argLikelihood.calculateLogP();
+        double logP2prime = argLikelihoodSlow.calculateLogP();
+
+        relError = 2.0*Math.abs(logP2-logP2prime)/Math.abs(logP2 + logP2prime);
+        System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
+                logP2, logP2prime, relError);
+        assertTrue(relError<1e-13);
+
+        state.restore();
+
+        double logP3 = argLikelihood.calculateLogP();
+        double logP3prime = argLikelihoodSlow.calculateLogP();
+
+        relError = 2.0*Math.abs(logP3-logP3prime)/Math.abs(logP3 + logP3prime);
+        System.out.format("logP=%g\nlogPprime=%g\nrelError=%g\n",
+                logP3, logP3prime, relError);
+        assertTrue(relError<1e-13);
     }
+
 }

@@ -80,7 +80,7 @@ public class SimulatedAlignmentTest extends TestBase {
         // (Should be enough info here for precise agreement)
         for (Region region : acg.getRegions(locus)) {
 
-            Alignment margAlign = createMarginalAlignment(alignment, acg, region);
+            Alignment margAlign = createMarginalAlignment(alignment, region);
             
             ClusterTree upgmaTree = new ClusterTree();
             upgmaTree.initByName(
