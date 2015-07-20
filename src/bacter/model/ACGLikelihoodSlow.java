@@ -85,8 +85,8 @@ public class ACGLikelihoodSlow extends GenericTreeLikelihood {
 
     @Override
     public double calculateLogP() throws Exception {
+        logP = 0.0;
 
-        double logP = 0.0;
         for (Region region : acg.getRegions(locus)) {
             Alignment margAlign = createMarginalAlignment(alignment, acg, region);
             Tree margTree = new Tree(new MarginalTree(acg, region).getRoot());
@@ -98,9 +98,7 @@ public class ACGLikelihoodSlow extends GenericTreeLikelihood {
 
             logP += treeLikelihood.calculateLogP();
         }
-
         return logP;
-
     }
 
     /**
