@@ -23,7 +23,6 @@ import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
-import feast.input.In;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,22 +36,26 @@ import java.util.List;
 @Description("Wilson-Balding operator for ACG clonal frames.")
 public class CFWilsonBalding extends ConversionCreationOperator {
 
-    public Input<Double> alphaInput = new In<Double>("alpha", "Root height "
-            + "proposal parameter").setRequired();
+    public Input<Double> alphaInput = new Input<>("alpha", "Root height "
+            + "proposal parameter", Input.Validate.REQUIRED);
 
-    public Input<Boolean> includeRootInput = new In<Boolean>("includeRoot",
-            "Whether to include root variants of move.").setDefault(true);
+    public Input<Double> convFollowProbInput = new Input<>("convFollowProb",
+            "Probability that conversion will follow subtree move.", 0.5);
 
-    public Input<RealParameter> rhoInput = new In<RealParameter>("rho",
-            "Conversion rate.").setRequired();
+    public Input<Boolean> includeRootInput = new Input<>("includeRoot",
+            "Whether to include root variants of move.", true);
 
-    private double alpha;
+    public Input<RealParameter> rhoInput = new Input<>("rho",
+            "Conversion rate.", Input.Validate.REQUIRED);
+
+    private double alpha, convFollowProb;
 
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
 
         alpha = alphaInput.get();
+        convFollowProb = convFollowProbInput.get();
     }
 
 //    int count = 0;
@@ -60,9 +63,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
     @Override
     public double proposal() {
 
-//        System.out.println(++count);
-
-//        System.out.println(acg.getExtendedNewick(true));
+//        String oldTree = acg.getExtendedNewick();
 
         // Determine whether we can apply this operator:
         if (acg.getLeafNodeCount()<3)
@@ -86,7 +87,13 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         } while (invalidDestNode(srcNode, destNode));
         Node destNodeP = destNode.getParent();
         double t_destNode = destNode.getHeight();
-        
+
+        String oldTree = acg.getExtendedNewick();
+        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
+            System.out.println("Hey!");
+
+        }
+
         if (destNode.isRoot()) {
             // Forward root move
 
@@ -168,6 +175,10 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         // DEBUG
         if (acg.isInvalid())
             throw new IllegalStateException("CFWB proposed invalid state.");
+
+        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
+            System.out.println("=\n" + oldTree + "\n" + acg.getExtendedNewick());
+        }
 
         return logHGF;
     }
@@ -262,7 +273,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
                         if (conv.getNode1() == node &&
                                 (!reverseRootMove || conv.getHeight1() < maxChildHeight))
-                            logP += Math.log(0.5);
+                            logP += Math.log(convFollowProb);
                     }
 
                     if (conv.getHeight2() > lowerBound && conv.getHeight2() < upperBound) {
@@ -272,7 +283,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                         if (conv.getNode2() == node
                                 && (!reverseRootMove || conv.getNode1() != node
                                 || conv.getHeight1() < maxChildHeight))
-                            logP += Math.log(0.5);
+                            logP += Math.log(convFollowProb);
                     }
                 }
             }
@@ -347,15 +358,15 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             for (Locus locus : acg.getLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == node && conv.getHeight1() < destTime) {
-                        if (Randomizer.nextBoolean())
+                        if (Randomizer.nextDouble()<convFollowProb)
                             conv.setNode1(srcNode);
-                        logP += Math.log(0.5);
+                        logP += Math.log(convFollowProb);
                     }
 
                     if (conv.getNode2() == node && conv.getHeight2() < destTime) {
-                        if (Randomizer.nextBoolean())
+                        if (Randomizer.nextDouble()<convFollowProb)
                             conv.setNode2(srcNode);
-                        logP += Math.log(0.5);
+                        logP += Math.log(convFollowProb);
                     }
 
                 }

@@ -134,6 +134,13 @@
         <populationModel idref="popModel"/>
     </operator>
 
+    <operator id="addRemoveRedundancy" spec="AddRemoveRedundantConversion" weight="10.0">
+        <acg idref="acg"/>
+        <delta idref="delta"/>
+        <populationModel idref="popModel"/>
+    </operator>
+
+
     <operator id="scale" spec="ACGScaler" weight="1.0"
         scaleFactor="0.8">
         <acg idref="acg"/>

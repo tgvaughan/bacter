@@ -1,0 +1,110 @@
+<beast version='2.0'
+       namespace='beast.core
+                 :beast.core.util
+                 :beast.core.parameter
+                 :beast.evolution.operators
+                 :beast.evolution.tree
+                 :beast.evolution.tree.coalescent
+                 :beast.evolution.alignment
+                 :beast.util
+                 :bacter
+                 :bacter.model
+                 :bacter.operators
+                 :bacter.util'>
+
+    <input spec="SimulatedACG" id="acg"
+           rho="0.0005" delta="50.0">
+        <locus spec="Locus" id="locus" siteCount="10000"/>
+        <taxonset spec="TaxonSet">
+            <taxon spec="Taxon" id="t1"/>
+            <taxon spec="Taxon" id="t2"/>
+            <taxon spec="Taxon" id="t3"/>
+            <taxon spec="Taxon" id="t4"/>
+            <taxon spec="Taxon" id="t5"/>
+        </taxonset>
+        <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
+    </input>
+
+  <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <state>
+      <stateNode idref='acg'/>
+    </state>
+    
+    <distribution spec="CompoundDistribution" id="posterior">
+        <distribution spec='ACGCoalescent' id="acgPrior">
+            <rho spec='RealParameter' value="0.0005" id="rho" estimate="false"/>
+            <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+            <tree idref="acg"/>
+            <populationModel idref="popFunc"/>
+        </distribution>
+    </distribution>
+
+    <operator id="addRemove" spec="AddRemoveConversion" weight="1.0">
+        <acg idref="acg"/>
+        <delta idref="delta"/>
+        <populationModel idref="popFunc"/>
+    </operator>
+    
+    <operator id="addRemoveRedundant" spec="AddRemoveRedundantConversion" weight="1.0">
+        <acg idref="acg"/>
+        <delta idref="delta"/>
+        <populationModel idref="popFunc"/>
+    </operator>
+    
+    <operator id="scale" spec="ACGScaler" weight="1.0"
+              scaleFactor="0.8">
+        <acg idref="acg"/>
+    </operator>
+   
+    <operator id="Uniform" spec='ACGValidityWrapper' acg="@acg" weight="1">
+        <operator spec='Uniform' weight="10">
+            <tree idref="acg"/>
+        </operator>
+    </operator>
+    <operator id="STS" spec='ACGValidityWrapper' acg="@acg" weight="1">
+        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
+            <tree idref="acg"/>
+        </operator>
+    </operator>
+    <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg" weight="1">
+        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
+            <tree idref="acg"/>
+        </operator>
+    </operator>
+    <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg" weight="1">
+        <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
+            <tree idref="acg"/>
+        </operator>
+    </operator>
+    <operator id="WB" spec='ACGValidityWrapper' acg="@acg" weight="1">
+        <operator spec='WilsonBalding' weight="1">
+            <tree idref="acg"/>
+        </operator>
+    </operator>
+
+    <logger logEvery="10000">
+      <log idref="posterior"/>
+      <log spec='TreeHeightLogger' tree="@acg"/>
+    </logger>
+    
+    <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
+       <log idref="acg"/>
+     </logger>
+     
+     <logger logEvery="1000" fileName="$(filebase).cf" mode="tree">
+         <log spec="ClonalFrameLogger" acg="@acg"/>
+     </logger>
+     
+     <logger logEvery="1000" fileName="$(filebase).converted">
+         <log idref="posterior"/>
+         <log spec="ConvertedRegionLogger" acg="@acg"/>
+     </logger>
+     
+     <logger logEvery="1000" fileName="$(filebase).stats">
+         <log idref="posterior"/>
+         <log spec="ConversionGraphStatsLogger" acg="@acg"/>
+     </logger>
+
+  </run>
+
+</beast>
