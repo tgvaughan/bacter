@@ -78,14 +78,14 @@ public class AddRemoveRedundantConversion extends ConversionCreationOperator {
 
             double toPoint = L*Randomizer.nextDouble();
             if (toPoint < cfParent.getLength()) {
-                newConv.setNode1(cfParent);
-                newConv.setHeight1(cfParent.getHeight() + toPoint);
+                newConv.setNode2(cfParent);
+                newConv.setHeight2(cfParent.getHeight() + toPoint);
             } else {
                 toPoint -= cfParent.getLength();
                 for (Node child : cfParent.getChildren()) {
                     if (toPoint < child.getLength()) {
-                        newConv.setNode1(child);
-                        newConv.setHeight1(child.getHeight() + toPoint);
+                        newConv.setNode2(child);
+                        newConv.setHeight2(child.getHeight() + toPoint);
                         break;
                     }
                     toPoint -= child.getLength();
@@ -98,12 +98,12 @@ public class AddRemoveRedundantConversion extends ConversionCreationOperator {
 
             logHGF -= drawAffectedRegion(newConv);
 
+            // Add conversion
+            acg.addConversion(newConv);
+
             // Add probability of reverse move deleting this conversion
             // to HGF:
             logHGF += Math.log(1.0/getRedundantConversions(cfNode).size());
-
-            // Add conversion
-            acg.addConversion(newConv);
         } else {
             
             // Remove
