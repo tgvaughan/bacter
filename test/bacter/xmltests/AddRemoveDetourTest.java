@@ -17,6 +17,7 @@
 
 package bacter.xmltests;
 
+import bacter.TestBase;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import org.junit.Test;
@@ -34,7 +35,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class AddRemoveDetourTest {
+public class AddRemoveDetourTest extends TestBase {
 
     @Test
     public void test5Taxon() throws Exception {
@@ -43,6 +44,7 @@ public class AddRemoveDetourTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/addRemoveDetourTests/addRemoveDetourTest5taxon.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();

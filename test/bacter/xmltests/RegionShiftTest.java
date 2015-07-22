@@ -17,6 +17,7 @@
 
 package bacter.xmltests;
 
+import bacter.TestBase;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import org.junit.Test;
@@ -34,7 +35,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class RegionShiftTest {
+public class RegionShiftTest extends TestBase {
 
     @Test
     public void testRegionShift() throws Exception {
@@ -43,6 +44,7 @@ public class RegionShiftTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/regionShiftTests/regionShiftTest5taxon.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -72,6 +74,7 @@ public class RegionShiftTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/regionShiftTests/boundaryShiftTest5taxon.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();

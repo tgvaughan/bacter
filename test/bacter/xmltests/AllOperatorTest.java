@@ -17,6 +17,7 @@
 
 package bacter.xmltests;
 
+import bacter.TestBase;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import org.junit.Test;
@@ -34,7 +35,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class AllOperatorTest {
+public class AllOperatorTest extends TestBase {
 
     @Test
     public void testSerialSample() throws Exception {
@@ -43,6 +44,7 @@ public class AllOperatorTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/allOperatorTests/allOperatorTestSeriallySampled.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -72,6 +74,7 @@ public class AllOperatorTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/allOperatorTests/allOperatorTestSSMultiLocus.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();

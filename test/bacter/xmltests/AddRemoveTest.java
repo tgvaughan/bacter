@@ -17,6 +17,8 @@
 
 package bacter.xmltests;
 
+import bacter.TestBase;
+import beast.core.MCMC;
 import beast.util.Randomizer;
 import beast.util.XMLParser;
 import org.junit.Test;
@@ -34,7 +36,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class AddRemoveTest {
+public class AddRemoveTest extends TestBase {
 
     @Test
     public void test2Taxon() throws Exception {
@@ -43,6 +45,7 @@ public class AddRemoveTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/addRemoveTests/addRemoveTest2taxon.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -72,6 +75,7 @@ public class AddRemoveTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/addRemoveTests/addRemoveTest5taxon.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -101,6 +105,7 @@ public class AddRemoveTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/addRemoveTests/addRemoveDynamicPopSize5taxon.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -130,6 +135,7 @@ public class AddRemoveTest {
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
                 new File("examples/addRemoveTests/addRemoveSerialSamplingTest5taxon.xml"));
+        disableScreenLog(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();

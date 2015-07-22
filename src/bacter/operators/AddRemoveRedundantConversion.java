@@ -19,6 +19,7 @@ package bacter.operators;
 import bacter.Conversion;
 import bacter.Locus;
 import beast.core.Description;
+import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
@@ -31,13 +32,17 @@ import java.util.List;
 @Description("Operator which adds and removes redundant conversions to/from an ACG.")
 public class AddRemoveRedundantConversion extends ConversionCreationOperator {
 
+    public Input<Double> apertureInput = new Input<Double>("aperture",
+            "Maximum aperture used to select conversion attachment points, " +
+                    "expressed as a fraction of node age.", 0.1);
+
     public AddRemoveRedundantConversion() { }
     
     @Override
     public double proposal() {
         double logHGF = 0;
 
-        // Select CF node
+        // Select non-root CF node
         Node cfNode = acg.getNode(Randomizer.nextInt(acg.getNodeCount()-1));
         Node cfParent = cfNode.getParent();
 
@@ -47,18 +52,19 @@ public class AddRemoveRedundantConversion extends ConversionCreationOperator {
 
             Conversion newConv = new Conversion();
 
-            double L = cfNode.getLength();
+            double maxL = apertureInput.get()*cfNode.getHeight();
+            double L = Math.min(getEdgeLength(cfNode), maxL);
             for (Node child : cfNode.getChildren())
-                L += child.getLength();
+                L += Math.min(getEdgeLength(child), maxL);
 
             logHGF -= Math.log(1.0/L);
 
             double fromPoint = L*Randomizer.nextDouble();
-            if (fromPoint < cfNode.getLength()) {
+            if (fromPoint < Math.min(getEdgeLength(cfNode), maxL)) {
                 newConv.setNode1(cfNode);
                 newConv.setHeight1(cfNode.getHeight() + fromPoint);
             } else {
-                fromPoint -= cfNode.getLength();
+                fromPoint -= Math.min(getEdgeLength(cfNode), maxL);
                 for (Node child : cfNode.getChildren()) {
                     if (fromPoint < child.getLength()) {
                         newConv.setNode1(child);
@@ -70,9 +76,9 @@ public class AddRemoveRedundantConversion extends ConversionCreationOperator {
 
             }
 
-            L = cfParent.getLength();
+            maxL = apertureInput.get()*cfParent.getHeight();
             for (Node child : cfParent.getChildren())
-                L += child.getLength();
+                L += Math.min(child.getLength(), maxL);
 
             logHGF -= Math.log(1.0/L);
 
@@ -161,5 +167,19 @@ public class AddRemoveRedundantConversion extends ConversionCreationOperator {
         }
 
         return redundantConversions;
+    }
+
+    /**
+     * Return length of edge above node.  Unlike node.getLength(), this method
+     * sensibly handles the root.
+     *
+     * @param node node below edge
+     * @return length of edge above node
+     */
+    private double getEdgeLength(Node node) {
+        if (node.isRoot())
+            return Double.POSITIVE_INFINITY;
+        else
+            return node.getParent().getHeight() - node.getHeight();
     }
 }

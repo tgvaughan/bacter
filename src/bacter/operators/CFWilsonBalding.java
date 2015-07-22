@@ -88,11 +88,11 @@ public class CFWilsonBalding extends ConversionCreationOperator {
         Node destNodeP = destNode.getParent();
         double t_destNode = destNode.getHeight();
 
-        String oldTree = acg.getExtendedNewick();
-        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
-            System.out.println("Hey!");
-
-        }
+//        String oldTree = acg.getExtendedNewick();
+//        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
+//            System.out.println("Hey!");
+//
+//        }
 
         if (destNode.isRoot()) {
             // Forward root move
@@ -173,12 +173,12 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             logHGF -= expandConversions(srcNode, destNode, newTime);
 
         // DEBUG
-        if (acg.isInvalid())
-            throw new IllegalStateException("CFWB proposed invalid state.");
+//        if (acg.isInvalid())
+//            throw new IllegalStateException("CFWB proposed invalid state.");
 
-        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
-            System.out.println("=\n" + oldTree + "\n" + acg.getExtendedNewick());
-        }
+//        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
+//            System.out.println("=\n" + oldTree + "\n" + acg.getExtendedNewick());
+//        }
 
         return logHGF;
     }

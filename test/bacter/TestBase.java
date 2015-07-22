@@ -17,6 +17,7 @@
 
 package bacter;
 
+import beast.core.*;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.evolution.alignment.Taxon;
@@ -214,6 +215,30 @@ public abstract class TestBase {
         public Clade(Node node) {
             for (Node leaf : node.getAllLeafNodes())
                 add(leaf.getID());
+        }
+    }
+
+    /**
+     * Remove screen log (if it exists) from given runnable, if that
+     * runnable is of dynamic type MCMC.  This prevents needlessly
+     * verbose test log output.
+     *
+     * @param runnable from which to remove log.
+     */
+    public void disableScreenLog(beast.core.Runnable runnable) {
+        if (runnable instanceof MCMC) {
+            MCMC mcmc = (MCMC)runnable;
+
+            Logger screenLog = null;
+            for (Logger logger : mcmc.loggersInput.get()) {
+                if (logger.fileNameInput.get() == null) {
+                    screenLog = logger;
+                    break;
+                }
+            }
+
+            if (screenLog != null)
+                mcmc.loggersInput.get().remove(screenLog);
         }
     }
 }
