@@ -91,7 +91,6 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 //        String oldTree = acg.getExtendedNewick();
 //        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
 //            System.out.println("Hey!");
-//
 //        }
 
         if (destNode.isRoot()) {

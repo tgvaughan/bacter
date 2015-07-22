@@ -59,7 +59,7 @@
     </input>
 
 
-    <run spec="MCMC" id="mcmc" chainLength="100000000">
+    <run spec="MCMC" id="mcmc" chainLength="100000000" storeEvery="10000">
         <state>
             <stateNode id="acg" spec='SimulatedACG' taxonset="@taxonSet"
                 locus="@locus" rho="0.0005" delta="1000.0">
@@ -134,11 +134,11 @@
         <populationModel idref="popModel"/>
     </operator>
 
-    <operator id="addRemoveRedundancy" spec="AddRemoveRedundantConversion" weight="10.0">
+    <!--operator id="addRemoveRedundancy" spec="AddRemoveRedundantConversion" weight="10.0">
         <acg idref="acg"/>
         <delta idref="delta"/>
         <populationModel idref="popModel"/>
-    </operator>
+    </operator-->
 
 
     <operator id="scale" spec="ACGScaler" weight="1.0"

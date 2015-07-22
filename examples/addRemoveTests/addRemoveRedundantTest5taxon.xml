@@ -47,8 +47,6 @@
     
     <operator id="addRemoveRedundant" spec="AddRemoveRedundantConversion" weight="1.0">
         <acg idref="acg"/>
-        <delta idref="delta"/>
-        <populationModel idref="popFunc"/>
     </operator>
     
     <operator id="scale" spec="ACGScaler" weight="1.0"
