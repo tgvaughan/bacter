@@ -21,7 +21,6 @@ import bacter.Conversion;
 import beast.core.Description;
 import beast.core.Input;
 import beast.util.Randomizer;
-import feast.input.In;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -30,11 +29,11 @@ import feast.input.In;
         + "by a randomly-selected conversion event.")
 public class ConvertedRegionBoundaryShift extends ACGOperator {
 
-    public Input<Double> apertureSizeInput = new In<Double>(
+    public Input<Double> apertureSizeInput = new Input<>(
             "apertureSize",
             "Relative size (with respect to alignment size) of aperture "
                     + "within which new location of region edge is chosen "
-                    + "uniformly. (Default 0.01, ie. 1%)").setDefault(0.01);
+                    + "uniformly. (Default 0.01, ie. 1%)", 0.01);
 
     public ConvertedRegionBoundaryShift() { }
 

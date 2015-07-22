@@ -23,7 +23,6 @@ import beast.core.Input;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
-import feast.input.In;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +38,11 @@ import java.util.List;
 @Description("Uniform operator for clonal frame nodes.")
 public class CFUniform extends ConversionCreationOperator {
 
-    public Input<RealParameter> rhoInput = new In<RealParameter>(
-            "rho", "Conversion rate parameter.").setRequired();
+    public Input<RealParameter> rhoInput = new Input<>(
+            "rho", "Conversion rate parameter.", Input.Validate.REQUIRED);
 
-    public Input<Double> scaleFactorInput = new In<Double>("scaleFactor",
-            "Root height proposal parameter.").setDefault(0.8);
+    public Input<Double> scaleFactorInput = new Input<>("scaleFactor",
+            "Root height proposal parameter.", 0.8);
 
     @Override
     public double proposal() {

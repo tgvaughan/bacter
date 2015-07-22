@@ -22,7 +22,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
-import feast.input.In;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -31,9 +30,9 @@ import feast.input.In;
         + "about on clonal frame.")
 public class ConvertedEdgeSlide extends ACGOperator {
 
-    public Input<Double> scaleBoundInput = new In<Double>("scaleBound",
+    public Input<Double> scaleBoundInput = new Input<>("scaleBound",
             "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "
-                    + "Default is 0.8.").setDefault(0.8);
+                    + "Default is 0.8.", 0.8);
 
     private double scaleMin, scaleMax;
 

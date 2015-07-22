@@ -23,7 +23,6 @@ import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.coalescent.PopulationFunction;
 import beast.util.Randomizer;
-import feast.input.In;
 import java.util.List;
 
 /**
@@ -34,8 +33,9 @@ import java.util.List;
  */
 public abstract class EdgeCreationOperator extends ACGOperator {
 
-    public Input<PopulationFunction> popFuncInput = new In<PopulationFunction>(
-            "populationModel", "Model of population size through time.").setRequired();
+    public Input<PopulationFunction> popFuncInput = new Input<>(
+            "populationModel", "Model of population size through time.",
+            Input.Validate.REQUIRED);
 
     protected PopulationFunction popFunc;
     

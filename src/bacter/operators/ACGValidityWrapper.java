@@ -19,7 +19,6 @@ package bacter.operators;
 
 import beast.core.Input;
 import beast.core.Operator;
-import feast.input.In;
 
 /**
  *
@@ -27,11 +26,11 @@ import feast.input.In;
  */
 public class ACGValidityWrapper extends ACGOperator {
     
-    public Input<Operator> operatorInput = new In<Operator>("operator",
-            "Operator to follow validity check with.").setRequired();
+    public Input<Operator> operatorInput = new Input<>("operator",
+            "Operator to follow validity check with.", Input.Validate.REQUIRED);
 
     public ACGValidityWrapper() {
-        In.setOptional(m_pWeight);
+        m_pWeight.setRule(Input.Validate.OPTIONAL);
     }
 
     @Override

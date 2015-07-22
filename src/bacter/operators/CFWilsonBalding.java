@@ -39,23 +39,19 @@ public class CFWilsonBalding extends ConversionCreationOperator {
     public Input<Double> alphaInput = new Input<>("alpha", "Root height "
             + "proposal parameter", Input.Validate.REQUIRED);
 
-    public Input<Double> convFollowProbInput = new Input<>("convFollowProb",
-            "Probability that conversion will follow subtree move.", 0.5);
-
     public Input<Boolean> includeRootInput = new Input<>("includeRoot",
             "Whether to include root variants of move.", true);
 
     public Input<RealParameter> rhoInput = new Input<>("rho",
             "Conversion rate.", Input.Validate.REQUIRED);
 
-    private double alpha, convFollowProb;
+    private double alpha;
 
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
 
         alpha = alphaInput.get();
-        convFollowProb = convFollowProbInput.get();
     }
 
 //    int count = 0;
@@ -272,7 +268,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
 
                         if (conv.getNode1() == node &&
                                 (!reverseRootMove || conv.getHeight1() < maxChildHeight))
-                            logP += Math.log(convFollowProb);
+                            logP += Math.log(0.5);
                     }
 
                     if (conv.getHeight2() > lowerBound && conv.getHeight2() < upperBound) {
@@ -282,7 +278,7 @@ public class CFWilsonBalding extends ConversionCreationOperator {
                         if (conv.getNode2() == node
                                 && (!reverseRootMove || conv.getNode1() != node
                                 || conv.getHeight1() < maxChildHeight))
-                            logP += Math.log(convFollowProb);
+                            logP += Math.log(0.5);
                     }
                 }
             }
@@ -357,15 +353,15 @@ public class CFWilsonBalding extends ConversionCreationOperator {
             for (Locus locus : acg.getLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == node && conv.getHeight1() < destTime) {
-                        if (Randomizer.nextDouble()<convFollowProb)
+                        if (Randomizer.nextBoolean())
                             conv.setNode1(srcNode);
-                        logP += Math.log(convFollowProb);
+                        logP += Math.log(0.5);
                     }
 
                     if (conv.getNode2() == node && conv.getHeight2() < destTime) {
-                        if (Randomizer.nextDouble()<convFollowProb)
+                        if (Randomizer.nextBoolean())
                             conv.setNode2(srcNode);
-                        logP += Math.log(convFollowProb);
+                        logP += Math.log(0.5);
                     }
 
                 }
