@@ -59,7 +59,12 @@
     </input>
 
 
+    <!--run spec="MCMCTrace" id="mcmc" chainLength="100000000" storeEvery="10000"
+        stateTraceFile="$(filebase).stateTrace"
+        stateTraceStart="40000"
+        stateTraceOperator="@CFWB"-->
     <run spec="MCMC" id="mcmc" chainLength="100000000" storeEvery="10000">
+
         <state>
             <stateNode id="acg" spec='SimulatedACG' taxonset="@taxonSet"
                 locus="@locus" rho="0.0005" delta="1000.0">
