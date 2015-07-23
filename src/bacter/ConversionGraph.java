@@ -97,7 +97,7 @@ public class ConversionGraph extends Tree {
         }
         
         if (fromStringInput.get() != null) {
-            fromString(fromStringInput.get());
+            fromStringOld(fromStringInput.get());
         }
 
         regionLists = new HashMap<>();
@@ -309,9 +309,21 @@ public class ConversionGraph extends Tree {
         
         return false;
     }
-    
+
     @Override
     public String toString() {
+        String string = getExtendedNewick();
+
+        // Unfortunately, we must behave differently if we're being
+        // called by toXML().
+        StackTraceElement[] ste = Thread.currentThread().getStackTrace();
+        if (ste[2].getMethodName().equals("toXML"))
+            return string.replaceAll("&", "&amp;");
+        else
+            return string;
+    }
+
+    public String toStringOld() {
         StringBuilder sb = new StringBuilder();
 
         for (Locus locus : loci) {
@@ -343,7 +355,7 @@ public class ConversionGraph extends Tree {
      *
      * @param str string representation of ACG
      */
-    public void fromString(String str) {
+    public void fromStringOld(String str) {
         
         // Extract clonal frame and recombination components of string
         Pattern cfPattern = Pattern.compile("^[^\\(]*(\\(.*)$");
@@ -404,7 +416,7 @@ public class ConversionGraph extends Tree {
     
     @Override
     public void fromXML(final org.w3c.dom.Node node) {
-        fromString(node.getTextContent());
+        fromExtendedNewick(node.getTextContent());
     }
 
     @Override

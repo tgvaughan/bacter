@@ -154,7 +154,7 @@ public class SerializationDeserializationTest extends TestBase {
         acg.addConversion(conv2);
         
         // Write ACG out to string
-        String argString = acg.toString();
+        String argString = acg.toStringOld();
         
         // Read ACG back in from string
         ConversionGraph argNew = new ConversionGraph();
