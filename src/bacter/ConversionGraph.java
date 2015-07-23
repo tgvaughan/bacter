@@ -58,6 +58,10 @@ public class ConversionGraph extends Tree {
             "fromString",
             "Initialise ARG from string representation.");
 
+    public Input<String> fromExtNewickInput = new Input<>(
+            "extendedNewick",
+            "Initialise ARG from extended Newick representation.");
+
     /**
      * List of recombinations on graph.
      */
@@ -98,6 +102,10 @@ public class ConversionGraph extends Tree {
         
         if (fromStringInput.get() != null) {
             fromStringOld(fromStringInput.get());
+        }
+
+        if (fromExtNewickInput.get() != null) {
+            fromExtendedNewick(fromExtNewickInput.get());
         }
 
         regionLists = new HashMap<>();
@@ -310,6 +318,12 @@ public class ConversionGraph extends Tree {
         return false;
     }
 
+    /**
+     * Produces an extended Newick representation of this ACG.  This
+     * method is also used to serialize the state to a state file.
+     *
+     * @return an extended Newick representation of ACG.
+     */
     @Override
     public String toString() {
         String string = getExtendedNewick();
@@ -323,6 +337,15 @@ public class ConversionGraph extends Tree {
             return string;
     }
 
+    /**
+     * Produces a string representing the ACG.  The string is
+     * composed of a Newick representation of the CF, with additional
+     * annotations describing the conversions.  This method is
+     * no longer used for state serialization.
+     *
+     * @return string representation of the ACG
+     */
+    @Deprecated
     public String toStringOld() {
         StringBuilder sb = new StringBuilder();
 
@@ -350,11 +373,11 @@ public class ConversionGraph extends Tree {
     }
     
     /**
-     * Load ACG from string representation.  This is the same representation
-     * used for XML state restoration.
+     * Load ACG from old string representation.
      *
      * @param str string representation of ACG
      */
+    @Deprecated
     public void fromStringOld(String str) {
         
         // Extract clonal frame and recombination components of string
