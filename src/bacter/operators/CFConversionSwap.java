@@ -64,7 +64,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
 //        String oldTree = acg.getExtendedNewick();
 
         // Determine whether we can apply this operator:
-        if (acg.getLeafNodeCount()<3)
+        if (acg.getLeafNodeCount()<3 || acg.getTotalConvCount()==0)
             return Double.NEGATIVE_INFINITY;
 
         // Select conversion to replace
@@ -99,15 +99,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
             double logHGF = 0.0;
 
-            double t_srcNodeG = srcNodeP.getParent().getHeight();
-
-            logHGF += Math.log(1.0/(t_srcNodeG - Math.max(t_srcNode, t_srcNodeS)));
-
-            double newTime = t_destNode
-                    + Randomizer.nextExponential(1.0/(alpha*t_destNode));
-
-            logHGF -= Math.log(1.0/(alpha*t_destNode))
-                    - (1.0/alpha)*(newTime/t_destNode - 1.0);
+            double newTime = replaceConversion.getHeight2();
 
             // Randomly reconnect some of the conversions ancestral
             // to srcNode to the new edge above srcNode.
@@ -128,15 +120,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
             double logHGF = 0.0;
 
-            logHGF += Math.log(1.0/(alpha*t_srcNodeS))
-                    - (1.0/alpha)*(t_srcNodeP/t_srcNodeS - 1.0);
-
-            double min_newTime = Math.max(t_srcNode, t_destNode);
-            double t_destNodeP = destNodeP.getHeight();
-            double newTime = min_newTime
-                    + (t_destNodeP - min_newTime)*Randomizer.nextDouble();
-
-            logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
+            double newTime = replaceConversion.getHeight2();
 
             // Reconnect conversions on edge above srcNode older than
             // newTime to edges ancestral to destNode.
@@ -153,16 +137,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         double logHGF = 0.0;
 
-        double t_srcNodeG = srcNodeP.getParent().getHeight();
-
-        logHGF += Math.log(1.0/(t_srcNodeG - Math.max(t_srcNode, t_srcNodeS)));
-
-        double min_newTime = Math.max(t_destNode, t_srcNode);
-        double t_destNodeP = destNodeP.getHeight();
-        double newTime = min_newTime
-                + (t_destNodeP - min_newTime)*Randomizer.nextDouble();
-
-        logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
+        double newTime = replaceConversion.getHeight2();
 
         if (newTime < srcNodeP.getHeight())
             logHGF += collapseConversions(srcNode, destNode, newTime);

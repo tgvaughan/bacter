@@ -2,6 +2,7 @@ package bacter.devutils;
 
 import beast.core.*;
 import beast.core.Runnable;
+import beast.util.Randomizer;
 import beast.util.XMLParser;
 
 import java.io.File;
@@ -12,7 +13,6 @@ import java.io.File;
 public class OperatorTester {
 
     public static void main(String[] args) {
-
         if (args.length < 4) {
             System.out.println("Usage: OperatorTester model.xml operator_ID state_file iterations");
             System.exit(0);
@@ -22,6 +22,8 @@ public class OperatorTester {
         String operatorID = args[1];
         String stateFileName = args[2];
         int Niter = Integer.parseInt(args[3]);
+
+        Randomizer.setSeed(1);
 
         XMLParser xmlParser = new XMLParser();
         Runnable runnable = null;
@@ -89,32 +91,42 @@ public class OperatorTester {
             }
         }
 
+        try {
+            state.robustlyCalcPosterior(mcmc.posteriorInput.get());
+        } catch (Exception e) {
+            System.out.println("Failed to calculate posterior.");
+            System.exit(1);
+        }
+        state.storeCalculationNodes();
+
         for (int i=1; i<Niter; i++) {
-            try {
-                state.robustlyCalcPosterior(mcmc.posteriorInput.get());
-            } catch (Exception e) {
-                System.out.println("Failed to calculate posterior.");
-                System.exit(1);
-            }
+           state.store(i);
 
-            operator.proposal();
+//            for (Logger logger : mcmc.loggersInput.get())
+//                logger.log(i);
 
-            state.storeCalculationNodes();
-            state.checkCalculationNodesDirtiness();
+            Double hgf = operator.proposal();
+//            System.out.println("hgf=" + hgf);
 
-            try {
-                mcmc.posteriorInput.get().calculateLogP();
-            } catch (Exception e) {
-                System.out.println("Failed to calculate posterior.");
-                System.exit(1);
-            }
+            if (hgf > Double.NEGATIVE_INFINITY) {
+                state.checkCalculationNodesDirtiness();
+
+                try {
+                    mcmc.posteriorInput.get().calculateLogP();
+                } catch (Exception e) {
+                    System.out.println("Failed to calculate posterior.");
+                    System.exit(1);
+                }
 
             for (Logger logger : mcmc.loggersInput.get())
                 logger.log(i);
 
-            operator.reject();
-            state.restore();
-            state.restoreCalculationNodes();
+                state.restore();
+                state.restoreCalculationNodes();
+                state.setEverythingDirty(false);
+            } else {
+                state.restore();
+            }
         }
 
         for (Logger logger : mcmc.loggersInput.get())
