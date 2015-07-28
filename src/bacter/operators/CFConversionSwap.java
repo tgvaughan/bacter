@@ -61,7 +61,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
     @Override
     public double proposal() {
 
-//        String oldTree = acg.getExtendedNewick();
+        double logHGF = 0.0;
 
         // Determine whether we can apply this operator:
         if (acg.getLeafNodeCount()<3 || acg.getTotalConvCount()==0)
@@ -86,10 +86,14 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         acg.deleteConversion(replaceConversion);
 
-//        String oldTree = acg.getExtendedNewick();
-//        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
-//            System.out.println("Hey!");
-//        }
+        Conversion newConversion = new Conversion();
+        newConversion.setLocus(replaceConversion.getLocus());
+        newConversion.setNode1(srcNode);
+        newConversion.setNode2(srcNodeS);
+        newConversion.setHeight1(replaceConversion.getHeight1());
+        newConversion.setHeight2(replaceConversion.getHeight2());
+        logHGF -= drawAffectedRegion(newConversion);
+        acg.addConversion(newConversion);
 
         if (destNode.isRoot()) {
             // Forward root move
@@ -97,7 +101,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-            double logHGF = 0.0;
 
             double newTime = replaceConversion.getHeight2();
 
@@ -118,8 +121,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-            double logHGF = 0.0;
-
             double newTime = replaceConversion.getHeight2();
 
             // Reconnect conversions on edge above srcNode older than
@@ -135,8 +136,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         // Non-root move
 
-        double logHGF = 0.0;
-
         double newTime = replaceConversion.getHeight2();
 
         if (newTime < srcNodeP.getHeight())
@@ -147,10 +146,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
         // DEBUG
 //        if (acg.isInvalid())
 //            throw new IllegalStateException("CFWB proposed invalid state.");
-
-//        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
-//            System.out.println("=\n" + oldTree + "\n" + acg.getExtendedNewick());
-//        }
 
         return logHGF;
     }
