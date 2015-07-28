@@ -38,22 +38,15 @@ import java.util.List;
 @Description("Wilson-Balding operator for ACG clonal frames.")
 public class CFConversionSwap extends ConversionCreationOperator {
 
-    public Input<Double> alphaInput = new Input<>("alpha", "Root height "
-            + "proposal parameter", Input.Validate.REQUIRED);
+    public Input<RealParameter> rhoInput = new Input<>("rho",
+            "Conversion rate.", Input.Validate.REQUIRED);
 
     public Input<Boolean> includeRootInput = new Input<>("includeRoot",
             "Whether to include root variants of move.", true);
 
-    public Input<RealParameter> rhoInput = new Input<>("rho",
-            "Conversion rate.", Input.Validate.REQUIRED);
-
-    private double alpha;
-
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
-
-        alpha = alphaInput.get();
     }
 
 //    int count = 0;
@@ -69,31 +62,25 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         // Select conversion to replace
         Conversion replaceConversion = chooseConversion();
+
         Node srcNode = replaceConversion.getNode1();
         Node destNode = replaceConversion.getNode2();
+
 
         if (invalidSrcNode(srcNode) || invalidDestNode(srcNode, destNode))
             return Double.NEGATIVE_INFINITY;
 
         Node srcNodeP = srcNode.getParent();
         Node srcNodeS = getSibling(srcNode);
-        double t_srcNode = srcNode.getHeight();
         double t_srcNodeP = srcNodeP.getHeight();
-        double t_srcNodeS = srcNodeS.getHeight();
 
-        Node destNodeP = destNode.getParent();
-        double t_destNode = destNode.getHeight();
+        double newTime = replaceConversion.getHeight2();
 
-        acg.deleteConversion(replaceConversion);
+        replaceConversion.setNode2(srcNodeS);
+        replaceConversion.setHeight2(t_srcNodeP);
 
-        Conversion newConversion = new Conversion();
-        newConversion.setLocus(replaceConversion.getLocus());
-        newConversion.setNode1(srcNode);
-        newConversion.setNode2(srcNodeS);
-        newConversion.setHeight1(replaceConversion.getHeight1());
-        newConversion.setHeight2(replaceConversion.getHeight2());
-        logHGF -= drawAffectedRegion(newConversion);
-        acg.addConversion(newConversion);
+        logHGF += getAffectedRegionProb(replaceConversion);
+        logHGF -= drawAffectedRegion(replaceConversion);
 
         if (destNode.isRoot()) {
             // Forward root move
@@ -101,8 +88,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-
-            double newTime = replaceConversion.getHeight2();
 
             // Randomly reconnect some of the conversions ancestral
             // to srcNode to the new edge above srcNode.
@@ -121,8 +106,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-            double newTime = replaceConversion.getHeight2();
-
             // Reconnect conversions on edge above srcNode older than
             // newTime to edges ancestral to destNode.
             logHGF += collapseConversions(srcNode, destNode, newTime);
@@ -135,8 +118,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
         }
 
         // Non-root move
-
-        double newTime = replaceConversion.getHeight2();
 
         if (newTime < srcNodeP.getHeight())
             logHGF += collapseConversions(srcNode, destNode, newTime);

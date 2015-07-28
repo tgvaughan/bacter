@@ -125,6 +125,7 @@ public class CFConvSwapExperiment {
         Node srcNode = acg.getNode(3);
         Node srcNodeS = getSibling(srcNode);
         Node destNode = acg.getNode(6);
+        double t_srcNodeP = srcNode.getParent().getHeight();
 
         disconnectEdge(acg, srcNode);
 
@@ -169,7 +170,7 @@ public class CFConvSwapExperiment {
         convNew.setNode1(srcNode);
         convNew.setNode2(srcNodeS);
         convNew.setHeight1(convToReplace.getHeight1());
-        convNew.setHeight2(convToReplace.getHeight2());
+        convNew.setHeight2(t_srcNodeP);
         acg.addConversion(convNew);
 
         ps.println(acg);
