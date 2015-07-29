@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Wilson-Balding operator for ACG clonal frames.")
+@Description("CF/conversion swap operator.")
 public class CFConversionSwap extends ConversionCreationOperator {
 
     public Input<RealParameter> rhoInput = new Input<>("rho",
@@ -87,47 +87,11 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         acg.addConversion(replaceConversion);
 
-        if (destNode.isRoot()) {
-            // Forward root move
+        if (!includeRootInput.get() && (srcNodeP.isRoot() || destNode.isRoot()))
+            return Double.NEGATIVE_INFINITY;
 
-            if (!includeRootInput.get())
-                return Double.NEGATIVE_INFINITY;
-
-            // Randomly reconnect some of the conversions ancestral
-            // to srcNode to the new edge above srcNode.
-            logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
-
-            logHGF += Math.log(1.0/getCompatibleConversions().size());
-
-            // DEBUG
-            if (acg.isInvalid())
-                throw new IllegalStateException("CFCS proposed invalid state.");
-
-            return logHGF;
-        }
-
-        if (srcNodeP.isRoot()) {
-            // Backward root move
-
-            if (!includeRootInput.get())
-                return Double.NEGATIVE_INFINITY;
-
-            // Reconnect conversions on edge above srcNode older than
-            // newTime to edges ancestral to destNode.
-            logHGF += collapseConversions(srcNode, destNode, newTime, replaceConversion);
-
-            logHGF += Math.log(1.0/getCompatibleConversions().size());
-
-            // DEBUG
-            if (acg.isInvalid())
-                throw new IllegalStateException("CFCS proposed invalid state.");
-
-            return logHGF;
-        }
-
-        // Non-root move
-
-        if (newTime < srcNodeP.getHeight())
+        // Perform necessary conversion expansions/collapses:
+        if (newTime < t_srcNodeP)
             logHGF += collapseConversions(srcNode, destNode, newTime, replaceConversion);
         else
             logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
@@ -140,7 +104,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         return logHGF;
     }
-    
+
     /**
      * Returns true if srcNode CANNOT be used for the WB move.
      *
