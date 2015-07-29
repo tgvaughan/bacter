@@ -223,7 +223,7 @@
                 acg="@Tree.t:$(n)" />
 
             <operator id="CEslide.t:$(n)" spec="bacter.operators.ConvertedEdgeSlide" weight="1.0"
-                acg="@Tree.t:$(n)" scaleBound="0.8" />
+                acg="@Tree.t:$(n)" apertureSize="0.05" />
 
             <operator id="STS.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
                 <operator spec='beast.evolution.operators.SubtreeSlide' weight="5" gaussian="true" size="0.1">
@@ -423,7 +423,11 @@
             <operator id="CFWB_$(model).t:$(n)" spec='bacter.operators.CFWilsonBalding'
                 acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
                 alpha="0.1" weight="10"/>
-            ]]>
+
+            <operator id="CFCS_$(model).t:$(n)" spec='bacter.operators.CFConversionSwap'
+                acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
+                weight="10"/>
+        ]]>
         <connect srcID='addRemove_$(model).t:$(n)' targetID='mcmc' inputName='operator'
                  if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
         <connect srcID='addRemoveDetour_$(model).t:$(n)' targetID='mcmc' inputName='operator'
