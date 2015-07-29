@@ -954,6 +954,9 @@ public class ConversionGraph extends Tree {
                 convCopy.setEndSite(conv.getEndSite());
                 convCopy.setHeight1(conv.getHeight1());
                 convCopy.setHeight2(conv.getHeight2());
+                convCopy.newickMetaDataBottom = conv.newickMetaDataBottom;
+                convCopy.newickMetaDataMiddle = conv.newickMetaDataMiddle;
+                convCopy.newickMetaDataTop = conv.newickMetaDataTop;
 
                 convCopy.setNode1(m_storedNodes[conv.getNode1().getNr()]);
                 convCopy.setNode2(m_storedNodes[conv.getNode2().getNr()]);

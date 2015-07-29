@@ -52,8 +52,7 @@ public class CFOperatorTest extends TestBase {
         expectations.add(new Expectation("acg.CFlength", 4.181, 0.5));
         expectations.add(new Expectation("acg.nConv", 21.0, 0.5));
 
-        LogAnalyser logAnalyser = new LogAnalyser("CFUniformTest5taxon.stats",
-                expectations);
+        new LogAnalyser("CFUniformTest5taxon.stats", expectations);
 
         for (Expectation expectation : expectations) {
             assertTrue(expectation.isValid());
@@ -83,8 +82,7 @@ public class CFOperatorTest extends TestBase {
         expectations.add(new Expectation("acg.CFlength", 4.181, 0.5));
         expectations.add(new Expectation("acg.nConv", 21.0, 0.5));
 
-        LogAnalyser logAnalyser = new LogAnalyser("CFWilsonBaldingTest5taxon.stats",
-                expectations);
+        new LogAnalyser("CFWilsonBaldingTest5taxon.stats", expectations);
 
         for (Expectation expectation : expectations) {
             assertTrue(expectation.isValid());
@@ -98,4 +96,32 @@ public class CFOperatorTest extends TestBase {
         Files.deleteIfExists(Paths.get("CFWilsonBaldingTest5taxon.xml.state"));
     }
 
+    @Test
+    public void testCFCS() throws Exception {
+        Randomizer.setSeed(1);
+
+        XMLParser parser = new XMLParser();
+        beast.core.Runnable runnable = parser.parseFile(
+                new File("examples/CFOperatorTests/CFConversionSwapTest5taxon.xml"));
+        disableScreenLog(runnable);
+        runnable.run();
+
+        List<Expectation> expectations = new ArrayList<>();
+        expectations.add(new Expectation("acg.CFheight", 1.606, 0.2));
+        expectations.add(new Expectation("acg.CFlength", 4.181, 0.5));
+        expectations.add(new Expectation("acg.nConv", 21.0, 0.5));
+
+        new LogAnalyser("CFConversionSwapTest5taxon.stats", expectations);
+
+        for (Expectation expectation : expectations) {
+            assertTrue(expectation.isValid());
+            assertTrue(expectation.isPassed());
+        }
+
+        Files.deleteIfExists(Paths.get("CFConversionSwapTest5taxon.stats"));
+        Files.deleteIfExists(Paths.get("CFConversionSwapTest5taxon.converted"));
+        Files.deleteIfExists(Paths.get("CFConversionSwapTest5taxon.trees"));
+        Files.deleteIfExists(Paths.get("CFConversionSwapTest5taxon.cf"));
+        Files.deleteIfExists(Paths.get("CFConversionSwapTest5taxon.xml.state"));
+    }
 }

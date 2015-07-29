@@ -23,8 +23,6 @@ public class OperatorTester {
         String stateFileName = args[2];
         int Niter = Integer.parseInt(args[3]);
 
-        Randomizer.setSeed(1);
-
         XMLParser xmlParser = new XMLParser();
         Runnable runnable = null;
         try {
@@ -100,13 +98,12 @@ public class OperatorTester {
         state.storeCalculationNodes();
 
         for (int i=1; i<Niter; i++) {
-           state.store(i);
+            state.store(i);
 
 //            for (Logger logger : mcmc.loggersInput.get())
 //                logger.log(i);
 
             Double hgf = operator.proposal();
-//            System.out.println("hgf=" + hgf);
 
             if (hgf > Double.NEGATIVE_INFINITY) {
                 state.checkCalculationNodesDirtiness();
@@ -118,8 +115,8 @@ public class OperatorTester {
                     System.exit(1);
                 }
 
-            for (Logger logger : mcmc.loggersInput.get())
-                logger.log(i);
+                for (Logger logger : mcmc.loggersInput.get())
+                    logger.log(i);
 
                 state.restore();
                 state.restoreCalculationNodes();

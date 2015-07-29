@@ -49,12 +49,8 @@ public class CFConversionSwap extends ConversionCreationOperator {
         super.initAndValidate();
     }
 
-//    int count = 0;
-
     @Override
     public double proposal() {
-
-        double logHGF = 0.0;
 
         // Determine whether we can apply this operator:
         if (acg.getLeafNodeCount()<3 || acg.getTotalConvCount()==0)
@@ -65,7 +61,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         Node srcNode = replaceConversion.getNode1();
         Node destNode = replaceConversion.getNode2();
-
 
         if (invalidSrcNode(srcNode) || invalidDestNode(srcNode, destNode))
             return Double.NEGATIVE_INFINITY;
@@ -79,6 +74,8 @@ public class CFConversionSwap extends ConversionCreationOperator {
         replaceConversion.setNode2(srcNodeS);
         replaceConversion.setHeight2(t_srcNodeP);
 
+        double logHGF = 0.0;
+
         logHGF += getAffectedRegionProb(replaceConversion);
         logHGF -= drawAffectedRegion(replaceConversion);
 
@@ -88,15 +85,13 @@ public class CFConversionSwap extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
+            logHGF -= Math.log(1.0/acg.getTotalConvCount());
 
             // Randomly reconnect some of the conversions ancestral
             // to srcNode to the new edge above srcNode.
-            logHGF -= expandConversions(srcNode, destNode, newTime);
+            logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
 
-            // DEBUG
-            if (acg.isInvalid())
-                throw new IllegalStateException("CFWB proposed invalid state.");
-
+            logHGF += Math.log(1.0/acg.getTotalConvCount());
             return logHGF;
         }
 
@@ -106,27 +101,22 @@ public class CFConversionSwap extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
+            logHGF -= Math.log(1.0/acg.getTotalConvCount());
+
             // Reconnect conversions on edge above srcNode older than
             // newTime to edges ancestral to destNode.
-            logHGF += collapseConversions(srcNode, destNode, newTime);
+            logHGF += collapseConversions(srcNode, destNode, newTime, replaceConversion);
 
-            // DEBUG
-            if (acg.isInvalid())
-                throw new IllegalStateException("CFWB proposed invalid state.");
-
+            logHGF += Math.log(1.0/acg.getTotalConvCount());
             return logHGF;
         }
 
         // Non-root move
 
         if (newTime < srcNodeP.getHeight())
-            logHGF += collapseConversions(srcNode, destNode, newTime);
+            logHGF += collapseConversions(srcNode, destNode, newTime, replaceConversion);
         else
-            logHGF -= expandConversions(srcNode, destNode, newTime);
-
-        // DEBUG
-//        if (acg.isInvalid())
-//            throw new IllegalStateException("CFWB proposed invalid state.");
+            logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
 
         return logHGF;
     }
@@ -192,7 +182,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
      *                  above destNode
      * @return log probability of the collapsed attachments.
      */
-    private double collapseConversions(Node srcNode, Node destNode, double destTime) {
+    private double collapseConversions(Node srcNode, Node destNode, double destTime, Conversion replaceConversion) {
         double logP = 0.0;
 
         if (destNode.isRoot())
@@ -296,7 +286,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
      * @param destTime new time drawn for srcNode.P.
      * @return log probability of new conversion configuration.
      */
-    private double expandConversions(Node srcNode, Node destNode, double destTime) {
+    private double expandConversions(Node srcNode, Node destNode, double destTime, Conversion replaceConversion) {
         double logP = 0.0;
 
         boolean forwardRootMove = destNode.isRoot();

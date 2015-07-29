@@ -72,19 +72,9 @@
         </operator>
 
 
-        <!--operator id="CFWB" spec='CFWilsonBalding'
-                  acg="@acg" rho="@rho" delta="@delta" alpha="0.1" populationModel="@popFunc"
-                  weight="10"/-->
-
-        <operator id="CFCS" spec='CFConversionSwap' includeRoot="false"
+        <operator id="CFCS" spec='CFConversionSwap' includeRoot="true"
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
                   weight="10"/>
-
-        <!--operator id="WB" spec='ACGValidityWrapper' acg="@acg">
-            <operator spec='WilsonBalding' weight="10">
-                <tree idref="acg"/>
-            </operator>
-        </operator-->
 
         <logger logEvery="10000">
             <log idref="posterior"/>
@@ -94,10 +84,6 @@
         <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
             <log idref="acg"/>
         </logger>
-
-        <!--logger logEvery="1" fileName="$(filebase).cf" mode="tree">
-            <log spec="ClonalFrameLogger" acg="@acg"/>
-        </logger-->
 
         <logger logEvery="1000" fileName="$(filebase).stats">
             <log idref="posterior"/>
