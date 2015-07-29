@@ -51,19 +51,24 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
     @Override
     public double proposal() {
+        double logHGF = 0.0;
 
         // Determine whether we can apply this operator:
         if (acg.getLeafNodeCount()<3 || acg.getTotalConvCount()==0)
             return Double.NEGATIVE_INFINITY;
 
+        // Acquire list of conversions compatible with swap:
+        List<Conversion> compatible = getCompatibleConversions();
+        if (compatible.isEmpty())
+            return Double.NEGATIVE_INFINITY;
+
         // Select conversion to replace
-        Conversion replaceConversion = chooseConversion();
+        Conversion replaceConversion = compatible.get(
+                Randomizer.nextInt(compatible.size()));
+        logHGF -= Math.log(1.0/compatible.size());
 
         Node srcNode = replaceConversion.getNode1();
         Node destNode = replaceConversion.getNode2();
-
-        if (invalidSrcNode(srcNode) || invalidDestNode(srcNode, destNode))
-            return Double.NEGATIVE_INFINITY;
 
         Node srcNodeP = srcNode.getParent();
         Node srcNodeS = getSibling(srcNode);
@@ -71,10 +76,9 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         double newTime = replaceConversion.getHeight2();
 
+        // Conversion modification:
         replaceConversion.setNode2(srcNodeS);
         replaceConversion.setHeight2(t_srcNodeP);
-
-        double logHGF = 0.0;
 
         logHGF += getAffectedRegionProb(replaceConversion);
         logHGF -= drawAffectedRegion(replaceConversion);
@@ -85,13 +89,11 @@ public class CFConversionSwap extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-            logHGF -= Math.log(1.0/acg.getTotalConvCount());
-
             // Randomly reconnect some of the conversions ancestral
             // to srcNode to the new edge above srcNode.
             logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
 
-            logHGF += Math.log(1.0/acg.getTotalConvCount());
+            logHGF += Math.log(1.0/getCompatibleConversions().size());
             return logHGF;
         }
 
@@ -101,13 +103,11 @@ public class CFConversionSwap extends ConversionCreationOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-            logHGF -= Math.log(1.0/acg.getTotalConvCount());
-
             // Reconnect conversions on edge above srcNode older than
             // newTime to edges ancestral to destNode.
             logHGF += collapseConversions(srcNode, destNode, newTime, replaceConversion);
 
-            logHGF += Math.log(1.0/acg.getTotalConvCount());
+            logHGF += Math.log(1.0/getCompatibleConversions().size());
             return logHGF;
         }
 
@@ -118,6 +118,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
         else
             logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
 
+        logHGF += Math.log(1.0/getCompatibleConversions().size());
         return logHGF;
     }
     
@@ -350,6 +351,23 @@ public class CFConversionSwap extends ConversionCreationOperator {
         }
 
         return logP;
+    }
+
+    /**
+     * @return list of conversions compatible with operator.
+     */
+    private List<Conversion> getCompatibleConversions() {
+        List<Conversion> compatible = new ArrayList<>();
+        for (Locus locus : acg.getLoci()) {
+            for (Conversion conv : acg.getConversions(locus)) {
+                Node srcNode = conv.getNode1();
+                Node destNode = conv.getNode2();
+                if (!invalidSrcNode(srcNode) && !invalidDestNode(srcNode, destNode))
+                    compatible.add(conv);
+            }
+        }
+
+        return compatible;
     }
 
 }
