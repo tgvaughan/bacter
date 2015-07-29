@@ -67,6 +67,8 @@ public class CFConversionSwap extends ConversionCreationOperator {
                 Randomizer.nextInt(compatible.size()));
         logHGF -= Math.log(1.0/compatible.size());
 
+        acg.deleteConversion(replaceConversion);
+
         Node srcNode = replaceConversion.getNode1();
         Node destNode = replaceConversion.getNode2();
 
@@ -83,6 +85,8 @@ public class CFConversionSwap extends ConversionCreationOperator {
         logHGF += getAffectedRegionProb(replaceConversion);
         logHGF -= drawAffectedRegion(replaceConversion);
 
+        acg.addConversion(replaceConversion);
+
         if (destNode.isRoot()) {
             // Forward root move
 
@@ -94,6 +98,11 @@ public class CFConversionSwap extends ConversionCreationOperator {
             logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
 
             logHGF += Math.log(1.0/getCompatibleConversions().size());
+
+            // DEBUG
+            if (acg.isInvalid())
+                throw new IllegalStateException("CFCS proposed invalid state.");
+
             return logHGF;
         }
 
@@ -108,6 +117,11 @@ public class CFConversionSwap extends ConversionCreationOperator {
             logHGF += collapseConversions(srcNode, destNode, newTime, replaceConversion);
 
             logHGF += Math.log(1.0/getCompatibleConversions().size());
+
+            // DEBUG
+            if (acg.isInvalid())
+                throw new IllegalStateException("CFCS proposed invalid state.");
+
             return logHGF;
         }
 
@@ -119,6 +133,11 @@ public class CFConversionSwap extends ConversionCreationOperator {
             logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
 
         logHGF += Math.log(1.0/getCompatibleConversions().size());
+
+        // DEBUG
+        if (acg.isInvalid())
+            throw new IllegalStateException("CFCS proposed invalid state.");
+
         return logHGF;
     }
     

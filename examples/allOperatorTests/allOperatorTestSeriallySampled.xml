@@ -105,6 +105,10 @@
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
                   alpha="0.1" weight="10"/>
 
+        <operator id="CFCS" spec='CFConversionSwap'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  weight="10"/>
+
         <logger logEvery="10000">
             <log idref="posterior"/>
             <log spec='TreeHeightLogger' tree="@acg"/>
