@@ -30,19 +30,15 @@ import beast.util.Randomizer;
         + "about on clonal frame.")
 public class ConvertedEdgeSlide extends ACGOperator {
 
-    public Input<Double> scaleBoundInput = new Input<>("scaleBound",
-            "Determines bounds of height scaling: [1/scaleBound, scaleBound]. "
-                    + "Default is 0.8.", 0.8);
-
-    private double scaleMin, scaleMax;
+    public Input<Double> apertureSizeInput = new Input<>("apertureSize",
+            "Window size as a fraction of the clonal frame tree height."
+                    + "Default is 0.1.", 0.1);
 
     public ConvertedEdgeSlide() { }
 
     @Override
     public void initAndValidate() throws Exception {
         super.initAndValidate();
-        scaleMin = Math.min(scaleBoundInput.get(), 1.0/scaleBoundInput.get());
-        scaleMax = 1.0/scaleMin;
     }
     
     @Override
@@ -67,11 +63,11 @@ public class ConvertedEdgeSlide extends ACGOperator {
             oldHeight = conv.getHeight2();
         }
         
-        // Choose scale factor
-        double f = Randomizer.nextDouble()*(scaleMax - scaleMin) + scaleMin;
-        
+        // Choose window:
+        double w = apertureSizeInput.get()*acg.getRoot().getHeight();
+
         // Set new height
-        double newHeight = f*oldHeight;
+        double newHeight = oldHeight + (Randomizer.nextDouble() - 0.5)*w;
         
         // Check for boundary violation
         if (moveDeparture) {
@@ -82,9 +78,6 @@ public class ConvertedEdgeSlide extends ACGOperator {
                 return Double.NEGATIVE_INFINITY;
         }
         
-        // Scale factor HR contribution
-        logHR += -Math.log(f);
-
         // Get node below current (old) attachment point
         Node nodeBelow;
         if (moveDeparture)
@@ -93,7 +86,7 @@ public class ConvertedEdgeSlide extends ACGOperator {
             nodeBelow = conv.getNode2();
 
         // Choose node below new attachment point
-        if (f<1.0) {
+        if (newHeight<oldHeight) {
             while (newHeight<nodeBelow.getHeight()) {
                 if (nodeBelow.isLeaf())
                     return Double.NEGATIVE_INFINITY;

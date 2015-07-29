@@ -195,7 +195,7 @@
         acg="@acg" />
 
     <operator id="CEslide" spec="ConvertedEdgeSlide" weight="1.0"
-        acg="@acg" scaleBound="0.8" />
+        acg="@acg" apertureSize="0.1" />
 
     <operator id="CFUniform" spec='CFUniform' acg="@acg"
               rho="@rho" delta="@delta" populationModel="@popModel" weight="10"/>
@@ -203,6 +203,10 @@
     <operator id="CFWB" spec='CFWilsonBalding'
               acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
               alpha="0.1" weight="10"/>
+
+    <operator id="CFCS" spec='CFConversionSwap'
+              acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
+              weight="10"/>
 
     <!-- Leaving this here for comparison with CFWB -->
     <operator id="WB" spec='ACGValidityWrapper' acg="@acg">

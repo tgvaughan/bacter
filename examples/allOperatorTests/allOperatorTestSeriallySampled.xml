@@ -69,7 +69,7 @@
                   acg="@acg" />
 
         <operator id="CEslide" spec="ConvertedEdgeSlide" weight="1.0"
-                  acg="@acg" scaleBound="0.8" />
+                  acg="@acg" apertureSize="0.1" />
 
         <operator id="CRswap" spec="ConvertedRegionSwap" weight="1.0"
                   acg="@acg"/>
