@@ -92,9 +92,9 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
         // Perform necessary conversion expansions/collapses:
         if (newTime < t_srcNodeP)
-            logHGF += collapseConversions(srcNode, destNode, newTime, replaceConversion);
+            logHGF += collapseConversions(srcNode, destNode, newTime);
         else
-            logHGF -= expandConversions(srcNode, destNode, newTime, replaceConversion);
+            logHGF -= expandConversions(srcNode, destNode, newTime);
 
         logHGF += Math.log(1.0/getCompatibleConversions().size());
 
@@ -103,55 +103,6 @@ public class CFConversionSwap extends ConversionCreationOperator {
             throw new IllegalStateException("CFCS proposed invalid state.");
 
         return logHGF;
-    }
-
-    /**
-     * Returns true if srcNode CANNOT be used for the WB move.
-     *
-     * @param srcNode source node for move
-     * @return True if srcNode invalid.
-     */
-    private boolean invalidSrcNode(Node srcNode) {
-
-        if (srcNode.isRoot())
-            return true;
-
-        Node parent = srcNode.getParent();
-
-        // This check is important for avoiding situations where it is
-        // impossible to choose a valid destNode:
-        if (parent.isRoot()) {
-
-            Node sister = getSibling(srcNode);
-
-            if (sister.isLeaf())
-                return true;
-
-            if (srcNode.getHeight() >= sister.getHeight())
-                return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns true if destNode CANNOT be used for the WB move in conjunction
-     * with srcNode.
-     *
-     * @param srcNode   source node for move
-     * @param destNode  destination node for move
-     * @return True if destNode invalid.
-     */
-    private boolean invalidDestNode(Node srcNode, Node destNode) {
-
-        if (destNode==srcNode
-                || destNode==srcNode.getParent()
-                || destNode.getParent()==srcNode.getParent())
-            return true;
-
-        Node destNodeP = destNode.getParent();
-
-        return destNodeP != null && (destNodeP.getHeight() <= srcNode.getHeight());
     }
 
     /**
@@ -166,17 +117,14 @@ public class CFConversionSwap extends ConversionCreationOperator {
      *                  above destNode
      * @return log probability of the collapsed attachments.
      */
-    private double collapseConversions(Node srcNode, Node destNode, double destTime, Conversion replaceConversion) {
+    private double collapseConversions(Node srcNode, Node destNode, double destTime) {
         double logP = 0.0;
-
-        if (destNode.isRoot())
-            throw new IllegalArgumentException("Destination node should " +
-                    "never be root in argument to collapseConversions.");
 
         boolean reverseRootMove = srcNode.getParent().isRoot();
         Node srcNodeP = srcNode.getParent();
         Node srcNodeS = getSibling(srcNode);
         double maxChildHeight = Math.max(srcNodeS.getHeight(), srcNode.getHeight());
+        double volatileHeight = Math.max(maxChildHeight, destTime);
 
         // Collapse non-root conversions
 
@@ -194,7 +142,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
                             conv.setNode1(node);
 
                         if (conv.getNode1() == node &&
-                                (!reverseRootMove || conv.getHeight1() < maxChildHeight))
+                                (!reverseRootMove || conv.getHeight1() < volatileHeight))
                             logP += Math.log(0.5);
                     }
 
@@ -204,7 +152,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
 
                         if (conv.getNode2() == node
                                 && (!reverseRootMove || conv.getNode1() != node
-                                || conv.getHeight1() < maxChildHeight))
+                                || conv.getHeight1() < volatileHeight))
                             logP += Math.log(0.5);
                     }
                 }
@@ -217,7 +165,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
         // if this was a reverse root move.
 
         if (reverseRootMove) {
-            double L = 2.0*(srcNode.getParent().getHeight() - maxChildHeight);
+            double L = 2.0*(srcNode.getParent().getHeight() - volatileHeight);
 
             double Nexp = L*rhoInput.get().getValue()
                     *(acg.getTotalSequenceLength()
@@ -227,7 +175,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
             for (Locus locus : acg.getLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == srcNodeS
-                            || (conv.getNode1() == srcNode && conv.getHeight1() > maxChildHeight))
+                            || (conv.getNode1() == srcNode && conv.getHeight1() > volatileHeight))
                         toRemove.add(conv);
                 }
             }
@@ -249,7 +197,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
         disconnectEdge(srcNode);
         connectEdge(srcNode, destNode, destTime);
 
-        if (reverseRootMove)
+        if (destTime<maxChildHeight)
             acg.setRoot(srcNodeS);
 
         return logP;
@@ -270,10 +218,11 @@ public class CFConversionSwap extends ConversionCreationOperator {
      * @param destTime new time drawn for srcNode.P.
      * @return log probability of new conversion configuration.
      */
-    private double expandConversions(Node srcNode, Node destNode, double destTime, Conversion replaceConversion) {
+    private double expandConversions(Node srcNode, Node destNode, double destTime) {
         double logP = 0.0;
 
-        boolean forwardRootMove = destNode.isRoot();
+        double volatileHeight = Math.max(acg.getRoot().getHeight(), srcNode.getParent().getHeight());
+        boolean forwardRootMove = destTime > volatileHeight;
 
         Node node = srcNode.getParent();
         while (node != null) {
@@ -306,7 +255,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
         if (forwardRootMove) {
             acg.setRoot(srcNode.getParent());
 
-            double L = 2.0*(destTime - destNode.getHeight());
+            double L = 2.0*(destTime - volatileHeight);
             double Nexp = L*rhoInput.get().getValue()
                     *(acg.getTotalSequenceLength()
                     + acg.getLoci().size()*deltaInput.get().getValue());
@@ -320,10 +269,10 @@ public class CFConversionSwap extends ConversionCreationOperator {
                 double u = Randomizer.nextDouble()*L;
                 if (u < 0.5*L) {
                     conv.setNode1(destNode);
-                    conv.setHeight1(destNode.getHeight() + u);
+                    conv.setHeight1(volatileHeight + u);
                 } else {
                     conv.setNode1(srcNode);
-                    conv.setHeight1(destNode.getHeight() + u - 0.5*L);
+                    conv.setHeight1(volatileHeight + u - 0.5*L);
                 }
 
                 logP += Math.log(1.0/L) + drawAffectedRegion(conv) + coalesceEdge(conv);
@@ -343,14 +292,11 @@ public class CFConversionSwap extends ConversionCreationOperator {
         List<Conversion> compatible = new ArrayList<>();
         for (Locus locus : acg.getLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
-                Node srcNode = conv.getNode1();
-                Node destNode = conv.getNode2();
-                if (!invalidSrcNode(srcNode) && !invalidDestNode(srcNode, destNode))
+                if (conv.getNode1() != conv.getNode2())
                     compatible.add(conv);
             }
         }
 
         return compatible;
     }
-
 }

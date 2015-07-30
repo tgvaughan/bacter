@@ -25,7 +25,9 @@
         <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
     </input>
 
-    <run spec="MCMC" id="mcmc" chainLength="10000000">
+    <!--run spec="MCMC" id="mcmc" chainLength="10000000"-->
+    <run spec="bacter.devutils.MCMCTrace" id="mcmc" chainLength="1000"
+            stateTraceFile="$(filebase).stateTrace">
         <state>
             <stateNode idref='acg'/>
         </state>
@@ -72,16 +74,16 @@
         </operator>
 
 
-        <operator id="CFCS" spec='CFConversionSwap' includeRoot="true"
+        <operator id="CFCS" spec='CFConversionSwap' includeRoot="false"
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
                   weight="10"/>
 
-        <logger logEvery="10000">
+        <logger logEvery="1">
             <log idref="posterior"/>
             <log spec='TreeHeightLogger' tree="@acg"/>
         </logger>
 
-        <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
+        <logger logEvery="1" fileName="$(filebase).trees" mode="tree">
             <log idref="acg"/>
         </logger>
 
