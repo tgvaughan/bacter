@@ -25,9 +25,9 @@
         <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
     </input>
 
-    <!--run spec="MCMC" id="mcmc" chainLength="10000000"-->
-    <run spec="bacter.devutils.MCMCTrace" id="mcmc" chainLength="1000"
-            stateTraceFile="$(filebase).stateTrace">
+    <run spec="MCMC" id="mcmc" chainLength="100000000">
+    <!--run spec="bacter.devutils.MCMCTrace" id="mcmc" chainLength="1000"
+            stateTraceFile="$(filebase).stateTrace"-->
         <state>
             <stateNode idref='acg'/>
         </state>
@@ -78,12 +78,12 @@
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
                   weight="10"/>
 
-        <logger logEvery="1">
+        <logger logEvery="1000">
             <log idref="posterior"/>
             <log spec='TreeHeightLogger' tree="@acg"/>
         </logger>
 
-        <logger logEvery="1" fileName="$(filebase).trees" mode="tree">
+        <logger logEvery="1000" fileName="$(filebase).trees" mode="tree">
             <log idref="acg"/>
         </logger>
 

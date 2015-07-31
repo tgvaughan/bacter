@@ -49,9 +49,14 @@ public class CFConversionSwap extends ConversionCreationOperator {
         super.initAndValidate();
     }
 
+    int count = 0;
+
     @Override
     public double proposal() {
         double logHGF = 0.0;
+
+        // DEBUG:
+//        System.out.println(++count);
 
         // Determine whether we can apply this operator:
         if (acg.getLeafNodeCount()<3 || acg.getTotalConvCount()==0)
@@ -67,7 +72,14 @@ public class CFConversionSwap extends ConversionCreationOperator {
                 Randomizer.nextInt(compatible.size()));
         logHGF -= Math.log(1.0/compatible.size());
 
+        // DEBUG:
+//        System.out.println("==Start==");
+//        System.out.println(acg);
+
         acg.deleteConversion(replaceConversion);
+
+        // DEBUG:
+//        System.out.println(acg);
 
         Node srcNode = replaceConversion.getNode1();
         Node destNode = replaceConversion.getNode2();
@@ -75,6 +87,9 @@ public class CFConversionSwap extends ConversionCreationOperator {
         Node srcNodeP = srcNode.getParent();
         Node srcNodeS = getSibling(srcNode);
         double t_srcNodeP = srcNodeP.getHeight();
+
+        if (destNode == srcNode.getParent())
+            destNode = srcNodeS;
 
         double newTime = replaceConversion.getHeight2();
 
@@ -91,16 +106,21 @@ public class CFConversionSwap extends ConversionCreationOperator {
             return Double.NEGATIVE_INFINITY;
 
         // Perform necessary conversion expansions/collapses:
-        if (newTime < t_srcNodeP)
+        if (newTime < t_srcNodeP) {
             logHGF += collapseConversions(srcNode, destNode, newTime);
-        else
+        } else {
             logHGF -= expandConversions(srcNode, destNode, newTime);
+        }
 
         logHGF += Math.log(1.0/getCompatibleConversions().size());
 
         // DEBUG
         if (acg.isInvalid())
             throw new IllegalStateException("CFCS proposed invalid state.");
+
+        // DEBUG:
+//        System.out.println(acg);
+//        System.out.println("==Finish==");
 
         return logHGF;
     }
@@ -197,7 +217,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
         disconnectEdge(srcNode);
         connectEdge(srcNode, destNode, destTime);
 
-        if (destTime<maxChildHeight)
+        if (reverseRootMove && destTime<maxChildHeight)
             acg.setRoot(srcNodeS);
 
         return logP;
