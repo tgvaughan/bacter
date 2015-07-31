@@ -38,10 +38,6 @@ public class CFSubtreeSlide extends ACGOperator {
 
     @Override
     public double proposal() {
-        throw new IllegalStateException("CF/conv swap operator is buggy.  Do not use!");
-    }
-
-    public double buggyProposal() {
 
         double logHGF = 0.0;
         double logHalf = Math.log(0.5);
@@ -134,7 +130,7 @@ public class CFSubtreeSlide extends ACGOperator {
                 
         } else {
 
-            System.out.println(acg.getExtendedNewick());
+//            System.out.println(acg.getExtendedNewick());
             
             // Disconnect <node,parent>
             if (parent.isRoot()) {
@@ -220,7 +216,11 @@ public class CFSubtreeSlide extends ACGOperator {
         if (delta<0)
             return Double.NEGATIVE_INFINITY;
 
-        System.out.println(acg.getExtendedNewick());
+//        System.out.println(acg.getExtendedNewick());
+
+        if (acg.isInvalid())
+            throw new RuntimeException("CFCS proposed invalid state.");
+
         return logHGF;
     }
     

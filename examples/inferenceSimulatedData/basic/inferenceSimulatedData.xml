@@ -139,11 +139,9 @@
         <populationModel idref="popModel"/>
     </operator>
 
-    <!--operator id="addRemoveRedundancy" spec="AddRemoveRedundantConversion" weight="10.0">
+    <operator id="addRemoveRedundancy" spec="AddRemoveRedundantConversion" weight="1.0">
         <acg idref="acg"/>
-        <delta idref="delta"/>
-        <populationModel idref="popModel"/>
-    </operator-->
+    </operator>
 
 
     <operator id="scale" spec="ACGScaler" weight="1.0"
@@ -186,7 +184,7 @@
               acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
               weight="10"/>
 
-    <!-- Leaving this here for comparison with CFWB -->
+    <!-- Leaving this here for comparison with CFWB and CFCS -->
     <operator id="WB" spec='ACGValidityWrapper' acg="@acg">
         <operator spec='WilsonBalding' weight="10">
             <tree idref="acg"/>
