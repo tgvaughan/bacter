@@ -75,6 +75,7 @@ public class CFSubtreeSlide extends CFOperator {
 
         } else {
 
+            // BUG HERE: need to skip nodeParent
             Node newSister = sister;
             while (!newSister.isRoot()
                         && newHeight>newSister.getParent().getHeight()) {
