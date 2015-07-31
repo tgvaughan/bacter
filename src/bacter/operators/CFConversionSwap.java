@@ -143,7 +143,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
         boolean reverseRootMove = srcNode.getParent().isRoot();
         Node srcNodeP = srcNode.getParent();
         Node srcNodeS = getSibling(srcNode);
-        double maxChildHeight = Math.max(srcNodeS.getHeight(), srcNode.getHeight());
+        double maxChildHeight = getMaxRootChildHeight();
         double volatileHeight = Math.max(maxChildHeight, destTime);
 
         // Collapse non-root conversions
@@ -194,8 +194,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
             List<Conversion> toRemove = new ArrayList<>();
             for (Locus locus : acg.getLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
-                    if (conv.getNode1() == srcNodeS
-                            || (conv.getNode1() == srcNode && conv.getHeight1() > volatileHeight))
+                    if (conv.getHeight1() > volatileHeight)
                         toRemove.add(conv);
                 }
             }
@@ -241,7 +240,7 @@ public class CFConversionSwap extends ConversionCreationOperator {
     private double expandConversions(Node srcNode, Node destNode, double destTime) {
         double logP = 0.0;
 
-        double volatileHeight = Math.max(acg.getRoot().getHeight(), srcNode.getParent().getHeight());
+        double volatileHeight = acg.getRoot().getHeight();
         boolean forwardRootMove = destTime > volatileHeight;
 
         Node node = srcNode.getParent();

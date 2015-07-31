@@ -172,4 +172,15 @@ public abstract class ACGOperator extends Operator {
         throw new IllegalStateException("Programmer error: loop fell through" +
                 " in chooseAlignment().");
     }
+
+    /**
+     * @return maximum height of children of root
+     */
+    protected double getMaxRootChildHeight() {
+        double max = 0.0;
+        for (Node child : acg.getRoot().getChildren())
+            max = Math.max(max, child.getHeight());
+
+        return max;
+    }
 }
