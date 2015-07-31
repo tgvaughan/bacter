@@ -16,8 +16,6 @@
  */
 package bacter.operators;
 
-import bacter.Conversion;
-import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
@@ -28,7 +26,7 @@ import beast.util.Randomizer;
  */
 @Description("Implementation of subtree slide that aims to sensibly deal " +
         "with conversions")
-public class CFSubtreeSlide extends ACGOperator {
+public class CFSubtreeSlide extends CFOperator {
 
     public Input<Double> sizeInput = new Input<>("size",
             "Size of window slide is confined to.", 1.0);
@@ -61,162 +59,33 @@ public class CFSubtreeSlide extends ACGOperator {
         if (delta<0) {
 
             Node newSister = sister;
-            while (true) {
-                for (Locus locus : acg.getLoci()) {
-                    for (Conversion conv : acg.getConversions(locus)) {
-                        if (conv.getNode1() == node
-                                && conv.getHeight1() > newHeight
-                                && conv.getHeight1() > newSister.getHeight()) {
-                            conv.setNode1(newSister);
-                            logHGF += logHalf;
-                        }
+            while (newHeight<newSister.getHeight()) {
+                if (newSister.isLeaf())
+                    return Double.NEGATIVE_INFINITY;
 
-                        if (conv.getNode2() == node
-                                && conv.getHeight2() > newHeight
-                                && conv.getHeight2() > newSister.getHeight()) {
-                            conv.setNode2(newSister);
-                            logHGF += logHalf;
-                        }
-                    }
-                }
-                
-                if (newHeight<newSister.getHeight()) {
-                    if (newSister.isLeaf())
-                        return Double.NEGATIVE_INFINITY;
-                    
-                    newSister = Randomizer.nextBoolean()
-                            ? newSister.getLeft()
-                            : newSister.getRight();
+                newSister = Randomizer.nextBoolean()
+                        ? newSister.getLeft()
+                        : newSister.getRight();
 
-                    logHGF -= logHalf;
-                } else
-                    break;
+                logHGF -= logHalf;
             }
 
             // Update topology:
-            if (newSister != sister) {
-                if (parent.isRoot()) {
-                    parent.removeChild(sister);
-                    sister.setParent(null);
-                    acg.setRoot(sister);
-                } else {
-                    Node grandParent = parent.getParent();
-                    grandParent.removeChild(parent);
-                    parent.removeChild(sister);
-                    grandParent.addChild(sister);
-                }
+            logHGF += collapseConversions(node, newSister, newHeight);
 
-                Node grandParent = newSister.getParent();
-                grandParent.removeChild(newSister);
-                grandParent.addChild(parent);
-                parent.addChild(newSister);
-            }
-
-            parent.setHeight(newHeight);
-
-            for (Locus locus : acg.getLoci()) {
-                for (Conversion conv : acg.getConversions(locus)) {
-                    if (conv.getNode1() == newSister && conv.getHeight1() > newHeight) {
-                        if (!parent.isRoot())
-                            conv.setNode1(parent);
-                        else
-                            return Double.NEGATIVE_INFINITY;
-                    }
-
-                    if (conv.getNode2() == newSister && conv.getHeight2() > newHeight)
-                        conv.setNode2(parent);
-                }
-            }
-                
         } else {
 
-//            System.out.println(acg.getExtendedNewick());
-            
-            // Disconnect <node,parent>
-            if (parent.isRoot()) {
-                parent.removeChild(sister);
-                sister.setParent(null);
-                acg.setRoot(sister);
-            } else {
-                Node grandParent = parent.getParent();
-                grandParent.removeChild(parent);
-                parent.setParent(null);
-                parent.removeChild(sister);
-                grandParent.addChild(sister);
-            }
-
-            // Move any conversions on edge previously above parent to edge
-            // above sister
-            for (Locus locus : acg.getLoci()) {
-                for (Conversion conv : acg.getConversions(locus)) {
-                    if (conv.getNode1() == parent)
-                        conv.setNode1(sister);
-                    if (conv.getNode2() == parent)
-                        conv.setNode2(sister);
-                }
-            }
-
             Node newSister = sister;
-            while (true) {
-                for (Locus locus : acg.getLoci()) {
-                    for (Conversion conv : acg.getConversions(locus)) {
-                        if (conv.getNode1() == newSister
-                                && conv.getHeight1() > parent.getHeight()
-                                && conv.getHeight1() < newHeight) {
-                            if (Randomizer.nextBoolean())
-                                conv.setNode1(node);
-
-                            logHGF -= logHalf;
-                        }
-
-                        if (conv.getNode2() == newSister
-                                && conv.getHeight2() > parent.getHeight()
-                                && conv.getHeight2() < newHeight) {
-                            if (Randomizer.nextBoolean())
-                                conv.setNode2(node);
-
-                            logHGF -= logHalf;
-                        }
-                    }
-                }
-                
-                if (!newSister.isRoot()
+            while (!newSister.isRoot()
                         && newHeight>newSister.getParent().getHeight()) {
                     newSister = newSister.getParent();
                     logHGF += logHalf;
-                } else
-                    break;
             }
 
             // Topology modification
-            if (newSister.isRoot()) {
-                parent.addChild(newSister);
-                acg.setRoot(parent);
-            } else {
-                Node grandParent = newSister.getParent();
-                grandParent.removeChild(newSister);
-                grandParent.addChild(parent);
-                parent.addChild(newSister);
-            }
-
-            parent.setHeight(newHeight);
-
-            for (Locus locus : acg.getLoci()) {
-                for (Conversion conv : acg.getConversions(locus)) {
-                    if (conv.getNode1() == newSister && conv.getHeight2() < newHeight)
-                        conv.setNode1(parent);
-
-                    if (conv.getNode2() == newSister && conv.getHeight2() < newHeight)
-                        conv.setNode2(parent);
-                }
-            }
+            logHGF -= expandConversions(node, newSister, newHeight);
 
         }
-
-        if (delta<0)
-            return Double.NEGATIVE_INFINITY;
-
-//        System.out.println(acg.getExtendedNewick());
 
         if (acg.isInvalid())
             throw new RuntimeException("CFCS proposed invalid state.");
