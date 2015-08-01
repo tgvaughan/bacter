@@ -56,8 +56,7 @@ public class CFSubtreeExchange extends CFOperator {
             logHGF += collapseConversions(destNode, srcNode, t_srcNodeP);
         }
 
-        if (acg.isInvalid())
-            throw new RuntimeException("CFSTX proposed invalid state.");
+        assert !acg.isInvalid() : "CFSTX proposed invalid state.";
 
         return logHGF;
     }

@@ -89,8 +89,7 @@ public class CFSubtreeSlide extends CFOperator {
 
         }
 
-        if (acg.isInvalid())
-            throw new RuntimeException("CFCS proposed invalid state.");
+        assert !acg.isInvalid() : "CFSTS proposed invalid state.";
 
         return logHGF;
     }

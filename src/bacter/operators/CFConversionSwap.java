@@ -98,9 +98,7 @@ public class CFConversionSwap extends CFOperator {
 
         logHGF += Math.log(1.0/getCompatibleConversions().size());
 
-        // DEBUG
-        if (acg.isInvalid())
-            throw new IllegalStateException("CFCS proposed invalid state.");
+        assert !acg.isInvalid() : "CFCS proposed invalid state.";
 
         return logHGF;
     }

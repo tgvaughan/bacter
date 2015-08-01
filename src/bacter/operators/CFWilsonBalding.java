@@ -102,9 +102,7 @@ public class CFWilsonBalding extends CFOperator {
             // to srcNode to the new edge above srcNode.
             logHGF -= expandConversions(srcNode, destNode, newTime);
 
-            // DEBUG
-            if (acg.isInvalid())
-                throw new IllegalStateException("CFWB proposed invalid state.");
+            assert !acg.isInvalid() : "CFWB proposed invalid state.";
 
             return logHGF;
         }
@@ -131,9 +129,7 @@ public class CFWilsonBalding extends CFOperator {
             // newTime to edges ancestral to destNode.
             logHGF += collapseConversions(srcNode, destNode, newTime);
 
-            // DEBUG
-            if (acg.isInvalid())
-                throw new IllegalStateException("CFWB proposed invalid state.");
+            assert !acg.isInvalid() : "CFWB proposed invalid state.";
 
             return logHGF;
         }
@@ -158,13 +154,7 @@ public class CFWilsonBalding extends CFOperator {
         else
             logHGF -= expandConversions(srcNode, destNode, newTime);
 
-        // DEBUG
-//        if (acg.isInvalid())
-//            throw new IllegalStateException("CFWB proposed invalid state.");
-
-//        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
-//            System.out.println("=\n" + oldTree + "\n" + acg.getExtendedNewick());
-//        }
+        assert !acg.isInvalid() : "CFWB proposed invalid state.";
 
         return logHGF;
     }
