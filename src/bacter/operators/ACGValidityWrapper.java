@@ -17,13 +17,15 @@
 
 package bacter.operators;
 
+import beast.core.Description;
 import beast.core.Input;
 import beast.core.Operator;
 
 /**
- *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
+@Description("Applies a given operator, sensibly handling the case that the" +
+        "operator breaks the ACG.")
 public class ACGValidityWrapper extends ACGOperator {
     
     public Input<Operator> operatorInput = new Input<>("operator",
