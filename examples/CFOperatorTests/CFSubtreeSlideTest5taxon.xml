@@ -25,8 +25,7 @@
         <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
     </input>
 
-    <!--run spec="MCMC" id="mcmc" chainLength="10000000"-->
-    <run spec="bacter.devutils.MCMCTrace" id="mcmc" chainLength="100" stateTraceFile="$(filebase).stateTrace">
+    <run spec="MCMC" id="mcmc" chainLength="10000000">
         <state>
             <stateNode idref='acg'/>
         </state>
@@ -40,12 +39,7 @@
             </distribution>
         </distribution>
 
-        <operator id="CFSTS" spec='CFSubtreeSlide'
-            acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
-            useGaussian="true" size="1.0"
-            weight="1"/>
-
-        <!--operator id="addRemove" spec="AddRemoveConversion" weight="1.0">
+        <operator id="addRemove" spec="AddRemoveConversion" weight="1.0">
             <acg idref="acg"/>
             <delta idref="delta"/>
             <populationModel idref="popFunc"/>
@@ -62,8 +56,13 @@
             </operator>
         </operator>
 
+        <operator id="CFSTS" spec='CFSubtreeSlide'
+            acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+            useGaussian="true" size="1.0"
+            weight="10"/>
+
         <operator id="STS" spec='ACGValidityWrapper' acg="@acg">
-            <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
+            <operator spec='SubtreeSlide' weight="10" gaussian="true" size="1.0">
                 <tree idref="acg"/>
             </operator>
         </operator>
@@ -80,11 +79,11 @@
 
         <operator id="WB" spec='CFWilsonBalding'
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
-                  alpha="0.1" weight="10"/-->
+                  alpha="0.1" weight="10"/>
 
         <!-- Loggers -->
 
-        <logger logEvery="1">
+        <logger logEvery="10000">
             <log idref="posterior"/>
             <log spec='TreeHeightLogger' tree="@acg"/>
         </logger>

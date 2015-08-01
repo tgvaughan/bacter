@@ -41,24 +41,25 @@ public class CFSubtreeSlide extends CFOperator {
         double logHalf = Math.log(0.5);
 
         // Choose non-root node:
-        Node node = acg.getNode(Randomizer.nextInt(acg.getNodeCount()-1));
+        Node srcNode = acg.getNode(Randomizer.nextInt(acg.getNodeCount()-1));
 
-        Node parent = node.getParent();
-        Node sister = getSibling(node);
+        Node srcNodeP = srcNode.getParent();
+        Node srcNodeS = getSibling(srcNode);
         
         double delta = useGaussianInput.get()
                 ? Randomizer.nextGaussian()*sizeInput.get()
                 : (Randomizer.nextDouble()-0.5)*sizeInput.get();
 
-        double newHeight = parent.getHeight() + delta;
+        double newHeight = srcNodeP.getHeight() + delta;
 
         // Reject invalid moves:
-        if (newHeight<node.getHeight())
+        if (newHeight<srcNode.getHeight())
             return Double.NEGATIVE_INFINITY;
 
         if (delta<0) {
 
-            Node newSister = sister;
+            // Search downwards for new attachment point:
+            Node newSister = srcNodeS;
             while (newHeight<newSister.getHeight()) {
                 if (newSister.isLeaf())
                     return Double.NEGATIVE_INFINITY;
@@ -71,20 +72,20 @@ public class CFSubtreeSlide extends CFOperator {
             }
 
             // Update topology:
-            logHGF += collapseConversions(node, newSister, newHeight);
+            logHGF += collapseConversions(srcNode, newSister, newHeight);
 
         } else {
 
-            // BUG HERE: need to skip nodeParent
-            Node newSister = sister;
-            while (!newSister.isRoot()
-                        && newHeight>newSister.getParent().getHeight()) {
-                    newSister = newSister.getParent();
+            // Search upwards for new attachment point:
+            Node newSister = srcNodeS;
+            while (getParentSkip(newSister, srcNodeP) != null
+                        && newHeight> getParentSkip(newSister, srcNodeP).getHeight()) {
+                    newSister = getParentSkip(newSister, srcNodeP);
                     logHGF += logHalf;
             }
 
-            // Topology modification
-            logHGF -= expandConversions(node, newSister, newHeight);
+            // Update topology
+            logHGF -= expandConversions(srcNode, newSister, newHeight);
 
         }
 
@@ -92,6 +93,22 @@ public class CFSubtreeSlide extends CFOperator {
             throw new RuntimeException("CFCS proposed invalid state.");
 
         return logHGF;
+    }
+
+    /**
+     * Return parent of node unless parent==skip in which case grandparent
+     * is returned.
+     *
+     * @param node node to find parent of
+     * @param skip parent node to skip
+     * @return conditioned parent
+     */
+    private Node getParentSkip(Node node, Node skip) {
+        Node parent = node.getParent();
+        if (parent == skip)
+            return parent.getParent();
+        else
+            return parent;
     }
     
 }
