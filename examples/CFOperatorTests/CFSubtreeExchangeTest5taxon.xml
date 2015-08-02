@@ -25,7 +25,7 @@
         <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
     </input>
 
-    <run spec="MCMC" id="mcmc" chainLength="100000000">
+    <run spec="MCMC" id="mcmc" chainLength="10000000">
         <state>
             <stateNode idref='acg'/>
         </state>
@@ -62,11 +62,6 @@
             weight="10"/>
 
 
-        <operator id="CFSTXwide" spec='CFSubtreeExchange'
-            acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
-            isNarrow="false"
-            weight="10"/>
-
         <operator id="STS" spec='ACGValidityWrapper' acg="@acg">
             <operator spec='SubtreeSlide' weight="10" gaussian="true" size="1.0">
                 <tree idref="acg"/>
@@ -86,6 +81,12 @@
         <operator id="WB" spec='CFWilsonBalding'
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
                   alpha="0.1" weight="10"/>
+
+
+        <operator id="CFSTXwide" spec='CFSubtreeExchange'
+            acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+            isNarrow="true"
+            weight="10"/>
 
         <!-- Loggers -->
 

@@ -40,17 +40,17 @@ public class CFSubtreeExchange extends CFOperator {
         }
 
         double t_srcNodeP = srcNodeP.getHeight();
-        double t_destNodeP = srcNodeP.getHeight();
+        double t_destNodeP = destNodeP.getHeight();
 
         // Reject if substitution would result in negative branch lengths:
-        if (destNode.getHeight()>t_srcNodeP
+        if (destNode == srcNodeP || srcNode == destNodeP
+                || destNode.getHeight()>t_srcNodeP
                 || srcNode.getHeight()>t_destNodeP)
             return Double.NEGATIVE_INFINITY;
 
         if (t_srcNodeP > t_destNodeP) {
             logHGF += collapseConversions(srcNode, destNode, t_destNodeP);
             logHGF -= expandConversions(destNode, srcNode, t_srcNodeP);
-
         } else {
             logHGF -= expandConversions(srcNode, destNode, t_destNodeP);
             logHGF += collapseConversions(destNode, srcNode, t_srcNodeP);

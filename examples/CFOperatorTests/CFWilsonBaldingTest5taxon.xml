@@ -71,7 +71,7 @@
             </operator>
         </operator>
 
-        <operator id="WB" spec='CFWilsonBalding'
+        <operator id="CFWB" spec='CFWilsonBalding'
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
                   alpha="0.1" weight="10"/>
 
