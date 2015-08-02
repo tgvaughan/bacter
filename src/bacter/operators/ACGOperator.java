@@ -174,11 +174,11 @@ public abstract class ACGOperator extends Operator {
     }
 
     /**
-     * @return maximum height of children of root
+     * @return maximum height of children of node
      */
-    protected double getMaxRootChildHeight() {
+    protected double getMaxChildHeight(Node node) {
         double max = 0.0;
-        for (Node child : acg.getRoot().getChildren())
+        for (Node child : node.getChildren())
             max = Math.max(max, child.getHeight());
 
         return max;

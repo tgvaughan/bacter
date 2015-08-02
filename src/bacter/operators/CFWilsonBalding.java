@@ -128,6 +128,12 @@ public class CFWilsonBalding extends CFOperator {
         logHGF += disconnectCFEdge(srcNode, newTime);
         logHGF += connectCFEdge(srcNode, destNode, newTime);
 
+        if (srcNodeP.isRoot())
+            acg.setRoot(srcNodeP);
+
+        if (srcNodeS.isRoot())
+            acg.setRoot(srcNodeS);
+
         assert !acg.isInvalid() : "CFWB proposed invalid state:" + "\n" + acg.toString();
 
         return logHGF;

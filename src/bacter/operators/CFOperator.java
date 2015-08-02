@@ -36,7 +36,7 @@ public abstract class CFOperator extends ConversionCreationOperator {
         boolean reverseRootMove = srcNode.getParent().isRoot();
         Node srcNodeP = srcNode.getParent();
         Node srcNodeS = getSibling(srcNode);
-        double maxChildHeight = getMaxRootChildHeight();
+        double maxChildHeight = getMaxChildHeight(acg.getRoot());
         double volatileHeight = Math.max(maxChildHeight, destTime);
 
         // Collapse non-root conversions
@@ -207,8 +207,6 @@ public abstract class CFOperator extends ConversionCreationOperator {
     protected double disconnectCFEdge(Node srcNode, double newTime) {
         double logP = 0.0;
 
-        Node srcNodeS = getSibling(srcNode);
-
         Node node = srcNode.getParent();
         while (node != null) {
             for (Locus locus : acg.getLoci()) {
@@ -233,11 +231,12 @@ public abstract class CFOperator extends ConversionCreationOperator {
 
         // Discard any conversions that aren't allowed
 
-        if (srcNode.getParent().isRoot() && newTime < acg.getRoot().getHeight()) {
+        Node srcNodeP = srcNode.getParent();
+        if (srcNode.getParent().isRoot() && newTime < srcNode.getParent().getHeight()) {
 
-            double volatileHeight = Math.max(newTime, getMaxRootChildHeight());
+            double volatileHeight = Math.max(newTime, getMaxChildHeight(srcNode.getParent()));
 
-            int nRemoved = 0;
+            List<Conversion> toRemove = new ArrayList<>();
             double L = 2.0*(srcNode.getParent().getHeight() - volatileHeight);
 
             for (Locus locus : acg.getLoci()) {
@@ -247,9 +246,7 @@ public abstract class CFOperator extends ConversionCreationOperator {
                                 + getAffectedRegionProb(conv)
                                 + getEdgeCoalescenceProb(conv);
 
-                        acg.deleteConversion(conv);
-
-                        nRemoved += 1;
+                        toRemove.add(conv);
                     }
                 }
             }
@@ -258,16 +255,16 @@ public abstract class CFOperator extends ConversionCreationOperator {
                     *(acg.getTotalSequenceLength()
                     + acg.getLoci().size()*deltaInput.get().getValue());
 
-            logP += -Nexp + nRemoved*Math.log(Nexp);
+            logP += -Nexp + toRemove.size()*Math.log(Nexp);
             // Factorial cancelled due to sum over permutations of
             // individual conversion states
+
+            for (Conversion conv : toRemove)
+                acg.deleteConversion(conv);
         }
 
         // Apply topology modifications.
         disconnectEdge(srcNode);
-
-        if (srcNodeS.isRoot())
-            acg.setRoot(srcNodeS);
 
         return logP;
     }
@@ -280,11 +277,12 @@ public abstract class CFOperator extends ConversionCreationOperator {
         // Collapse non-root conversions
 
         Node node = destNode;
-        while (!node.isRoot() && node.getHeight() < srcNodeP.getHeight()) {
+        while (node != null && node.getHeight() < srcNodeP.getHeight()) {
 
             double lowerBound = Math.max(newTime, node.getHeight());
-            double upperBound = Math.min(node.getParent().getHeight(),
-                    srcNodeP.getHeight());
+            double upperBound = !node.isRoot()
+                    ? Math.min(node.getParent().getHeight(), srcNodeP.getHeight())
+                    : Double.POSITIVE_INFINITY;
 
             for (Locus locus : acg.getLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
@@ -309,41 +307,39 @@ public abstract class CFOperator extends ConversionCreationOperator {
             node = node.getParent();
         }
 
-        // Create new conversions above old root
+        // Determine number of conversions to create above original root:
+        int N = 0;
+        double volatileHeight = Math.max(destNode.getHeight(), srcNodeP.getHeight());
+        double L = 2.0 * (newTime - volatileHeight);
         if (destNode.isRoot() && newTime > srcNodeP.getHeight()) {
-            double volatileHeight = Math.max(getMaxRootChildHeight(), srcNodeP.getHeight());
-
-            double L = 2.0 * (newTime - volatileHeight);
             double Nexp = L * rhoInput.get().getValue()
                     * (acg.getTotalSequenceLength()
                     + acg.getLoci().size() * deltaInput.get().getValue());
-            int N = (int) Randomizer.nextPoisson(Nexp);
+            N = (int) Randomizer.nextPoisson(Nexp);
 
             logP -= -Nexp + N * Math.log(Nexp); // Factorial cancels
-
-            for (int i = 0; i < N; i++) {
-                Conversion conv = new Conversion();
-
-                double u = Randomizer.nextDouble() * L;
-                if (u < 0.5 * L) {
-                    conv.setNode1(destNode);
-                    conv.setHeight1(volatileHeight + u);
-                } else {
-                    conv.setNode1(srcNode);
-                    conv.setHeight1(volatileHeight + u - 0.5 * L);
-                }
-
-                logP -= Math.log(1.0 / L) + drawAffectedRegion(conv) + coalesceEdge(conv);
-
-                acg.addConversion(conv);
-            }
         }
+
 
         // Apply topology modifications.
         connectEdge(srcNode, destNode, newTime);
 
-        if (srcNodeP.isRoot())
-            acg.setRoot(srcNodeP);
+        for (int i = 0; i < N; i++) {
+            Conversion conv = new Conversion();
+
+            double u = Randomizer.nextDouble() * L;
+            if (u < 0.5 * L) {
+                conv.setNode1(destNode);
+                conv.setHeight1(volatileHeight + u);
+            } else {
+                conv.setNode1(srcNode);
+                conv.setHeight1(volatileHeight + u - 0.5 * L);
+            }
+
+            logP -= Math.log(1.0 / L) + drawAffectedRegion(conv) + coalesceEdge(conv);
+
+            acg.addConversion(conv);
+        }
 
         return logP;
     }
