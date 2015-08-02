@@ -50,8 +50,6 @@ public class CFWilsonBalding extends CFOperator {
     @Override
     public double proposal() {
 
-//        String oldTree = acg.getExtendedNewick();
-
         // Determine whether we can apply this operator:
         if (acg.getLeafNodeCount()<3)
             return Double.NEGATIVE_INFINITY;
@@ -75,10 +73,8 @@ public class CFWilsonBalding extends CFOperator {
         Node destNodeP = destNode.getParent();
         double t_destNode = destNode.getHeight();
 
-//        String oldTree = acg.getExtendedNewick();
-//        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
-//            System.out.println("Hey!");
-//        }
+        double logHGF = 0.0;
+        double newTime = -1;
 
         if (destNode.isRoot()) {
             // Forward root move
@@ -86,25 +82,15 @@ public class CFWilsonBalding extends CFOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-            double logHGF = 0.0;
-
             double t_srcNodeG = srcNodeP.getParent().getHeight();
 
             logHGF += Math.log(1.0/(t_srcNodeG - Math.max(t_srcNode, t_srcNodeS)));
 
-            double newTime = t_destNode
+            newTime = t_destNode
                     + Randomizer.nextExponential(1.0/(alpha*t_destNode));
 
             logHGF -= Math.log(1.0/(alpha*t_destNode))
                     - (1.0/alpha)*(newTime/t_destNode - 1.0);
-
-            // Randomly reconnect some of the conversions ancestral
-            // to srcNode to the new edge above srcNode.
-            logHGF -= expandConversions(srcNode, destNode, newTime);
-
-            assert !acg.isInvalid() : "CFWB proposed invalid state.";
-
-            return logHGF;
         }
 
         if (srcNodeP.isRoot()) {
@@ -113,48 +99,36 @@ public class CFWilsonBalding extends CFOperator {
             if (!includeRootInput.get())
                 return Double.NEGATIVE_INFINITY;
 
-            double logHGF = 0.0;
-
             logHGF += Math.log(1.0/(alpha*t_srcNodeS))
                     - (1.0/alpha)*(t_srcNodeP/t_srcNodeS - 1.0);
 
             double min_newTime = Math.max(t_srcNode, t_destNode);
             double t_destNodeP = destNodeP.getHeight();
-            double newTime = min_newTime
+            newTime = min_newTime
                     + (t_destNodeP - min_newTime)*Randomizer.nextDouble();
 
             logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
-
-            // Reconnect conversions on edge above srcNode older than
-            // newTime to edges ancestral to destNode.
-            logHGF += collapseConversions(srcNode, destNode, newTime);
-
-            assert !acg.isInvalid() : "CFWB proposed invalid state.";
-
-            return logHGF;
         }
 
-        // Non-root move
+        if (newTime<0) {
+            // Non-root move
 
-        double logHGF = 0.0;
+            double t_srcNodeG = srcNodeP.getParent().getHeight();
 
-        double t_srcNodeG = srcNodeP.getParent().getHeight();
+            logHGF += Math.log(1.0 / (t_srcNodeG - Math.max(t_srcNode, t_srcNodeS)));
 
-        logHGF += Math.log(1.0/(t_srcNodeG - Math.max(t_srcNode, t_srcNodeS)));
+            double min_newTime = Math.max(t_destNode, t_srcNode);
+            double t_destNodeP = destNodeP.getHeight();
+            newTime = min_newTime
+                    + (t_destNodeP - min_newTime) * Randomizer.nextDouble();
 
-        double min_newTime = Math.max(t_destNode, t_srcNode);
-        double t_destNodeP = destNodeP.getHeight();
-        double newTime = min_newTime
-                + (t_destNodeP - min_newTime)*Randomizer.nextDouble();
+            logHGF -= Math.log(1.0 / (t_destNodeP - min_newTime));
+        }
 
-        logHGF -= Math.log(1.0/(t_destNodeP - min_newTime));
+        logHGF += disconnectCFEdge(srcNode, newTime);
+        logHGF += connectCFEdge(srcNode, destNode, newTime);
 
-        if (newTime < srcNodeP.getHeight())
-            logHGF += collapseConversions(srcNode, destNode, newTime);
-        else
-            logHGF -= expandConversions(srcNode, destNode, newTime);
-
-        assert !acg.isInvalid() : "CFWB proposed invalid state.";
+        assert !acg.isInvalid() : "CFWB proposed invalid state:" + "\n" + acg.toString();
 
         return logHGF;
     }

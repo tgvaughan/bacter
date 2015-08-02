@@ -35,12 +35,15 @@ public class CFSubtreeExchange extends CFOperator {
 
             do {
                 destNode = acg.getNode(Randomizer.nextInt(acg.getNodeCount()-1));
-            } while(destNode == srcNode || destNode.getParent() == srcNode.getParent());
+            } while(destNode == srcNode
+                    || destNode == srcNode.getParent()
+                    || destNode.getParent() == srcNode
+                    || destNode.getParent() == srcNode.getParent());
             destNodeP = destNode.getParent();
         }
 
         double t_srcNodeP = srcNodeP.getHeight();
-        double t_destNodeP = srcNodeP.getHeight();
+        double t_destNodeP = destNodeP.getHeight();
 
         // Reject if substitution would result in negative branch lengths:
         if (destNode.getHeight()>t_srcNodeP
