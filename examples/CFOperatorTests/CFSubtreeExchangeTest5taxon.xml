@@ -61,6 +61,10 @@
             isNarrow="true"
             weight="10"/>
 
+        <operator id="CFSTXwide" spec='CFSubtreeExchange'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  isNarrow="false"
+                  weight="10"/>
 
         <operator id="STS" spec='ACGValidityWrapper' acg="@acg">
             <operator spec='SubtreeSlide' weight="10" gaussian="true" size="1.0">
@@ -78,15 +82,12 @@
             </operator>
         </operator>
 
-        <operator id="WB" spec='CFWilsonBalding'
-                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
-                  alpha="0.1" weight="10"/>
+        <operator id="WB" spec='ACGValidityWrapper' acg="@acg">
+            <operator spec='WilsonBalding' weight="10">
+                <tree idref="acg"/>
+            </operator>
+        </operator>
 
-
-        <operator id="CFSTXwide" spec='CFSubtreeExchange'
-            acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
-            isNarrow="true"
-            weight="10"/>
 
         <!-- Loggers -->
 

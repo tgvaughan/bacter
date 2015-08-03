@@ -1,5 +1,8 @@
 package bacter.operators;
 
+import bacter.Conversion;
+import bacter.Locus;
+import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
@@ -7,10 +10,13 @@ import beast.util.Randomizer;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
+@Description("CF subtree exchange operator.")
 public class CFSubtreeExchange extends CFOperator {
 
     public Input<Boolean> isNarrowInput = new Input<>("isNarrow",
             "Whether to use narrow exchange. (Default true.)", true);
+
+    int count = 0;
 
     @Override
     public double proposal() {
@@ -49,11 +55,23 @@ public class CFSubtreeExchange extends CFOperator {
             return Double.NEGATIVE_INFINITY;
 
         if (t_srcNodeP > t_destNodeP) {
-            logHGF += collapseConversions(srcNode, destNode, t_destNodeP);
-            logHGF -= expandConversions(destNode, srcNode, t_srcNodeP);
+            Node srcNodeS = getSibling(srcNode);
+
+            logHGF += collapseConversions(srcNode, destNodeP, t_destNodeP);
+
+            if (!srcNodeS.isRoot() && srcNodeS.getLength() == 0.0)
+                srcNodeS = srcNodeS.getParent();
+
+            logHGF -= expandConversions(destNode, srcNodeS, t_srcNodeP);
         } else {
-            logHGF -= expandConversions(srcNode, destNode, t_destNodeP);
-            logHGF += collapseConversions(destNode, srcNode, t_srcNodeP);
+            Node srcNodeS = getSibling(srcNode);
+
+            logHGF -= expandConversions(srcNode, destNodeP, t_destNodeP);
+
+            if (srcNodeP.isRoot())
+                acg.setRoot(srcNodeP);
+
+            logHGF += collapseConversions(destNode, srcNodeS, t_srcNodeP);
         }
 
         assert !acg.isInvalid() : "CFSTX proposed invalid state.";
