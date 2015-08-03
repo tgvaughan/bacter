@@ -204,6 +204,9 @@
                 <parameterInverse idref="rho.t:$(n)"/>
             </operator>
 
+            <operator id="addRemoveRedundant.t:$(n)" acg="@Tree.t:$(n)"
+                spec="bacter.operators.AddRemoveRedundantConversion" weight="1.0"/>
+
             <operator id="CRswap.t:$(n)" spec="bacter.operators.ConvertedRegionSwap" weight="1.0"
                 acg="@Tree.t:$(n)"/>
 
@@ -224,24 +227,6 @@
 
             <operator id="CEslide.t:$(n)" spec="bacter.operators.ConvertedEdgeSlide" weight="1.0"
                 acg="@Tree.t:$(n)" apertureSize="0.05" />
-
-            <operator id="STS.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
-                <operator spec='beast.evolution.operators.SubtreeSlide' weight="5" gaussian="true" size="0.1">
-                    <tree idref="Tree.t:$(n)"/>
-                </operator>
-            </operator>
-
-            <operator id="STXnarrow.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
-                <operator id='narrow' spec='beast.evolution.operators.Exchange' isNarrow='true' weight="10">
-                    <tree idref="Tree.t:$(n)"/>
-                </operator>
-            </operator>
-
-            <operator id="STXwide.t:$(n)" spec='bacter.operators.ACGValidityWrapper' acg="@Tree.t:$(n)">
-                <operator id='wide' spec='beast.evolution.operators.Exchange' isNarrow='false' weight="10">
-                    <tree idref="Tree.t:$(n)"/>
-                </operator>
-            </operator>
 
             <!-- Parameter operators -->
             <operator id='popSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
@@ -352,6 +337,10 @@
 
             <connect srcID='ACGscale.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+
+            <connect srcID='addRemoveRedundant.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+
             <connect srcID='CRswap.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='CRshift.t:$(n)' targetID='mcmc' inputName='operator'
@@ -365,12 +354,6 @@
             <connect srcID='CEflip.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='CEslide.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='STS.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='STXnarrow.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
-            <connect srcID='STXwide.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
 
             <connect srcID='popSizeScaler.t:$(n)' targetID='mcmc' inputName='operator'
@@ -417,7 +400,7 @@
             <operator id="addRemoveDetour_$(model).t:$(n)" spec="bacter.operators.AddRemoveDetour" weight="10.0"
                 acg="@Tree.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"/>
 
-            <operator id="CFuniform_$(model).t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
+            <operator id="CFUniform_$(model).t:$(n)" spec='bacter.operators.CFUniform' acg="@Tree.t:$(n)"
                 rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)" weight="10"/>
 
             <operator id="CFWB_$(model).t:$(n)" spec='bacter.operators.CFWilsonBalding'
@@ -427,14 +410,35 @@
             <operator id="CFCS_$(model).t:$(n)" spec='bacter.operators.CFConversionSwap'
                 acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
                 weight="10"/>
+
+            <operator id="CFSTS_$(model).t:$(n)" spec='bacter.operators.CFSubtreeSlide'
+                  acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
+                  useGaussian="true" size="1.0" weight="10"/>
+
+            <operator id="CFSTXnarrow_$(model).t:$(n)" spec='bacter.operators.CFSubtreeExchange'
+                  acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
+                  isNarrow="true" weight="10"/>
+
+            <operator id="CFSTXwide_$(model).t:$(n)" spec='bacter.operators.CFSubtreeExchange'
+                  acg="@Tree.t:$(n)" rho="@rho.t:$(n)" delta="@delta.t:$(n)" populationModel="@$(model).t:$(n)"
+                  isNarrow="false" weight="10"/>
+
         ]]>
         <connect srcID='addRemove_$(model).t:$(n)' targetID='mcmc' inputName='operator'
                  if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
         <connect srcID='addRemoveDetour_$(model).t:$(n)' targetID='mcmc' inputName='operator'
                  if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
-        <connect srcID='CFuniform_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+        <connect srcID='CFUniform_$(model).t:$(n)' targetID='mcmc' inputName='operator'
                  if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
         <connect srcID='CFWB_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                 if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+        <connect srcID='CFCS_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                 if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+        <connect srcID='CFSTS_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                 if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+        <connect srcID='CFSTXnarrow_$(model).t:$(n)' targetID='mcmc' inputName='operator'
+                 if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
+        <connect srcID='CFSTXwide_$(model).t:$(n)' targetID='mcmc' inputName='operator'
                  if='inposterior($(model).t:$(n)) and Tree.t:$(n)/estimate=true'/>
     </fragment>
 
