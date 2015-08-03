@@ -52,14 +52,30 @@
             </distribution>
         </distribution>
 
+        <!-- Operators -->
+
+        <operator id="scale" spec="ACGScaler" weight="1.0"
+                  scaleFactor="0.8">
+            <acg idref="acg"/>
+        </operator>
+
         <operator id="addRemove" spec="AddRemoveConversion" weight="1.0">
             <acg idref="acg"/>
             <delta idref="delta"/>
             <populationModel idref="popFunc"/>
         </operator>
 
-        <operator id="scale" spec="ACGScaler" weight="1.0"
-                  scaleFactor="0.8">
+        <operator id="addRemoveDetour" spec="AddRemoveDetour" weight="1.0">
+            <acg idref="acg"/>
+            <delta idref="delta"/>
+            <populationModel idref="popFunc"/>
+        </operator>
+
+        <operator id="addRemoveRedundant" spec="AddRemoveRedundantConversion" weight="1.0">
+            <acg idref="acg"/>
+        </operator>
+
+        <operator id="mergeSplit" spec="MergeSplitConversion" weight="1.0">
             <acg idref="acg"/>
         </operator>
 
@@ -81,34 +97,33 @@
         <operator id="CRBshift" spec="ConvertedRegionBoundaryShift" weight="1.0"
                   acg="@acg" apertureSize="0.01" />
 
-        <operator id="STS" spec='ACGValidityWrapper' acg="@acg" weight="1">
-            <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
-                <tree idref="acg"/>
-            </operator>
-        </operator>
-
-        <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg" weight="1">
-            <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
-                <tree idref="acg"/>
-            </operator>
-        </operator>
-
-        <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg" weight="1">
-            <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
-                <tree idref="acg"/>
-            </operator>
-        </operator>
-
-        <operator id="Uniform" spec="CFUniform" delta="@delta" rho="@rho"
+        <operator id="CFUniform" spec="CFUniform" delta="@delta" rho="@rho"
                   populationModel="@popFunc" acg="@acg" weight="10"/>
 
-        <operator id="WB" spec='CFWilsonBalding'
+        <operator id="CFWB" spec='CFWilsonBalding'
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
                   alpha="0.1" weight="10"/>
 
         <operator id="CFCS" spec='CFConversionSwap'
                   acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
                   weight="10"/>
+
+        <operator id="CFSTS" spec='CFSubtreeSlide'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  useGaussian="true" size="1.0"
+                  weight="10"/>
+
+        <operator id="CFSTXnarrow" spec='CFSubtreeExchange'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  isNarrow="true"
+                  weight="10"/>
+
+        <operator id="CFSTXwide" spec='CFSubtreeExchange'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  isNarrow="false"
+                  weight="10"/>
+
+        <!-- Loggers -->
 
         <logger logEvery="10000">
             <log idref="posterior"/>
