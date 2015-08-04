@@ -189,8 +189,7 @@
 
     <operator id="CFSTS" spec='CFSubtreeSlide'
         acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
-        useGaussian="true" size="1.0"
-        weight="10"/>
+        scaleFactor="0.8" weight="10"/>
 
     <operator id="CFSTXnarrow" spec='CFSubtreeExchange'
         acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
@@ -202,30 +201,6 @@
         isNarrow="false"
         weight="10"/>
 
-    <!-- Leaving this here for comparison with CFWB and CFCS -->
-    <operator id="WB" spec='ACGValidityWrapper' acg="@acg">
-        <operator spec='WilsonBalding' weight="10">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
-
-    <operator id="STS" spec='ACGValidityWrapper' acg="@acg">
-        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="0.1">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
-
-    <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg">
-        <operator id='narrow' spec='Exchange' isNarrow='true' weight="10">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
-
-    <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg">
-        <operator id='wide' spec='Exchange' isNarrow='false' weight="10">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
 
     <!-- Output logging -->
 
