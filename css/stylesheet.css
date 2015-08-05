@@ -16,6 +16,11 @@
     margin: 0 auto;
 }
 
+.jumbotron a {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .btn {
     display: inline-block;
     background-image: none;
