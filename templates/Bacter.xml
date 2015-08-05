@@ -144,7 +144,7 @@
             </plugin>
 
             <!-- ACG -->
-            <plugin spec='bacter.model.SimulatedACG' id='Tree.t:$(n)' estimate='true' rho="0.001" delta="1000">
+            <plugin spec='bacter.model.SimulatedACG' id='Tree.t:$(n)' estimate='true' rho="0.0" delta="1000">
                 <locus idref="locus.$(n)"/>
                 <taxonset spec='beast.evolution.alignment.TaxonSet'>
                     <alignment idref="data"/>
