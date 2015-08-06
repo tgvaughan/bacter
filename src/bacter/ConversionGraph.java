@@ -643,11 +643,13 @@ public class ConversionGraph extends Tree {
                 thisLength = lastTime - event.time;
             
             if (event.isArrival) {
-                String meta =  String.format("[&conv=%d, region={%d,%d}, locus=\"%s\"",
-                                convs.get(event.conv.getLocus()).indexOf(event.conv),
-                                event.conv.getStartSite(),
-                                event.conv.getEndSite(),
-                                event.conv.getLocus().getID());
+                String meta =  String.format("[&conv=%d, region={%d,%d}, locus=\"%s\", relSize=%g",
+                        convs.get(event.conv.getLocus()).indexOf(event.conv),
+                        event.conv.getStartSite(),
+                        event.conv.getEndSite(),
+                        event.conv.getLocus().getID(),
+                        event.conv.getSiteCount()/(double)event.conv.getLocus().getSiteCount()
+                );
 
                 if (event.conv.newickMetaDataMiddle != null)
                     meta += ", " + event.conv.newickMetaDataMiddle;
