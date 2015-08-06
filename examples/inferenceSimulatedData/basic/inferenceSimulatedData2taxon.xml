@@ -152,32 +152,32 @@
         acg="@acg" />
 
     <operator id="CEslide" spec="ConvertedEdgeSlide" weight="1.0"
-        acg="@acg" scaleBound="0.8" />
+        acg="@acg" apertureSize="0.8" />
 
     <operator id="CFUniform" spec='CFUniform' acg="@acg"
               rho="@rho" delta="@delta" populationModel="@popModel" weight="10"/>
 
     <operator id="CFWB" spec='CFWilsonBalding'
               acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
-              alpha="0.1" weight="10"/>
+              alpha="0.1" weight="1"/>
 
-    <operator id="STS" spec='ACGValidityWrapper' acg="@acg">
-        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="0.1">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
+    <operator id="CFCS" spec='CFConversionSwap'
+        acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
+        weight="1"/>
 
-    <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg">
-        <operator id='narrow' spec='Exchange' isNarrow='true' weight="10">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
+    <operator id="CFSTS" spec='CFSubtreeSlide'
+        acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
+        scaleFactor="0.9" weight="1"/>
 
-    <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg">
-        <operator id='wide' spec='Exchange' isNarrow='false' weight="10">
-            <tree idref="acg"/>
-        </operator>
-    </operator>
+    <operator id="CFSTXnarrow" spec='CFSubtreeExchange'
+        acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
+        isNarrow="true"
+        weight="1"/>
+
+    <operator id="CFSTXwide" spec='CFSubtreeExchange'
+        acg="@acg" rho="@rho" delta="@delta" populationModel="@popModel"
+        isNarrow="false"
+        weight="1"/>
 
     <!-- Output logging -->
 

@@ -22,6 +22,9 @@ public class CFSubtreeExchange extends CFOperator {
     public double proposal() {
         double logHGF = 0.0;
 
+        if (acg.getLeafNodeCount()<3)
+            return Double.NEGATIVE_INFINITY;
+
         Node srcNode, srcNodeP, destNode, destNodeP;
         if (isNarrowInput.get()) {
 
