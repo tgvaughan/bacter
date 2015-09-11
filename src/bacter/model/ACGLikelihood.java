@@ -24,6 +24,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
 import beast.evolution.likelihood.BeerLikelihoodCore;
 import beast.evolution.likelihood.BeerLikelihoodCore4;
@@ -51,6 +52,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected ConversionGraph acg;
 
     protected SiteModel.Base siteModel;
+    protected BranchRateModel branchRateModel;
     protected SubstitutionModel.Base substitutionModel;
     protected Alignment alignment;
     protected Locus locus;
@@ -105,10 +107,14 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         siteModel = (SiteModel.Base) siteModelInput.get();
         substitutionModel = (SubstitutionModel.Base) siteModel.getSubstitutionModel();
 
-        if (branchRateModelInput.get() != null &&
-                !(branchRateModelInput.get() instanceof StrictClockModel))
-            throw new IllegalArgumentException("ACGLikelihood currently only" +
-                    "supports strict clock models.");
+        if (branchRateModelInput.get() != null) {
+            branchRateModel = branchRateModelInput.get();
+
+            if (!(branchRateModel instanceof StrictClockModel))
+                throw new IllegalArgumentException("ACGLikelihood currently only" +
+                        "supports strict clock models.");
+        } else
+            branchRateModel = new StrictClockModel();
 
         patterns = new HashMap<>();
         storedPatterns = new HashMap<>();
@@ -286,7 +292,8 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         if (!node.isRoot()) {
             lhc.setNodeMatrixForUpdate(node.getNr());
             for (int i=0; i<siteModel.getCategoryCount(); i++) {
-                double jointBranchRate = siteModel.getRateForCategory(i, node);
+                double jointBranchRate = siteModel.getRateForCategory(i, node)
+                        * branchRateModel.getRateForBranch(node);
                 double parentHeight = node.getParent().getHeight();
                 double nodeHeight = node.getHeight();
 
