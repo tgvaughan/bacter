@@ -1,6 +1,8 @@
 BACTER
 ======
 
+[![Join the chat at https://gitter.im/tgvaughan/bacter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tgvaughan/bacter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 BACTER is a [BEAST 2](http://beast2.org) package which facilitates
 inference of a (restricted kind of) ancestral recombination graph
 (ARG) and related parameters from a sequence alignment.  It is based on the model
