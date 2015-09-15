@@ -1,4 +1,4 @@
-<addon name="bacter" version="1.0.0-pre">
+<addon name="bacter" version="1.0.0-pre2">
   <depends on="beast2" atleast="2.3.0"/>
   <addonapp class="bacter.acgannotator.ACGAnnotator"
             description="ACGAnnotator"
