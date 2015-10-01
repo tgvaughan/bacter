@@ -512,7 +512,10 @@ public class ACGAnnotator {
                     + "                         (Default 10%)\n"
                     + "-threshold percentage    Choose minimum posterior probability\n"
                     + "                         for including conversion in summary.\n"
-                    + "                         (Default 50%)";
+                    + "                         (Default 50%)\n"
+                    + "\n"
+                    + "If no output file is specified, output is written to a file"
+                    + "named 'summary.tree'.";
 
     /**
      * Print usage info and exit.
