@@ -20,7 +20,7 @@ This software is free (as in freedom). You are welcome to use it, modify it,
 and distribute your modified versions provided you extend the same courtesy to
 users of your modified version.  Specifically, it is made available under the
 terms of the GNU General Public License version 3, which is contained in his
-directory in he file named COPYING.
+directory in the file named COPYING.
 
 Acknowledgements
 ----------------
