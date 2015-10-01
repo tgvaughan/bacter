@@ -25,6 +25,16 @@ directory in the file named COPYING.
 Acknowledgements
 ----------------
 
-Work on this project is made possible by generous funding from 
+Work on this project is made possible by the support of the following insitutions:
+
+* [The Allan Wilson Centre for Molecular Ecology and Evolution]
+  (http://www.allanwilsoncentre.ac.nz)
+
+* [The Royal Society of New Zealand's Marsden Fund]
+  (http://www.royalsociety.org.nz/programmes/funds/marsden/)
+
+* [The University of Auckland] (http://auckland.ac.nz)
+
+* [Massey University] (http://www.massey.ac.nz)
 
 [1]: http://www.genetics.org/content/186/4/1435
