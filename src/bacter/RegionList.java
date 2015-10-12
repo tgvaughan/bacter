@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -132,10 +133,7 @@ public class RegionList {
 
             int nextBoundary = Math.min(nextStart, nextEnd);
             if (nextBoundary > lastBoundary) {
-                Region region = new Region();
-                region.leftBoundary = lastBoundary;
-                region.rightBoundary = nextBoundary;
-                region.activeConversions.addAll(activeConversions);
+                Region region = new Region(lastBoundary, nextBoundary, activeConversions);
                 regions.add(region);
             }
 
@@ -151,9 +149,7 @@ public class RegionList {
         }
 
         if (lastBoundary < locus.getSiteCount()) {
-            Region region = new Region();
-            region.leftBoundary = lastBoundary;
-            region.rightBoundary = locus.getSiteCount();
+            Region region = new Region(lastBoundary, locus.getSiteCount(), new HashSet<>());
             regions.add(region);
         }
 

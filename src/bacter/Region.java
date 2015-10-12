@@ -16,6 +16,7 @@
  */
 package bacter;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,11 +28,21 @@ import java.util.Set;
  */
 public class Region {
 
-    public int leftBoundary, rightBoundary;
-    public Set<Conversion> activeConversions;
+    public final int leftBoundary, rightBoundary;
+    public final Set<Conversion> activeConversions;
 
-    public Region() {
-        activeConversions = new HashSet<>();
+    final int hashCodeCached;
+
+    public Region(int leftBoundary, int rightBoundary, Set<Conversion> activeConversions) {
+        this.leftBoundary = leftBoundary;
+        this.rightBoundary = rightBoundary;
+        this.activeConversions = Collections.unmodifiableSet(new HashSet<>(activeConversions));
+
+        // Pre-compute hash code
+        int result = leftBoundary;
+        result = 31 * result + rightBoundary;
+        result = 31 * result + activeConversions.hashCode();
+        hashCodeCached = result;
     }
 
     public int getRegionLength() {
@@ -71,9 +82,6 @@ public class Region {
 
     @Override
     public int hashCode() {
-        int result = leftBoundary;
-        result = 31 * result + rightBoundary;
-        result = 31 * result + activeConversions.hashCode();
-        return result;
+        return hashCodeCached;
     }
 }
