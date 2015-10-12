@@ -27,6 +27,9 @@ import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.coalescent.PopulationFunction;
+import cern.jet.random.Poisson;
+import org.apache.commons.math.MathException;
+import org.apache.commons.math.distribution.PoissonDistributionImpl;
 
 import java.util.List;
 import java.util.Random;
@@ -37,9 +40,6 @@ import java.util.Random;
 @Description("Appoximation to the coalescent with gene conversion.")
 public class ACGCoalescent extends TreeDistribution {
 
-    //public Input<ConversionGraph> acgInput = new Input<>(
-    //        "acg", "Conversion graph.", Input.Validate.REQUIRED);
-    
     public Input<PopulationFunction> popFuncInput = new Input<>(
             "populationModel", "Population model.", Input.Validate.REQUIRED);
     
@@ -85,13 +85,13 @@ public class ACGCoalescent extends TreeDistribution {
             return Double.NEGATIVE_INFINITY;
 
         logP = calculateClonalFrameLogP();
-        
+        double poissonMean = rhoInput.get().getValue()
+                *acg.getClonalFrameLength()
+                *(acg.getTotalSequenceLength()
+                +acg.getLoci().size()*deltaInput.get().getValue());
+
         // Probability of conversion count:
-        if (rhoInput.get().getValue()>0.0) {
-            double poissonMean = rhoInput.get().getValue()
-                    *acg.getClonalFrameLength()
-                    *(acg.getTotalSequenceLength()
-                    +acg.getLoci().size()*deltaInput.get().getValue());
+        if (poissonMean>0.0) {
             logP += -poissonMean + acg.getTotalConvCount()*Math.log(poissonMean);
             //      - GammaFunction.lnGamma(acg.getConvCount()+1);
         } else {
@@ -108,9 +108,20 @@ public class ACGCoalescent extends TreeDistribution {
         // the individual conversions, and cancels with the N! in the
         // denominator of the Poissonian above.
         // logP += GammaFunction.lnGamma(acg.getConvCount() + 1);
-        
-        
-        return logP;        
+
+        if (lowerCCBoundInput.get()>0 || upperCCBoundInput.get()<Integer.MAX_VALUE) {
+            try {
+                logP -= new PoissonDistributionImpl(poissonMean)
+                        .cumulativeProbability(
+                                lowerCCBoundInput.get(),
+                                upperCCBoundInput.get());
+            } catch (MathException e) {
+                throw new RuntimeException("Error computing modification to ARG " +
+                        "prior density required by conversion number constraint.");
+            }
+        }
+
+        return logP;
     }
 
     /**
