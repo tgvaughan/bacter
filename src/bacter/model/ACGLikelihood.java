@@ -345,6 +345,8 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
     /**
      * Traverse a marginal tree, computing partial likelihoods on the way.
+     * Experimental version that avoids potentially-expensive recursive
+     * function calls.
      *
      * @param root Tree node
      * @param region region
@@ -355,22 +357,16 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             postOrderNodes = new Node[acg.getNodeCount()];
 
         stack.clear();
-        Node n = root;
-        int i=0;
+        int i = 0;
 
-        while (true) {
-            while (n != null) {
-                stack.add(n);
-                n = n.getLeft();
+        stack.push(root);
+        while (!stack.isEmpty()) {
+            Node n = stack.pop();
+            if (!n.isLeaf()) {
+                stack.push(n.getLeft());
+                stack.push(n.getRight());
             }
-            n = stack.remove();
-
-            postOrderNodes[i++] = n;
-
-            if (stack.isEmpty())
-                break;
-
-            n = n.getRight();
+            postOrderNodes[postOrderNodes.length-1-(i++)] = n;
         }
 
         LikelihoodCore lhc = likelihoodCores.get(region);
