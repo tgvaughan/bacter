@@ -343,15 +343,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     Deque<Node> stack = new ArrayDeque<>();
     Node[] postOrderNodes;
 
-    /**
-     * Traverse a marginal tree, computing partial likelihoods on the way.
-     * Experimental version that avoids potentially-expensive recursive
-     * function calls.
-     *
-     * @param root Tree node
-     * @param region region
-     */
-    void traverseNoRecurse(Node root, Region region) {
+    void computePostOrder(Node root) {
 
         if (postOrderNodes == null)
             postOrderNodes = new Node[acg.getNodeCount()];
@@ -368,6 +360,19 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             }
             postOrderNodes[postOrderNodes.length-1-(i++)] = n;
         }
+    }
+
+    /**
+     * Traverse a marginal tree, computing partial likelihoods on the way.
+     * Experimental version that avoids potentially-expensive recursive
+     * function calls.
+     *
+     * @param root Tree node
+     * @param region region
+     */
+    void traverseNoRecurse(Node root, Region region) {
+
+        computePostOrder(root);
 
         LikelihoodCore lhc = likelihoodCores.get(region);
 
@@ -375,7 +380,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
             if (!node.isRoot()) {
                 lhc.setNodeMatrixForUpdate(node.getNr());
-                for (i = 0; i < siteModel.getCategoryCount(); i++) {
+                for (int i = 0; i < siteModel.getCategoryCount(); i++) {
                     double jointBranchRate = siteModel.getRateForCategory(i, node)
                             * branchRateModel.getRateForBranch(node);
                     double parentHeight = node.getParent().getHeight();
