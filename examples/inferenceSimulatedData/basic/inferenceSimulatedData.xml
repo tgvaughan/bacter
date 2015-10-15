@@ -43,10 +43,10 @@
     <!-- Simulated ACG (Truth) -->  
 
     <input spec='SimulatedACG' id='acgTruth'
-        rho="0.0005" delta="1000.0"
+        rho="0.005" delta="1000.0"
         outputFileName="simulated_acg.nexus" taxonset="@taxonSet">
         <locus spec="Locus" id="locus" siteCount="10000"/>
-        <populationModel spec='ConstantPopulation' popSize="1.0"/>
+        <populationModel spec='ConstantPopulation' popSize="5.0"/>
     </input>
 
     <!-- Simulated Alignment (Truth) -->
@@ -71,9 +71,9 @@
                 <populationModel spec='ConstantPopulation' popSize="5.0"/>
             </stateNode>
 
-            <stateNode id="rho" spec='RealParameter' value="0.0005" />
+            <stateNode id="rho" spec='RealParameter' value="0.005" />
             <stateNode id="delta" spec='RealParameter' value="1000.0"/>
-            <stateNode id="popSize" spec='RealParameter' value="1.0"/>
+            <stateNode id="popSize" spec='RealParameter' value="5.0"/>
             <stateNode id="mutationRate" spec='RealParameter' value="0.005"/>
         </state>
 
@@ -204,7 +204,7 @@
 
     <!-- Output logging -->
 
-    <logger logEvery="10000">
+    <logger logEvery="100">
         <log idref="posterior"/>
         <log spec='TreeHeightLogger' tree="@acg"/>
         <log idref='delta'/>

@@ -16,10 +16,7 @@
  */
 package bacter.model;
 
-import bacter.ConversionGraph;
-import bacter.Locus;
-import bacter.MarginalTree;
-import bacter.Region;
+import bacter.*;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
@@ -139,6 +136,8 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         updatePatterns();
         updateCores();
 
+        preComputeCFTransitionProbs();
+
         logP = 0.0;
 
         regionLogLikelihoods.keySet().retainAll(acg.getRegions(locus));
@@ -146,7 +145,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         for (Region region : acg.getRegions(locus)) {
 
             if (!regionLogLikelihoods.containsKey(region)) {
-//                traverse(new MarginalTree(acg, region.activeConversions).getRoot(), region);
                 traverseNoRecurse(new MarginalTree(acg, region.activeConversions).getRoot(), region);
 
 
@@ -164,6 +162,8 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 logP += regionLogLikelihoods.get(region);
             }
         }
+
+//        System.out.println("Cache hit rate: " + cacheHits/(double)(cacheMisses + cacheHits));
 
         return logP;
     }
@@ -279,84 +279,61 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             lhc.setNodeStates(node.getNr(), states);
         }
     }
-    
-    
-    /**
-     * Traverse a marginal tree, computing partial likelihoods on the way.
-     *
-     * @param node Tree node
-     * @param region region
-     */
-    void traverse(Node node, Region region) {
 
-        LikelihoodCore lhc = likelihoodCores.get(region);
-        
-        if (!node.isRoot()) {
-            lhc.setNodeMatrixForUpdate(node.getNr());
-            for (int i=0; i<siteModel.getCategoryCount(); i++) {
-                double jointBranchRate = siteModel.getRateForCategory(i, node)
+    /**
+     * Cached transition probabilities for CF edges.
+     */
+    double [][][] cfTransitionProbs;
+    int cacheHits = 0;
+    int cacheMisses = 0;
+
+    /**
+     * Pre-compute transition probabilities for CF edges.
+     */
+    void preComputeCFTransitionProbs() {
+        if (cfTransitionProbs == null)
+            cfTransitionProbs = new double[acg.getNodeCount()-1][siteModel.getCategoryCount()][(nStates+1)*(nStates+1)];
+
+        for (int ni=0; ni<acg.getNodeCount()-1; ni++) {
+            Node node = acg.getNode(ni);
+            for (int ci=0; ci<siteModel.getCategoryCount(); ci++) {
+                double jointBranchRate = siteModel.getRateForCategory(ci, node)
                         * branchRateModel.getRateForBranch(node);
                 double parentHeight = node.getParent().getHeight();
                 double nodeHeight = node.getHeight();
 
-                synchronized (this) {
-                    substitutionModel.getTransitionProbabilities(
-                            node,
-                            parentHeight,
-                            nodeHeight,
-                            jointBranchRate,
-                            probabilities);
-                    lhc.setNodeMatrix(node.getNr(), i, probabilities);
-                }
-            }
-        }
-        
-        if (!node.isLeaf()) {
-            
-            // LikelihoodCore only supports binary trees.
-            List<Node> children = node.getChildren();
-            traverse(children.get(0), region);
-            traverse(children.get(1), region);
-
-            lhc.setNodePartialsForUpdate(node.getNr());
-            lhc.setNodeStatesForUpdate(node.getNr());
-            lhc.calculatePartials(children.get(0).getNr(),
-                    children.get(1).getNr(), node.getNr());
-
-            if (node.isRoot()) {
-                double [] frequencies = substitutionModel.getFrequencies();
-                double [] proportions = siteModel.getCategoryProportions(node);
-                lhc.integratePartials(node.getNr(), proportions,
-                        rootPartials.get(region));
-
-                for (int idx : constantPatterns.get(region)) {
-                    rootPartials.get(region)[idx]
-                            += siteModel.getProportionInvariant();
-                }
-
-                lhc.calculateLogLikelihoods(rootPartials.get(region),
-                        frequencies, patternLogLikelihoods.get(region));
+                substitutionModel.getTransitionProbabilities(
+                        node,
+                        parentHeight,
+                        nodeHeight,
+                        jointBranchRate,
+                        cfTransitionProbs[ni][ci]);
             }
         }
     }
 
-    Deque<Node> stack = new ArrayDeque<>();
-    Node[] postOrderNodes;
+    Deque<MarginalNode> stack = new ArrayDeque<>();
+    MarginalNode[] postOrderNodes;
 
-    void computePostOrder(Node root) {
+    /**
+     * Assemble list of marginal tree nodes for post-order traversal.
+     *
+     * @param root root of marginal tree
+     */
+    void computePostOrder(MarginalNode root) {
 
         if (postOrderNodes == null)
-            postOrderNodes = new Node[acg.getNodeCount()];
+            postOrderNodes = new MarginalNode[acg.getNodeCount()];
 
         stack.clear();
         int i = 0;
 
         stack.push(root);
         while (!stack.isEmpty()) {
-            Node n = stack.pop();
+            MarginalNode n = stack.pop();
             if (!n.isLeaf()) {
-                stack.push(n.getLeft());
-                stack.push(n.getRight());
+                stack.push((MarginalNode)n.getLeft());
+                stack.push((MarginalNode)n.getRight());
             }
             postOrderNodes[postOrderNodes.length-1-(i++)] = n;
         }
@@ -370,23 +347,25 @@ public class ACGLikelihood extends GenericTreeLikelihood {
      * @param root Tree node
      * @param region region
      */
-    void traverseNoRecurse(Node root, Region region) {
+    void traverseNoRecurse(MarginalNode root, Region region) {
 
         computePostOrder(root);
 
         LikelihoodCore lhc = likelihoodCores.get(region);
 
-        for (Node node : postOrderNodes) {
+        for (MarginalNode node : postOrderNodes) {
 
             if (!node.isRoot()) {
                 lhc.setNodeMatrixForUpdate(node.getNr());
-                for (int i = 0; i < siteModel.getCategoryCount(); i++) {
-                    double jointBranchRate = siteModel.getRateForCategory(i, node)
-                            * branchRateModel.getRateForBranch(node);
-                    double parentHeight = node.getParent().getHeight();
-                    double nodeHeight = node.getHeight();
+                if (node.cfNodeNr<0 || ((MarginalNode)node.getParent()).cfNodeNr<0) {
+                    cacheMisses += 1;
 
-                    synchronized (this) {
+                    for (int i = 0; i < siteModel.getCategoryCount(); i++) {
+                        double jointBranchRate = siteModel.getRateForCategory(i, node)
+                                * branchRateModel.getRateForBranch(node);
+                        double parentHeight = node.getParent().getHeight();
+                        double nodeHeight = node.getHeight();
+
                         substitutionModel.getTransitionProbabilities(
                                 node,
                                 parentHeight,
@@ -395,6 +374,12 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                                 probabilities);
                         lhc.setNodeMatrix(node.getNr(), i, probabilities);
                     }
+                } else {
+                    cacheHits += 1;
+
+                    for (int i=0; i<siteModel.getCategoryCount(); i++) {
+                        lhc.setNodeMatrix(node.getNr(), i, cfTransitionProbs[node.cfNodeNr][i]);
+                    }
                 }
             }
 
@@ -402,9 +387,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
                 // LikelihoodCore only supports binary trees.
                 List<Node> children = node.getChildren();
-//                traverse(children.get(0), region);
-//                traverse(children.get(1), region);
-
                 lhc.setNodePartialsForUpdate(node.getNr());
                 lhc.setNodeStatesForUpdate(node.getNr());
                 lhc.calculatePartials(children.get(0).getNr(),

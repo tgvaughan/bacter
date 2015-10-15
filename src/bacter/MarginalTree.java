@@ -29,15 +29,11 @@ import java.util.Set;
  */
 public class MarginalTree {
 
-    Node marginalRoot;
+    MarginalNode marginalRoot;
 
-    public Node getRoot() {
+    public MarginalNode getRoot() {
         return marginalRoot;
     }
-
-	public MarginalTree(Node marginalRoot) {
-		this.marginalRoot = marginalRoot;
-	}
 
     public MarginalTree(ConversionGraph acg, Region region) {
         this(acg, region.activeConversions);
@@ -45,8 +41,8 @@ public class MarginalTree {
 
     public MarginalTree(ConversionGraph acg, Set<Conversion> convSet) {
 
-        Map<Conversion, Node> activeConversions = new HashMap<>();
-        Map<Node, Node> activeCFlineages = new HashMap<>();
+        Map<Conversion, MarginalNode> activeConversions = new HashMap<>();
+        Map<Node, MarginalNode> activeCFlineages = new HashMap<>();
 
         int nextNonLeafNr = acg.getLeafNodeCount();
 
@@ -54,19 +50,21 @@ public class MarginalTree {
 
             switch (event.getType()) {
                 case CF_LEAF:
-                    Node marginalLeaf = new Node();
+                    MarginalNode marginalLeaf = new MarginalNode();
                     marginalLeaf.setHeight(event.getTime());
                     marginalLeaf.setID(event.getNode().getID());
                     marginalLeaf.setNr(event.getNode().getNr());
+                    marginalLeaf.cfNodeNr = event.getNode().getNr();
                     activeCFlineages.put(event.getNode(), marginalLeaf);
                     break;
 
                 case CF_COALESCENCE:
                     if (activeCFlineages.containsKey(event.getNode().getLeft())
-
                         && activeCFlineages.containsKey(event.getNode().getRight())) {
-                        Node marginalNode = new Node();
+
+                        MarginalNode marginalNode = new MarginalNode();
                         marginalNode.setNr(nextNonLeafNr++);
+                        marginalNode.cfNodeNr = event.getNode().getNr();
                         Node marginalLeft = activeCFlineages.get(event.getNode().getLeft());
                         Node marginalRight = activeCFlineages.get(event.getNode().getRight());
 
@@ -81,14 +79,14 @@ public class MarginalTree {
                     } else {
 
                         if (activeCFlineages.containsKey(event.getNode().getLeft())) {
-                            Node marginalNode = activeCFlineages.get(event.getNode().getLeft());
+                            MarginalNode marginalNode = activeCFlineages.get(event.getNode().getLeft());
                             activeCFlineages.remove(event.getNode().getLeft());
                             activeCFlineages.put(event.getNode(), marginalNode);
                             break;
                         }
 
                         if (activeCFlineages.containsKey(event.getNode().getRight())) {
-                            Node marginalNode = activeCFlineages.get(event.getNode().getRight());
+                            MarginalNode marginalNode = activeCFlineages.get(event.getNode().getRight());
                             activeCFlineages.remove(event.getNode().getRight());
                             activeCFlineages.put(event.getNode(), marginalNode);
                             break;
@@ -101,7 +99,7 @@ public class MarginalTree {
                         break;
 
                     if (activeCFlineages.containsKey(event.getConversion().getNode1())) {
-                        Node marginalNode = activeCFlineages.get(event.getConversion().getNode1());
+                        MarginalNode marginalNode = activeCFlineages.get(event.getConversion().getNode1());
                         activeCFlineages.remove(event.getConversion().getNode1());
                         activeConversions.put(event.getConversion(), marginalNode);
                     }
@@ -114,10 +112,10 @@ public class MarginalTree {
                     if (activeCFlineages.containsKey(event.getConversion().getNode2())
 
                         && activeConversions.containsKey(event.getConversion())) {
-                        Node marginalNode = new Node();
+                        MarginalNode marginalNode = new MarginalNode();
                         marginalNode.setNr(nextNonLeafNr++);
-                        Node marginalLeft = activeCFlineages.get(event.getConversion().getNode2());
-                        Node marginalRight = activeConversions.get(event.getConversion());
+                        MarginalNode marginalLeft = activeCFlineages.get(event.getConversion().getNode2());
+                        MarginalNode marginalRight = activeConversions.get(event.getConversion());
 
                         marginalNode.setHeight(event.getTime());
                         marginalNode.addChild(marginalLeft);
@@ -129,7 +127,7 @@ public class MarginalTree {
                     } else {
 
                         if (activeConversions.containsKey(event.getConversion())) {
-                            Node marginalNode = activeConversions.get(event.getConversion());
+                            MarginalNode marginalNode = activeConversions.get(event.getConversion());
                             activeConversions.remove(event.getConversion());
                             activeCFlineages.put(event.getConversion().getNode2(), marginalNode);
                         }

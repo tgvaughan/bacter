@@ -104,9 +104,7 @@ public class RegionList {
         objects in the likelihood code.
         */
         List<Conversion> convOrderedByStart = new ArrayList<>();
-        acg.getConversions(locus).forEach(conversion ->
-                convOrderedByStart.add(conversion.getCopy()));
-        convOrderedByStart.addAll(acg.getConversions(locus));
+        acg.getConversions(locus).forEach(conversion -> convOrderedByStart.add(conversion.getCopy()));
         convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
 
         List<Conversion> convOrderedByEnd = new ArrayList<>();

@@ -60,7 +60,7 @@
     <!-- Simulated ACG (Truth) -->
 
     <input spec='SimulatedACG' id='acgTruth'
-        rho="0.0005" delta="1000.0"
+        rho="0.005" delta="1000.0"
         outputFileName="simulated_acg.nexus" taxonset="@taxonSet">
         <locus spec="Locus" id="l1" siteCount="3000"/>
         <locus spec="Locus" id="l2" siteCount="7000"/>
