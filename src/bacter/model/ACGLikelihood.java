@@ -341,8 +341,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
     /**
      * Traverse a marginal tree, computing partial likelihoods on the way.
-     * Experimental version that avoids potentially-expensive recursive
-     * function calls.
+     * This version avoids potentially-expensive recursive function calls.
      *
      * @param root Tree node
      * @param region region

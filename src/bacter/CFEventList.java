@@ -41,6 +41,7 @@ public class CFEventList {
         EventType type;
         double t;
         int lineages;
+        Node node;
 
         /**
          * Construct event object corresponding to chosen CF node.
@@ -48,6 +49,8 @@ public class CFEventList {
          * @param node chosen CF node
          */
         public Event(Node node) {
+            this.node = node;
+
             if (node.isLeaf())
                 type = EventType.SAMPLE;
             else
@@ -72,6 +75,10 @@ public class CFEventList {
         
         public EventType getType() {
             return type;
+        }
+
+        public Node getNode() {
+            return node;
         }
         
         /**
@@ -162,7 +169,8 @@ public class CFEventList {
             
             event.lineages = k;
         }
-        
+
+
         dirty = false;
     }
 }

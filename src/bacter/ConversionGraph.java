@@ -73,7 +73,6 @@ public class ConversionGraph extends Tree {
      */
     protected Map<Locus, RegionList> regionLists;
     protected CFEventList cfEventList;
-    protected ACGEventList acgEventList;
 
     protected List<Locus> loci;
     protected int totalSequenceLength;
@@ -113,7 +112,6 @@ public class ConversionGraph extends Tree {
             regionLists.put(locus, new RegionList(this, locus));
 
         cfEventList = new CFEventList(this);
-        acgEventList = new ACGEventList(this);
 
         super.initAndValidate();
     }
@@ -268,17 +266,6 @@ public class ConversionGraph extends Tree {
         return cfEventList.getCFEvents();
     }
 
-    /**
-     * Obtain ordered list of events that make up the ACG.  Used
-     * for ACG probability density calculations and for various state proposal
-     * operators.
-     * 
-     * @return List of events.
-     */
-    public List<ACGEventList.Event> getACGEvents() {
-        return acgEventList.getACGEvents();
-    }
-    
     /**
      * @return Total length of all edges in clonal frame.
      */
@@ -517,9 +504,6 @@ public class ConversionGraph extends Tree {
             if (cfEventList == null)
                 cfEventList = new CFEventList(this);
 
-            if (acgEventList == null)
-                acgEventList = new ACGEventList(this);
-
             regionLists.clear();
             for (Locus locus : loci) {
                 regionLists.put(locus, new RegionList(this, locus));
@@ -552,9 +536,6 @@ public class ConversionGraph extends Tree {
 
             if (cfEventList == null)
                 cfEventList = new CFEventList(null);
-
-            if (acgEventList == null)
-                acgEventList = new ACGEventList(this);
 
             regionLists.clear();
             for (Locus locus : loci)
@@ -979,7 +960,6 @@ public class ConversionGraph extends Tree {
         convs = tmp;
 
         cfEventList.makeDirty();
-        acgEventList.makeDirty();
         for (Locus locus : loci)
             regionLists.get(locus).makeDirty();
     }
@@ -991,9 +971,6 @@ public class ConversionGraph extends Tree {
 
         if (cfEventList != null)
             cfEventList.makeDirty();
-
-        if (acgEventList != null)
-            acgEventList.makeDirty();
 
         if (regionLists != null)
             for (RegionList regionList : regionLists.values())

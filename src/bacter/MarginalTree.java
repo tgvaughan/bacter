@@ -18,9 +18,9 @@
 package bacter;
 
 import beast.evolution.tree.Node;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Light-weight Tree object representing marginal tree.
@@ -30,6 +30,21 @@ import java.util.Set;
 public class MarginalTree {
 
     MarginalNode marginalRoot;
+
+    protected class ConvEvent {
+        public Conversion conversion;
+        public boolean isDeparture;
+        public double height;
+
+        public ConvEvent(Conversion conversion, boolean isDeparture) {
+            this.conversion = conversion;
+            this.isDeparture = isDeparture;
+            if (isDeparture)
+                height = conversion.height1;
+            else
+                height = conversion.height2;
+        }
+    }
 
     public MarginalNode getRoot() {
         return marginalRoot;
@@ -46,21 +61,40 @@ public class MarginalTree {
 
         int nextNonLeafNr = acg.getLeafNodeCount();
 
-        for (ACGEventList.Event event : acg.getACGEvents()) {
+        ArrayList<ConvEvent> convEvents = new ArrayList<>();
+        convSet.forEach(conversion -> {
+            convEvents.add(new ConvEvent(conversion, false));
+            convEvents.add(new ConvEvent(conversion, true));
+        });
+        convEvents.sort((c1, c2) -> {
+            if (c1.height < c2.height)
+                return -1;
+
+            if (c1.height > c2.height)
+                return 1;
+
+            return 0;
+        });
+
+        List<CFEventList.Event> cfEvents = acg.getCFEvents();
+
+        int convEventIdx=0;
+        for (int eventIdx=0; eventIdx<cfEvents.size(); eventIdx++) {
+            CFEventList.Event event = cfEvents.get(eventIdx);
 
             switch (event.getType()) {
-                case CF_LEAF:
+                case SAMPLE:
                     MarginalNode marginalLeaf = new MarginalNode();
-                    marginalLeaf.setHeight(event.getTime());
+                    marginalLeaf.setHeight(event.getHeight());
                     marginalLeaf.setID(event.getNode().getID());
                     marginalLeaf.setNr(event.getNode().getNr());
                     marginalLeaf.cfNodeNr = event.getNode().getNr();
                     activeCFlineages.put(event.getNode(), marginalLeaf);
                     break;
 
-                case CF_COALESCENCE:
+                case COALESCENCE:
                     if (activeCFlineages.containsKey(event.getNode().getLeft())
-                        && activeCFlineages.containsKey(event.getNode().getRight())) {
+                            && activeCFlineages.containsKey(event.getNode().getRight())) {
 
                         MarginalNode marginalNode = new MarginalNode();
                         marginalNode.setNr(nextNonLeafNr++);
@@ -68,7 +102,7 @@ public class MarginalTree {
                         Node marginalLeft = activeCFlineages.get(event.getNode().getLeft());
                         Node marginalRight = activeCFlineages.get(event.getNode().getRight());
 
-                        marginalNode.setHeight(event.getTime());
+                        marginalNode.setHeight(event.getHeight());
                         marginalNode.addChild(marginalLeft);
                         marginalNode.addChild(marginalRight);
 
@@ -93,54 +127,49 @@ public class MarginalTree {
                         }
                     }
                     break;
+            }
 
-                case CONV_DEPART:
-                    if (!convSet.contains(event.getConversion()))
-                        break;
+            while (convEventIdx < convEvents.size() &&
+                    (event.node.isRoot() || convEvents.get(convEventIdx).height < cfEvents.get(eventIdx + 1).getHeight())) {
+                ConvEvent convEvent = convEvents.get(convEventIdx++);
 
-                    if (activeCFlineages.containsKey(event.getConversion().getNode1())) {
-                        MarginalNode marginalNode = activeCFlineages.get(event.getConversion().getNode1());
-                        activeCFlineages.remove(event.getConversion().getNode1());
-                        activeConversions.put(event.getConversion(), marginalNode);
+                if (convEvent.isDeparture) {
+                    if (activeCFlineages.containsKey(convEvent.conversion.getNode1())) {
+                        MarginalNode marginalNode = activeCFlineages.get(convEvent.conversion.getNode1());
+                        activeCFlineages.remove(convEvent.conversion.getNode1());
+                        activeConversions.put(convEvent.conversion, marginalNode);
                     }
-                    break;
 
-                case CONV_ARRIVE:
-                    if (!convSet.contains(event.getConversion()))
-                        break;
+                } else {
+                    if (activeCFlineages.containsKey(convEvent.conversion.getNode2())
 
-                    if (activeCFlineages.containsKey(event.getConversion().getNode2())
-
-                        && activeConversions.containsKey(event.getConversion())) {
+                            && activeConversions.containsKey(convEvent.conversion)) {
                         MarginalNode marginalNode = new MarginalNode();
                         marginalNode.setNr(nextNonLeafNr++);
-                        MarginalNode marginalLeft = activeCFlineages.get(event.getConversion().getNode2());
-                        MarginalNode marginalRight = activeConversions.get(event.getConversion());
+                        MarginalNode marginalLeft = activeCFlineages.get(convEvent.conversion.getNode2());
+                        MarginalNode marginalRight = activeConversions.get(convEvent.conversion);
 
-                        marginalNode.setHeight(event.getTime());
+                        marginalNode.setHeight(convEvent.height);
                         marginalNode.addChild(marginalLeft);
                         marginalNode.addChild(marginalRight);
 
-                        activeConversions.remove(event.getConversion());
-                        activeCFlineages.put(event.getConversion().getNode2(), marginalNode);
+                        activeConversions.remove(convEvent.conversion);
+                        activeCFlineages.put(convEvent.conversion.getNode2(), marginalNode);
 
                     } else {
 
-                        if (activeConversions.containsKey(event.getConversion())) {
-                            MarginalNode marginalNode = activeConversions.get(event.getConversion());
-                            activeConversions.remove(event.getConversion());
-                            activeCFlineages.put(event.getConversion().getNode2(), marginalNode);
+                        if (activeConversions.containsKey(convEvent.conversion)) {
+                            MarginalNode marginalNode = activeConversions.get(convEvent.conversion);
+                            activeConversions.remove(convEvent.conversion);
+                            activeCFlineages.put(convEvent.conversion.getNode2(), marginalNode);
                         }
                     }
-                    break;
-                default:
-                    // Null type
-                    break;
+                }
             }
-
-            // A single active CF lineage should remain:
-            marginalRoot = activeCFlineages.get(acg.getRoot());
         }
+
+        // A single active CF lineage should remain:
+        marginalRoot = activeCFlineages.get(acg.getRoot());
     }
 
     @Override
