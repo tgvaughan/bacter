@@ -358,6 +358,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 lhc.setNodeMatrixForUpdate(node.getNr());
 
                 boolean cfEdge = node.cfNodeNr>=0
+                        && !acg.getNode(node.cfNodeNr).isRoot()
                         && acg.getNode(node.cfNodeNr).getParent().getNr()
                            == ((MarginalNode)node.getParent()).cfNodeNr;
 
