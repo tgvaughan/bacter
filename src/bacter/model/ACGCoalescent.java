@@ -27,7 +27,6 @@ import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.tree.TreeDistribution;
 import beast.evolution.tree.coalescent.PopulationFunction;
-import cern.jet.random.Poisson;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.PoissonDistributionImpl;
 

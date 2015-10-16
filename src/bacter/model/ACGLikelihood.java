@@ -356,7 +356,12 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
             if (!node.isRoot()) {
                 lhc.setNodeMatrixForUpdate(node.getNr());
-                if (node.cfNodeNr<0 || ((MarginalNode)node.getParent()).cfNodeNr<0) {
+
+                boolean cfEdge = node.cfNodeNr>=0
+                        && acg.getNode(node.cfNodeNr).getParent().getNr()
+                           == ((MarginalNode)node.getParent()).cfNodeNr;
+
+                if (!cfEdge) {
                     cacheMisses += 1;
 
                     for (int i = 0; i < siteModel.getCategoryCount(); i++) {
@@ -406,7 +411,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                             frequencies, patternLogLikelihoods.get(region));
                 }
             }
-
         }
     }
 
