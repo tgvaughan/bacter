@@ -18,6 +18,8 @@ package bacter;
 
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
+
+import java.util.List;
 import java.util.Objects;
 
 /**
