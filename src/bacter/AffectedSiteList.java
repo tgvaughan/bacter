@@ -1,11 +1,9 @@
 package bacter;
 
+import beast.evolution.tree.Node;
 import com.google.common.collect.Range;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -15,11 +13,79 @@ public class AffectedSiteList {
     ConversionGraph acg;
     Map<Conversion, List<Integer>> affectedSites;
 
+    ACGEventList acgEventList;
+
     public AffectedSiteList(ConversionGraph acg) {
         this.acg = acg;
+
+        acgEventList = new ACGEventList(acg);
+    }
+
+    public Map<Locus, List<Integer>> getLeafAncestralSites() {
+        Map<Locus, List<Integer>> affectedSites = new HashMap<>();
+
+        for (Locus locus : acg.getLoci()) {
+            List<Integer> siteRange = new ArrayList<>();
+            siteRange.add(0);
+            siteRange.add(locus.getSiteCount()-1);
+            affectedSites.put(locus, siteRange);
+        }
+
+        return affectedSites;
     }
 
     public void computeAffectedSites() {
+
+        Map<Node, Map<Locus, List<Integer>>> activeCFNodes = new HashMap<>();
+        Map<Locus, List<Integer>> ancestralSitesCF;
+        List<Integer> ancestralSitesLocusCF;
+
+        for (ACGEventList.Event event : acgEventList.getACGEvents()) {
+            switch(event.type) {
+                case CF_LEAF:
+                    activeCFNodes.put(event.node, getLeafAncestralSites());
+
+                case CF_COALESCENCE:
+                    Node node1 = event.node.getLeft();
+                    Node node2 = event.node.getRight();
+
+                    ancestralSitesCF = new HashMap<>();
+                    for (Locus locus : acg.getLoci()) {
+                        ancestralSitesCF.put(locus,
+                                getUnion(activeCFNodes.get(node1).get(locus),
+                                        activeCFNodes.get(node2).get(locus)));
+                    }
+
+                    activeCFNodes.remove(node1);
+                    activeCFNodes.remove(node2);
+                    activeCFNodes.put(event.node, ancestralSitesCF);
+
+                    break;
+
+                case CONV_DEPART:
+                    List<Integer> convAncestral =
+                            getIntersection(
+                                    activeCFNodes.get(event.node).get(event.conversion.getLocus()),
+                                    event.conversion.getStartSite(),
+                                    event.conversion.getEndSite());
+                    affectedSites.put(event.conversion, convAncestral);
+
+                    ancestralSitesLocusCF =
+                            getDifference(
+                                    activeCFNodes.get(event.node).get(event.conversion.getLocus()),
+                                    event.conversion.getStartSite(),
+                                    event.conversion.getEndSite());
+                    activeCFNodes.get(event.node).put(
+                            event.conversion.getLocus(), ancestralSitesLocusCF);
+
+                    break;
+
+                case CONV_ARRIVE:
+                    activeCFNodes.get(event.node).put(event.conversion.locus,
+                            getUnion(affectedSites.get(event.conversion),
+                                    activeCFNodes.get(event.node).get(event.conversion.locus)));
+            }
+        }
 
     }
 

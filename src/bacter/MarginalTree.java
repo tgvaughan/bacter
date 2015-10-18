@@ -20,7 +20,6 @@ package bacter;
 import beast.evolution.tree.Node;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Light-weight Tree object representing marginal tree.
@@ -30,21 +29,6 @@ import java.util.function.Consumer;
 public class MarginalTree {
 
     MarginalNode marginalRoot;
-
-    protected class ConvEvent {
-        public Conversion conversion;
-        public boolean isDeparture;
-        public double height;
-
-        public ConvEvent(Conversion conversion, boolean isDeparture) {
-            this.conversion = conversion;
-            this.isDeparture = isDeparture;
-            if (isDeparture)
-                height = conversion.height1;
-            else
-                height = conversion.height2;
-        }
-    }
 
     public MarginalNode getRoot() {
         return marginalRoot;
@@ -61,10 +45,10 @@ public class MarginalTree {
 
         int nextNonLeafNr = acg.getLeafNodeCount();
 
-        ArrayList<ConvEvent> convEvents = new ArrayList<>();
+        ArrayList<ConversionEvent> convEvents = new ArrayList<>();
         convSet.forEach(conversion -> {
-            convEvents.add(new ConvEvent(conversion, false));
-            convEvents.add(new ConvEvent(conversion, true));
+            convEvents.add(new ConversionEvent(conversion, false));
+            convEvents.add(new ConversionEvent(conversion, true));
         });
         convEvents.sort((c1, c2) -> {
             if (c1.height < c2.height)
@@ -131,7 +115,7 @@ public class MarginalTree {
 
             while (convEventIdx < convEvents.size() &&
                     (event.node.isRoot() || convEvents.get(convEventIdx).height < cfEvents.get(eventIdx + 1).getHeight())) {
-                ConvEvent convEvent = convEvents.get(convEventIdx++);
+                ConversionEvent convEvent = convEvents.get(convEventIdx++);
 
                 if (convEvent.isDeparture) {
                     if (activeCFlineages.containsKey(convEvent.conversion.getNode1())) {
