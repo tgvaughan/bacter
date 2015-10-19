@@ -63,20 +63,16 @@ public class AffectedSiteList {
                     break;
 
                 case CONV_DEPART:
-                    List<Integer> convAncestral =
-                            getIntersection(
-                                    activeCFNodes.get(event.node).get(event.conversion.getLocus()),
-                                    event.conversion.getStartSite(),
-                                    event.conversion.getEndSite());
-                    affectedSites.put(event.conversion, convAncestral);
+                    List<Integer> inside = new ArrayList<>();
+                    List<Integer> outside = new ArrayList<>();
+                    partitionRanges(activeCFNodes.get(event.node).get(event.conversion.getLocus()),
+                            event.conversion.getStartSite(),
+                            event.conversion.getEndSite()+1,
+                            inside, outside);
 
-                    ancestralSitesLocusCF =
-                            getDifference(
-                                    activeCFNodes.get(event.node).get(event.conversion.getLocus()),
-                                    event.conversion.getStartSite(),
-                                    event.conversion.getEndSite());
+                    affectedSites.put(event.conversion, inside);
                     activeCFNodes.get(event.node).put(
-                            event.conversion.getLocus(), ancestralSitesLocusCF);
+                            event.conversion.getLocus(), outside);
 
                     break;
 
@@ -125,57 +121,35 @@ public class AffectedSiteList {
         return union;
     }
 
-    public static List<Integer> getIntersection(List<Integer> as, int x, int y) {
-        List<Integer> intersect = new ArrayList<>();
+    public static void partitionRanges(List<Integer> as, int x, int y,
+                                       List<Integer> inside, List<Integer> outside) {
 
-        // Early exit for empty range
-        if (y==x)
-            return intersect;
+        int i=0;
+        while (i<as.size() && as.get(i) < x)
+            outside.add(as.get(i++));
 
-        int ix = Collections.binarySearch(as, x);
-        if (ix<0)
-            ix = -(ix+1)-1;
-
-        int iy = Collections.binarySearch(as, y);
-        if (iy<0)
-            iy = -(iy+1)-1;
-
-
-        if (ix == iy && ix%2 == 0) {
-            intersect.add(x);
-            intersect.add(y);
-
-            return intersect;
+        if (i%2==1) {
+            outside.add(x);
+            if (x<as.get(i))
+                inside.add(x);
+            else
+                i += 1;
         }
 
-        for (int i=ix; i<=iy; i++) {
-            if (i%2 == 0) {
-                if (as.get(i)<x) {
-                    intersect.add(x);
-                } else {
-                    intersect.add(as.get(i));
-                }
-            } else {
-                intersect.add(as.get(i));
-            }
-        }
-        if (ix%2 == 0) {
-            intersect.add(x);
-            ix += 1;
+        while (i<as.size() && as.get(i)<y)
+            inside.add(as.get(i++));
+
+        if (i%2==1) {
+            inside.add(y);
+            if (y<as.get(i))
+                outside.add(y);
+            else
+                i += 1;
         }
 
-        if (iy>ix)
-            intersect.addAll(as.subList(ix, iy));
+        while (i<as.size())
+            outside.add(as.get(i++));
 
-        if (iy%2 == 1) {
-            intersect.add(as.get(iy));
-        } else if (y>as.get(iy)) {
-            intersect.add(as.get(iy));
-            intersect.add(y);
-        }
-
-
-        return intersect;
     }
 
     static String rangesToString(List<Integer> bounds) {
@@ -200,9 +174,12 @@ public class AffectedSiteList {
 
         System.out.println("as3 = union(as1,as2) = " + rangesToString(as3));
 
-        List<Integer> as4 = getIntersection(as3, 8, 19);
-        System.out.println("as4 = " + rangesToString(as4));
-
+        List<Integer> intersect = new ArrayList<>();
+        List<Integer> difference = new ArrayList<>();
+        int x = 4, y = 24;
+        partitionRanges(as3, x, y, intersect, difference);
+        System.out.format("as3 - [%d,%d] = %s\n", x, y, rangesToString(difference));
+        System.out.format("as3 ^ [%d,%d] = %s\n", x, y, rangesToString(intersect));
 
     }
 
