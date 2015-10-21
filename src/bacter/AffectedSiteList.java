@@ -11,7 +11,9 @@ import java.util.*;
 public class AffectedSiteList {
 
     ConversionGraph acg;
-    Map<Conversion, List<Integer>> affectedSites;
+    public Map<Conversion, List<Integer>> affectedSites;
+    public Map<Conversion, Integer> affectedSiteCount;
+    public Map<Conversion, Double> affectedSiteFraction;
 
     ACGEventList acgEventList;
 
@@ -19,19 +21,24 @@ public class AffectedSiteList {
         this.acg = acg;
 
         acgEventList = new ACGEventList(acg);
+        affectedSites = new HashMap<>();
+        affectedSiteCount = new HashMap<>();
+        affectedSiteFraction = new HashMap<>();
+
+        computeAffectedSites();
     }
 
     public Map<Locus, List<Integer>> getLeafAncestralSites() {
-        Map<Locus, List<Integer>> affectedSites = new HashMap<>();
+        Map<Locus, List<Integer>> res = new HashMap<>();
 
         for (Locus locus : acg.getLoci()) {
             List<Integer> siteRange = new ArrayList<>();
             siteRange.add(0);
             siteRange.add(locus.getSiteCount()-1);
-            affectedSites.put(locus, siteRange);
+            res.put(locus, siteRange);
         }
 
-        return affectedSites;
+        return res;
     }
 
     public void computeAffectedSites() {
@@ -44,6 +51,7 @@ public class AffectedSiteList {
             switch(event.type) {
                 case CF_LEAF:
                     activeCFNodes.put(event.node, getLeafAncestralSites());
+                    break;
 
                 case CF_COALESCENCE:
                     Node node1 = event.node.getLeft();
@@ -71,6 +79,9 @@ public class AffectedSiteList {
                             inside, outside);
 
                     affectedSites.put(event.conversion, inside);
+                    affectedSiteCount.put(event.conversion, getTotalSites(inside));
+                    affectedSiteFraction.put(event.conversion,
+                            getTotalSites(inside)/(double)event.conversion.getSiteCount());
                     activeCFNodes.get(event.node).put(
                             event.conversion.getLocus(), outside);
 
@@ -80,9 +91,26 @@ public class AffectedSiteList {
                     activeCFNodes.get(event.node).put(event.conversion.locus,
                             getUnion(affectedSites.get(event.conversion),
                                     activeCFNodes.get(event.node).get(event.conversion.locus)));
+                    break;
             }
         }
 
+    }
+
+    /**
+     * Obtain the total number of sites included in a list of site ranges.
+     *
+     * @param as affected sites
+     * @return total number of sites included
+     */
+    static int getTotalSites(List<Integer> as) {
+        int res = 0;
+
+        for (int i=0; i<as.size(); i+=2) {
+            res += as.get(i+1)-as.get(i);
+        }
+
+        return res;
     }
 
     static List<Integer> getUnion(List<Integer> as1, List<Integer> as2) {

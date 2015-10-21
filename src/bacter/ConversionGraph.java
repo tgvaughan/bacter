@@ -255,6 +255,18 @@ public class ConversionGraph extends Tree {
         return regionLists.get(locus).getRegions().size();
     }
 
+    public int getUselessConvCount() {
+        AffectedSiteList asList = new AffectedSiteList(this);
+
+        int count = 0;
+        for (int asCount : asList.affectedSiteCount.values()) {
+            if (asCount == 0)
+                count += 1;
+        }
+
+        return count;
+    }
+
     /**
      * Obtain ordered list of events that make up the clonal frame.  Used
      * for ACG probability density calculations and for various state proposal
@@ -552,7 +564,9 @@ public class ConversionGraph extends Tree {
      */
     public String getExtendedNewick() {
 
-        return extendedNewickTraverse(root, false) + ";";
+        AffectedSiteList asList = new AffectedSiteList(this);
+
+        return extendedNewickTraverse(root, asList, false) + ";";
     }
 
     /**
@@ -565,10 +579,11 @@ public class ConversionGraph extends Tree {
      */
     public String getTrimmedExtendedNewick() {
 
-        return extendedNewickTraverse(root, true) + ";";
+        return extendedNewickTraverse(root, null, true) + ";";
     }
     
     private String extendedNewickTraverse(Node node,
+                                          AffectedSiteList asList,
                                           boolean intraCFOnly) {
         StringBuilder sb = new StringBuilder();
         
@@ -624,12 +639,15 @@ public class ConversionGraph extends Tree {
                 thisLength = lastTime - event.time;
             
             if (event.isArrival) {
-                String meta =  String.format("[&conv=%d, region={%d,%d}, locus=\"%s\", relSize=%g",
+                String meta =  String.format("[&conv=%d, region={%d,%d}, " +
+                                "locus=\"%s\", relSize=%g, affectedSites=%d, uselessSiteFraction=%g",
                         convs.get(event.conv.getLocus()).indexOf(event.conv),
                         event.conv.getStartSite(),
                         event.conv.getEndSite(),
                         event.conv.getLocus().getID(),
-                        event.conv.getSiteCount()/(double)event.conv.getLocus().getSiteCount()
+                        event.conv.getSiteCount()/(double)event.conv.getLocus().getSiteCount(),
+                        asList.affectedSiteCount.get(event.conv),
+                        1.0-asList.affectedSiteFraction.get(event.conv)
                 );
 
                 if (event.conv.newickMetaDataMiddle != null)
@@ -669,8 +687,8 @@ public class ConversionGraph extends Tree {
         // Process this node and its children.
 
         if (!node.isLeaf()) {
-            String subtree1 = extendedNewickTraverse(node.getChild(0), intraCFOnly);
-            String subtree2 = extendedNewickTraverse(node.getChild(1), intraCFOnly);
+            String subtree1 = extendedNewickTraverse(node.getChild(0), asList, intraCFOnly);
+            String subtree2 = extendedNewickTraverse(node.getChild(1), asList, intraCFOnly);
             sb.insert(cursor, "(" + subtree1 + "," + subtree2 + ")");
             cursor += subtree1.length() + subtree2.length() + 3;
         }

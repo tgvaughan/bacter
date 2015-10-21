@@ -215,6 +215,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
         out.print(id + ".CFheight\t"
                 + id + ".CFlength\t"
                 + id + ".nConv\t"
+                + id + ".nUselessConvs\t"
                 + id + ".meanEdgeLength\t"
                 + id + ".meanDepartureHeight\t");
 
@@ -234,6 +235,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
         out.print(acg.getRoot().getHeight() + "\t"
                 + acg.getClonalFrameLength() + "\t"
                 + acg.getTotalConvCount() + "\t"
+                + acg.getUselessConvCount() + "\t"
                 + ConversionGraphStatsLogger.getMeanEdgeLength(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanDepartureHeight(acg) + "\t");
 

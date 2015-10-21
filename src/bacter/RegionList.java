@@ -97,6 +97,8 @@ public class RegionList {
 
         regions.clear();
 
+        AffectedSiteList affectedSiteList = new AffectedSiteList(acg);
+
         /* Assemble lists of conversions ordered by start and end sites.
         Note that these are COPIES of the conversion objects attached
         to the ACG. This ensures that subsequent modifications of these
@@ -104,7 +106,10 @@ public class RegionList {
         objects in the likelihood code.
         */
         List<Conversion> convOrderedByStart = new ArrayList<>();
-        acg.getConversions(locus).forEach(conversion -> convOrderedByStart.add(conversion.getCopy()));
+        acg.getConversions(locus).forEach(conversion -> {
+            if (affectedSiteList.affectedSiteCount.get(conversion)>0)
+                convOrderedByStart.add(conversion.getCopy());
+        });
         convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
 
         List<Conversion> convOrderedByEnd = new ArrayList<>();
