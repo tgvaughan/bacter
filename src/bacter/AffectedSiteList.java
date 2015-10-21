@@ -86,6 +86,9 @@ public class AffectedSiteList {
                     activeCFNodes.remove(node2);
                     activeCFNodes.put(event.node, ancestralSitesCF);
 
+                    if (leavesSeen == acg.getLeafNodeCount() && haveReachedAllMRCAs(activeCFNodes, activeConversions))
+                        mrcaReached = true;
+
                     break;
 
                 case CONV_DEPART:
@@ -103,9 +106,6 @@ public class AffectedSiteList {
                     activeCFNodes.get(event.node).put(
                             event.conversion.getLocus(), outside);
                     activeConversions.get(event.conversion.locus).add(event.conversion);
-
-                    if (leavesSeen == acg.getLeafNodeCount() && haveReachedAllMRCAs(activeCFNodes, activeConversions))
-                        mrcaReached = true;
 
                     break;
 
