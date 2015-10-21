@@ -44,13 +44,31 @@ public class AffectedSiteList {
     public void computeAffectedSites() {
 
         Map<Node, Map<Locus, List<Integer>>> activeCFNodes = new HashMap<>();
+        Map<Locus, Set<Conversion>> activeConversions = new HashMap<>();
+        for (Locus locus : acg.getLoci())
+            activeConversions.put(locus, new HashSet<>());
+
         Map<Locus, List<Integer>> ancestralSitesCF;
         List<Integer> ancestralSitesLocusCF;
 
+        int leavesSeen = 0;
+        boolean mrcaReached = false;
         for (ACGEventList.Event event : acgEventList.getACGEvents()) {
+
+            if (mrcaReached) {
+                if (event.type == ACGEventList.EventType.CONV_DEPART) {
+                    affectedSites.put(event.conversion, new ArrayList<>());
+                    affectedSiteCount.put(event.conversion, 0);
+                    affectedSiteFraction.put(event.conversion, 0.0);
+                }
+
+                continue;
+            }
+
             switch(event.type) {
                 case CF_LEAF:
                     activeCFNodes.put(event.node, getLeafAncestralSites());
+                    leavesSeen += 1;
                     break;
 
                 case CF_COALESCENCE:
@@ -81,9 +99,13 @@ public class AffectedSiteList {
                     affectedSites.put(event.conversion, inside);
                     affectedSiteCount.put(event.conversion, getTotalSites(inside));
                     affectedSiteFraction.put(event.conversion,
-                            getTotalSites(inside)/(double)event.conversion.getSiteCount());
+                            getTotalSites(inside) / (double) event.conversion.getSiteCount());
                     activeCFNodes.get(event.node).put(
                             event.conversion.getLocus(), outside);
+                    activeConversions.get(event.conversion.locus).add(event.conversion);
+
+                    if (leavesSeen == acg.getLeafNodeCount() && haveReachedAllMRCAs(activeCFNodes, activeConversions))
+                        mrcaReached = true;
 
                     break;
 
@@ -91,8 +113,13 @@ public class AffectedSiteList {
                     activeCFNodes.get(event.node).put(event.conversion.locus,
                             getUnion(affectedSites.get(event.conversion),
                                     activeCFNodes.get(event.node).get(event.conversion.locus)));
+                    activeConversions.get(event.conversion.locus).remove(event.conversion);
+
+                    if (leavesSeen == acg.getLeafNodeCount() && haveReachedAllMRCAs(activeCFNodes, activeConversions))
+                        mrcaReached = true;
                     break;
             }
+
         }
 
     }
@@ -111,6 +138,73 @@ public class AffectedSiteList {
         }
 
         return res;
+    }
+
+    boolean haveReachedAllMRCAs(Map<Node, Map<Locus, List<Integer>>> activeCFNodes,
+                                Map<Locus, Set<Conversion>> activeConversions) {
+
+        for (Locus locus : acg.getLoci()) {
+            List<Integer> startSites = new ArrayList<>();
+            List<Integer> endSites = new ArrayList<>();
+            for (Node node : activeCFNodes.keySet()) {
+                for (int i=0; i<activeCFNodes.get(node).get(locus).size(); i+=2) {
+                    startSites.add(activeCFNodes.get(node).get(locus).get(i));
+                    endSites.add(activeCFNodes.get(node).get(locus).get(i + 1));
+                }
+            }
+
+            for (Conversion conv : activeConversions.get(locus)) {
+                for (int i=0; i<affectedSites.get(conv).size(); i+=2) {
+                    startSites.add(affectedSites.get(conv).get(i));
+                    endSites.add(affectedSites.get(conv).get(i + 1));
+                }
+            }
+
+            Collections.sort(startSites);
+            Collections.sort(endSites);
+
+            for (int i=0; i<startSites.size()-1; i++) {
+                if (startSites.get(i+1)<endSites.get(i))
+                    return false;
+            }
+
+            return true;
+        }
+
+        return true;
+    }
+
+    /**
+     * Test whether two range lists are disjoint.
+     *
+     * @param as1 list 1
+     * @param as2 list 2
+     * @return true iff all ranges are disjoint
+     */
+    static boolean rangesAreDisjoint(List<Integer> as1, List<Integer> as2) {
+
+        List<Integer> startSites = new ArrayList<>();
+        List<Integer> endSites = new ArrayList<>();
+
+        for (int i=0; i<as1.size(); i+=2) {
+            startSites.add(as1.get(i));
+            endSites.add(as1.get(i + 1));
+        }
+
+        for (int i=0; i<as2.size(); i+=2) {
+            startSites.add(as2.get(i));
+            endSites.add(as2.get(i+1));
+        }
+
+        Collections.sort(startSites);
+        Collections.sort(endSites);
+
+        for (int i=0; i<startSites.size()-1; i++) {
+            if (startSites.get(i+1)<endSites.get(i))
+                return false;
+        }
+
+        return true;
     }
 
     static List<Integer> getUnion(List<Integer> as1, List<Integer> as2) {
@@ -196,7 +290,8 @@ public class AffectedSiteList {
         System.out.println("as1 = " + rangesToString(as1));
 
         List<Integer> as2 = new ArrayList<>();
-        as2.add(23); as2.add(25);
+        as2.add(1); as2.add(2);
+        as2.add(5); as2.add(10);
         System.out.println("as2 = " + rangesToString(as2));
         List<Integer> as3 = getUnion(as1, as2);
 
@@ -208,6 +303,14 @@ public class AffectedSiteList {
         partitionRanges(as3, x, y, intersect, difference);
         System.out.format("as3 - [%d,%d] = %s\n", x, y, rangesToString(difference));
         System.out.format("as3 ^ [%d,%d] = %s\n", x, y, rangesToString(intersect));
+
+        List<Integer> as4 = new ArrayList<>();
+        as4.add(10); as4.add(20);
+        as4.add(30); as4.add(40);
+        List<Integer> as5 = new ArrayList<>();
+        as5.add(1); as5.add(11);
+        as5.add(20); as5.add(30);
+        System.out.println(rangesAreDisjoint(as4, as5));
 
     }
 
