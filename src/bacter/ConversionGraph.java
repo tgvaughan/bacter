@@ -646,8 +646,8 @@ public class ConversionGraph extends Tree {
                         event.conv.getEndSite(),
                         event.conv.getLocus().getID(),
                         event.conv.getSiteCount()/(double)event.conv.getLocus().getSiteCount(),
-                        asList.affectedSiteCount.get(event.conv),
-                        1.0-asList.affectedSiteFraction.get(event.conv)
+                        asList != null ? asList.affectedSiteCount.get(event.conv) : Double.NaN,
+                        asList != null ? 1.0-asList.affectedSiteFraction.get(event.conv) : Double.NaN
                 );
 
                 if (event.conv.newickMetaDataMiddle != null)
