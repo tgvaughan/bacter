@@ -640,15 +640,19 @@ public class ConversionGraph extends Tree {
             
             if (event.isArrival) {
                 String meta =  String.format("[&conv=%d, region={%d,%d}, " +
-                                "locus=\"%s\", relSize=%g, affectedSites=%d, uselessSiteFraction=%g",
+                                "locus=\"%s\", relSize=%g",
                         convs.get(event.conv.getLocus()).indexOf(event.conv),
                         event.conv.getStartSite(),
                         event.conv.getEndSite(),
                         event.conv.getLocus().getID(),
-                        event.conv.getSiteCount()/(double)event.conv.getLocus().getSiteCount(),
-                        asList != null ? asList.affectedSiteCount.get(event.conv) : Double.NaN,
-                        asList != null ? 1.0-asList.affectedSiteFraction.get(event.conv) : Double.NaN
+                        event.conv.getSiteCount()/(double)event.conv.getLocus().getSiteCount()
                 );
+
+                if (asList != null) {
+                    meta += String.format(", affectedSites=%d, uselessSiteFraction=%g",
+                            asList.affectedSiteCount.get(event.conv),
+                            1.0-asList.affectedSiteFraction.get(event.conv));
+                }
 
                 if (event.conv.newickMetaDataMiddle != null)
                     meta += ", " + event.conv.newickMetaDataMiddle;
