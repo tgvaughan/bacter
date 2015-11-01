@@ -147,7 +147,7 @@ public class ACGAnnotator {
 
         try (PrintStream ps = new PrintStream(options.outFile)) {
             ps.print(logReader.getPreamble());
-            ps.println("tree STATE_0 = " + acgBest.getExtendedNewick());
+            ps.println("tree STATE_0 = " + acgBest.getExtendedNewick(false));
 
             String postamble = logReader.getPostamble();
             if (postamble.length() > 0)

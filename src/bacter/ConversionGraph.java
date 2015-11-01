@@ -563,10 +563,24 @@ public class ConversionGraph extends Tree {
      * @return Extended Newick string.
      */
     public String getExtendedNewick() {
+        return getExtendedNewick(true);
+    }
 
-        AffectedSiteList asList = new AffectedSiteList(this);
+    /**
+     * Obtain extended Newick representation of ACG.  Optionally Nexus metadata
+     * on hybrid leaf nodes describing the alignment sites affected by the
+     * conversion event.
+     *
+     * @param computeAffectedSites if true, compute affected sites
+     * @return Extended Newick string.
+     */
+    public String getExtendedNewick(boolean computeAffectedSites) {
+        AffectedSiteList asList = null;
+        if (computeAffectedSites)
+            asList = new AffectedSiteList(this);
 
         return extendedNewickTraverse(root, asList, false) + ";";
+
     }
 
     /**
