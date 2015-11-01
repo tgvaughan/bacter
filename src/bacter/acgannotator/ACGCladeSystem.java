@@ -195,6 +195,7 @@ public class ACGCladeSystem extends CladeSystem {
 
         List<Conversion> activeConversions = new ArrayList<>();
         ConversionSummary conversionSummary = null;
+        int maxOverlaps = 0;
 
         while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
@@ -214,14 +215,18 @@ public class ACGCladeSystem extends CladeSystem {
                         conversionSummary = new ConversionSummary();
                         convSummaryList.add(conversionSummary);
                         conversionSummary.addConvs(activeConversions);
-                    } else
+                        maxOverlaps = activeConversions.size();
+                    } else {
                         conversionSummary.addConv(convOrderedByStart.get(0));
+                        maxOverlaps = Math.max(maxOverlaps, activeConversions.size());
+                    }
                 }
                 convOrderedByStart.remove(0);
             } else {
                 activeConversions.remove(convOrderedByEnd.get(0));
                 if (activeConversions.size() == thresholdCount-1) {
                     assert conversionSummary != null;
+                    conversionSummary.maxOverlaps = maxOverlaps;
                     conversionSummary = null;
                 }
                 convOrderedByEnd.remove(0);
@@ -319,7 +324,6 @@ public class ACGCladeSystem extends CladeSystem {
             height2s.add(conv.getHeight2());
             startSites.add(conv.getStartSite());
             ends.add(conv.getEndSite());
-            maxOverlaps += 1;
         }
 
         /**
