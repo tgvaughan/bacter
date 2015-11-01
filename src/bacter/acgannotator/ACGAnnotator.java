@@ -230,7 +230,7 @@ public class ACGAnnotator {
                         conv.setNode1(acg.getNode(fromNr));
                         conv.setNode2(acg.getNode(toNr));
 
-                        double posteriorSupport = conversionSummary.maxOverlaps/(double)nACGs;
+                        double posteriorSupport = conversionSummary.nIncludedACGs /(double)nACGs;
 
                         double[] height1s = new double[conversionSummary.summarizedConvCount()];
                         double[] height2s = new double[conversionSummary.summarizedConvCount()];

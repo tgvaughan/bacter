@@ -37,6 +37,8 @@ public class ACGCladeSystem extends CladeSystem {
     protected Map<BitSetPair, List<Conversion>> conversionListsTemp = new HashMap<>();
     protected BitSet[] bitSets;
 
+    protected int acgIndex = 1;
+
     public ACGCladeSystem() { }
 
     public ACGCladeSystem(ConversionGraph acg) {
@@ -73,6 +75,7 @@ public class ACGCladeSystem extends CladeSystem {
 
             conversionListsTemp.clear();
             for (Conversion conv : acg.getConversions(locus))  {
+                conv.acgIndex = acgIndex;
                 BitSetPair bsPair = new BitSetPair(conv);
 
                 if (!conversionListsTemp.containsKey(bsPair))
@@ -95,6 +98,8 @@ public class ACGCladeSystem extends CladeSystem {
 
             }
         }
+
+        acgIndex += 1;
     }
 
     private List<Conversion> mergeOverlappingConvs(List<Conversion> conversions) {
@@ -128,6 +133,7 @@ public class ACGCladeSystem extends CladeSystem {
 
                 if (nActive == 1) {
                     currentMergedConv = convOrderedByStart.get(0).getCopy();
+                    currentMergedConv.acgIndex = convOrderedByStart.get(0).acgIndex;
                     mergedConvCount = 1;
                     mergedConvHeight1 = currentMergedConv.getHeight1();
                     mergedConvHeight2 = currentMergedConv.getHeight2();
@@ -195,7 +201,8 @@ public class ACGCladeSystem extends CladeSystem {
 
         List<Conversion> activeConversions = new ArrayList<>();
         ConversionSummary conversionSummary = null;
-        int maxOverlaps = 0;
+
+        BitSet includedACGindices = new BitSet();
 
         while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
@@ -215,10 +222,13 @@ public class ACGCladeSystem extends CladeSystem {
                         conversionSummary = new ConversionSummary();
                         convSummaryList.add(conversionSummary);
                         conversionSummary.addConvs(activeConversions);
-                        maxOverlaps = activeConversions.size();
+
+                        includedACGindices.clear();
+                        for (Conversion conv : activeConversions)
+                            includedACGindices.set(conv.acgIndex);
                     } else {
                         conversionSummary.addConv(convOrderedByStart.get(0));
-                        maxOverlaps = Math.max(maxOverlaps, activeConversions.size());
+                        includedACGindices.set(convOrderedByStart.get(0).acgIndex);
                     }
                 }
                 convOrderedByStart.remove(0);
@@ -226,7 +236,7 @@ public class ACGCladeSystem extends CladeSystem {
                 activeConversions.remove(convOrderedByEnd.get(0));
                 if (activeConversions.size() == thresholdCount-1) {
                     assert conversionSummary != null;
-                    conversionSummary.maxOverlaps = maxOverlaps;
+                    conversionSummary.nIncludedACGs = includedACGindices.cardinality();
                     conversionSummary = null;
                 }
                 convOrderedByEnd.remove(0);
@@ -312,7 +322,7 @@ public class ACGCladeSystem extends CladeSystem {
         List<Integer> startSites = new ArrayList<>();
         List<Integer> ends = new ArrayList<>();
 
-        public int maxOverlaps = 0;
+        public int nIncludedACGs = 0;
 
         /**
          * Add metrics associated with given conversion to summary.

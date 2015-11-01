@@ -60,6 +60,13 @@ public class Conversion {
      */
     public String newickMetaDataBottom, newickMetaDataMiddle, newickMetaDataTop;
 
+    /**
+     * Used by ACGAnnotator to keep track of which conversions belong to which
+     * ACGs. (The acg reference can't be used, as ACGAnnotator avoids keeping
+     * multiple ACGs in memory simultaneously.)
+     */
+    public int acgIndex;
+
     public Conversion() { }
 
     /**
@@ -263,7 +270,7 @@ public class Conversion {
     public void setConversionGraph(ConversionGraph acg) {
         this.acg = acg;
     }
-    
+
     /**
      * Mark ARG statenode as dirty if available.
      */
