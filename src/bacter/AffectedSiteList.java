@@ -1,7 +1,6 @@
 package bacter;
 
 import beast.evolution.tree.Node;
-import com.google.common.collect.Range;
 
 import java.util.*;
 
@@ -49,7 +48,6 @@ public class AffectedSiteList {
             activeConversions.put(locus, new HashSet<>());
 
         Map<Locus, List<Integer>> ancestralSitesCF;
-        List<Integer> ancestralSitesLocusCF;
 
         int leavesSeen = 0;
         boolean mrcaReached = false;
