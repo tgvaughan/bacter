@@ -46,6 +46,11 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             "Locus associated with alignment to evaluate probability of.",
             Input.Validate.REQUIRED);
 
+    public Input<Boolean> useAmbiguitiesInput = new Input<>(
+            "useAmbiguities",
+            "Whether sites containing ambiguous states should be handled " +
+                    "instead of ignored (the default)", false);
+
     protected ConversionGraph acg;
 
     protected SiteModel.Base siteModel;
@@ -209,8 +214,16 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                         break;
                     }
 
-                if (isConstant && !alignment.getDataType().isAmbiguousState(pattern[0]))
-                    constantPatternList.add(patternIdx*nStates + pattern[0]);
+                if (isConstant) {
+                    if (alignment.getDataType().isAmbiguousState(pattern[0])) {
+                        if (useAmbiguitiesInput.get()) {
+                            for (int state : alignment.getDataType().getStatesForCode(pattern[0]))
+                                constantPatternList.add(patternIdx * nStates + state);
+                        }
+                    } else {
+                        constantPatternList.add(patternIdx * nStates + pattern[0]);
+                    }
+                }
 
                 patternIdx += 1;
             }
@@ -245,7 +258,11 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                     patterns.get(region).elementSet().size(),
                     siteModel.getCategoryCount(),
                     true, false);
-            setStates(likelihoodCore, patterns.get(region));
+
+            if (useAmbiguitiesInput.get())
+                setPartials(likelihoodCore, patterns.get(region));
+            else
+                setStates(likelihoodCore, patterns.get(region));
             
             int intNodeCount = acg.getNodeCount()/2;
             for (int i=0; i<intNodeCount; i++)
@@ -277,6 +294,31 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 i += 1;
             }
             lhc.setNodeStates(node.getNr(), states);
+        }
+    }
+
+
+    /**
+     * Set leaf partials in likelihood core.
+     *
+     * @param lhc likelihood core object
+     * @param patterns leaf state patterns
+     */
+    protected void setPartials(LikelihoodCore lhc, Multiset<int[]> patterns) {
+        for (Node node : acg.getExternalNodes()) {
+            Alignment data = dataInput.get();
+            int nStates = data.getDataType().getStateCount();
+            double[] partials = new double[patterns.size() * nStates];
+            int k = 0;
+            int iTaxon = alignment.getTaxonIndex(node.getID());
+            for (int[] pattern : patterns.elementSet()) {
+                int code = pattern[iTaxon];
+                boolean[] stateSet = alignment.getDataType().getStateSet(code);
+                for (int iState = 0; iState < nStates; iState++) {
+                    partials[k++] = (stateSet[iState] ? 1.0 : 0.0);
+                }
+            }
+            lhc.setNodePartials(node.getNr(), partials);
         }
     }
 
