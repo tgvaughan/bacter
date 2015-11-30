@@ -1,7 +1,6 @@
 package bacter.model;
 
-import bacter.ConversionGraph;
-import bacter.Locus;
+import bacter.*;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -11,6 +10,7 @@ import beast.evolution.alignment.Alignment;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -38,6 +38,7 @@ public class ACGLikelihoodApprox extends Distribution {
             "Locus alignment is associated with.",
             Input.Validate.REQUIRED);
 
+    int nPairs;
     int[][] cumulativeHD;
     Alignment alignment;
     ConversionGraph acg;
@@ -55,7 +56,7 @@ public class ACGLikelihoodApprox extends Distribution {
         // Pre-compute pairwise distance tables
 
         int nLeaves = acg.getLeafNodeCount();
-        int nPairs = nLeaves*(nLeaves+1)/2;
+        nPairs = nLeaves*(nLeaves+1)/2;
         cumulativeHD = new int[nPairs][alignment.getSiteCount()];
 
         for (int site=0; site<alignment.getSiteCount(); site++) {
@@ -84,6 +85,18 @@ public class ACGLikelihoodApprox extends Distribution {
         logP = 0.0;
 
         return logP;
+    }
+
+    double[] distancesTrue, distancesExpected;
+
+    public void computeTrueDistances(Set<Conversion> activeConvs) {
+
+    }
+
+    public void computeExpectedDistances() {
+        for (int pair=0; pair<nPairs; pair++) {
+
+        }
     }
 
     @Override
