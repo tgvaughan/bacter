@@ -29,6 +29,11 @@ import java.util.List;
  */
 public class IntRanges {
 
+    /**
+     * @param as1 range set argument 1
+     * @param as2 range set argument 2
+     * @return union between the two range sets
+     */
     public static List<Integer> getUnion(List<Integer> as1, List<Integer> as2) {
         List<Integer> union = new ArrayList<>();
         int nextx, nexty;
@@ -65,6 +70,11 @@ public class IntRanges {
         return union;
     }
 
+    /**
+     * @param as1 range set argument 1
+     * @param as2 range set argument 2
+     * @return intersection between the two range sets
+     */
     public static List<Integer> getIntersection(List<Integer> as1, List<Integer> as2) {
         List<Integer> intersection = new ArrayList<>();
 
@@ -98,6 +108,16 @@ public class IntRanges {
         return intersection;
     }
 
+    /**
+     * Partition ranges in as into ranges inside and outside of the
+     * contiguous range [x,y].
+     *
+     * @param as range set
+     * @param x left boundary of contiguous range
+     * @param y right boundary of contiguous range
+     * @param inside list to fill with inside ranges
+     * @param outside list to fill with outside ranges
+     */
     public static void partitionRanges(List<Integer> as, int x, int y,
                                        List<Integer> inside, List<Integer> outside) {
 
@@ -129,11 +149,15 @@ public class IntRanges {
 
     }
 
-    public static String rangesToString(List<Integer> bounds) {
+    /**
+     * @param as range set
+     * @return string representation of as.
+     */
+    public static String rangesToString(List<Integer> as) {
         String res = "";
 
-        for (int i=0; i<bounds.size(); i+=2)
-            res += " [" + bounds.get(i) + "," + bounds.get(i+1) + "]";
+        for (int i=0; i<as.size(); i+=2)
+            res += " [" + as.get(i) + "," + as.get(i+1) + "]";
 
         return "{" + res + " }";
     }
@@ -217,6 +241,11 @@ public class IntRanges {
         return result;
     }
 
+    /**
+     * @param as1 first range
+     * @param as2 second range
+     * @return true if ranges as1 and as2 are equal.
+     */
     public static boolean rangesEqual(List<Integer> as1, List<Integer> as2) {
         if (as1.size() != as2.size())
             return false;
