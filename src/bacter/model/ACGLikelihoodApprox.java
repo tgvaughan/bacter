@@ -1,16 +1,16 @@
 package bacter.model;
 
 import bacter.*;
+import bacter.util.IntRanges;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
+import beast.evolution.tree.Node;
 
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -80,6 +80,8 @@ public class ACGLikelihoodApprox extends Distribution {
         }
     }
 
+
+
     @Override
     public double calculateLogP() throws Exception {
         logP = 0.0;
@@ -87,16 +89,82 @@ public class ACGLikelihoodApprox extends Distribution {
         return logP;
     }
 
-    double[] distancesTrue, distancesExpected;
+    Map<Double, List<Integer>> getCoalescenceHeights() {
+        Map<Double, List<Integer>> heightMap = new HashMap<>();
 
-    public void computeTrueDistances(Set<Conversion> activeConvs) {
+        Map<Node, List<Integer>> activeCFNodes = new HashMap<>();
+        Map<Conversion, List<Integer>> activeConversions = new HashMap<>();
 
-    }
+        ACGEventList acgEventList = new ACGEventList(acg, locus);
 
-    public void computeExpectedDistances() {
-        for (int pair=0; pair<nPairs; pair++) {
+        for (ACGEventList.Event event : acgEventList.getACGEvents()) {
+
+            switch (event.type) {
+                case CF_LEAF:
+                    List<Integer> leafSites = new ArrayList<>();
+                    leafSites.add(0);
+                    leafSites.add(locus.getSiteCount()-1);
+                    activeCFNodes.put(event.node, leafSites);
+
+                    break;
+
+                case CF_COALESCENCE:
+                    Node node1 = event.node.getLeft();
+                    Node node2 = event.node.getRight();
+
+                    List<Integer> ancestralSitesCF =
+                            IntRanges.getUnion(activeCFNodes.get(node1),
+                                        activeCFNodes.get(node2));
+
+                    List<Integer> coalescingSitesCF =
+                            IntRanges.getIntersection(
+                                    activeCFNodes.get(node1),
+                                    activeCFNodes.get(node2));
+
+                    if (!coalescingSitesCF.isEmpty())
+                        heightMap.put(event.node.getHeight(), coalescingSitesCF);
+
+                    activeCFNodes.remove(node1);
+                    activeCFNodes.remove(node2);
+                    activeCFNodes.put(event.node, ancestralSitesCF);
+
+                    break;
+
+                case CONV_DEPART:
+                    List<Integer> inside = new ArrayList<>();
+                    List<Integer> outside = new ArrayList<>();
+                    IntRanges.partitionRanges(activeCFNodes.get(event.node),
+                            event.conversion.getStartSite(),
+                            event.conversion.getEndSite()+1,
+                            inside, outside);
+
+                    activeCFNodes.put(event.node, outside);
+                    activeConversions.put(event.conversion, outside);
+
+                    break;
+
+                case CONV_ARRIVE:
+                    activeCFNodes.put(event.node,
+                            IntRanges.getUnion(
+                                    activeConversions.get(event.conversion),
+                                    activeCFNodes.get(event.node)));
+
+                    List<Integer> coalescingSites =
+                            IntRanges.getIntersection(
+                                    activeConversions.get(event.conversion),
+                                    activeCFNodes.get(event.node));
+
+                    if (!coalescingSites.isEmpty())
+                        heightMap.put(event.conversion.getHeight2(), coalescingSites);
+
+                    activeConversions.remove(event.conversion);
+
+                    break;
+            }
 
         }
+
+        return heightMap;
     }
 
     @Override

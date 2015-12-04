@@ -86,6 +86,11 @@ public class ACGEventList {
     private final ConversionGraph acg;
 
     /**
+     * If non-null, event list includes only events associated with this locus.
+     */
+    private Locus locus;
+
+    /**
      * Construct a new event list for the given ACG.  There should only
      * be one of these objects per ACG object, created during the ACG
      * initAndValidate().
@@ -93,9 +98,20 @@ public class ACGEventList {
      * @param acg Conversion graph from which to compute event list.
      */
     public ACGEventList(ConversionGraph acg) {
+        this(acg, null);
+    }
+
+    /**
+     * Construct a new event list for the given ACG and locus.
+     *
+     * @param acg Conversion graph from which to compute event list
+     * @param locus conversions for this event only are included
+     */
+    public ACGEventList(ConversionGraph acg, Locus locus) {
         this.acg = acg;
-        events = new ArrayList<>();
-        dirty = true;
+        this.locus = locus;
+        this.events = new ArrayList<>();
+        dirty = false;
     }
 
     /**
@@ -135,12 +151,20 @@ public class ACGEventList {
         }
 
         // Add conversion events:
-        for (Locus locus : acg.getLoci()) {
+        if (locus == null) {
+            for (Locus locus : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(locus)) {
+                    events.add(new Event(conv, true));
+                    events.add(new Event(conv, false));
+                }
+            }
+        } else {
             for (Conversion conv : acg.getConversions(locus)) {
                 events.add(new Event(conv, true));
                 events.add(new Event(conv, false));
             }
         }
+
 
         // Sort event list:
 
