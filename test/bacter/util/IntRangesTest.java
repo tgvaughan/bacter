@@ -59,8 +59,21 @@ public class IntRangesTest {
 
     @Test
     public void testDisjoint() throws Exception {
-        List<Integer> as1 = IntRanges.fromString("[3,5] [9,17]");
-        List<Integer> as2 = IntRanges.fromString("[1,2] [5,10]");
+        List<Integer> as1 = IntRanges.fromString("[10,20] [30,40]");
+        List<Integer> as2 = IntRanges.fromString("[1,10] [20,30]");
 
+        assertTrue(IntRanges.rangesAreDisjoint(as1, as2));
+    }
+
+    @Test
+    public void testIntersection() throws Exception {
+
+        List<Integer> as1 = IntRanges.fromString("[10,20] [30,40]");
+        List<Integer> as2 = IntRanges.fromString("[15,22] [27,38]");
+
+        List<Integer> intersect = IntRanges.getIntersection(as1, as2);
+        List<Integer> intersectTruth = IntRanges.fromString("[15,20] [30,38]");
+
+        assertTrue(IntRanges.rangesEqual(intersect, intersectTruth));
     }
 }
