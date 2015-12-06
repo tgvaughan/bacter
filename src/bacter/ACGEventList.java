@@ -17,8 +17,8 @@
 
 package bacter;
 
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,21 +76,6 @@ public class ACGEventList {
     private final List<Event> events; 
 
     /**
-     * Event list dirty flag.
-     */
-    private boolean dirty;
-
-    /**
-     * Ancestral conversion graph this list belongs to.
-     */
-    private final ConversionGraph acg;
-
-    /**
-     * If non-null, event list includes only events associated with this locus.
-     */
-    private Locus locus;
-
-    /**
      * Construct a new event list for the given ACG.  There should only
      * be one of these objects per ACG object, created during the ACG
      * initAndValidate().
@@ -108,40 +93,7 @@ public class ACGEventList {
      * @param locus conversions for this event only are included
      */
     public ACGEventList(ConversionGraph acg, Locus locus) {
-        this.acg = acg;
-        this.locus = locus;
         this.events = new ArrayList<>();
-        dirty = false;
-    }
-
-    /**
-     * Obtain sorted list of events that make up the ACG.
-     * 
-     * @return ACG event list.
-     */
-    public synchronized List<Event> getACGEvents() {
-        updateEvents();
-
-        return events;
-    }
-
-    /**
-     * Mark the event list as dirty.
-     */
-    public void makeDirty() {
-        dirty = true;
-    }
-
-    /**
-     * Assemble sorted list of events on ACG and a map from nodes and
-     * conversions to these events.
-     */
-    public void updateEvents() {
-        if (!dirty) {
-            return;
-        }
-
-        events.clear();
 
         // Create unsorted event list.
 
@@ -152,8 +104,8 @@ public class ACGEventList {
 
         // Add conversion events:
         if (locus == null) {
-            for (Locus locus : acg.getLoci()) {
-                for (Conversion conv : acg.getConversions(locus)) {
+            for (Locus l : acg.getLoci()) {
+                for (Conversion conv : acg.getConversions(l)) {
                     events.add(new Event(conv, true));
                     events.add(new Event(conv, false));
                 }
@@ -175,8 +127,14 @@ public class ACGEventList {
                 return 1;
             return 0;
         });
-
-        dirty = false;
     }
-    
+
+    /**
+     * Obtain sorted list of events that make up the ACG.
+     * 
+     * @return ACG event list.
+     */
+    public synchronized List<Event> getACGEvents() {
+        return events;
+    }
 }
