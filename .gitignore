@@ -17,6 +17,7 @@
 /build
 /dist
 /out
+/doc/_build
 
 # Output files:
 *.json
