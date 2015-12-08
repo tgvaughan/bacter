@@ -36,32 +36,46 @@ public class SiteAncestry {
         return decendentLeaves.size();
     }
 
-    public SiteAncestry getUnionWith(SiteAncestry other) {
-        SiteAncestry union = new SiteAncestry();
-
+    /**
+     * Computes the union between this ancestry and another, additionally
+     * producing a SiteAncestry representing the those sites and samples
+     * which experienced a coalescent event.
+     *
+     * @param other
+     * @param coalescence
+     * @param union
+     */
+    public void merge(SiteAncestry other, SiteAncestry coalescence, SiteAncestry union) {
         int i=0, j=0;
 
         while (i<getIntervalCount()) {
+
+            boolean started = false;
             while (j<other.getIntervalCount()) {
 
                 if (other.siteRanges.get(2*j) >= siteRanges.get(2*i+1))
                     break;
 
-                if (other.siteRanges.get(2*j+1) > siteRanges.get(2*i)) {
-
-                    if (other.siteRanges.get(2*j) < siteRanges.get(2*i)) {
-                        if (other.decendentLeaves.get(j).equals(decendentLeaves.get(i))) {
-
-                        } else {
-                            
-                        }
-                    }
-
-                } else {
+                if (other.siteRanges.get(2*j+1)<siteRanges.get(2*i)) {
                     union.siteRanges.add(other.siteRanges.get(2*j));
                     union.siteRanges.add(other.siteRanges.get(2*j+1));
                     union.decendentLeaves.add(other.decendentLeaves.get(j));
+
+                    j += 1;
+                    continue;
                 }
+
+                if (other.siteRanges.get(2*j)>siteRanges.get(2*i)) {
+                    if (!started) {
+                        union.siteRanges.add(siteRanges.get(2*i));
+                        union.siteRanges.add(other.siteRanges.get(2*j));
+                        union.decendentLeaves.add(decendentLeaves.get(i));
+                        started = true;
+                    }
+
+
+                }
+
 
                 j += 1;
             }
@@ -69,6 +83,5 @@ public class SiteAncestry {
             i += 1;
         }
 
-        return union;
     }
 }
