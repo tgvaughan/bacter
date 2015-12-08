@@ -102,6 +102,7 @@ public class IntRanges {
 
                 j += 2;
             }
+
             i += 2;
         }
 
