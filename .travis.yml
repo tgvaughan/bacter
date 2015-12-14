@@ -3,4 +3,9 @@ language: java
 jdk:
   - oraclejdk8
 
+addons:
+  apt:
+    packages:
+    - libhmsbeagle1v5
+
 sudo: false
