@@ -295,13 +295,14 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
             int taxon = alignment.getTaxonIndex(node.getID());
             int i=0;
             for (int [] pattern : patterns.elementSet()) {
-                int code = pattern[taxon];
-                int[] statesForCode = alignment.getDataType().getStatesForCode(code);
-                if (statesForCode.length==1)
-                    states[i] = statesForCode[0];
-                else
-                    states[i] = code; // Causes ambiguous states to be ignored.
-                
+//                int code = pattern[taxon];
+//                int[] statesForCode = alignment.getDataType().getStatesForCode(code);
+//                if (statesForCode.length==1)
+//                    states[i] = statesForCode[0];
+//                else
+//                    states[i] = code; // Causes ambiguous states to be ignored.
+                states[i] = pattern[taxon];
+
                 i += 1;
             }
             beagle.setTipStates(node.getNr(), states);
