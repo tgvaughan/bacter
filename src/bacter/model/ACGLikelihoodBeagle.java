@@ -148,9 +148,13 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
 
             if (!regionLogLikelihoods.containsKey(region)) {
                 Beagle beagle = beagleInstances.get(region);
-                traverse(beagle, new MarginalTree(acg, region).getRoot(), region);
+                MarginalTree marginalTree = new MarginalTree(acg, region);
+                traverse(beagle, marginalTree.getRoot(), region);
 
                 beagle.setCategoryRates(siteModel.getCategoryRates(null));
+                beagle.setCategoryWeights(0, siteModel.getCategoryProportions(null));
+                beagle.setStateFrequencies(0, substitutionModel.getFrequencies());
+
                 beagle.updateTransitionMatrices(0, nodeNrs,
                         null, null, edgeLengths, edgeLengths.length);
 
@@ -246,7 +250,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
                     1, // Number of eigen decompositions
                     acg.getNodeCount()-1, // Number of transition matrices (one per edge)
                     siteModel.getCategoryCount(), // Number of rate categories
-                    0, // Number of scaling buffers (0 means not neaded)
+                    0, // Number of scaling buffers (0 means not needed)
                     null, // Potential resource list (null -> no restriction)
                     0, // bit flags indicating preferred implementation characteristics
                     0); // bit flags indicating required implementation characteristics
@@ -270,6 +274,8 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
                     ed.getEigenValues());
 
             beagleInstance.setCategoryRates(siteModel.getCategoryRates(null));
+            beagleInstance.setCategoryWeights(0, siteModel.getCategoryProportions(null));
+            beagleInstance.setStateFrequencies(0, substitutionModel.getFrequencies());
 
             beagleInstances.put(region, beagleInstance);
         }
@@ -356,7 +362,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
             operationList[opIdx + 5] = rightChild.getNr();
             operationList[opIdx + 6] = rightChild.getNr();
 
-            operationListIdx[0] += 1;
+            operationListIdx[0] += Beagle.OPERATION_TUPLE_SIZE;
         }
     }
 

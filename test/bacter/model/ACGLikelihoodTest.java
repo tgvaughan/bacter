@@ -279,4 +279,87 @@ public class ACGLikelihoodTest extends TestBase {
         assertTrue(relError<1e-13);
     }
 
+    @Test
+    public void testBeagleLikelihood() throws Exception {
+
+        Locus locus = new Locus("locus", getAlignment());
+
+        // ConversionGraph
+        ConversionGraph acg = new ConversionGraph();
+        ClusterTree tree = new ClusterTree();
+        tree.initByName(
+                "clusterType", "upgma",
+                "taxa", locus.getAlignment());
+
+        acg.assignFrom(tree);
+        acg.initByName("locus", locus);
+
+        // Site model:
+        JukesCantor jc = new JukesCantor();
+        jc.initByName();
+        SiteModel siteModel = new SiteModel();
+        siteModel.initByName(
+                "substModel", jc);
+
+        // Likelihood
+
+        ACGLikelihoodBeagle argLikelihood = new ACGLikelihoodBeagle();
+        argLikelihood.initByName(
+                "locus", locus,
+                "tree", acg,
+                "siteModel", siteModel);
+
+
+        ACGLikelihoodSlow argLikelihoodSlow = new ACGLikelihoodSlow();
+        argLikelihoodSlow.initByName(
+                "locus", locus,
+                "tree", acg,
+                "siteModel", siteModel);
+
+        acg.setEverythingDirty(true);
+
+        double logP = argLikelihood.calculateLogP();
+        double logPtrue = argLikelihoodSlow.calculateLogP();
+
+        double relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+
+        assertTrue(relativeDiff<1e-14);
+
+        //Add a single recombination event
+        Node node1 = acg.getExternalNodes().get(0);
+        Node node2 = node1.getParent();
+        double height1 = 0.5*(node1.getHeight() + node1.getParent().getHeight());
+        double height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
+        int startLocus = 100;
+        int endLocus = 200;
+        Conversion recomb1 = new Conversion(node1, height1, node2, height2,
+                startLocus, endLocus, acg, locus);
+        acg.addConversion(recomb1);
+
+        logP = argLikelihood.calculateLogP();
+        logPtrue = argLikelihoodSlow.calculateLogP();
+
+        relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+
+        assertTrue(relativeDiff<1e-14);
+
+        // Add another recombination event
+        node1 = acg.getExternalNodes().get(0);
+        node2 = acg.getNode(20);
+        height1 = 0.75*(node1.getHeight() + node1.getParent().getHeight());
+        height2 = 0.5*(node2.getHeight() + node2.getParent().getHeight());
+        startLocus = 250;
+        endLocus = 300;
+        Conversion recomb2 = new Conversion(node1, height1, node2, height2,
+                startLocus, endLocus, acg, locus);
+        acg.addConversion(recomb2);
+
+        logP = argLikelihood.calculateLogP();
+        logPtrue = argLikelihoodSlow.calculateLogP();
+
+        relativeDiff = Math.abs(2.0*(logPtrue-logP)/(logPtrue+logP));
+
+        assertTrue(relativeDiff<1e-14);
+    }
+
 }
