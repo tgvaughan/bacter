@@ -25,10 +25,7 @@ import beast.core.State;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
-import beast.evolution.likelihood.BeerLikelihoodCore;
-import beast.evolution.likelihood.BeerLikelihoodCore4;
 import beast.evolution.likelihood.GenericTreeLikelihood;
-import beast.evolution.likelihood.LikelihoodCore;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.substitutionmodel.EigenDecomposition;
 import beast.evolution.substitutionmodel.SubstitutionModel;
@@ -149,7 +146,9 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
             if (!regionLogLikelihoods.containsKey(region)) {
                 Beagle beagle = beagleInstances.get(region);
                 MarginalTree marginalTree = new MarginalTree(acg, region);
-                traverse(beagle, marginalTree.getRoot(), region);
+
+                operationListIdx[0] = 0;
+                buildOperationList(beagle, marginalTree.getRoot(), region);
 
                 beagle.setCategoryRates(siteModel.getCategoryRates(null));
                 beagle.setCategoryWeights(0, siteModel.getCategoryProportions(null));
@@ -158,7 +157,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
                 beagle.updateTransitionMatrices(0, nodeNrs,
                         null, null, edgeLengths, edgeLengths.length);
 
-                beagle.updatePartials(operationList, operationList.length, Beagle.NONE);
+                beagle.updatePartials(operationList, operationListIdx[0], Beagle.NONE);
 
                 beagle.calculateRootLogLikelihoods(
                         new int[]{rootNr},
@@ -340,7 +339,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
         }
     }
 
-    protected void traverse(Beagle beagle, MarginalNode node, Region region) {
+    protected void buildOperationList(Beagle beagle, MarginalNode node, Region region) {
         if (!node.isRoot()) {
             edgeLengths[node.getNr()] = node.getLength() * branchRateModel.getRateForBranch(node);
         }
@@ -350,10 +349,10 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
             MarginalNode leftChild = (MarginalNode)node.getLeft();
             MarginalNode rightChild = (MarginalNode)node.getRight();
 
-            traverse(beagle, leftChild, region);
-            traverse(beagle, rightChild, region);
+            buildOperationList(beagle, leftChild, region);
+            buildOperationList(beagle, rightChild, region);
 
-            int opIdx = operationListIdx[0];
+            int opIdx = operationListIdx[0]*Beagle.OPERATION_TUPLE_SIZE;
 
             operationList[opIdx + 0] = node.getNr();
             operationList[opIdx + 1] = Beagle.NONE;
@@ -363,7 +362,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
             operationList[opIdx + 5] = rightChild.getNr();
             operationList[opIdx + 6] = rightChild.getNr();
 
-            operationListIdx[0] += Beagle.OPERATION_TUPLE_SIZE;
+            operationListIdx[0] += 1;
         }
     }
 
