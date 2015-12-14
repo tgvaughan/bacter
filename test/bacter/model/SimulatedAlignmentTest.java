@@ -29,6 +29,8 @@ import beast.util.Randomizer;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import java.io.PrintStream;
+
 /**
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -37,10 +39,10 @@ public class SimulatedAlignmentTest extends TestBase {
     
     @Test
     public void test() throws Exception {
-        
-        Randomizer.setSeed(7);
 
-        Locus locus = new Locus("locus", 10000);
+        Randomizer.setSeed(26);
+
+        Locus locus = new Locus("locus", 100000);
 
         TaxonSet taxonSet = getTaxonSet(10);
 
@@ -49,7 +51,7 @@ public class SimulatedAlignmentTest extends TestBase {
 
         ConversionGraph acg = new SimulatedACG();
         acg.initByName(
-                "rho", 1.0/10000,
+                "rho", 1.0/100000,
                 "delta", 1000.0,
                 "populationModel", popFunc,
                 "locus", locus,
@@ -76,6 +78,10 @@ public class SimulatedAlignmentTest extends TestBase {
         for (Region region : acg.getRegions(locus))
                 System.out.println(new MarginalTree(acg, region));
 
+//        PrintStream outfMarg = new PrintStream("margTree.newick");
+//        PrintStream outfUPGMA = new PrintStream("upgmaTree.newick");
+//        outfMarg.println(acg);
+
         // Compare UPGMA topologies with true topologies
         // (Should be enough info here for precise agreement)
         for (Region region : acg.getRegions(locus)) {
@@ -88,11 +94,18 @@ public class SimulatedAlignmentTest extends TestBase {
                     "taxa", margAlign);
 
             MarginalTree marginalTree = new MarginalTree(acg, region);
-//            System.out.println(marginalTree.getRoot());
-//            System.out.println(upgmaTree.getRoot());
+
+//            outfMarg.println(marginalTree.getRoot() + ";");
+//            outfMarg.flush();
+//
+//            outfUPGMA.println(upgmaTree.getRoot() + ";");
+//            outfUPGMA.flush();
 
             assertTrue(topologiesEquivalent(marginalTree.getRoot(), upgmaTree.getRoot()));
         }
+
+//        outfMarg.close();
+//        outfUPGMA.close();
     }
     
 
