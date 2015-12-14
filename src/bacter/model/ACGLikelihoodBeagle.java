@@ -36,6 +36,10 @@ import com.google.common.collect.Multiset;
 import java.util.*;
 
 /**
+ * ACGLikelihood that uses libhmsbeagle to compute marginal tree likelihoods.
+ * This is EXPERIMENTAL, and may actually incur a performance hit over the
+ * java ACGLikelihood due to the cost of spinning up beagle instances.
+ *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Probability of sequence data given recombination graph.")
