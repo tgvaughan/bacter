@@ -3,9 +3,8 @@ language: java
 jdk:
   - oraclejdk8
 
-addons:
-  apt:
-    packages:
-    - libhmsbeagle1v5
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libhmsbeagle1v5
 
-sudo: false
+sudo: required
