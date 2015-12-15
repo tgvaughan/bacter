@@ -38,6 +38,10 @@ public class SiteAncestry {
         decendentLeaves = new ArrayList<>();
 
         string = string.replaceAll("\\s+","");
+
+        if (string.isEmpty())
+            return;
+
         string = string.substring(1, string.length()-1);
         String[] split1 = string.replaceAll("\\s","").split("}\\[");
 
@@ -64,45 +68,39 @@ public class SiteAncestry {
     /**
      * Computes the union between this ancestry and another, additionally
      * producing a SiteAncestry representing the those sites and samples
-     * which experienced a coalescent event.
+     * which experienced a coalescent event.  Note that SAs are assumed
+     * to come from contemporaneous points on extant lineages, meaning that
+     * each site+sample combination must appear at most once.
      *
-     * @param other
-     * @param coalescence
-     * @param union
+     * That is, the merge of A = [1,10]{0} and B = [5,20]{0,1} is not allowed
+     * as this implies that sites [5,10] of sample 0 coexist in two
+     * contemporaneoous lineages.
+     *
+     * @param other SA with which to merge
+     * @param coalescence empty SA object in which to record coalescences
+     * @param union empty SA object in which to record union
      */
     public void merge(SiteAncestry other, SiteAncestry coalescence, SiteAncestry union) {
-        int i=0, j=0;
+
+        int i = 0, j = 0;
 
         while (i<getIntervalCount()) {
 
-            boolean started = false;
-            while (j<other.getIntervalCount()) {
+            while (j<other.getIntervalCount()
+                    && other.siteRanges.get(2*j) < siteRanges.get(2*i)) {
 
-                if (other.siteRanges.get(2*j) >= siteRanges.get(2*i+1))
-                    break;
+                int xp = other.siteRanges.get(2*j);
+                int yp = other.siteRanges.get(2*j + 1);
+                yp = yp > siteRanges.get(2*i) ? siteRanges.get(2*i) : yp;
 
-                if (other.siteRanges.get(2*j+1)<siteRanges.get(2*i)) {
-                    union.siteRanges.add(other.siteRanges.get(2*j));
-                    union.siteRanges.add(other.siteRanges.get(2*j+1));
-                    union.decendentLeaves.add(other.decendentLeaves.get(j));
+                union.siteRanges.add(xp);
+                union.siteRanges.add(yp);
+                union.decendentLeaves.add(other.decendentLeaves.get(j));
 
+                if (other.siteRanges.get(2*j+1) <= siteRanges.get(2*i))
                     j += 1;
-                    continue;
-                }
-
-                if (other.siteRanges.get(2*j)>siteRanges.get(2*i)) {
-                    if (!started) {
-                        union.siteRanges.add(siteRanges.get(2*i));
-                        union.siteRanges.add(other.siteRanges.get(2*j));
-                        union.decendentLeaves.add(decendentLeaves.get(i));
-                        started = true;
-                    }
-
-
-                }
-
-
-                j += 1;
+                else
+                    break;
             }
 
             i += 1;
@@ -124,7 +122,7 @@ public class SiteAncestry {
 
         int i=0;
 
-        while (i<getIntervalCount()) {
+        while (i<getIntervalCount() && siteRanges.get(2*i)<x) {
             int xp = siteRanges.get(2*i);
             int yp = siteRanges.get(2*i+1);
             yp = yp > x ? x : yp;
@@ -139,7 +137,7 @@ public class SiteAncestry {
                 break;
         }
 
-        while (i<getIntervalCount()) {
+        while (i<getIntervalCount() && siteRanges.get(2*i)<y) {
             int xp = siteRanges.get(2*i);
             int yp = siteRanges.get(2*i+1);
             xp = xp < x ? x : xp;
@@ -201,16 +199,22 @@ public class SiteAncestry {
         return res;
     }
 
+    /**
+     * Main method for testing
+     *
+     * @param args unused
+     */
     public static void main(String[] args) {
 
-        SiteAncestry a = new SiteAncestry("[0,400]{0} [600,1000]{1}");
+        SiteAncestry a = new SiteAncestry("[200,400]{0} [600,800]{1}");
 
         SiteAncestry inside = new SiteAncestry();
         SiteAncestry outside = new SiteAncestry();
-        a.split(250, 750, inside, outside);
+        int x=0, y=100;
+        a.split(x, y, inside, outside);
 
         System.out.println("a = " + a);
-        System.out.println("inside a.split(250, 750) = " + inside);
-        System.out.println("outside a.split(250, 750) = " + outside);
+        System.out.println("inside a.split(" + x + "," + y + ") = " + inside);
+        System.out.println("outside a.split(" + x + "," + y + ") = " + outside);
     }
 }

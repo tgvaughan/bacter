@@ -27,14 +27,39 @@ import static org.junit.Assert.assertTrue;
 public class SiteAncestryTest {
 
     @Test
-    public void testSplit() {
-        SiteAncestry a = new SiteAncestry("[0,400]{0} [600,1000]{1}");
+    public void testSplit1() {
+        SiteAncestry a = new SiteAncestry("[200,400]{0} [600,800]{1}");
 
         SiteAncestry inside = new SiteAncestry();
         SiteAncestry outside = new SiteAncestry();
         a.split(250, 750, inside, outside);
 
         assertTrue(inside.equals(new SiteAncestry("[250,400]{0} [600,750]{1}")));
-        assertTrue(outside.equals(new SiteAncestry("[0,250]{0} [750,1000]{1}")));
+        assertTrue(outside.equals(new SiteAncestry("[200,250]{0} [750,800]{1}")));
+    }
+
+
+    @Test
+    public void testSplit2() {
+        SiteAncestry a = new SiteAncestry("[200,400]{0} [600,800]{1}");
+
+        SiteAncestry inside = new SiteAncestry();
+        SiteAncestry outside = new SiteAncestry();
+        a.split(0, 100, inside, outside);
+
+        assertTrue(inside.equals(new SiteAncestry("")));
+        assertTrue(outside.equals(new SiteAncestry("[200,400]{0} [600,800]{1}")));
+    }
+
+    @Test
+    public void testSplit3() {
+        SiteAncestry a = new SiteAncestry("[200,400]{0} [600,800]{1}");
+
+        SiteAncestry inside = new SiteAncestry();
+        SiteAncestry outside = new SiteAncestry();
+        a.split(500, 700, inside, outside);
+
+        assertTrue(inside.equals(new SiteAncestry("[600, 700]{1}")));
+        assertTrue(outside.equals(new SiteAncestry("[200,400]{0} [700,800]{1}")));
     }
 }
