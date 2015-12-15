@@ -14,11 +14,11 @@ import java.util.List;
 public class SiteAncestry {
 
     public List<Integer> siteRanges;
-    public List<BitSet> decendentLeaves;
+    public List<BitSet> descendantLeaves;
 
     public SiteAncestry() {
         siteRanges = new ArrayList<>();
-        decendentLeaves = new ArrayList<>();
+        descendantLeaves = new ArrayList<>();
     }
 
     public SiteAncestry(Node node, Locus locus) {
@@ -26,16 +26,16 @@ public class SiteAncestry {
         siteRanges.add(0);
         siteRanges.add(locus.getSiteCount());
 
-        decendentLeaves = new ArrayList<>();
+        descendantLeaves = new ArrayList<>();
         BitSet bitSet = new BitSet();
         bitSet.set(node.getNr());
-        decendentLeaves.add(bitSet);
+        descendantLeaves.add(bitSet);
     }
 
     public SiteAncestry(String string) {
 
         siteRanges = new ArrayList<>();
-        decendentLeaves = new ArrayList<>();
+        descendantLeaves = new ArrayList<>();
 
         string = string.replaceAll("\\s+","");
 
@@ -57,12 +57,12 @@ public class SiteAncestry {
             for (String aBitStr : bitStr) {
                 theseDecendents.set(Integer.parseInt(aBitStr));
             }
-            decendentLeaves.add(theseDecendents);
+            descendantLeaves.add(theseDecendents);
         }
     }
 
     public int getIntervalCount() {
-        return decendentLeaves.size();
+        return descendantLeaves.size();
     }
 
     /**
@@ -86,24 +86,78 @@ public class SiteAncestry {
 
         while (i<getIntervalCount()) {
 
+            int x = siteRanges.get(2*i);
+            int y = siteRanges.get(2*i + 1);
+            BitSet dl = descendantLeaves.get(i);
+
             while (j<other.getIntervalCount()
-                    && other.siteRanges.get(2*j) < siteRanges.get(2*i)) {
+                    && other.siteRanges.get(2*j) < x) {
 
                 int xp = other.siteRanges.get(2*j);
                 int yp = other.siteRanges.get(2*j + 1);
-                yp = yp > siteRanges.get(2*i) ? siteRanges.get(2*i) : yp;
+                yp = yp > x ? x : yp;
 
                 union.siteRanges.add(xp);
                 union.siteRanges.add(yp);
-                union.decendentLeaves.add(other.decendentLeaves.get(j));
+                union.descendantLeaves.add(other.descendantLeaves.get(j));
 
-                if (other.siteRanges.get(2*j+1) <= siteRanges.get(2*i))
+                if (other.siteRanges.get(2*j+1) <= x)
                     j += 1;
                 else
                     break;
             }
 
+            int last = x;
+
+            while (j<other.getIntervalCount()
+                    && other.siteRanges.get(2*j) < y) {
+
+                int xp = other.siteRanges.get(2*j);
+                int yp = other.siteRanges.get(2*j + 1);
+                xp = xp < x ? x : xp;
+                yp = yp > y ? y : yp;
+
+                if (last < xp) {
+                    union.siteRanges.add(last);
+                    union.siteRanges.add(xp);
+                    union.descendantLeaves.add(dl);
+                }
+                last = yp;
+
+                union.siteRanges.add(xp);
+                union.siteRanges.add(yp);
+
+                BitSet mergedDescendants = (BitSet)dl.clone();
+                mergedDescendants.or(other.descendantLeaves.get(j));
+                union.descendantLeaves.add(mergedDescendants);
+
+                if (other.siteRanges.get(2*j+1) <= y)
+                    j += 1;
+                else
+                    break;
+            }
+
+            if (last < y) {
+                union.siteRanges.add(last);
+                union.siteRanges.add(y);
+                union.descendantLeaves.add(dl);
+            }
+
             i += 1;
+        }
+
+        while (j < other.getIntervalCount()) {
+
+            int xp = other.siteRanges.get(2*j);
+            if (!siteRanges.isEmpty() && xp < siteRanges.get(siteRanges.size()-1))
+                xp = siteRanges.get(siteRanges.size()-1);
+            int yp = other.siteRanges.get(2*j + 1);
+
+            union.siteRanges.add(xp);
+            union.siteRanges.add(yp);
+            union.descendantLeaves.add(other.descendantLeaves.get(j));
+
+            j += 1;
         }
 
     }
@@ -129,7 +183,7 @@ public class SiteAncestry {
 
             outside.siteRanges.add(xp);
             outside.siteRanges.add(yp);
-            outside.decendentLeaves.add(decendentLeaves.get(i));
+            outside.descendantLeaves.add(descendantLeaves.get(i));
 
             if (siteRanges.get(2*i+1) <= x)
                 i += 1;
@@ -145,7 +199,7 @@ public class SiteAncestry {
 
             inside.siteRanges.add(xp);
             inside.siteRanges.add(yp);
-            inside.decendentLeaves.add(decendentLeaves.get(i));
+            inside.descendantLeaves.add(descendantLeaves.get(i));
 
             if (siteRanges.get(2*i+1) <=y)
                 i += 1;
@@ -160,7 +214,7 @@ public class SiteAncestry {
 
             outside.siteRanges.add(xp);
             outside.siteRanges.add(yp);
-            outside.decendentLeaves.add(decendentLeaves.get(i));
+            outside.descendantLeaves.add(descendantLeaves.get(i));
 
             i += 1;
         }
@@ -174,13 +228,13 @@ public class SiteAncestry {
         SiteAncestry that = (SiteAncestry) o;
 
         return siteRanges.equals(that.siteRanges)
-                && decendentLeaves.equals(that.decendentLeaves);
+                && descendantLeaves.equals(that.descendantLeaves);
     }
 
     @Override
     public int hashCode() {
         int result = siteRanges.hashCode();
-        result = 31 * result + decendentLeaves.hashCode();
+        result = 31 * result + descendantLeaves.hashCode();
         return result;
     }
 
@@ -193,7 +247,7 @@ public class SiteAncestry {
                 res += " ";
 
             res += "[" + siteRanges.get(2*i) + "," + siteRanges.get(2*i+1) + "]"
-                    + decendentLeaves.get(i).toString().replaceAll("\\s","");
+                    + descendantLeaves.get(i).toString().replaceAll("\\s","");
         }
 
         return res;
