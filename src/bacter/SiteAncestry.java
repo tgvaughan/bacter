@@ -139,6 +139,8 @@ public class SiteAncestry {
                 mergedDescendants.or(other.descendantLeaves.get(j));
                 union.addInterval(xp, yp, mergedDescendants);
 
+                coalescence.addInterval(xp, yp, mergedDescendants);
+
                 if (other.siteRanges.get(2*j+1) <= y)
                     j += 1;
                 else
@@ -286,6 +288,7 @@ public class SiteAncestry {
         System.out.println("\nb = " + b);
         System.out.println("c = " + c);
         System.out.println("b.merge(c) union = " + union);
+        System.out.println("b.merge(c) coalescence = " + coalescence);
 
         SiteAncestry d = new SiteAncestry("[120,150]{0} [200,300]{1}");
         SiteAncestry e = new SiteAncestry("[100,200]{1}");
@@ -297,6 +300,7 @@ public class SiteAncestry {
         System.out.println("\nd = " + d);
         System.out.println("e = " + e);
         System.out.println("d.merge(e) union = " + union);
+        System.out.println("d.merge(e) coalescence = " + coalescence);
 
     }
 }
