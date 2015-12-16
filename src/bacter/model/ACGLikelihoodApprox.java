@@ -9,6 +9,7 @@ import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
+import beast.evolution.tree.coalescent.Coalescent;
 
 import java.util.*;
 
@@ -89,11 +90,12 @@ public class ACGLikelihoodApprox extends Distribution {
         return logP;
     }
 
-    Map<Double, List<Integer>> getCoalescenceHeights() {
-        Map<Double, List<Integer>> heightMap = new HashMap<>();
+    Map<Double, Coalescence> getCoalescenceHeights() {
 
-        Map<Node, List<Integer>> activeCFNodes = new HashMap<>();
-        Map<Conversion, List<Integer>> activeConversions = new HashMap<>();
+        Map<Double, Coalescence> heightMap = new HashMap<>();
+
+        Map<Node, SiteAncestry> activeCFNodes = new HashMap<>();
+        Map<Conversion, SiteAncestry> activeConversions = new HashMap<>();
 
         ACGEventList acgEventList = new ACGEventList(acg, locus);
 
@@ -101,10 +103,7 @@ public class ACGLikelihoodApprox extends Distribution {
 
             switch (event.type) {
                 case CF_LEAF:
-                    List<Integer> leafSites = new ArrayList<>();
-                    leafSites.add(0);
-                    leafSites.add(locus.getSiteCount()-1);
-                    activeCFNodes.put(event.node, leafSites);
+                    activeCFNodes.put(event.node, new SiteAncestry(event.node, locus));
 
                     break;
 
@@ -112,30 +111,26 @@ public class ACGLikelihoodApprox extends Distribution {
                     Node node1 = event.node.getLeft();
                     Node node2 = event.node.getRight();
 
-                    List<Integer> ancestralSitesCF =
-                            IntRanges.getUnion(activeCFNodes.get(node1),
-                                        activeCFNodes.get(node2));
-
-                    List<Integer> coalescingSitesCF =
-                            IntRanges.getIntersection(
-                                    activeCFNodes.get(node1),
-                                    activeCFNodes.get(node2));
-
-                    if (!coalescingSitesCF.isEmpty())
-                        heightMap.put(event.node.getHeight(), coalescingSitesCF);
+                    SiteAncestry ancestryCF = new SiteAncestry();
+                    Coalescence coalescenceCF = new Coalescence();
+                    activeCFNodes.get(node1).merge(activeCFNodes.get(node2),
+                            coalescenceCF, ancestryCF);
 
                     activeCFNodes.remove(node1);
                     activeCFNodes.remove(node2);
-                    activeCFNodes.put(event.node, ancestralSitesCF);
+                    activeCFNodes.put(event.node, ancestryCF);
+
+                    if (coalescenceCF.getIntervalCount()>0)
+                        heightMap.put(event.t, coalescenceCF);
 
                     break;
 
                 case CONV_DEPART:
-                    List<Integer> inside = new ArrayList<>();
-                    List<Integer> outside = new ArrayList<>();
-                    IntRanges.partitionRanges(activeCFNodes.get(event.node),
+                    SiteAncestry inside = new SiteAncestry();
+                    SiteAncestry outside = new SiteAncestry();
+                    activeCFNodes.get(event.node).split(
                             event.conversion.getStartSite(),
-                            event.conversion.getEndSite()+1,
+                            event.conversion.getEndSite(),
                             inside, outside);
 
                     activeCFNodes.put(event.node, outside);
@@ -144,20 +139,17 @@ public class ACGLikelihoodApprox extends Distribution {
                     break;
 
                 case CONV_ARRIVE:
-                    activeCFNodes.put(event.node,
-                            IntRanges.getUnion(
-                                    activeConversions.get(event.conversion),
-                                    activeCFNodes.get(event.node)));
 
-                    List<Integer> coalescingSites =
-                            IntRanges.getIntersection(
-                                    activeConversions.get(event.conversion),
-                                    activeCFNodes.get(event.node));
+                    SiteAncestry ancestry = new SiteAncestry();
+                    Coalescence coalescence = new Coalescence();
+                    activeCFNodes.get(event.node).merge(activeConversions.get(event.conversion),
+                            coalescence, ancestry);
 
-                    if (!coalescingSites.isEmpty())
-                        heightMap.put(event.conversion.getHeight2(), coalescingSites);
-
+                    activeCFNodes.put(event.node, ancestry);
                     activeConversions.remove(event.conversion);
+
+                    if (coalescence.getIntervalCount()>0)
+                        heightMap.put(event.t, coalescence);
 
                     break;
             }
