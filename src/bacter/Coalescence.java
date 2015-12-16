@@ -28,8 +28,8 @@ import java.util.List;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class Coalescence {
-    List<BitSet> descendantLeaves1, descendantLeaves2;
-    List<Integer> siteRanges;
+    public List<BitSet> descendantLeaves1, descendantLeaves2;
+    public List<Integer> siteRanges;
 
     public Coalescence() {
         descendantLeaves1 = new ArrayList<>();

@@ -1,7 +1,6 @@
 package bacter.model;
 
 import bacter.*;
-import bacter.util.IntRanges;
 import beast.core.Description;
 import beast.core.Distribution;
 import beast.core.Input;
@@ -9,7 +8,7 @@ import beast.core.State;
 import beast.core.parameter.RealParameter;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
-import beast.evolution.tree.coalescent.Coalescent;
+import beast.math.Binomial;
 
 import java.util.*;
 
@@ -54,43 +53,65 @@ public class ACGLikelihoodApprox extends Distribution {
         acg = acgInput.get();
         locus = locusInput.get();
 
-        // Pre-compute pairwise distance tables
-
-        int nLeaves = acg.getLeafNodeCount();
-        nPairs = nLeaves*(nLeaves+1)/2;
-        cumulativeHD = new int[nPairs][alignment.getSiteCount()];
-
-        for (int site=0; site<alignment.getSiteCount(); site++) {
-            int pair = 0;
-            for (int tIdx1=1; tIdx1<nLeaves; tIdx1++) {
-                for (int tIdx2=0; tIdx2<tIdx1; tIdx2++) {
-                    if (site==0)
-                        cumulativeHD[pair][site] = 0;
-                    else
-                        cumulativeHD[pair][site] = cumulativeHD[pair][site-1];
-
-                    int patternIdx = alignment.getPatternIndex(site);
-
-                    if (alignment.getPattern(tIdx1, patternIdx)
-                            != alignment.getPattern(tIdx2, patternIdx))
-                        cumulativeHD[pair][site] += 1;
-
-                    pair += 1;
-                }
-            }
-        }
+        computePairwiseDistances();
     }
-
 
 
     @Override
     public double calculateLogP() throws Exception {
         logP = 0.0;
 
+        Map<Double, Coalescence> heightMap = getCoalescenceHeights();
+
+        for (Map.Entry<Double, Coalescence> entry : heightMap.entrySet()) {
+            double height = entry.getKey();
+            Coalescence coalescence = entry.getValue();
+
+            for (int i=0; i<coalescence.getIntervalCount(); i++) {
+                BitSet dl1 = coalescence.descendantLeaves1.get(i);
+                BitSet dl2 = coalescence.descendantLeaves2.get(i);
+                int x = coalescence.siteRanges.get(2*i);
+                int y = coalescence.siteRanges.get(2*i + 1);
+
+                for (int nr1 = dl1.nextSetBit(0); nr1>=0; nr1 = dl1.nextSetBit(nr1+1)) {
+                    for (int nr2 = dl2.nextSetBit(0); nr2>=0; nr2 = dl2.nextSetBit(nr2+1)) {
+                        double time = 2*height
+                                - acg.getNode(nr1).getHeight()
+                                - acg.getNode(nr2).getHeight();
+
+                        int h = getPairwiseDistance(nr1, nr2, x, y);
+
+                        logP += getHDProbability(h, time, y-x);
+                    }
+                }
+
+            }
+        }
+
         return logP;
     }
 
-    Map<Double, Coalescence> getCoalescenceHeights() {
+    /**
+     * Returns the (log) probability of observing h segregating sites out of
+     * a total of siteCount sites when the sequence is left to evolve for
+     * a given time.
+     *
+     * @param h observed Hamming distance
+     * @param time total time for evolution
+     * @param siteCount total number of sites (h<=siteCount)
+     * @return log probability
+     */
+    public double getHDProbability(int h, double time, int siteCount) {
+        double p = 0.75*(1-Math.exp(-4.0/3.0*time*substRateInput.get().getValue()));
+        return Binomial.logChoose(siteCount, h)
+                + h*Math.log(p) + (siteCount-h)*Math.log(1.0-p);
+    }
+
+    /**
+     * @return map from heights of coalescences to objects describing
+     * the sites and samples they involve.
+     */
+    private Map<Double, Coalescence> getCoalescenceHeights() {
 
         Map<Double, Coalescence> heightMap = new HashMap<>();
 
@@ -157,6 +178,49 @@ public class ACGLikelihoodApprox extends Distribution {
         }
 
         return heightMap;
+    }
+
+    public void computePairwiseDistances() {
+        // Pre-compute pairwise distance tables
+
+        int nLeaves = acg.getLeafNodeCount();
+        nPairs = nLeaves*(nLeaves+1)/2;
+        cumulativeHD = new int[nPairs][alignment.getSiteCount()];
+
+        for (int site=0; site<alignment.getSiteCount(); site++) {
+            int pair = 0;
+            for (int tIdx1=1; tIdx1<nLeaves; tIdx1++) {
+                for (int tIdx2=0; tIdx2<tIdx1; tIdx2++) {
+                    if (site==0)
+                        cumulativeHD[pair][site] = 0;
+                    else
+                        cumulativeHD[pair][site] = cumulativeHD[pair][site-1];
+
+                    int patternIdx = alignment.getPatternIndex(site);
+
+                    if (alignment.getPattern(tIdx1, patternIdx)
+                            != alignment.getPattern(tIdx2, patternIdx))
+                        cumulativeHD[pair][site] += 1;
+
+                    pair += 1;
+                }
+            }
+        }
+    }
+
+    public int getPairwiseDistance(int node1Nr, int node2Nr, int x, int y) {
+        int nr1, nr2;
+        if (node1Nr < node2Nr) {
+            nr1 = node1Nr;
+            nr2 = node2Nr;
+        } else {
+            nr1 = node2Nr;
+            nr2 = node1Nr;
+        }
+
+        int pair = nr1 + nr2*acg.getLeafNodeCount();
+
+        return cumulativeHD[pair][y] - cumulativeHD[pair][x];
     }
 
     @Override
