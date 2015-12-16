@@ -92,7 +92,7 @@ public class SiteAncestry {
      * @param coalescence empty SA object in which to record coalescences
      * @param union empty SA object in which to record union
      */
-    public void merge(SiteAncestry other, SiteAncestry coalescence, SiteAncestry union) {
+    public void merge(SiteAncestry other, Coalescence coalescence, SiteAncestry union) {
 
         int i = 0, j = 0;
 
@@ -139,7 +139,7 @@ public class SiteAncestry {
                 mergedDescendants.or(other.descendantLeaves.get(j));
                 union.addInterval(xp, yp, mergedDescendants);
 
-                coalescence.addInterval(xp, yp, mergedDescendants);
+                coalescence.addInterval(xp, yp, dl, other.descendantLeaves.get(j));
 
                 if (other.siteRanges.get(2*j+1) <= y)
                     j += 1;
@@ -282,7 +282,7 @@ public class SiteAncestry {
         SiteAncestry c = new SiteAncestry("[100,200]{0} [350,400]{1}");
 
         SiteAncestry union = new SiteAncestry();
-        SiteAncestry coalescence = new SiteAncestry();
+        Coalescence coalescence = new Coalescence();
         b.merge(c, coalescence, union);
 
         System.out.println("\nb = " + b);
@@ -294,7 +294,7 @@ public class SiteAncestry {
         SiteAncestry e = new SiteAncestry("[100,200]{1}");
 
         union = new SiteAncestry();
-        coalescence = new SiteAncestry();
+        coalescence = new Coalescence();
         d.merge(e, coalescence, union);
 
         System.out.println("\nd = " + d);

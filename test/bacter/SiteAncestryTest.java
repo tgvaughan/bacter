@@ -69,11 +69,11 @@ public class SiteAncestryTest {
         SiteAncestry b = new SiteAncestry("[100,200]{0} [350,400]{1}");
 
         SiteAncestry union = new SiteAncestry();
-        SiteAncestry coalescence = new SiteAncestry();
+        Coalescence coalescence = new Coalescence();
         a.merge(b, coalescence, union);
 
         assertTrue(union.equals(new SiteAncestry("[0,200]{0} [200,300]{1} [350,400]{1}")));
-        assertTrue(coalescence.equals(new SiteAncestry("")));
+        assertTrue(coalescence.equals(new Coalescence("")));
     }
 
     @Test
@@ -82,11 +82,11 @@ public class SiteAncestryTest {
         SiteAncestry b = new SiteAncestry("[100,200]{1} [250,400]{2}");
 
         SiteAncestry union = new SiteAncestry();
-        SiteAncestry coalescence = new SiteAncestry();
+        Coalescence coalescence = new Coalescence();
         a.merge(b, coalescence, union);
 
         assertTrue(union.equals(new SiteAncestry("[0,100]{0} [100,120]{1} " +
                 "[120,150]{0,1} [150,250]{1} [250,300]{1,2} [300,400]{2}")));
-        assertTrue(coalescence.equals(new SiteAncestry("[120,150]{0,1} [250,300]{1,2}")));
+        assertTrue(coalescence.equals(new Coalescence("[120,150]{0}{1} [250,300]{1}{2}")));
     }
 }
