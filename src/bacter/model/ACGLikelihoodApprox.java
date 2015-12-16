@@ -38,8 +38,9 @@ public class ACGLikelihoodApprox extends Distribution {
             "Locus alignment is associated with.",
             Input.Validate.REQUIRED);
 
-    int nPairs;
+    int nLeaves;
     int[][] cumulativeHD;
+    int[] pairNrLookup;
     Alignment alignment;
     ConversionGraph acg;
     Locus locus;
@@ -183,14 +184,17 @@ public class ACGLikelihoodApprox extends Distribution {
     public void computePairwiseDistances() {
         // Pre-compute pairwise distance tables
 
-        int nLeaves = acg.getLeafNodeCount();
-        nPairs = nLeaves*(nLeaves-1)/2;
+        nLeaves = acg.getLeafNodeCount();
+        int nPairs = nLeaves*(nLeaves-1)/2;
         cumulativeHD = new int[nPairs][alignment.getSiteCount()+1];
+        pairNrLookup = new int[nLeaves*nLeaves];
 
         for (int siteBoundary=0; siteBoundary<alignment.getSiteCount()+1; siteBoundary++) {
             int pair = 0;
             for (int tIdx1=0; tIdx1<nLeaves; tIdx1++) {
                 for (int tIdx2=tIdx1+1; tIdx2<nLeaves; tIdx2++) {
+                    pairNrLookup[tIdx1 + tIdx2*nLeaves] = pair;
+                    pairNrLookup[tIdx2 + tIdx1*nLeaves] = pair;
                     if (siteBoundary == 0)
                         cumulativeHD[pair][siteBoundary] = 0;
                     else
@@ -211,18 +215,8 @@ public class ACGLikelihoodApprox extends Distribution {
     }
 
     public int getPairwiseDistance(int node1Nr, int node2Nr, int x, int y) {
-        int nr1, nr2;
-        if (node1Nr < node2Nr) {
-            nr1 = node1Nr;
-            nr2 = node2Nr;
-        } else {
-            nr1 = node2Nr;
-            nr2 = node1Nr;
-        }
-
-        int pair = nr1*acg.getLeafNodeCount() + nr2;
-
-        return cumulativeHD[pair][y] - cumulativeHD[pair][x];
+        int pairNr = pairNrLookup[node1Nr*nLeaves + node2Nr];
+        return cumulativeHD[pairNr][y] - cumulativeHD[pairNr][x];
     }
 
     @Override

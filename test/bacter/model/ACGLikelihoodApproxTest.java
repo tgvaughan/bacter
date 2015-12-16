@@ -23,6 +23,7 @@ import bacter.TestBase;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 import beast.util.ClusterTree;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class ACGLikelihoodApproxTest extends TestBase {
                                            //01234567890123456789
         sequenceList.add(new Sequence("t1", "AAAAAAAAAAAAAAAAAAAA"));
         sequenceList.add(new Sequence("t2", "AAAACAAAAAAGAAAAAAAA"));
+        sequenceList.add(new Sequence("t3", "CCCCCCCCCCCCCCCCCCCC"));
         Alignment alignment = new Alignment(sequenceList, "nucleotide");
 
         Locus locus = new Locus("locus", alignment);
@@ -59,6 +61,15 @@ public class ACGLikelihoodApproxTest extends TestBase {
                 "alignment", alignment,
                 "locus", locus);
 
-        System.out.println(likelihoodApprox.getPairwiseDistance(0,1,0,20));
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(0, 1, 0, 4), 0);
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(0,1,0,5), 1);
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(0,1,0,11), 1);
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(0,1,0,12), 2);
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(0,1,0,20), 2);
+
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(1,2,2,8), 5);
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(1,2,0,20), 19);
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(0,2,2,8), 6);
+        Assert.assertEquals(likelihoodApprox.getPairwiseDistance(0,2,0,20), 20);
     }
 }
