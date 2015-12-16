@@ -65,6 +65,18 @@ public class SiteAncestry {
         return descendantLeaves.size();
     }
 
+    public void addInterval(int x, int y, BitSet dl) {
+        if (getIntervalCount()>0
+                && siteRanges.get(siteRanges.size()-1)==x
+                && descendantLeaves.get(descendantLeaves.size()-1).equals(dl))
+            siteRanges.set(siteRanges.size()-1, y);
+        else {
+            siteRanges.add(x);
+            siteRanges.add(y);
+            descendantLeaves.add(dl);
+        }
+    }
+
     /**
      * Computes the union between this ancestry and another, additionally
      * producing a SiteAncestry representing the those sites and samples
@@ -97,9 +109,10 @@ public class SiteAncestry {
                 int yp = other.siteRanges.get(2*j + 1);
                 yp = yp > x ? x : yp;
 
-                union.siteRanges.add(xp);
-                union.siteRanges.add(yp);
-                union.descendantLeaves.add(other.descendantLeaves.get(j));
+//                union.siteRanges.add(xp);
+//                union.siteRanges.add(yp);
+//                union.descendantLeaves.add(other.descendantLeaves.get(j));
+                union.addInterval(xp, yp, other.descendantLeaves.get(j));
 
                 if (other.siteRanges.get(2*j+1) <= x)
                     j += 1;
@@ -118,18 +131,21 @@ public class SiteAncestry {
                 yp = yp > y ? y : yp;
 
                 if (last < xp) {
-                    union.siteRanges.add(last);
-                    union.siteRanges.add(xp);
-                    union.descendantLeaves.add(dl);
+//                    union.siteRanges.add(last);
+//                    union.siteRanges.add(xp);
+//                    union.descendantLeaves.add(dl);
+                    union.addInterval(last, xp, dl);
                 }
                 last = yp;
 
-                union.siteRanges.add(xp);
-                union.siteRanges.add(yp);
+//                union.siteRanges.add(xp);
+//                union.siteRanges.add(yp);
 
                 BitSet mergedDescendants = (BitSet)dl.clone();
                 mergedDescendants.or(other.descendantLeaves.get(j));
-                union.descendantLeaves.add(mergedDescendants);
+//                union.descendantLeaves.add(mergedDescendants);
+
+                union.addInterval(xp, yp, mergedDescendants);
 
                 if (other.siteRanges.get(2*j+1) <= y)
                     j += 1;
@@ -138,9 +154,10 @@ public class SiteAncestry {
             }
 
             if (last < y) {
-                union.siteRanges.add(last);
-                union.siteRanges.add(y);
-                union.descendantLeaves.add(dl);
+//                union.siteRanges.add(last);
+//                union.siteRanges.add(y);
+//                union.descendantLeaves.add(dl);
+                union.addInterval(last, y, dl);
             }
 
             i += 1;
@@ -153,9 +170,10 @@ public class SiteAncestry {
                 xp = siteRanges.get(siteRanges.size()-1);
             int yp = other.siteRanges.get(2*j + 1);
 
-            union.siteRanges.add(xp);
-            union.siteRanges.add(yp);
-            union.descendantLeaves.add(other.descendantLeaves.get(j));
+//            union.siteRanges.add(xp);
+//            union.siteRanges.add(yp);
+//            union.descendantLeaves.add(other.descendantLeaves.get(j));
+            union.addInterval(xp, yp, other.descendantLeaves.get(j));
 
             j += 1;
         }
@@ -270,5 +288,28 @@ public class SiteAncestry {
         System.out.println("a = " + a);
         System.out.println("inside a.split(" + x + "," + y + ") = " + inside);
         System.out.println("outside a.split(" + x + "," + y + ") = " + outside);
+
+        SiteAncestry b = new SiteAncestry("[0,100]{0} [200,300]{1}");
+        SiteAncestry c = new SiteAncestry("[100,200]{0} [350,400]{1}");
+
+        SiteAncestry union = new SiteAncestry();
+        SiteAncestry coalescence = new SiteAncestry();
+        b.merge(c, coalescence, union);
+
+        System.out.println("\nb = " + b);
+        System.out.println("c = " + c);
+        System.out.println("b.merge(c) union = " + union);
+
+        SiteAncestry d = new SiteAncestry("[0,100]{0} [120,150]{0} [200,300]{1}");
+        SiteAncestry e = new SiteAncestry("[100,200]{1} [250,400]{2}");
+
+        union = new SiteAncestry();
+        coalescence = new SiteAncestry();
+        d.merge(e, coalescence, union);
+
+        System.out.println("\nd = " + d);
+        System.out.println("e = " + e);
+        System.out.println("d.merge(e) union = " + union);
+
     }
 }

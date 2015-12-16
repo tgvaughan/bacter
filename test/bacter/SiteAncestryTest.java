@@ -62,4 +62,29 @@ public class SiteAncestryTest {
         assertTrue(inside.equals(new SiteAncestry("[600, 700]{1}")));
         assertTrue(outside.equals(new SiteAncestry("[200,400]{0} [700,800]{1}")));
     }
+
+    @Test
+    public void testMerge1() {
+        SiteAncestry a = new SiteAncestry("[0,100]{0} [200,300]{1}");
+        SiteAncestry b = new SiteAncestry("[100,200]{0} [350,400]{1}");
+
+        SiteAncestry union = new SiteAncestry();
+        SiteAncestry coalescence = new SiteAncestry();
+        a.merge(b, coalescence, union);
+
+        assertTrue(union.equals(new SiteAncestry("[0,200]{0} [200,300]{1} [350,400]{1}")));
+    }
+
+    @Test
+    public void testMerge2() {
+        SiteAncestry a = new SiteAncestry("[0,100]{0} [120,150]{0} [200,300]{1}");
+        SiteAncestry b = new SiteAncestry("[100,200]{1} [250,400]{2}");
+
+        SiteAncestry union = new SiteAncestry();
+        SiteAncestry coalescence = new SiteAncestry();
+        a.merge(b, coalescence, union);
+
+        assertTrue(union.equals(new SiteAncestry("[0,100]{0} [100,120]{1} " +
+                "[120,150]{0,1} [150,250]{1} [250,300]{1,2} {300,400]{2}")));
+    }
 }
