@@ -85,6 +85,6 @@ public class SiteAncestryTest {
         a.merge(b, coalescence, union);
 
         assertTrue(union.equals(new SiteAncestry("[0,100]{0} [100,120]{1} " +
-                "[120,150]{0,1} [150,250]{1} [250,300]{1,2} {300,400]{2}")));
+                "[120,150]{0,1} [150,250]{1} [250,300]{1,2} [300,400]{2}")));
     }
 }

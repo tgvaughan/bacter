@@ -96,6 +96,8 @@ public class SiteAncestry {
 
         int i = 0, j = 0;
 
+        int last=0;
+
         while (i<getIntervalCount()) {
 
             int x = siteRanges.get(2*i);
@@ -107,11 +109,9 @@ public class SiteAncestry {
 
                 int xp = other.siteRanges.get(2*j);
                 int yp = other.siteRanges.get(2*j + 1);
+                xp = xp < last ? last : xp;
                 yp = yp > x ? x : yp;
 
-//                union.siteRanges.add(xp);
-//                union.siteRanges.add(yp);
-//                union.descendantLeaves.add(other.descendantLeaves.get(j));
                 union.addInterval(xp, yp, other.descendantLeaves.get(j));
 
                 if (other.siteRanges.get(2*j+1) <= x)
@@ -120,7 +120,7 @@ public class SiteAncestry {
                     break;
             }
 
-            int last = x;
+            last = x;
 
             while (j<other.getIntervalCount()
                     && other.siteRanges.get(2*j) < y) {
@@ -130,21 +130,13 @@ public class SiteAncestry {
                 xp = xp < x ? x : xp;
                 yp = yp > y ? y : yp;
 
-                if (last < xp) {
-//                    union.siteRanges.add(last);
-//                    union.siteRanges.add(xp);
-//                    union.descendantLeaves.add(dl);
+                if (last < xp)
                     union.addInterval(last, xp, dl);
-                }
-                last = yp;
 
-//                union.siteRanges.add(xp);
-//                union.siteRanges.add(yp);
+                last = yp;
 
                 BitSet mergedDescendants = (BitSet)dl.clone();
                 mergedDescendants.or(other.descendantLeaves.get(j));
-//                union.descendantLeaves.add(mergedDescendants);
-
                 union.addInterval(xp, yp, mergedDescendants);
 
                 if (other.siteRanges.get(2*j+1) <= y)
@@ -153,12 +145,10 @@ public class SiteAncestry {
                     break;
             }
 
-            if (last < y) {
-//                union.siteRanges.add(last);
-//                union.siteRanges.add(y);
-//                union.descendantLeaves.add(dl);
+            if (last < y)
                 union.addInterval(last, y, dl);
-            }
+
+            last = y;
 
             i += 1;
         }
@@ -170,9 +160,6 @@ public class SiteAncestry {
                 xp = siteRanges.get(siteRanges.size()-1);
             int yp = other.siteRanges.get(2*j + 1);
 
-//            union.siteRanges.add(xp);
-//            union.siteRanges.add(yp);
-//            union.descendantLeaves.add(other.descendantLeaves.get(j));
             union.addInterval(xp, yp, other.descendantLeaves.get(j));
 
             j += 1;
@@ -300,8 +287,8 @@ public class SiteAncestry {
         System.out.println("c = " + c);
         System.out.println("b.merge(c) union = " + union);
 
-        SiteAncestry d = new SiteAncestry("[0,100]{0} [120,150]{0} [200,300]{1}");
-        SiteAncestry e = new SiteAncestry("[100,200]{1} [250,400]{2}");
+        SiteAncestry d = new SiteAncestry("[120,150]{0} [200,300]{1}");
+        SiteAncestry e = new SiteAncestry("[100,200]{1}");
 
         union = new SiteAncestry();
         coalescence = new SiteAncestry();
