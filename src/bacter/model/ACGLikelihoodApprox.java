@@ -112,7 +112,7 @@ public class ACGLikelihoodApprox extends Distribution {
      * @return map from heights of coalescences to objects describing
      * the sites and samples they involve.
      */
-    private Map<Double, Coalescence> getCoalescenceHeights() {
+    public Map<Double, Coalescence> getCoalescenceHeights() {
 
         Map<Double, Coalescence> heightMap = new HashMap<>();
 
@@ -152,11 +152,11 @@ public class ACGLikelihoodApprox extends Distribution {
                     SiteAncestry outside = new SiteAncestry();
                     activeCFNodes.get(event.node).split(
                             event.conversion.getStartSite(),
-                            event.conversion.getEndSite(),
+                            event.conversion.getEndSite()+1,
                             inside, outside);
 
                     activeCFNodes.put(event.node, outside);
-                    activeConversions.put(event.conversion, outside);
+                    activeConversions.put(event.conversion, inside);
 
                     break;
 

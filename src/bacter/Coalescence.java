@@ -118,16 +118,34 @@ public class Coalescence {
 
         Coalescence that = (Coalescence) o;
 
-        return descendantLeaves1.equals(that.descendantLeaves1)
-                && descendantLeaves2.equals(that.descendantLeaves2)
-                && siteRanges.equals(that.siteRanges);
+        if (!siteRanges.equals(that.siteRanges))
+            return false;
+
+        for (int i=0; i<getIntervalCount(); i++) {
+            if ((!descendantLeaves1.get(i).equals(that.descendantLeaves1.get(i))
+                    && !descendantLeaves1.get(i).equals(that.descendantLeaves2.get(i)))
+                    || (!descendantLeaves2.get(i).equals(that.descendantLeaves2.get(i))
+                    && !descendantLeaves2.get(i).equals(that.descendantLeaves1.get(i))))
+                return false;
+        }
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = descendantLeaves1.hashCode();
-        result = 31 * result + descendantLeaves2.hashCode();
-        result = 31 * result + siteRanges.hashCode();
+        int result = siteRanges.hashCode();
+
+        for (int i=0; i<getIntervalCount(); i++) {
+            int dl1hash = descendantLeaves1.get(i).hashCode();
+            int dl2hash = descendantLeaves2.get(i).hashCode();
+
+            if (dl1hash < dl2hash)
+                result = 31*(31 * result + dl1hash) + dl2hash;
+            else
+                result = 31*(31 * result + dl2hash) + dl1hash;
+        }
+
         return result;
     }
 }

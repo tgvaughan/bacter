@@ -205,7 +205,7 @@ public abstract class TestBase {
     /**
      * Convenience clade class.
      */
-    private class Clade extends HashSet<String> {
+    private class Clade extends BitSet {
 
         /**
          * Construct clade from leaves below node.
@@ -214,7 +214,7 @@ public abstract class TestBase {
          */
         public Clade(Node node) {
             for (Node leaf : node.getAllLeafNodes())
-                add(leaf.getID());
+                set(leaf.getNr());
         }
     }
 
