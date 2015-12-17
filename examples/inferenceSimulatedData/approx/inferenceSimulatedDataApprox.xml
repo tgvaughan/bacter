@@ -207,7 +207,7 @@
 
     <!-- Output logging -->
 
-    <logger logEvery="10000">
+    <logger logEvery="1000">
         <log idref="posterior"/>
         <log spec='TreeHeightLogger' tree="@acg"/>
         <log idref='delta'/>
@@ -235,7 +235,7 @@
         <log spec="ClonalFrameLogger" acg="@acg"/>
     </logger-->
 
-    <logger logEvery="1000" fileName="$(filebase).converted">
+    <logger logEvery="10000" fileName="$(filebase).converted">
         <!--model idref="posterior"/-->
         <log spec="ConvertedRegionLogger" acg="@acg"/>
     </logger>

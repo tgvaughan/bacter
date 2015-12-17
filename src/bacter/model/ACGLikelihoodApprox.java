@@ -156,12 +156,17 @@ public class ACGLikelihoodApprox extends Distribution {
                             event.conversion.getEndSite()+1,
                             inside, outside);
 
-                    activeCFNodes.put(event.node, outside);
-                    activeConversions.put(event.conversion, inside);
+                    if (inside.getIntervalCount()>0) {
+                        activeCFNodes.put(event.node, outside);
+                        activeConversions.put(event.conversion, inside);
+                    }
 
                     break;
 
                 case CONV_ARRIVE:
+
+                    if (!activeConversions.containsKey(event.conversion))
+                        continue;
 
                     SiteAncestry ancestry = new SiteAncestry();
                     Coalescence coalescence = new Coalescence();
