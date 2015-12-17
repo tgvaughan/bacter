@@ -104,8 +104,9 @@ public class ACGLikelihoodApprox extends Distribution {
      */
     public double getHDProbability(int h, double time, int siteCount) {
         double p = 0.75*(1-Math.exp(-4.0/3.0*time*substRateInput.get().getValue()));
-        return Binomial.logChoose(siteCount, h)
-                + h*Math.log(p) + (siteCount-h)*Math.log(1.0-p);
+//        return Binomial.logChoose(siteCount, h)
+//                + h*Math.log(p) + (siteCount-h)*Math.log(1.0-p);
+        return h*Math.log(p) + (siteCount-h)*Math.log(1.0-p);
     }
 
     /**

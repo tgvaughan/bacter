@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ACGLikelihoodApproxTest extends TestBase {
+public class ACGLikelihoodApproxTest {
 
     @Test
     public void testPairwiseDistances() throws Exception {
@@ -131,8 +131,6 @@ public class ACGLikelihoodApproxTest extends TestBase {
         conversion.setLocus(locus);
         acg.addConversion(conversion);
 
-        System.out.println(acg);
-
         ACGLikelihoodApprox likelihoodApprox = new ACGLikelihoodApprox();
         likelihoodApprox.initByName(
                 "acg", acg,
@@ -152,5 +150,32 @@ public class ACGLikelihoodApproxTest extends TestBase {
                 heightMap.get(1.5).equals(new Coalescence("[0,10]{0}{2}")));
         Assert.assertTrue("height map contains incorrect coalescence.",
                 heightMap.get(2.0).equals(new Coalescence("[0,10]{0,2}{1} [10,20]{0,1}{2}")));
+    }
+
+    @Test
+    public void testTreeLikelihood() throws Exception {
+
+        List<Sequence> sequences = new ArrayList<>();
+        //01234567890123456789
+        sequences.add(new Sequence("t1", "GGGGGGGGGGGGGGGGGGGG"));
+        sequences.add(new Sequence("t2", "CCCCCCCCCCCCCCCCCCCC"));
+        sequences.add(new Sequence("t3", "TTTTTTTTTTTTTTTTTTTT"));
+        Alignment alignment = new Alignment(sequences, "nucleotide");
+        Locus locus = new Locus("locus", alignment);
+
+        TreeParser tree = new TreeParser(alignment, "((t1:1,t2:1):1,t3:2):0;");
+        ConversionGraph acg = new ConversionGraph();
+        acg.assignFrom(tree);
+        acg.initByName("locus", locus);
+
+        ACGLikelihoodApprox likelihoodApprox = new ACGLikelihoodApprox();
+        likelihoodApprox.initByName(
+                "acg", acg,
+                "substitutionRate", "1.0",
+                "alignment", alignment,
+                "locus", locus);
+
+        double logP = likelihoodApprox.calculateLogP();
+        Assert.assertEquals(-18.894818399518734, logP, 1e-16);
     }
 }
