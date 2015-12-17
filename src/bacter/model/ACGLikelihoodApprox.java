@@ -74,18 +74,22 @@ public class ACGLikelihoodApprox extends Distribution {
                 int x = coalescence.siteRanges.get(2*i);
                 int y = coalescence.siteRanges.get(2*i + 1);
 
+                double time = 0;
+                double h = 0;
                 for (int nr1 = dl1.nextSetBit(0); nr1>=0; nr1 = dl1.nextSetBit(nr1+1)) {
                     for (int nr2 = dl2.nextSetBit(0); nr2>=0; nr2 = dl2.nextSetBit(nr2+1)) {
-                        double time = 2*height
+                        time += 2*height
                                 - acg.getNode(nr1).getHeight()
                                 - acg.getNode(nr2).getHeight();
 
-                        int h = getPairwiseDistance(nr1, nr2, x, y);
-
-                        logP += getHDProbability(h, time, y-x);
+                        h += getPairwiseDistance(nr1, nr2, x, y);
                     }
                 }
+                int nPairs = dl1.cardinality()*dl2.cardinality();
+                h /= nPairs;
+                time /= nPairs;
 
+                logP += getHDProbability(h, time, y-x);
             }
         }
 
@@ -102,7 +106,7 @@ public class ACGLikelihoodApprox extends Distribution {
      * @param siteCount total number of sites (h<=siteCount)
      * @return log probability
      */
-    public double getHDProbability(int h, double time, int siteCount) {
+    public double getHDProbability(double h, double time, int siteCount) {
         double p = 0.75*(1-Math.exp(-4.0/3.0*time*substRateInput.get().getValue()));
 //        return Binomial.logChoose(siteCount, h)
 //                + h*Math.log(p) + (siteCount-h)*Math.log(1.0-p);
