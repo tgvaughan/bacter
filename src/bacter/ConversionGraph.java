@@ -455,7 +455,7 @@ public class ConversionGraph extends Tree {
 
         acg.initArrays();
 
-        acg.m_taxonset = m_taxonset;
+        acg.m_taxonset.setValue(m_taxonset.get(), acg);
         
         acg.convs = new HashMap<>();
         acg.storedConvs = new HashMap<>();
