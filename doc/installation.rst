@@ -5,8 +5,8 @@ Getting Started
 Software requirements
 =====================
 
-In order to use Bacter and complete this tutorial the following software must
-be installed:
+In order to use Bacter and visualize its analysis results the following
+software must be installed:
 
 * BEAST 2 version 2.3.1 or later. http://www.beast2.org/
 * Tracer version 1.6 or later. http://tree.bio.ed.ac.uk/software/tracer/

@@ -1,10 +1,10 @@
-***************
-Bacter Tutorial
-***************
+*******************************
+Bacter Tutorial: Basic Analysis
+*******************************
 
-This tutorial will gently walk you through the process of using Bacter, from
-installation of the package through to jointly inferring an ARG and population
-model parameters from an example data set.
+This tutorial will gently walk you through the process of using Bacter, from to
+jointly infer an ARG and population model parameters from an example
+multi-locus data set.
 
 Choosing the Bacter BEAUti template
 ===================================

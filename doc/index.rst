@@ -12,6 +12,10 @@ rate and population dynamics.  Exactly what may be inferred from a given data
 set depends heavily on the size of the data set, and the rates of recombination
 and mutation for the population under study, and the sampling procedure.
 
+Much of the documentation for Bacter is presented in tutorial form. We
+recommend completing these tutorials before attempting to analyze your own
+data.
+
 .. _Bacter: http://tgvaughan.github.io/bacter
 .. _BEAST 2: http://www.beast2.org/
 
