@@ -26,10 +26,31 @@ installed bacter package by selecting File->Set working dir->bacter.  (This step
 
 .. image:: images/setwd.png
 
-Then, select File->Add Alignment, navigate to the :file:`examples/` subdirectory and
-choose the file :file:`simulated_data.fasta`.  This is a simulated alignment of 20
-distinct 10kb nucleotide sequences.  The alignment should now be visible as a
-new record in the table.
+Then, select File->Add Alignment, navigate to the :file:`examples/`
+subdirectory.  Hold down the :kbd:`Ctrl` key (or Command if you're on a Mac)
+and click to select the two files :file:`simulated_data_A.fasta` and
+:file:`simulated_data_B.fasta`.
+
+.. image:: images/load_alignments.png
+
+Each of these files is a simulated alignment of 20 distinct 5kb nucleotide
+sequences. Each file contains the multiple sequence alignment for a distinct
+locus. That is, each file contains exactly the same number of sequences from
+the same sampled bacteria but from different portions of the genome.
+
+After pressing OK, the alignments should be visible as two new records in the
+table. By default, each locus is assumed to have its own distinct site, clock
+and "tree" (really ARG here) models.  Since our ARGs potentially span multiple
+loci, we should definitely cause the loci to share a tree model. This is done
+by selecting both rows in the table by again holding down :kbd:`Ctrl` (or
+Command) and clicking each in turn. Alternatively, you can just click on one
+row and then press :kbd:`Ctrl+A`. (This is easier than clicking each row if
+your data consists of many loci.) Once they're selected, press the "Link Trees"
+button on the right-hand side just above the table. In our case, we will use
+shared site and clock models too, so click the "Link Site Models" and "Link
+Clock Models" buttons as well.
+
+.. image:: link_models.png
 
 Setting up the analysis
 =======================
@@ -220,12 +241,6 @@ in the summary.
 Wrapping up
 ===========
 
-In this tutorial we have demonstrated some of the basic functionality of
-Bacter.  However, this is not a complete overview.  Topics which have been
-omitted from this tutorial include:
-
-1. conversion rate and expected tract length inference,
-2. non-parametric inference of population dynamics (Bayesian Skyline Plots from ARGs),
-3. dealing with multi-locus data sets.
-
-These topics will be covered by future tutorials.
+This completes the first tutorial.  In a future tutorial we will demonstrate how
+to use Bacter to perform non-parametric inference of population dynamics
+(Bayesian Skyline Plots from ARGs). 
