@@ -14,6 +14,12 @@
     <property name="examples" location="examples"/>
     <property name="templates" location="templates"/>
 
+    <!-- BEAST branch and version to build against
+         (only different for version tags because of
+         a Github peculiarity) -->
+    <property name="beast-branch" value="v2.3.2"/>
+    <property name="beast-version" value="2.3.2"/>
+
     <!-- Names of temporary build/test directories -->
     <property name="build" location="build"/>
     <property name="build-lib" location="build-lib"/>
@@ -52,20 +58,20 @@
         <property name="build-beast" location="build-beast"/>
         <mkdir dir="${build-beast}"/>
 
-        <get src="https://github.com/CompEvol/beast2/archive/master.zip" dest="${build-beast}/beast.zip"/>
+        <get src="https://github.com/CompEvol/beast2/archive/${beast-branch}.zip" dest="${build-beast}/beast.zip"/>
         <unzip src="${build-beast}/beast.zip" dest="${build-beast}"/>
-        <mkdir dir="${build-beast}/beast2-master/build"/>
+        <mkdir dir="${build-beast}/beast2-${beast-version}/build"/>
         <javac target="${targetVersion}" source="${sourceVersion}"
-               srcdir="${build-beast}/beast2-master/src"
-               destdir="${build-beast}/beast2-master/build" includeantruntime="false">
+            srcdir="${build-beast}/beast2-${beast-version}/src"
+            destdir="${build-beast}/beast2-${beast-version}/build" includeantruntime="false">
             <classpath>
                 <pathelement path="${classpath}"/>
-                <fileset dir="${build-beast}/beast2-master/lib" includes="*.jar"/>
+                <fileset dir="${build-beast}/beast2-${beast-version}/lib" includes="*.jar"/>
             </classpath>
         </javac>
-        <jar jarfile="${build-lib}/beast2.jar" basedir="${build-beast}/beast2-master/build" />
+        <jar jarfile="${build-lib}/beast2.jar" basedir="${build-beast}/beast2-${beast-version}/build" />
         <copy todir="${build-lib}">
-            <fileset dir="${build-beast}/beast2-master/lib" includes="*.jar"/>
+            <fileset dir="${build-beast}/beast2-${beast-version}/lib" includes="*.jar"/>
         </copy>
 
         <delete dir="${build-beast}" />
