@@ -245,16 +245,23 @@ simulated data:
 
 .. image:: images/truth.png
 
-
-
 Although the inference has recovered many features of the true ARG, fewer
 features appear in the summary than were present in reality. This is a
 side-effect of the summary procedure, which includes only those features that
 have adequate support.  Features in the original which did not produce a strong
-signal in the data do not appear in the summary. In addition, it's almost
-certain that the chain has not completely converged to the true posterior -
-running the algorithm for more steps will no-doubt recover a greater fraction
-of the conversions.
+signal in the data do not appear in the summary. In addition, since the chain
+has not completely converged to the true posterior, running the algorithm for
+more steps will no-doubt recover a greater fraction of the conversions.
+
+In addition, notice the pair of low-support conversions between the clonal
+frame edges above leaf nodes t3 and t5/t14.  These edges correspond to almost
+precisely the same sites on locus A.  These two conversions actually represent
+uncertainty in the source edge of a single conversion comming from either t5 or
+t14 to arrive at t3. (From the true ARG we see that the fragment actually comes
+from t5.) It is important to be aware of this artifact of the summary
+procedure. Even if a single connection point of a recombinant edge is known
+with a high degree of confidence, uncertainty in the location of the other
+point may cause the conversion to appear as a number of lower-support edges.
 
 Wrapping up
 ===========
