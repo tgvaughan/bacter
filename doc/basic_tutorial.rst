@@ -153,7 +153,10 @@ period (:kbd:`,` and :kbd:`.`) keys to step through the file one ARG at a time
 or the :kbd:`<` and :kbd:`>` keys to step in increments of 10%.  Navigation can
 also be performed by clicking on the buttons in the lower-left corner of the
 window with your mouse.  Further information about using IcyTree can be found
-by selecting items listed under the Help menu.
+by selecting items listed under the Help menu. To generate the image below,
+edges were coloured by locus (Style->"Colour edges by"), the colouring legend
+and the time axis were switched on (Style->"Display legend" and Style->"Display
+axis").
 
 .. _IcyTree: http://tgvaughan.github.io/icytree
 
