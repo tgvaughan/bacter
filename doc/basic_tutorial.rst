@@ -89,7 +89,9 @@ The priors panel should now look similar to the following:
 
 .. image:: images/priors.png
 
-Finally, switch to the MCMC panel and change the chain length to 2000000.
+Finally, switch to the MCMC panel and change the chain length to 2000000. This
+is almost certainly far too short for a production run, but means that the
+example analysis will complete relatively quickly.
 
 Once your analysis is set up, select File->Save, navigate to the directory you
 wish the analysis XML to be written to, give it a sensible file name (for
@@ -106,7 +108,7 @@ Run the analysis just as you would any other BEAST 2 analysis.  That is,
 
 Once BEAST is running, you should see output periodically printed to standard
 out (if you're running BEAST from a terminal emulator) or the output window.
-The analysis we've set up should take just under an hour to complete on a
+The analysis we've set up should take around half an hour to complete on a
 modern computer.
 
 Analyzing the results
@@ -130,9 +132,10 @@ corresponding inferred parameters:
 
 .. image:: images/tracer.png
 
-Note that the ESS for the likelihood is still quite small.  This indicates that
-the chain should probably be run for a while longer before the results are
-considered completely trustworthy.
+Note that the ESS for many parameters, the likelihood and the clonal frame height
+(Tree.t:simulated_data_A.CFheight) is still very small.  This indicates that
+the chain should be run for a lot longer before the results are
+for the results to be considered trustworthy.
 
 Viewing sampled ARGs
 --------------------
