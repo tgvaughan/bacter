@@ -514,7 +514,7 @@ public class ACGAnnotator {
                     + "                         for including conversion in summary.\n"
                     + "                         (Default 50%)\n"
                     + "\n"
-                    + "If no output file is specified, output is written to a file"
+                    + "If no output file is specified, output is written to a file\n"
                     + "named 'summary.tree'.";
 
     /**
