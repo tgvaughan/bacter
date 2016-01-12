@@ -38,7 +38,7 @@ sequences. Each file contains the multiple sequence alignment for a distinct
 locus. That is, each file contains exactly the same number of sequences from
 the same sampled bacteria but from different portions of the genome.
 
-After pressing OK, the alignments should be visible as two new records in the
+After pressing Open, the alignments should be visible as two new records in the
 table. By default, each locus is assumed to have its own distinct site, clock
 and "tree" (really ARG here) models.  Since our ARGs potentially span multiple
 loci, we should definitely cause the loci to share a tree model. This is done
@@ -50,7 +50,7 @@ button on the right-hand side just above the table. In our case, we will use
 shared site and clock models too, so click the "Link Site Models" and "Link
 Clock Models" buttons as well.
 
-.. image:: link_models.png
+.. image:: images/link_models.png
 
 Setting up the analysis
 =======================
