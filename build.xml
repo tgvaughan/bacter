@@ -17,8 +17,8 @@
     <!-- BEAST branch and version to build against
          (only different for version tags because of
          a Github peculiarity) -->
-    <property name="beast-branch" value="v2.3.2"/>
-    <property name="beast-version" value="2.3.2"/>
+    <property name="beast-branch" value="master"/>
+    <property name="beast-version" value="master"/>
 
     <!-- Names of temporary build/test directories -->
     <property name="build" location="build"/>
