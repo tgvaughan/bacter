@@ -32,6 +32,7 @@ import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
 import feast.nexus.TreesBlock;
 
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +76,7 @@ public class SimulatedACG extends ConversionGraph {
     }
     
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         
         rho = rhoInput.get();
         delta = deltaInput.get();
@@ -146,6 +147,8 @@ public class SimulatedACG extends ConversionGraph {
 
             try (PrintStream pstream = new PrintStream(outputFileNameInput.get())) {
                 nexusBuilder.write(pstream);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }

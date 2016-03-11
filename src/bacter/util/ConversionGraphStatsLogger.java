@@ -207,7 +207,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
     }
     
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         String id = acg.getID();
         if (id == null || id.matches("\\s*"))
             id = "acg";

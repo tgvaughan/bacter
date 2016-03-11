@@ -58,7 +58,7 @@ public class PiecewisePopulationFunction extends PopulationFunction.Abstract imp
     double[] groupBoundaries;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         popSizes = popSizesInput.get();
         changeTimes = changeTimesInput.get();
 
@@ -169,7 +169,7 @@ public class PiecewisePopulationFunction extends PopulationFunction.Abstract imp
     // Loggable implementation:
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         prepare();
 
         for (int i=0; i<popSizes.getDimension(); i++) {

@@ -78,7 +78,7 @@ public class ConversionGraph extends Tree {
     protected int totalSequenceLength;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         convs = new HashMap<>();
         storedConvs = new HashMap<>();
@@ -1028,7 +1028,7 @@ public class ConversionGraph extends Tree {
      * Loggable implementation.
      */
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         Node node = getRoot();
         out.println("#NEXUS\n");
         out.println("Begin taxa;");

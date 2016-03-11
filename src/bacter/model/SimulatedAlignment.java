@@ -34,6 +34,8 @@ import beast.util.XMLProducer;
 import feast.nexus.CharactersBlock;
 import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
+
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +78,7 @@ public class SimulatedAlignment extends Alignment {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         acg = acgInput.get();
         siteModel = siteModelInput.get();
@@ -103,21 +105,24 @@ public class SimulatedAlignment extends Alignment {
         
         // Write simulated alignment to disk if requested:
         if (outputFileNameInput.get() != null) {
-            PrintStream pstream = new PrintStream(outputFileNameInput.get());
-            if (useNexusInput.get()) {
-                NexusBuilder nb = new NexusBuilder();
-                nb.append(new TaxaBlock(acg.getTaxonset()));
-                nb.append(new CharactersBlock(this));
-                nb.write(pstream);
-            } else
-                pstream.println(new XMLProducer().toRawXML(this));
+            try (PrintStream pstream = new PrintStream(outputFileNameInput.get())) {
+                if (useNexusInput.get()) {
+                    NexusBuilder nb = new NexusBuilder();
+                    nb.append(new TaxaBlock(acg.getTaxonset()));
+                    nb.append(new CharactersBlock(this));
+                    nb.write(pstream);
+                } else
+                    pstream.println(new XMLProducer().toRawXML(this));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     /**
      * Perform actual sequence simulation.
      */
-    private void simulate(Locus locus) throws Exception {
+    private void simulate(Locus locus) {
         Node cfRoot = acg.getRoot();
         int nTaxa = acg.getLeafNodeCount();
         

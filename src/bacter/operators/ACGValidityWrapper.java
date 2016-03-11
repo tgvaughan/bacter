@@ -36,7 +36,7 @@ public class ACGValidityWrapper extends ACGOperator {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         m_pWeight.setValue(operatorInput.get().m_pWeight.get(), this);
         super.initAndValidate();
     }

@@ -82,7 +82,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         if (treeInput.get() instanceof ConversionGraph)
             acg = (ConversionGraph)treeInput.get();

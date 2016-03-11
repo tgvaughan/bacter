@@ -40,7 +40,7 @@ public abstract class ACGOperator extends Operator {
     protected ConversionGraph acg;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         acg = acgInput.get();
     }
     

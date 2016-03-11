@@ -65,7 +65,7 @@ public class Locus extends BEASTObject {
     }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (alignmentInput.get() != null) {
             alignment = alignmentInput.get();
             siteCount = alignment.getSiteCount();

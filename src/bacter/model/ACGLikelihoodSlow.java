@@ -54,7 +54,7 @@ public class ACGLikelihoodSlow extends GenericTreeLikelihood {
     protected SiteModel.Base siteModel;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (treeInput.get() instanceof ConversionGraph)
             acg = (ConversionGraph) treeInput.get();
         else
@@ -84,7 +84,7 @@ public class ACGLikelihoodSlow extends GenericTreeLikelihood {
     }
 
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         logP = 0.0;
 
         for (Region region : acg.getRegions(locus)) {
@@ -112,7 +112,7 @@ public class ACGLikelihoodSlow extends GenericTreeLikelihood {
      * @throws Exception
      */
     public Alignment createMarginalAlignment(Alignment alignment,
-                                             ConversionGraph acg, Region region) throws Exception {
+                                             ConversionGraph acg, Region region) {
         List<Sequence> sequences = new ArrayList<>();
 
         for (int leafIdx=0; leafIdx<alignment.getTaxonCount(); leafIdx++) {

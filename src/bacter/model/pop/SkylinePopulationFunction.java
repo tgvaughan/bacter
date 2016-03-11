@@ -83,7 +83,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
     double[] groupBoundaries;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
 
         acg = acgInput.get();
@@ -302,7 +302,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
     // Loggable implementation:
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         prepare();
 
         for (int i=0; i<popSizes.getDimension(); i++) {

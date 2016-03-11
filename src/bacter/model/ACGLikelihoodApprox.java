@@ -48,7 +48,7 @@ public class ACGLikelihoodApprox extends Distribution {
     public ACGLikelihoodApprox() { }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
         alignment = alignmentInput.get();
         acg = acgInput.get();
@@ -59,7 +59,7 @@ public class ACGLikelihoodApprox extends Distribution {
 
 
     @Override
-    public double calculateLogP() throws Exception {
+    public double calculateLogP() {
         logP = 0.0;
 
         Map<Double, Coalescence> heightMap = getCoalescenceHeights();

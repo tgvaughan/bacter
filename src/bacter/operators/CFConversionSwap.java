@@ -41,7 +41,7 @@ public class CFConversionSwap extends CFOperator {
             "Whether to include root variants of move.", true);
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
     }
 

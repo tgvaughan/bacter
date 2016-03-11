@@ -62,7 +62,7 @@ public class ACGCoalescent extends TreeDistribution {
     }
     
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         if (!(treeInput.get() instanceof ConversionGraph))
             throw new IllegalArgumentException("Tree input to ACGCoalescent " +
                     "must specify a ConversionGraph.");

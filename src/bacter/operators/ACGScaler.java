@@ -56,7 +56,7 @@ public class ACGScaler extends ACGOperator {
     private boolean rootOnly;
     
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
         scaleParam = scaleParamInput.get();
         rootOnly = rootOnlyInput.get();

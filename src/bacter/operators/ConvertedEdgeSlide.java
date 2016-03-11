@@ -37,7 +37,7 @@ public class ConvertedEdgeSlide extends ACGOperator {
     public ConvertedEdgeSlide() { }
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
     }
     

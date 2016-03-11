@@ -40,7 +40,7 @@ public class TrimmedACGLogger extends CalculationNode implements Loggable {
     public void initAndValidate() { }
     
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
        acgInput.get().init(out);
     }
 

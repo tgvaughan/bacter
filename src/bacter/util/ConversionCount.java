@@ -34,14 +34,14 @@ public class ConversionCount extends BEASTObject implements Loggable, Function {
             "Conversion graph", Input.Validate.REQUIRED);
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
 
     }
 
     // Loggable implementation
 
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         out.print(getID() + "\t");
     }
 

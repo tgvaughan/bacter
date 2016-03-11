@@ -41,7 +41,7 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
     public void initAndValidate() { }
     
     @Override
-    public void init(PrintStream out) throws Exception {
+    public void init(PrintStream out) {
         final ConversionGraph arg = acgInput.get();
 
         String mainID = (getID() == null || getID().matches(("\\s*")))

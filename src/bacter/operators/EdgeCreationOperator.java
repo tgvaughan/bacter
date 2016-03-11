@@ -40,7 +40,7 @@ public abstract class EdgeCreationOperator extends ACGOperator {
     protected PopulationFunction popFunc;
     
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
         
         popFunc = popFuncInput.get();

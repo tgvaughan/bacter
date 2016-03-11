@@ -23,6 +23,8 @@ import beast.core.util.Evaluator;
 import beast.core.util.Log;
 import beast.util.Randomizer;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,16 +55,20 @@ public class MCMCTrace extends MCMC {
     int stateTraceStart;
 
     @Override
-    public void initAndValidate() throws Exception {
+    public void initAndValidate() {
         super.initAndValidate();
 
-        stateTrace = new PrintStream(stateTraceFileInput.get());
+        try {
+            stateTrace = new PrintStream(stateTraceFileInput.get());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         stateTraceOperators = stateTraceOperatorsInput.get();
         stateTraceStart = stateTraceStartInput.get();
     }
 
     @Override
-    protected void doLoop() throws Exception {
+    protected void doLoop() {
         int corrections = 0;
         if (burnIn > 0) {
             Log.warning.println("Please wait while BEAST takes " + burnIn + " pre-burnin samples");
@@ -201,7 +207,11 @@ public class MCMCTrace extends MCMC {
                 /*final double fLogLikelihood = */
                 state.robustlyCalcNonStochasticPosterior(posterior);
                 state.storeToFile(sampleNr);
-                operatorSchedule.storeToFile();
+                try {
+                    operatorSchedule.storeToFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (stateTraceActive)
