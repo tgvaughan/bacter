@@ -80,7 +80,7 @@
             </operator>
         </operator>
 
-        <logger logEvery="10000">
+        <logger logEvery="100000">
             <log idref="posterior"/>
             <log id="treeHeightLogger" spec='TreeHeightLogger' tree="@acg"/>
         </logger>

@@ -127,6 +127,7 @@
                     <include name="**/*Test.java"/>
                 </fileset>
                 <formatter type="plain"/>
+                <!--formatter type="plain" usefile="false"/--> <!-- to screen -->
             </batchtest>
         </junit>
 
