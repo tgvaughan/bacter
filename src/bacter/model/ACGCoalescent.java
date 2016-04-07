@@ -87,7 +87,7 @@ public class ACGCoalescent extends TreeDistribution {
         double poissonMean = rhoInput.get().getValue()
                 *acg.getClonalFrameLength()
                 *(acg.getTotalSequenceLength()
-                +acg.getLoci().size()*deltaInput.get().getValue());
+                +acg.getLoci().size()*(deltaInput.get().getValue()-1.0));
 
         // Probability of conversion count:
         if (poissonMean>0.0) {

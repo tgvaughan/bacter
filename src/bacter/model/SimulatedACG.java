@@ -258,10 +258,10 @@ public class SimulatedACG extends ConversionGraph {
                         "locus choice loop fell through.");
 
             int startSite, endSite;
-            if (u<delta-1.0) {
+            if (u<delta) {
                 startSite = 0;
             } else {
-                startSite = (int)(u-(delta-1.0));
+                startSite = (int)Math.ceil(u-delta);
             }
             endSite = startSite + (int)Randomizer.nextGeometric(1.0/delta);
             endSite = Math.min(endSite, affectedLocus.getSiteCount()-1);

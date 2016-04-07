@@ -59,11 +59,11 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             if (u < deltaInput.get().getValue() - 1.0 + thisLocus.getSiteCount()) {
                 locus = thisLocus;
 
-                if (u < deltaInput.get().getValue() - 1.0) {
+                if (u < deltaInput.get().getValue()) {
                     startSite = 0;
-                    logP += Math.log((deltaInput.get().getValue() - 1.0) / alpha);
+                    logP += Math.log(deltaInput.get().getValue() / alpha);
                 } else {
-                    startSite = (int) (u - (deltaInput.get().getValue() - 1.0));
+                    startSite = (int)Math.ceil(u - deltaInput.get().getValue());
                     logP += Math.log(1.0 / alpha);
                 }
 
