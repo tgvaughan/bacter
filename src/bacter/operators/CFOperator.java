@@ -82,7 +82,7 @@ public abstract class CFOperator extends ConversionCreationOperator {
 
             double Nexp = L*rhoInput.get().getValue()
                     *(acg.getTotalSequenceLength()
-                    + acg.getLoci().size()*deltaInput.get().getValue());
+                    + acg.getLoci().size()*(deltaInput.get().getValue() - 1.0));
 
             List<Conversion> toRemove = new ArrayList<>();
             for (Locus locus : acg.getLoci()) {
@@ -170,7 +170,7 @@ public abstract class CFOperator extends ConversionCreationOperator {
             double L = 2.0*(destTime - volatileHeight);
             double Nexp = L*rhoInput.get().getValue()
                     *(acg.getTotalSequenceLength()
-                    + acg.getLoci().size()*deltaInput.get().getValue());
+                    + acg.getLoci().size()*(deltaInput.get().getValue() - 1.0));
             int N = (int)Randomizer.nextPoisson(Nexp);
 
             logP += -Nexp + N*Math.log(Nexp); // Factorial cancels

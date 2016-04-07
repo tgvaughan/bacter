@@ -38,10 +38,10 @@ public class ACGLikelihoodApprox extends Distribution {
             "Locus alignment is associated with.",
             Input.Validate.REQUIRED);
 
-    int nLeaves;
-    int[][] cumulativeHD;
-    int[] pairNrLookup;
-    Alignment alignment;
+    private int nLeaves;
+    private int[][] cumulativeHD;
+    private int[] pairNrLookup;
+    private Alignment alignment;
     ConversionGraph acg;
     Locus locus;
 
@@ -106,7 +106,7 @@ public class ACGLikelihoodApprox extends Distribution {
      * @param siteCount total number of sites (h<=siteCount)
      * @return log probability
      */
-    public double getHDProbability(double h, double time, int siteCount) {
+    private double getHDProbability(double h, double time, int siteCount) {
         double p = 0.75*(1-Math.exp(-4.0/3.0*time*substRateInput.get().getValue()));
 //        return Binomial.logChoose(siteCount, h)
 //                + h*Math.log(p) + (siteCount-h)*Math.log(1.0-p);
@@ -117,7 +117,7 @@ public class ACGLikelihoodApprox extends Distribution {
      * @return map from heights of coalescences to objects describing
      * the sites and samples they involve.
      */
-    public Map<Double, Coalescence> getCoalescenceHeights() {
+    Map<Double, Coalescence> getCoalescenceHeights() {
 
         Map<Double, Coalescence> heightMap = new HashMap<>();
 
@@ -191,7 +191,7 @@ public class ACGLikelihoodApprox extends Distribution {
         return heightMap;
     }
 
-    public void computePairwiseDistances() {
+    private void computePairwiseDistances() {
         // Pre-compute pairwise distance tables
 
         nLeaves = acg.getLeafNodeCount();
@@ -224,7 +224,7 @@ public class ACGLikelihoodApprox extends Distribution {
         }
     }
 
-    public int getPairwiseDistance(int node1Nr, int node2Nr, int x, int y) {
+    int getPairwiseDistance(int node1Nr, int node2Nr, int x, int y) {
         int pairNr = pairNrLookup[node1Nr*nLeaves + node2Nr];
         return cumulativeHD[pairNr][y] - cumulativeHD[pairNr][x];
     }

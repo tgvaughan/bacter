@@ -187,26 +187,24 @@ public class ACGCoalescent extends TreeDistribution {
 
         // Probability of start site:
         if (conv.getStartSite()==0)
-            thisLogP += Math.log((deltaInput.get().getValue() + 1)
-                /(acg.getLoci().size()*deltaInput.get().getValue()
+            thisLogP += Math.log(deltaInput.get().getValue()
+                /(acg.getLoci().size()*(deltaInput.get().getValue()-1)
                     + acg.getTotalSequenceLength()));
         else
             thisLogP += Math.log(
-                    1.0/(acg.getLoci().size()*deltaInput.get().getValue()
+                    1.0/(acg.getLoci().size()*(deltaInput.get().getValue()-1)
                             + acg.getTotalSequenceLength()));
 
         // Probability of end site:
-        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
-            conv.getEndSite() - conv.getStartSite())
-            / deltaInput.get().getValue();
-        
-        // Include probability of going past the end:
-        if (conv.getEndSite() == conv.getLocus().getSiteCount()-1)
-            probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    conv.getLocus().getSiteCount()-conv.getStartSite());
+        if (conv.getEndSite() == conv.getLocus().getSiteCount()-1) {
+            thisLogP += (conv.getLocus().getSiteCount()-1-conv.getStartSite())
+                    *Math.log(1.0 - 1.0/deltaInput.get().getValue());
+        } else {
+            thisLogP += (conv.getEndSite()-conv.getStartSite())
+                    *Math.log(1.0 - 1.0/deltaInput.get().getValue())
+                    -Math.log(deltaInput.get().getValue());
+        }
 
-        thisLogP += Math.log(probEnd);
-        
         return thisLogP;
     }
 

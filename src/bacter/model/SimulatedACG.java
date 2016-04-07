@@ -236,21 +236,21 @@ public class SimulatedACG extends ConversionGraph {
 
         // Draw number of conversions:
         int Nconv = (int) Randomizer.nextPoisson(rho*getClonalFrameLength()*
-            (getTotalSequenceLength()+delta*getLoci().size()));
+            (getTotalSequenceLength()+(delta-1.0)*getLoci().size()));
 
         // Generate conversions:
         for (int i=0; i<Nconv; i++) {
             // Choose alignment
             double u = Randomizer.nextDouble()*(getTotalSequenceLength()
-                    + delta*getLoci().size());
+                    + (delta-1.0)*getLoci().size());
 
             Locus affectedLocus = null;
             for (Locus locus : getLoci()) {
-                if (u < locus.getSiteCount() + delta) {
+                if (u < locus.getSiteCount() + delta - 1.0) {
                     affectedLocus = locus;
                     break;
                 } else
-                    u -= locus.getSiteCount() + delta;
+                    u -= locus.getSiteCount() + delta - 1.0;
             }
 
             if (affectedLocus == null)
@@ -258,10 +258,10 @@ public class SimulatedACG extends ConversionGraph {
                         "locus choice loop fell through.");
 
             int startSite, endSite;
-            if (u<delta) {
+            if (u<delta-1.0) {
                 startSite = 0;
             } else {
-                startSite = (int)(u-delta);
+                startSite = (int)(u-(delta-1.0));
             }
             endSite = startSite + (int)Randomizer.nextGeometric(1.0/delta);
             endSite = Math.min(endSite, affectedLocus.getSiteCount()-1);

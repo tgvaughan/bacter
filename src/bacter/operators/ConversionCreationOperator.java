@@ -47,7 +47,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
 
         // Total effective number of possible start sites
         double alpha = acg.getTotalSequenceLength()
-                + acg.getLoci().size()*deltaInput.get().getValue();
+                + acg.getLoci().size()*(deltaInput.get().getValue() - 1.0);
 
         // Draw location of converted region.
         int startSite = -1;
@@ -56,21 +56,21 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
 
         double u = Randomizer.nextDouble()*alpha;
         for (Locus thisLocus : acg.getLoci()) {
-            if (u < deltaInput.get().getValue() + thisLocus.getSiteCount()) {
+            if (u < deltaInput.get().getValue() - 1.0 + thisLocus.getSiteCount()) {
                 locus = thisLocus;
 
-                if (u < deltaInput.get().getValue()) {
+                if (u < deltaInput.get().getValue() - 1.0) {
                     startSite = 0;
-                    logP += Math.log(deltaInput.get().getValue() / alpha);
+                    logP += Math.log((deltaInput.get().getValue() - 1.0) / alpha);
                 } else {
-                    startSite = (int) (u - deltaInput.get().getValue());
+                    startSite = (int) (u - (deltaInput.get().getValue() - 1.0));
                     logP += Math.log(1.0 / alpha);
                 }
 
                 break;
             }
 
-            u -= deltaInput.get().getValue() + thisLocus.getSiteCount();
+            u -= deltaInput.get().getValue() - 1.0 + thisLocus.getSiteCount();
         }
 
         if (locus == null)
@@ -81,15 +81,14 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         endSite = Math.min(endSite, locus.getSiteCount()-1);
 
         // Probability of end site:
-        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
-            endSite-startSite)/ deltaInput.get().getValue();
-        
-        // Include probability of going past the end:
-        if (endSite == locus.getSiteCount()-1)
-            probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    locus.getSiteCount()-startSite);
-
-        logP += Math.log(probEnd);
+        if (endSite == locus.getSiteCount()-1) {
+            logP += (locus.getSiteCount()-1-startSite)
+                    *Math.log(1.0 - 1.0/deltaInput.get().getValue());
+        } else {
+            logP += (endSite-startSite)
+                    *Math.log(1.0 - 1.0/deltaInput.get().getValue())
+                    -Math.log(deltaInput.get().getValue());
+        }
 
         conv.setLocus(locus);
         conv.setStartSite(startSite);
@@ -110,26 +109,23 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
 
         // Total effective number of possible start sites
         double alpha = acg.getTotalSequenceLength()
-                + acg.getLoci().size()*deltaInput.get().getValue();
-
+                + acg.getLoci().size()*(deltaInput.get().getValue() - 1.0);
 
         // Calculate probability of converted region.
         if (conv.getStartSite()==0)
-            logP += Math.log((deltaInput.get().getValue() + 1) / alpha);
+            logP += Math.log(deltaInput.get().getValue() / alpha);
         else
             logP += Math.log(1.0 / alpha);
 
         // Probability of end site:
-        double probEnd = Math.pow(1.0-1.0/deltaInput.get().getValue(),
-            conv.getEndSite() - conv.getStartSite())
-            / deltaInput.get().getValue();
-        
-        // Include probability of going past the end:
-        if (conv.getEndSite() == conv.getLocus().getSiteCount()-1)
-            probEnd += Math.pow(1.0-1.0/deltaInput.get().getValue(),
-                    conv.getLocus().getSiteCount()-conv.getStartSite());
-
-        logP += Math.log(probEnd);
+        if (conv.getEndSite() == conv.getLocus().getSiteCount()-1) {
+            logP += (conv.getLocus().getSiteCount()-1-conv.getStartSite())
+                    *Math.log(1.0 - 1.0/deltaInput.get().getValue());
+        } else {
+            logP += (conv.getEndSite()-conv.getStartSite())
+                    *Math.log(1.0 - 1.0/deltaInput.get().getValue())
+                    -Math.log(deltaInput.get().getValue());
+        }
 
         return logP;
     }
