@@ -1,0 +1,143 @@
+<beast version='2.0'
+       namespace='beast.core
+                 :beast.core.util
+                 :beast.core.parameter
+                 :beast.evolution.alignment
+                 :beast.evolution.operators
+                 :beast.evolution.tree
+                 :beast.evolution.tree.coalescent
+                 :beast.evolution.alignment
+                 :beast.util
+                 :bacter
+                 :bacter.model
+                 :bacter.operators
+                 :bacter.util'>
+
+    <taxonSet spec="TaxonSet" id="taxonSet">
+        <taxon spec="Taxon" id="t1"/>
+        <taxon spec="Taxon" id="t2"/>
+        <taxon spec="Taxon" id="t3"/>
+        <taxon spec="Taxon" id="t4"/>
+        <taxon spec="Taxon" id="t5"/>
+    </taxonSet>
+
+    <input spec='SimulatedACG' id='acg'
+           rho="0.2" delta="10.0" taxonset="@taxonSet">
+        <locus id="l1" spec="Locus" siteCount="10"/>
+        <locus id="l2" spec="Locus" siteCount="15"/>
+        <populationModel spec='ConstantPopulation' popSize="1.0" id="popFunc"/>
+        <trait spec='TraitSet' id="timeTrait"
+               taxa="@taxonSet"
+               traitname="date-backward">
+            t1=0.0,
+            t2=0.1,
+            t3=0.2,
+            t4=0.3,
+            t5=0.4
+        </trait>
+    </input>
+
+
+    <run spec="MCMC" id="mcmc" chainLength="10000000">
+        <state>
+            <stateNode idref='acg'/>
+        </state>
+
+        <distribution spec="CompoundDistribution" id="posterior">
+            <distribution spec='ACGCoalescent' id="acgPrior">
+                <rho spec='RealParameter' value="0.2" id="rho" estimate="false"/>
+                <delta spec='RealParameter' value="10.0" id="delta" estimate="false"/>
+                <tree idref="acg"/>
+                <populationModel idref="popFunc"/>
+            </distribution>
+        </distribution>
+
+        <!-- Operators -->
+
+        <operator id="scale" spec="ACGScaler" weight="1.0"
+                  scaleFactor="0.8">
+            <acg idref="acg"/>
+        </operator>
+
+        <operator id="addRemove" spec="AddRemoveConversion" weight="1.0">
+            <acg idref="acg"/>
+            <delta idref="delta"/>
+            <populationModel idref="popFunc"/>
+        </operator>
+
+        <operator id="addRemoveDetour" spec="AddRemoveDetour" weight="1.0">
+            <acg idref="acg"/>
+            <delta idref="delta"/>
+            <populationModel idref="popFunc"/>
+        </operator>
+
+        <operator id="addRemoveRedundant" spec="AddRemoveRedundantConversion" weight="1.0">
+            <acg idref="acg"/>
+        </operator>
+
+        <operator id="mergeSplit" spec="MergeSplitConversion" weight="1.0">
+            <acg idref="acg"/>
+        </operator>
+
+        <operator id="CEhop" spec="ConvertedEdgeHop" weight="1.0"
+                  acg="@acg" />
+
+        <operator id="CEflip" spec="ConvertedEdgeFlip" weight="1.0"
+                  acg="@acg" />
+
+        <operator id="CEslide" spec="ConvertedEdgeSlide" weight="1.0"
+                  acg="@acg" apertureSize="0.1" />
+
+        <operator id="CRswap" spec="ConvertedRegionSwap" weight="1.0"
+                  acg="@acg"/>
+
+        <operator id="CRshift" spec="ConvertedRegionShift" weight="1.0"
+                  acg="@acg" apertureSize="0.01" />
+
+        <operator id="CRBshift" spec="ConvertedRegionBoundaryShift" weight="1.0"
+                  acg="@acg" apertureSize="0.01" />
+
+        <operator id="CFUniform" spec="CFUniform" delta="@delta" rho="@rho"
+                  populationModel="@popFunc" acg="@acg" weight="10"/>
+
+        <operator id="CFWB" spec='CFWilsonBalding'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  alpha="0.1" weight="10"/>
+
+        <operator id="CFCS" spec='CFConversionSwap'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  weight="10"/>
+
+        <operator id="CFSTS" spec='CFSubtreeSlide'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  scaleFactor="0.8" weight="10"/>
+
+        <operator id="CFSTXnarrow" spec='CFSubtreeExchange'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  isNarrow="true"
+                  weight="10"/>
+
+        <operator id="CFSTXwide" spec='CFSubtreeExchange'
+                  acg="@acg" rho="@rho" delta="@delta" populationModel="@popFunc"
+                  isNarrow="false"
+                  weight="10"/>
+
+        <!-- Loggers -->
+
+        <logger logEvery="10000">
+            <log idref="posterior"/>
+            <log spec='TreeHeightLogger' tree="@acg"/>
+        </logger>
+
+        <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">
+            <log idref="acg"/>
+        </logger>
+
+        <logger logEvery="1000" fileName="$(filebase).stats">
+            <log idref="posterior"/>
+            <log spec="ConversionGraphStatsLogger" acg="@acg"/>
+        </logger>
+
+    </run>
+
+</beast>
