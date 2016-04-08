@@ -130,7 +130,7 @@ public class AddRemoveTest extends TestBase {
 
     @Test
     public void test5TaxonSerialSampling() throws Exception {
-        Randomizer.setSeed(53);
+        Randomizer.setSeed(42);
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
