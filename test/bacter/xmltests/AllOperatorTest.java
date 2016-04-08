@@ -96,4 +96,34 @@ public class AllOperatorTest extends TestBase {
         Files.deleteIfExists(Paths.get("allOperatorTestSSMultiLocus.cf"));
         Files.deleteIfExists(Paths.get("allOperatorTestSSMultiLocus.xml.state"));
     }
+
+    @Test
+    public void testShortMultiLocus() throws Exception {
+        Randomizer.setSeed(1);
+
+        XMLParser parser = new XMLParser();
+        beast.core.Runnable runnable = parser.parseFile(
+                new File("examples/allOperatorTests/allOperatorTestShortSSML.xml"));
+        disableScreenLog(runnable);
+        runnable.run();
+
+        List<Expectation> expectations = new ArrayList<>();
+        expectations.add(new Expectation("acg.CFheight", 1.601, 0.2));
+        expectations.add(new Expectation("acg.CFlength", 4.17, 0.5));
+        expectations.add(new Expectation("acg.nConv", 39.61, 0.5));
+
+        LogAnalyser logAnalyser = new LogAnalyser("allOperatorTestShortSSML.stats",
+                expectations);
+
+        for (Expectation expectation : expectations) {
+            assertTrue(expectation.isValid());
+            assertTrue(expectation.isPassed());
+        }
+
+        Files.deleteIfExists(Paths.get("allOperatorTestShortSSML.stats"));
+        Files.deleteIfExists(Paths.get("allOperatorTestShortSSML.converted"));
+        Files.deleteIfExists(Paths.get("allOperatorTestShortSSML.trees"));
+        Files.deleteIfExists(Paths.get("allOperatorTestShortSSML.cf"));
+        Files.deleteIfExists(Paths.get("allOperatorTestShortSSML.xml.state"));
+    }
 }

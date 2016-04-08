@@ -14,7 +14,7 @@
 
 
     <input spec="SimulatedACG" id="acg"
-           rho="0.0005" delta="50.0">
+           rho="0.0001" delta="50.0">
         <locus spec="Locus" id="locus" siteCount="10000"/>
         <taxonset spec="TaxonSet">
             <taxon spec="Taxon" id="t1"/>
