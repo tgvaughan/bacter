@@ -18,7 +18,8 @@ Archive Contents
 
 * `/doc` : Source code for the [usage documentation] (http://bacter.readthedocs.org/).
 * `/examples` : Example XML files, simulated data for the tutorial and a
-  Jupyter notebook with implementation validation details.
+  Jupyter notebook with implementation validation details. (You can view this
+  notebook [online] [2].) 
 * `/lib` : Required libraries.
 * `/src` : Java source code.
 * `/test` : Java source code (unit tests).
@@ -72,3 +73,4 @@ Work on this project is made possible by the support of the following insitution
 * [Massey University] (http://www.massey.ac.nz)
 
 [1]: http://www.genetics.org/content/186/4/1435
+[2]: http://nbviewer.jupyter.org/github/tgvaughan/bacter/blob/master/examples/Validation.ipynb
