@@ -1,9 +1,9 @@
-BACTER
+bacter
 ======
 
 [![Build Status](https://travis-ci.org/tgvaughan/bacter.svg?branch=master)](https://travis-ci.org/tgvaughan/bacter) [![Documentation Status](https://readthedocs.org/projects/bacter/badge/?version=latest)](http://bacter.readthedocs.org/en/latest/?badge=latest) [![Join the chat at https://gitter.im/tgvaughan/bacter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tgvaughan/bacter?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-BACTER is a [BEAST 2] (http://www.beast2.org)  package which facilitates
+Bacter is a [BEAST 2] (http://www.beast2.org)  package which facilitates
 inference of a (restricted kind of) ancestral recombination graph (ARG) and
 related parameters from a sequence alignment.  It is based on the model
 described in [Didelot et al.'s 2010 Genetics paper] [1].
@@ -12,6 +12,40 @@ This archive contains the source code of the package and is therefore of
 primary interest to programmers.  For installation and usage instructions, as
 well as links to tutorials and other documentation, please visit the project
 home page hosted at http://tgvaughan.github.io/bacter.
+
+Archive Contents
+----------------
+
+* `/doc` : Source code for the [usage documentation] (http://bacter.readthedocs.org/).
+* `/examples` : Example XML files, simulated data for the tutorial and a
+  Jupyter notebook with implementation validation details.
+* `/lib` : Required libraries.
+* `/src` : Java source code.
+* `/test` : Java source code (unit tests).
+* `/templates` : BEAUti templates.
+* `version.xml` : BEAST package version file.
+* `build.xml` : Ant build script.
+* `.gitignore` : Causes SCM to ignore certain files
+* `.travis.yml` : Control file for Travis CI server
+* `COPYING` : Software license.
+* `README.md` : This file.
+
+Building package from source
+----------------------------
+
+To build this package from source, ensure you have the following installed:
+
+* Java JDK v1.8 
+* Apache Ant v1.9 or later
+* An internet connection
+
+The internet connection is required since the build script downloads the most
+recent version of the BEAST 2 source to build the package against.
+Assuming both Java and Ant are on your execution path and your CWD is the root of
+this archive, simply type "ant" from the command line to build the package.
+This may take up to a minute due to the script fetching the BEAST source, and
+the resulting binary will be left in the `/dist` directory.
+To run the unit tests, use "ant test".
 
 License
 -------
