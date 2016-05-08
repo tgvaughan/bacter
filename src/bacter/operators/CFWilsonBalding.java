@@ -45,12 +45,8 @@ public class CFWilsonBalding extends CFOperator {
         alpha = alphaInput.get();
     }
 
-//    int count = 0;
-
     @Override
     public double proposal() {
-
-//        String oldTree = acg.getExtendedNewick();
 
         // Determine whether we can apply this operator:
         if (acg.getLeafNodeCount()<3)
@@ -74,11 +70,6 @@ public class CFWilsonBalding extends CFOperator {
         } while (invalidDestNode(srcNode, destNode));
         Node destNodeP = destNode.getParent();
         double t_destNode = destNode.getHeight();
-
-//        String oldTree = acg.getExtendedNewick();
-//        if (srcNode.getNr() == 3 && destNode.getNr() == 6) {
-//            System.out.println("Hey!");
-//        }
 
         if (destNode.isRoot()) {
             // Forward root move
