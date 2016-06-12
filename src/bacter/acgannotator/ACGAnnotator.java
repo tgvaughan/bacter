@@ -528,8 +528,8 @@ public class ACGAnnotator {
     /**
      * Display error, print usage and exit with error.
      */
-    public static void printUsageAndError() {
-        System.err.println("Error processing command line parameters.\n");
+    public static void printUsageAndError(String errMsg) {
+        System.err.println(errMsg);
         System.err.println(helpMessage);
         System.exit(1);
     }
@@ -550,23 +550,25 @@ public class ACGAnnotator {
 
                 case "-burnin":
                     if (args.length<=i+1)
-                        printUsageAndError();
+                        printUsageAndError("-burnin must be followed by a number (percent)");
 
                     try {
                         options.burninPercentage = Double.parseDouble(args[i+1]);
                     } catch (NumberFormatException e) {
-                        printUsageAndError();
+                        printUsageAndError("Error parsing burnin percentage.");
                     }
 
-                    if (options.burninPercentage<0 || options.burninPercentage>100)
-                        printUsageAndError();
+                    if (options.burninPercentage<0 || options.burninPercentage>100) {
+                        printUsageAndError("Burnin percentage must be >= 0 and < 100.");
+                    }
 
                     i += 1;
                     break;
 
-                case "-heights":
-                    if (args.length<=i+1)
-                        printUsageAndError();
+                case "-positions":
+                    if (args.length<=i+1) {
+                        printUsageAndError("-positions must be followed by either 'MEAN' or 'MEDIAN'.");
+                    }
 
                     if (args[i+1].toLowerCase().equals("mean")) {
                         options.summaryStrategy = SummaryStrategy.MEAN;
@@ -582,31 +584,32 @@ public class ACGAnnotator {
                         break;
                     }
 
-                    printUsageAndError();
+                    printUsageAndError("-positions must be followed by either 'MEAN' or 'MEDIAN'.");
 
                 case "-threshold":
-                    if (args.length<=i+1)
-                        printUsageAndError();
+                    if (args.length<=i+1) {
+                        printUsageAndError("-threshold must be followed by a number.");
+                    }
 
                     try {
                         options.convSupportThresh =
                                 Double.parseDouble(args[i + 1]);
                     } catch (NumberFormatException e) {
-                        printUsageAndError();
+                        printUsageAndError("Threshold must be a number between 0 and 100.");
                     }
 
                     i += 1;
                     break;
 
                 default:
-                    printUsageAndError();
+                    printUsageAndError("Unrecognised command line option '" + args[i] + "'.");
             }
 
             i += 1;
         }
 
         if (i >= args.length)
-            printUsageAndError();
+            printUsageAndError("No input file specified.");
         else
             options.inFile = new File(args[i]);
 
