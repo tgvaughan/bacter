@@ -49,7 +49,7 @@ public class ACGAnnotator {
         double burninPercentage = 10.0;
         double convSupportThresh = 50.0;
         SummaryStrategy summaryStrategy = SummaryStrategy.MEAN;
-        File geneFlowOutFile;
+        File geneFlowOutFile = new File("geneFlow.log");
         boolean recordGeneFlow = false;
 
         @Override
@@ -59,7 +59,10 @@ public class ACGAnnotator {
                     "Output file: " + outFile + "\n" +
                     "Burn-in percentage: " + burninPercentage + "%\n" +
                     "Conversion support threshold: " + convSupportThresh + "%\n" +
-                    "Node height and conv. site summary: " + summaryStrategy;
+                    "Node height and conv. site summary: " + summaryStrategy + "\n" +
+                    (recordGeneFlow
+                            ? "Record gene flow to file " + geneFlowOutFile
+                            : "Gene flow recording disabled.");
         }
     }
 
@@ -163,6 +166,10 @@ public class ACGAnnotator {
         // Write gene flow output if desired
 
         if (options.recordGeneFlow) {
+            System.out.println("\nRecording gene flow log in file "
+                    + options.geneFlowOutFile.getName()
+                    + "...");
+
             try (PrintStream ps = new PrintStream(options.geneFlowOutFile)) {
                 writeGeneFlowFile(cladeSystem, acgBest, ps);
             }
@@ -180,7 +187,7 @@ public class ACGAnnotator {
             else
                 ps.print(",");
 
-            ps.print(b);
+            ps.print(b/2);
 
             if (b == Integer.MAX_VALUE) {
                 break; // or (i+1) would overflow
@@ -200,6 +207,15 @@ public class ACGAnnotator {
 
         BitSet[] bitSets = cladeSystem.getBitSets(acgBest);
         List<Map<BitSet,Map<BitSet,Long>>> geneFlow = cladeSystem.getGeneFlowMaps();
+
+        // Give map from node leaf names to node numbers as comment
+        ps.println("# Gene flow log file");
+        ps.println("# ------------------");
+        ps.println("#");
+        ps.println("# Each column of this (tab-delimited) file contains the");
+        ps.println("# number of nucleotides transfered by conversion between");
+        ps.println("# a pair of clonal frame edges.");
+        ps.println("#");
 
         // Write header
         boolean isFirst = true;
@@ -394,6 +410,7 @@ public class ACGAnnotator {
         JLabel burninLabel = new JLabel("Burn-in percentage:");
         JLabel summaryMethodLabel = new JLabel("Position summary method:");
         JLabel thresholdLabel = new JLabel("Posterior conversion support threshold:");
+        JCheckBox geneFlowCheckBox = new JCheckBox("Record gene flow");
 
         JTextField inFilename = new JTextField(20);
         inFilename.setEditable(false);
@@ -403,6 +420,13 @@ public class ACGAnnotator {
         outFilename.setText(options.outFile.getName());
         outFilename.setEditable(false);
         JButton outFileButton = new JButton("Choose File");
+
+        JTextField gfOutFilename = new JTextField(20);
+        gfOutFilename.setText(options.geneFlowOutFile.getName());
+        gfOutFilename.setEditable(false);
+        gfOutFilename.setEnabled(false);
+        JButton gfOutFileButton = new JButton("Choose File");
+        gfOutFileButton.setEnabled(false);
 
         JSlider burninSlider = new JSlider(JSlider.HORIZONTAL,
                 0, 100, (int)(options.burninPercentage));
@@ -439,16 +463,19 @@ public class ACGAnnotator {
                         .addComponent(outFileLabel)
                         .addComponent(burninLabel)
                         .addComponent(summaryMethodLabel)
-                        .addComponent(thresholdLabel))
+                        .addComponent(thresholdLabel)
+                        .addComponent(geneFlowCheckBox))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                         .addComponent(inFilename)
                         .addComponent(outFilename)
                         .addComponent(burninSlider)
                         .addComponent(heightMethodCombo)
-                        .addComponent(thresholdSlider))
+                        .addComponent(thresholdSlider)
+                        .addComponent(gfOutFilename))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                         .addComponent(inFileButton)
-                        .addComponent(outFileButton)));
+                        .addComponent(outFileButton)
+                        .addComponent(gfOutFileButton)));
 
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup()
@@ -482,7 +509,11 @@ public class ACGAnnotator {
                         .addComponent(thresholdSlider,
                                 GroupLayout.PREFERRED_SIZE,
                                 GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.PREFERRED_SIZE)));
+                                GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup()
+                        .addComponent(geneFlowCheckBox)
+                        .addComponent(gfOutFilename)
+                        .addComponent(gfOutFileButton)));
 
         mainPanel.setBorder(new EtchedBorder());
         cp.add(mainPanel);
@@ -494,6 +525,7 @@ public class ACGAnnotator {
             options.burninPercentage = burninSlider.getValue();
             options.convSupportThresh = thresholdSlider.getValue();
             options.summaryStrategy = (SummaryStrategy)heightMethodCombo.getSelectedItem();
+            options.recordGeneFlow = geneFlowCheckBox.isSelected();
             dialog.setVisible(false);
         });
         runButton.setEnabled(false);
@@ -534,6 +566,29 @@ public class ACGAnnotator {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 options.outFile = outFileChooser.getSelectedFile();
                 outFilename.setText(outFileChooser.getSelectedFile().getName());
+            }
+        });
+
+        geneFlowCheckBox.addActionListener(e -> {
+            boolean newValue = geneFlowCheckBox.isSelected();
+            gfOutFilename.setEnabled(newValue);
+            gfOutFileButton.setEnabled(newValue);
+        });
+
+        JFileChooser gfOutFileChooser = new JFileChooser();
+        gfOutFileButton.addActionListener(e -> {
+            gfOutFileChooser.setDialogTitle("Select gene flow output file name.");
+            if (options.inFile != null)
+                gfOutFileChooser.setCurrentDirectory(options.inFile);
+            else
+                gfOutFileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+
+            gfOutFileChooser.setSelectedFile(options.geneFlowOutFile);
+            int returnVal = gfOutFileChooser.showOpenDialog(dialog);
+
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                options.geneFlowOutFile = gfOutFileChooser.getSelectedFile();
+                gfOutFilename.setText(gfOutFileChooser.getSelectedFile().getName());
             }
         });
 
