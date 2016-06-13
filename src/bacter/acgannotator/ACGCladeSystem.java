@@ -35,6 +35,7 @@ public class ACGCladeSystem extends CladeSystem {
 
     protected Map<BitSetPair, Map<Locus, List<Conversion>>> conversionLists = new HashMap<>();
     protected Map<BitSetPair, List<Conversion>> conversionListsTemp = new HashMap<>();
+    protected List<Map<BitSet, Map<BitSet, Long>>> geneFlow = new ArrayList<>();
     protected BitSet[] bitSets;
 
     protected int acgIndex = 1;
@@ -70,6 +71,8 @@ public class ACGCladeSystem extends CladeSystem {
     public void collectConversions(ConversionGraph acg) {
         getBitSets(acg);
 
+        Map<BitSet,Map<BitSet,Long>> geneFlowTemp = new HashMap<>();
+
         // Assemble list of conversions for each pair of clades on each locus
         for (Locus locus : acg.getLoci()) {
 
@@ -82,6 +85,16 @@ public class ACGCladeSystem extends CladeSystem {
                     conversionListsTemp.put(bsPair, new ArrayList<>());
 
                 conversionListsTemp.get(bsPair).add(conv);
+
+                // Record gene flow
+                if (!geneFlowTemp.containsKey(bsPair.from))
+                    geneFlowTemp.put(bsPair.from, new HashMap<>());
+
+                long oldFlow = 0;
+                if (geneFlowTemp.get(bsPair.from).containsKey(bsPair.to))
+                    oldFlow = geneFlowTemp.get(bsPair.from).get(bsPair.to);
+
+                geneFlowTemp.get(bsPair.from).put(bsPair.to, oldFlow + conv.getSiteCount());
             }
 
             // Merge overlapping conversions:
@@ -98,6 +111,8 @@ public class ACGCladeSystem extends CladeSystem {
 
             }
         }
+
+        geneFlow.add(geneFlowTemp);
 
         acgIndex += 1;
     }
@@ -244,6 +259,13 @@ public class ACGCladeSystem extends CladeSystem {
         }
 
         return convSummaryList;
+    }
+
+    /**
+     * @return list of maps specifying gene flow between clades.
+     */
+    public List<Map<BitSet,Map<BitSet,Long>>> getGeneFlowMaps() {
+        return geneFlow;
     }
 
     /**
