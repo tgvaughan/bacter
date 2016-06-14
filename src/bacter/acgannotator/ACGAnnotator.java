@@ -185,7 +185,7 @@ public class ACGAnnotator {
             if (isFirst)
                 isFirst = false;
             else
-                ps.print(",");
+                ps.print("_");
 
             ps.print(b/2);
 
@@ -230,7 +230,7 @@ public class ACGAnnotator {
                     ps.print("\t");
 
                 printBitSetHeader(ps, from);
-                ps.print(">");
+                ps.print("_to_");
                 printBitSetHeader(ps, to);
             }
         }
@@ -238,8 +238,9 @@ public class ACGAnnotator {
         ps.println();
 
         // Write data
-        isFirst = true;
         for (int i=0; i<geneFlow.size(); i++) {
+
+            isFirst = true;
             for (BitSet from : bitSets) {
                 for (BitSet to : bitSets) {
                     if (from.equals(to))
