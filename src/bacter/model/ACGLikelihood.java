@@ -17,9 +17,11 @@
 package bacter.model;
 
 import bacter.*;
+import bacter.devutils.Buffer;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.Input.Validate;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
@@ -72,7 +74,13 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected Map<Region, LikelihoodCore> storedLikelihoodCores;
     protected Map<Region, Double> regionLogLikelihoods;
     protected Map<Region, Double> storedRegionLogLikelihoods;
+    
+    //protected ArrayList<LikelihoodCore> cores = new ArrayList<>();
+    
+    public Input<Buffer> bufferInput = new Input<Buffer>("buffer", "A buffer object that contains transition rate matrices.", Validate.OPTIONAL);
 
+    MarginalTree marginalTree;
+    
     /**
      * Memory for transition probabilities.
      */
@@ -134,23 +142,37 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         // Allocate transition probability memory:
         // (Only the first nStates*nStates elements are usually used.)
         probabilities = new double[(nStates+1)*(nStates+1)];
+        
+        if(bufferInput.get() == null) {
+            cfTransitionProbs = new double[acg.getNodeCount()-1][siteModel.getCategoryCount()][(nStates+1)*(nStates+1)];
+        }
+        marginalTree = new MarginalTree(acg);
     }
 
     @Override
     public double calculateLogP() {
-        updatePatterns();
-        updateCores();
 
-        preComputeCFTransitionProbs();
+        List<Region> regionList = acg.getRegions(locus);
+        
+    	updatePatterns(regionList);
+        updateCores(regionList);
+
+        if(bufferInput.get() == null) {
+        	preComputeCFTransitionProbs();
+        }
+        else if(cfTransitionProbs == null){
+        	cfTransitionProbs = bufferInput.get().cfTransitionProbs;        	
+        }
 
         logP = 0.0;
+        
+        regionLogLikelihoods.keySet().retainAll(regionList);
 
-        regionLogLikelihoods.keySet().retainAll(acg.getRegions(locus));
-
-        for (Region region : acg.getRegions(locus)) {
+        for (Region region : regionList) {
 
             if (!regionLogLikelihoods.containsKey(region)) {
                 traverseNoRecurse(new MarginalTree(acg, region.activeConversions).getRoot(), region);
+            	//traverseNoRecurse(marginalTree.getPostOrderNodes(region.activeConversions), region);
 
 
                 double regionLogP = 0.0;
@@ -176,8 +198,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     /**
      * Ensure pattern counts are up to date.
      */
-    private void updatePatterns() {
-        List<Region> regionList = acg.getRegions(locus);
+    private void updatePatterns(List<Region> regionList) {
 
         // Remove stale pattern sets
         patterns.keySet().retainAll(regionList);
@@ -236,13 +257,29 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     /**
      * Initialize likelihood cores.
      */
-    private void updateCores() {
-
-        List<Region> regionList = acg.getRegions(locus);
-        likelihoodCores.keySet().retainAll(regionList);
-
+    private void updateCores(List<Region> regionList) {
+    	
+//    	int count = regionList.size() - cores.size();
+//    	for(int i = 0; i < count; i++ ){
+//    		LikelihoodCore likelihoodCore;
+//            if (nStates==4)
+//                likelihoodCore = new BeerLikelihoodCore4();
+//            else
+//                likelihoodCore = new BeerLikelihoodCore(nStates);
+//            
+//            cores.add(likelihoodCore);
+//    	}
+    	
+    	//if(mycount==0)System.err.println(likelihoodCores.size()+ " "+regionList.size());
+    	likelihoodCores.keySet().retainAll(regionList);
+    	//if(mycount==0)System.err.println(likelihoodCores.size()+"\n");
+    	//likelihoodCores.clear();
+    	
+//    	int index = 0;
         for (Region region : regionList) {
-
+        	
+//        	LikelihoodCore likelihoodCore = cores.get(index++);
+        	
             if (likelihoodCores.containsKey(region))
                 continue;
 
@@ -252,6 +289,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             else
                 likelihoodCore = new BeerLikelihoodCore(nStates);
                 
+        	
             likelihoodCores.put(region, likelihoodCore);
 
             likelihoodCore.initialize(acg.getNodeCount(),
@@ -333,8 +371,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
      * Pre-compute transition probabilities for CF edges.
      */
     void preComputeCFTransitionProbs() {
-        if (cfTransitionProbs == null)
-            cfTransitionProbs = new double[acg.getNodeCount()-1][siteModel.getCategoryCount()][(nStates+1)*(nStates+1)];
 
         for (int ni=0; ni<acg.getNodeCount()-1; ni++) {
             Node node = acg.getNode(ni);
@@ -423,7 +459,72 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                     }
                 } else {
                     cacheHits += 1;
+                    for (int i=0; i<siteModel.getCategoryCount(); i++) {
+                        lhc.setNodeMatrix(node.getNr(), i, cfTransitionProbs[node.cfNodeNr][i]);
+                    }
+                }
+            }
 
+            if (!node.isLeaf()) {
+
+                // LikelihoodCore only supports binary trees.
+                List<Node> children = node.getChildren();
+                lhc.setNodePartialsForUpdate(node.getNr());
+                lhc.setNodeStatesForUpdate(node.getNr());
+                lhc.calculatePartials(children.get(0).getNr(),
+                        children.get(1).getNr(), node.getNr());
+
+                if (node.isRoot()) {
+                    double[] frequencies = substitutionModel.getFrequencies();
+                    double[] proportions = siteModel.getCategoryProportions(node);
+                    lhc.integratePartials(node.getNr(), proportions,
+                            rootPartials.get(region));
+
+                    for (int idx : constantPatterns.get(region)) {
+                        rootPartials.get(region)[idx]
+                                += siteModel.getProportionInvariant();
+                    }
+
+                    lhc.calculateLogLikelihoods(rootPartials.get(region),
+                            frequencies, patternLogLikelihoods.get(region));
+                }
+            }
+        }
+    }
+    
+    void traverseNoRecurse(MarginalNode []postOrderNodes, Region region) {
+
+        LikelihoodCore lhc = likelihoodCores.get(region);
+
+        for (MarginalNode node : postOrderNodes) {
+
+            if (!node.isRoot()) {
+                lhc.setNodeMatrixForUpdate(node.getNr());
+
+                boolean cfEdge = node.cfNodeNr>=0
+                        && !acg.getNode(node.cfNodeNr).isRoot()
+                        && acg.getNode(node.cfNodeNr).getParent().getNr()
+                           == ((MarginalNode)node.getParent()).cfNodeNr;
+
+                if (!cfEdge) {
+                    cacheMisses += 1;
+
+                    for (int i = 0; i < siteModel.getCategoryCount(); i++) {
+                        double jointBranchRate = siteModel.getRateForCategory(i, node)
+                                * branchRateModel.getRateForBranch(node);
+                        double parentHeight = node.getParent().getHeight();
+                        double nodeHeight = node.getHeight();
+
+                        substitutionModel.getTransitionProbabilities(
+                                node,
+                                parentHeight,
+                                nodeHeight,
+                                jointBranchRate,
+                                probabilities);
+                        lhc.setNodeMatrix(node.getNr(), i, probabilities);
+                    }
+                } else {
+                    cacheHits += 1;
                     for (int i=0; i<siteModel.getCategoryCount(); i++) {
                         lhc.setNodeMatrix(node.getNr(), i, cfTransitionProbs[node.cfNodeNr][i]);
                     }

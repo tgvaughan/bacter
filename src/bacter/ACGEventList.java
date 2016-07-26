@@ -73,7 +73,9 @@ public class ACGEventList {
     /**
      * Event list.
      */
-    private final List<Event> events; 
+    private List<Event> events;
+    private ConversionGraph acg;
+    private boolean dirty;
 
     /**
      * Construct a new event list for the given ACG.  There should only
@@ -94,39 +96,52 @@ public class ACGEventList {
      */
     public ACGEventList(ConversionGraph acg, Locus locus) {
         this.events = new ArrayList<>();
+        this.acg = acg;
+        dirty = true;
+    }
+    
+    public void makeDirty() {
+        dirty = true;
+    }
+    
+    public void updateEvents(Locus locus){
+		synchronized (this) {
+			if (dirty) {
+				events.clear();
+				// Create unsorted event list.
 
-        // Create unsorted event list.
+				// Add CF events:
+				for (Node node : acg.getNodesAsArray()) {
+					events.add(new Event(node));
+				}
 
-        // Add CF events:
-        for (Node node : acg.getNodesAsArray()) {
-            events.add(new Event(node));
-        }
+				// Add conversion events:
+				if (locus == null) {
+					for (Locus l : acg.getLoci()) {
+						for (Conversion conv : acg.getConversions(l)) {
+							events.add(new Event(conv, true));
+							events.add(new Event(conv, false));
+						}
+					}
+				} else {
+					for (Conversion conv : acg.getConversions(locus)) {
+						events.add(new Event(conv, true));
+						events.add(new Event(conv, false));
+					}
+				}
 
-        // Add conversion events:
-        if (locus == null) {
-            for (Locus l : acg.getLoci()) {
-                for (Conversion conv : acg.getConversions(l)) {
-                    events.add(new Event(conv, true));
-                    events.add(new Event(conv, false));
-                }
-            }
-        } else {
-            for (Conversion conv : acg.getConversions(locus)) {
-                events.add(new Event(conv, true));
-                events.add(new Event(conv, false));
-            }
-        }
+				// Sort event list:
 
-
-        // Sort event list:
-
-        events.sort((Event o1, Event o2) -> {
-            if (o1.t < o2.t)
-                return -1;
-            if (o1.t > o2.t)
-                return 1;
-            return 0;
-        });
+				events.sort((Event o1, Event o2) -> {
+					if (o1.t < o2.t)
+						return -1;
+					if (o1.t > o2.t)
+						return 1;
+					return 0;
+				});
+				dirty = false;
+			}
+		}
     }
 
     /**
@@ -134,7 +149,8 @@ public class ACGEventList {
      * 
      * @return ACG event list.
      */
-    public synchronized List<Event> getACGEvents() {
+    public List<Event> getACGEvents() {
+    	updateEvents(null);
         return events;
     }
 }
