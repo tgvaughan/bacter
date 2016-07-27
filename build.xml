@@ -5,7 +5,10 @@
     <property name="test" location="test"/>
     <property name="lib" location="lib"/>
 
-    <!-- BEAST 2 currently uses Java 1.6 -->
+    <!-- Location to check for local copy of beast2 repository -->
+    <property name="beastDir" location="../beast2"/>
+
+    <!-- BEAST 2 currently uses Java 1.8 -->
     <property name="sourceVersion" value="1.8"/>
     <property name="targetVersion" value="1.8"/>
 
@@ -54,7 +57,15 @@
     </target>
 
     <!-- Get beast -->
-    <target name="get-beast" depends="init">
+
+    <target name="find-beast" depends="init">
+        <available file="${beastDir}" property="localBeastAvailable"/>
+    </target>
+
+    <target name="build-remote-beast" depends="find-beast" unless="localBeastAvailable">
+        <echo>No local copy of the beast2 source found at ${beastDir}.</echo>
+        <echo>Compiling against version ${beast-version} from GitHub.</echo>
+
         <property name="build-beast" location="build-beast"/>
         <mkdir dir="${build-beast}"/>
 
@@ -77,8 +88,32 @@
         <delete dir="${build-beast}" />
     </target>
 
+    <target name="build-local-beast" depends="find-beast" if="localBeastAvailable">
+        <echo>Compiling against beast2 source found at ${beastDir}.</echo>
+
+        <property name="build-beast" location="build-beast"/>
+        <mkdir dir="${build-beast}"/>
+
+        <javac target="${targetVersion}" source="${sourceVersion}"
+            srcdir="${beastDir}/src"
+            destdir="${build-beast}" includeantruntime="false">
+            <classpath>
+                <pathelement path="${classpath}"/>
+                <fileset dir="${beastDir}/lib" includes="*.jar"/>
+            </classpath>
+        </javac>
+        <jar jarfile="${build-lib}/beast2.jar" basedir="${build-beast}" />
+        <copy todir="${build-lib}">
+            <fileset dir="${beastDir}/lib" includes="*.jar"/>
+        </copy>
+
+        <delete dir="${build-beast}" />
+    </target>
+
+    <target name="build-beast" depends="build-local-beast,build-remote-beast"/>
+
     <!-- Compile -->
-    <target name="compile" depends="init, get-beast">
+    <target name="compile" depends="build-beast">
         <javac target="${targetVersion}" source="${sourceVersion}" srcdir="${src}" destdir="${build}" includeantruntime="false">
             <classpath>
                 <pathelement path="${classpath}"/>
