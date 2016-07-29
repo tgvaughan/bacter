@@ -86,6 +86,8 @@ public class ConversionGraph extends Tree {
         convs = new HashMap<>();
         storedConvs = new HashMap<>();
 
+        affectedSiteList = new AffectedSiteList(this);
+
         if (lociInput.get().isEmpty())
                 throw new RuntimeException("Must specify at least one locus " +
                         "as an input to ConversionGraph.");
@@ -117,9 +119,6 @@ public class ConversionGraph extends Tree {
         cfEventList = new CFEventList(this);
 
         super.initAndValidate();
-
-        //MF
-        affectedSiteList = new AffectedSiteList(this);
     }
 
     /**
@@ -449,6 +448,8 @@ public class ConversionGraph extends Tree {
     @Override
     public ConversionGraph copy() {
         ConversionGraph acg = new ConversionGraph();
+
+        acg.affectedSiteList = new AffectedSiteList(acg);
 
         acg.setID(getID());
 
