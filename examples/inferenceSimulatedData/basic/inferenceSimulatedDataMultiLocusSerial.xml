@@ -22,6 +22,7 @@
     :beast.evolution.operators
     :beast.evolution.sitemodel
     :beast.evolution.substitutionmodel
+    :beast.evolution.branchratemodel
     :beast.evolution.tree
     :beast.evolution.tree.coalescent
     :beast.evolution.alignment
@@ -130,9 +131,10 @@
 
             <distribution spec='ACGLikelihood' id="acgLikelihood1"
                 tree="@acg" data="@a1" locus="@l1">
-                <siteModel spec='SiteModel' mutationRate="@mutationRate">
+                <siteModel spec='SiteModel'>
                     <substModel spec='JukesCantor'/>
                 </siteModel>
+                <branchRateModel spec="StrictClockModel" clock.rate="@mutationRate"/>
             </distribution>
 
             <distribution spec='ACGLikelihood' id="acgLikelihood2"
@@ -179,8 +181,8 @@
         <!--operator id="popSizeScaler" spec="ScaleOperator" weight="1.0"
             scaleFactor="0.8" parameter="@popSize"/-->
 
-        <!--operator id="mutationRateScaler" spec="ScaleOperator" weight="1.0"
-              scaleFactor="0.8" parameter="@mutationRate"/-->
+        <operator id="mutationRateScaler" spec="ScaleOperator" weight="1.0"
+              scaleFactor="0.8" parameter="@mutationRate"/>
 
 
     <!-- ACG operators -->

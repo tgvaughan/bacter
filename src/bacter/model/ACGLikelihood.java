@@ -54,7 +54,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected ConversionGraph acg;
 
     protected SiteModel.Base siteModel;
-    protected BranchRateModel branchRateModel;
+    protected BranchRateModel.Base branchRateModel;
     protected SubstitutionModel.Base substitutionModel;
     protected Alignment alignment;
     protected Locus locus;
@@ -474,7 +474,9 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
     @Override
     protected boolean requiresRecalculation() {
-        if (acg.clonalFrameIsDirty() || siteModel.isDirtyCalculation())
+        if (acg.clonalFrameIsDirty()
+                || siteModel.isDirtyCalculation()
+                || branchRateModel.isDirtyCalculation())
             regionLogLikelihoods.clear();
 
         return true;

@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Conversion graph based around the clonal frame.")
-@Citation("Tim Vaughan, Alexei Drummond and Nigel French, "
+@Citation("TG Vaughan, AJ Drummond and Nigel French, "
         + "'Phylogenetic inference\n for bacteria in BEAST 2'. "
         + "In preparation.")
 public class ConversionGraph extends Tree {
