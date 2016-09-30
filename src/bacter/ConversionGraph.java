@@ -77,6 +77,8 @@ public class ConversionGraph extends Tree {
     protected List<Locus> loci;
     protected int totalSequenceLength;
 
+    protected Map<Locus, boolean[]> localTreeChanged, storedLocalTreeChanged;
+
     @Override
     public void initAndValidate() {
 
@@ -97,6 +99,9 @@ public class ConversionGraph extends Tree {
             convs.put(locus, new ArrayList<>());
             storedConvs.put(locus, new ArrayList<>());
             totalSequenceLength += locus.getSiteCount();
+
+            localTreeChanged.put(locus, new boolean[locus.getSiteCount()]);
+            storedLocalTreeChanged.put(locus, new boolean[locus.getSiteCount()]);
         }
         
         if (fromStringInput.get() != null) {
@@ -167,6 +172,9 @@ public class ConversionGraph extends Tree {
                 break;
         
         convs.get(locus).add(i, conv);
+
+        for (int site = conv.startSite; site<=conv.endSite; site++)
+            localTreeChanged.get(locus)[site] = true;
     }
     
     /**
@@ -178,6 +186,9 @@ public class ConversionGraph extends Tree {
         startEditing(null);
         
         convs.get(conv.getLocus()).remove(conv);
+
+        for (int site = conv.startSite; site<=conv.endSite; site++)
+            localTreeChanged.get(conv.getLocus())[site] = true;
     }
     
     /**

@@ -275,8 +275,10 @@ public class Conversion {
      * Mark ARG statenode as dirty if available.
      */
     public void startEditing() {
-        if (acg != null)
-            acg.startEditing(null);
+        if (acg == null)
+            return;
+
+        acg.startEditing(null);
     }
     
     /**
