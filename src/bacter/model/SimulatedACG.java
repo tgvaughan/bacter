@@ -130,7 +130,8 @@ public class SimulatedACG extends ConversionGraph {
                         lociLine += " " + locus.getID() + ":" + locus.getSiteCount();
                     lines.add(lociLine);
 
-                    lines.add("clonalframe " + root.toShortNewick(true));
+                    lines.add("clonalframe_labeled " + root.toNewick());
+                    lines.add("clonalframe_numbered " + root.toShortNewick(true));
                     for (Locus locus : getLoci()) {
                         for (Conversion conv : getConversions(locus)) {
                             lines.add("conversion node1=" + conv.getNode1().getNr()

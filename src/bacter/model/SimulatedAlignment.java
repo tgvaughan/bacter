@@ -25,6 +25,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
+import beast.evolution.alignment.Taxon;
 import beast.evolution.datatype.DataType;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
@@ -63,7 +64,7 @@ public class SimulatedAlignment extends Alignment {
     
     public Input<Boolean> useNexusInput = new Input<>(
             "useNexus",
-            "Use Nexus format to write alignment file.",
+            "Use Nexus instead of FASTA format to write alignment file.",
             false);
 
     public Input<Locus> locusInput = new Input<>("locus",
@@ -111,8 +112,12 @@ public class SimulatedAlignment extends Alignment {
                     nb.append(new TaxaBlock(acg.getTaxonset()));
                     nb.append(new CharactersBlock(this));
                     nb.write(pstream);
-                } else
-                    pstream.println(new XMLProducer().toRawXML(this));
+                } else {
+                    for (String taxonName : acg.getTaxaNames()) {
+                        pstream.print(">" + taxonName + "\n");
+                        pstream.print(getSequenceAsString(taxonName) + "\n");
+                    }
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
