@@ -22,7 +22,6 @@ import bacter.model.ACGLikelihood;
 import bacter.model.SimulatedACG;
 import beast.app.beauti.BeautiDoc;
 import beast.core.BEASTInterface;
-import beast.evolution.likelihood.TreeLikelihood;
 
 /**
  * Class containing static methods to be accessed by BeautiConnector.
@@ -47,7 +46,7 @@ public class CustomConnectors {
             if (coalescent == null)
                 continue;
 
-            acg.setRestricted(coalescent.restrictedRegionsInput.get());
+            acg.setWholeLocusMode(coalescent.wholeLocusConversionsInput.get());
         }
     }
 }

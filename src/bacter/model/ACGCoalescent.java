@@ -21,7 +21,6 @@ import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
 import beast.core.Description;
-import beast.core.Distribution;
 import beast.core.Input;
 import beast.core.State;
 import beast.core.parameter.RealParameter;
@@ -60,13 +59,12 @@ public class ACGCoalescent extends TreeDistribution {
     //
     // The reason for this ugliness is that BEAUti does not allow users to
     // alter inputs to Trees.  (The Tree input editor is used to set tip dates.)
-    public Input<Boolean> restrictedRegionsInput = new Input<>("restrictedRegions",
-            "Force region boundaries to coincide with locus boundaries.", false);
+    public Input<Boolean> wholeLocusConversionsInput = new Input<>(
+            "wholeLocusConversionsOnly",
+            "Only allow whole loci to be converted.", false);
 
     ConversionGraph acg;
     PopulationFunction popFunc;
-
-    boolean restrictedRegions;
 
     public ACGCoalescent() {
         treeInput.setRule(Input.Validate.REQUIRED);
@@ -84,8 +82,6 @@ public class ACGCoalescent extends TreeDistribution {
 
         acg = (ConversionGraph)treeInput.get();
         popFunc = popFuncInput.get();
-
-        restrictedRegions = restrictedRegionsInput.get();
     }
     
     @Override
@@ -204,7 +200,7 @@ public class ACGCoalescent extends TreeDistribution {
                     / (acg.getLoci().size() * (deltaInput.get().getValue() - 1)
                     + acg.getTotalSequenceLength()));
         } else {
-            if (!restrictedRegions)
+            if (!acg.wholeLocusModeOn())
                 thisLogP += Math.log(
                         1.0 / (acg.getLoci().size() * (deltaInput.get().getValue() - 1)
                                 + acg.getTotalSequenceLength()));
@@ -217,7 +213,7 @@ public class ACGCoalescent extends TreeDistribution {
             thisLogP += (conv.getLocus().getSiteCount()-1-conv.getStartSite())
                     *Math.log(1.0 - 1.0/deltaInput.get().getValue());
         } else {
-            if  (!restrictedRegions)
+            if  (!acg.wholeLocusModeOn())
                 thisLogP += (conv.getEndSite()-conv.getStartSite())
                         *Math.log(1.0 - 1.0/deltaInput.get().getValue())
                         -Math.log(deltaInput.get().getValue());

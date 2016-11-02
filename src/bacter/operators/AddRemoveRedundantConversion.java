@@ -29,7 +29,8 @@ import java.util.List;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-@Description("Operator which adds and removes redundant conversions to/from an ACG.")
+@Description("Operator which adds and removes redundant conversions to/from an ACG, " +
+        "i.e. those which do not alter the CF topology.")
 public class AddRemoveRedundantConversion extends ACGOperator {
 
     public Input<Double> apertureInput = new Input<>("aperture",
@@ -198,20 +199,25 @@ public class AddRemoveRedundantConversion extends ACGOperator {
         conv.setLocus(locus);
         logP += Math.log(1.0/acg.getLoci().size());
 
-        int site1 = Randomizer.nextInt(locus.getSiteCount());
-        int site2 = Randomizer.nextInt(locus.getSiteCount());
+        if (!acg.wholeLocusModeOn()) {
+            int site1 = Randomizer.nextInt(locus.getSiteCount());
+            int site2 = Randomizer.nextInt(locus.getSiteCount());
 
-        if (site1<site2) {
-            conv.setStartSite(site1);
-            conv.setEndSite(site2);
+            if (site1 < site2) {
+                conv.setStartSite(site1);
+                conv.setEndSite(site2);
+            } else {
+                conv.setStartSite(site2);
+                conv.setEndSite(site1);
+            }
+
+            logP += 2.0 * Math.log(1.0 / locus.getSiteCount());
+            if (site1 != site2)
+                logP += Math.log(2.0);
         } else {
-            conv.setStartSite(site2);
-            conv.setEndSite(site1);
+            conv.setStartSite(0);
+            conv.setEndSite(locus.getSiteCount()-1);
         }
-
-        logP += 2.0*Math.log(1.0/locus.getSiteCount());
-        if (site1 != site2)
-            logP += Math.log(2.0);
 
         return logP;
     }
@@ -220,9 +226,12 @@ public class AddRemoveRedundantConversion extends ACGOperator {
         double logP = 0.0;
 
         logP += Math.log(1.0/acg.getLoci().size());
-        logP += 2.0*Math.log(1.0/conv.getLocus().getSiteCount());
-        if (conv.getStartSite() != conv.getEndSite())
-            logP += Math.log(2.0);
+
+        if (!acg.wholeLocusModeOn()) {
+            logP += 2.0 * Math.log(1.0 / conv.getLocus().getSiteCount());
+            if (conv.getStartSite() != conv.getEndSite())
+                logP += Math.log(2.0);
+        }
 
         return logP;
     }

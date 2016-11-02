@@ -57,7 +57,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
      * @return log probability density of chosen attachment.
      */
     public double drawAffectedRegion(Conversion conv) {
-        if (!acg.getRestricted())
+        if (!acg.wholeLocusModeOn())
             return drawAffectedRegionUnrestricted(conv);
         else
             return drawAffectedRegionRestricted(conv);
@@ -71,7 +71,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
      * @return log probability density
      */
     public double getAffectedRegionProb(Conversion conv) {
-        if (!acg.getRestricted())
+        if (!acg.wholeLocusModeOn())
             return getAffectedRegionProbUnrestricted(conv);
         else
             return getAffectedRegionProbRestricted(conv);

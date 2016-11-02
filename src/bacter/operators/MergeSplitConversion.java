@@ -37,7 +37,7 @@ public class MergeSplitConversion extends ACGOperator {
     @Override
     public double proposal() {
 
-        if (acg.getRestricted())
+        if (acg.wholeLocusModeOn())
             return Double.NEGATIVE_INFINITY;
 
         Locus locus = chooseLocus();

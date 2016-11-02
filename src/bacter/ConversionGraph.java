@@ -62,7 +62,8 @@ public class ConversionGraph extends Tree {
             "extendedNewick",
             "Initialise ARG from extended Newick representation.");
 
-    public Input<Boolean> restrictedRegionsInput = new Input<>("restrictedRegions",
+    public Input<Boolean> wholeLocusConversionsInput = new Input<>(
+            "wholeLocusConversionsOnly",
             "Force region boundaries to coincide with locus boundaries.", false);
 
     /**
@@ -151,12 +152,12 @@ public class ConversionGraph extends Tree {
         return loci;
     }
 
-    public boolean getRestricted() {
-        return restrictedRegionsInput.get();
+    public boolean wholeLocusModeOn() {
+        return wholeLocusConversionsInput.get();
     }
 
-    public void setRestricted(boolean newVal) {
-        restrictedRegionsInput.setValue(newVal, this);
+    public void setWholeLocusMode(boolean newVal) {
+        wholeLocusConversionsInput.setValue(newVal, this);
     }
     
     /**

@@ -346,11 +346,11 @@
             <connect srcID='CRswap.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='CRshift.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and Tree.t:$(n)/wholeLocusConversionsOnly=false'/>
             <connect srcID='CRBshift.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and Tree.t:$(n)/wholeLocusConversionsOnly=false'/>
             <connect srcID='mergeSplit.t:$(n)' targetID='mcmc' inputName='operator'
-                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
+                if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true and Tree.t:$(n)/wholeLocusConversionsOnly=false'/>
             <connect srcID='CEhop.t:$(n)' targetID='mcmc' inputName='operator'
                 if='inposterior(Tree.t:$(n)) and Tree.t:$(n)/estimate=true'/>
             <connect srcID='CEflip.t:$(n)' targetID='mcmc' inputName='operator'
