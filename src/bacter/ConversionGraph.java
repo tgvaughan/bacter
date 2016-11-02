@@ -62,6 +62,9 @@ public class ConversionGraph extends Tree {
             "extendedNewick",
             "Initialise ARG from extended Newick representation.");
 
+    public Input<Boolean> restrictedRegionsInput = new Input<>("restrictedRegions",
+            "Force region boundaries to coincide with locus boundaries.", false);
+
     /**
      * List of recombinations on graph.
      */
@@ -146,6 +149,14 @@ public class ConversionGraph extends Tree {
      */
     public List<Locus> getLoci() {
         return loci;
+    }
+
+    public boolean getRestricted() {
+        return restrictedRegionsInput.get();
+    }
+
+    public void setRestricted(boolean newVal) {
+        restrictedRegionsInput.setValue(newVal, this);
     }
     
     /**

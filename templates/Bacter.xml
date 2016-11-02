@@ -67,7 +67,7 @@
             beast.evolution.operators.ScaleOperator.indicator,
             beast.core.Operator.weight,
             beast.core.Logger.model,
-            bacter.model.ACGCoalescent.acg'>
+            bacter.model.ACGCoalescent.tree'>
 
         <panel spec='BeautiPanelConfig' panelname="Partitions" tiptext="Data Partitions"
             path='distribution/distribution[id="likelihood"]/distribution/data'
@@ -103,7 +103,7 @@
             path=''
             hasPartitions="none" icon='9.png.x' forceExpansion='TRUE' />
 
-        <alignmentProvider id="Add Alignment" spec='BeautiAlignmentProvider' template='@StandardPartitionTemplate'/>
+        <alignmentProvider id="Import Alignment" spec='BeautiAlignmentProvider' template='@StandardPartitionTemplate'/>
 
         <partitiontemplate id='StandardPartitionTemplate' spec='BeautiSubTemplate'
             class='beast.evolution.likelihood.TreeLikelihood' mainid='mcmc'>
@@ -260,6 +260,8 @@
 
             <connect srcID='treeLikelihood.$(n)' targetID='likelihood' inputName='distribution' if="isInitializing"/>
             <connect method="beast.app.beauti.SiteModelInputEditor.customConnector"/>
+
+            <connect method="bacter.beauti.CustomConnectors.applyRestrictions"/>
 
             <!-- Ensure locus is present in tree -->
             <connect srcID="locus.$(n)" targetID="Tree.t:$(n)" inputName="locus"

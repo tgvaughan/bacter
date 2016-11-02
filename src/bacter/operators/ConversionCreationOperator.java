@@ -35,14 +35,56 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             "delta",
             "Tract length parameter.",
             Input.Validate.REQUIRED);
-     
+
+    double[] relativeLocusSizes;
+
+    @Override
+    public void initAndValidate() {
+
+        relativeLocusSizes = new double[acgInput.get().getLoci().size()];
+        for (int i=0; i<acgInput.get().getLoci().size(); i++)
+            relativeLocusSizes[i] = acgInput.get().getLoci().get(i).getSiteCount()/
+                    (double)acgInput.get().getTotalSequenceLength();
+
+        super.initAndValidate();
+    }
+
+
     /**
      * Choose region to be affected by this conversion.
+     *
+     * @param conv Conversion object whose region is to be set.
+     * @return log probability density of chosen attachment.
+     */
+    public double drawAffectedRegion(Conversion conv) {
+        if (!acg.getRestricted())
+            return drawAffectedRegionUnrestricted(conv);
+        else
+            return drawAffectedRegionRestricted(conv);
+    }
+
+    /**
+     * Calculate probability of choosing region affected by the
+     * given conversion.
+     *
+     * @param conv conversion region is associated with
+     * @return log probability density
+     */
+    public double getAffectedRegionProb(Conversion conv) {
+        if (!acg.getRestricted())
+            return getAffectedRegionProbUnrestricted(conv);
+        else
+            return getAffectedRegionProbRestricted(conv);
+    }
+
+    /**
+     * Choose region to be affected by this conversion using the
+     * full ClonalOrigin model.
      * 
      * @param conv Conversion object where these sites are stored.
      * @return log probability density of chosen attachment.
      */
-    public double drawAffectedRegion(Conversion conv) {
+    protected double drawAffectedRegionUnrestricted(Conversion conv) {
         double logP = 0.0;
 
         // Total effective number of possible start sites
@@ -99,12 +141,12 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
     
     /**
      * Calculate probability of choosing region affected by the given
-     * conversion under the ClonalOrigin model.
+     * conversion under the full ClonalOrigin model.
      * 
      * @param conv conversion region is associated with
      * @return log probability density
      */
-    public double getAffectedRegionProb(Conversion conv) {
+    protected double getAffectedRegionProbUnrestricted(Conversion conv) {
         double logP = 0.0;
 
         // Total effective number of possible start sites
@@ -128,5 +170,36 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         }
 
         return logP;
+    }
+
+    /**
+     * Select affected region when region endpoint restriction is in place.
+     *
+     * @param conv Conversion object where these sites are stored.
+     * @return log probability density of chosen attachment.
+     */
+    protected double drawAffectedRegionRestricted(Conversion conv) {
+        int locusIdx = Randomizer.randomChoicePDF(relativeLocusSizes);
+        Locus locus = acg.getLoci().get(locusIdx);
+
+        conv.setLocus(locus);
+        conv.setStartSite(0);
+        conv.setEndSite(locus.getSiteCount()-1);
+
+        return Math.log(relativeLocusSizes[locusIdx]);
+    }
+
+    /**
+     * Calculate probability of choosing region affected by the given
+     * conversion when region endpoint restriction is in place.
+     *
+     * @param conv conversion region is associated with
+     * @return log probability density
+     */
+    protected double getAffectedRegionProbRestricted(Conversion conv) {
+        if (conv.getStartSite()>0 || conv.getEndSite()<conv.getLocus().getSiteCount()-1)
+            return Double.NEGATIVE_INFINITY;
+
+        return Math.log(relativeLocusSizes[acg.getLoci().indexOf(conv.getLocus())]);
     }
 }

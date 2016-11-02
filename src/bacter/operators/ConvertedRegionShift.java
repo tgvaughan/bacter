@@ -40,9 +40,9 @@ public class ConvertedRegionShift extends ACGOperator {
     @Override
     public double proposal() {
         
-        if (acg.getTotalConvCount()<1)
+        if (acg.getTotalConvCount()<1 || acg.getRestricted())
             return Double.NEGATIVE_INFINITY;
-        
+
         Conversion conv = chooseConversion();
         
         int radius = (int)Math.round(conv.getLocus().getSiteCount()

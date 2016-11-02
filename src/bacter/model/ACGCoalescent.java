@@ -54,8 +54,19 @@ public class ACGCoalescent extends TreeDistribution {
     public Input<Integer> upperCCBoundInput = new Input<>("upperConvCountBound",
             "Upper bound on conversion count.", Integer.MAX_VALUE);
 
+    // WARNING: The presence of the following input is a hack. This value is
+    // not directly used by BEAST, but is instead copied via a custom BEAUti
+    // connector to the similarly-named input to ConversionGraph.
+    //
+    // The reason for this ugliness is that BEAUti does not allow users to
+    // alter inputs to Trees.  (The Tree input editor is used to set tip dates.)
+    public Input<Boolean> restrictedRegionsInput = new Input<>("restrictedRegions",
+            "Force region boundaries to coincide with locus boundaries.", false);
+
     ConversionGraph acg;
     PopulationFunction popFunc;
+
+    boolean restrictedRegions;
 
     public ACGCoalescent() {
         treeInput.setRule(Input.Validate.REQUIRED);
@@ -73,6 +84,8 @@ public class ACGCoalescent extends TreeDistribution {
 
         acg = (ConversionGraph)treeInput.get();
         popFunc = popFuncInput.get();
+
+        restrictedRegions = restrictedRegionsInput.get();
     }
     
     @Override
@@ -157,9 +170,9 @@ public class ACGCoalescent extends TreeDistribution {
     public double calculateConversionLogP(Conversion conv) {
 
         double thisLogP = 0.0;
-        
+
         List<CFEventList.Event> events = acg.getCFEvents();
-        
+
         // Probability density of location of recombinant edge start
         thisLogP += Math.log(1.0/acg.getClonalFrameLength());
 
@@ -167,42 +180,49 @@ public class ACGCoalescent extends TreeDistribution {
         int startIdx = 0;
         while (events.get(startIdx+1).getHeight() < conv.getHeight1())
             startIdx += 1;
-        
+
         for (int i=startIdx; i<events.size() && events.get(i).getHeight()<conv.getHeight2(); i++) {
-            
+
             double timeA = Math.max(events.get(i).getHeight(), conv.getHeight1());
-            
+
             double timeB;
             if (i<events.size()-1)
                 timeB = Math.min(conv.getHeight2(), events.get(i+1).getHeight());
             else
                 timeB = conv.getHeight2();
-            
+
             double intervalArea = popFunc.getIntegral(timeA, timeB);
             thisLogP += -events.get(i).getLineageCount()*intervalArea;
         }
-        
+
         // Probability of single coalescence event
         thisLogP += Math.log(1.0/popFunc.getPopSize(conv.getHeight2()));
 
         // Probability of start site:
-        if (conv.getStartSite()==0)
+        if (conv.getStartSite()==0) {
             thisLogP += Math.log(deltaInput.get().getValue()
-                /(acg.getLoci().size()*(deltaInput.get().getValue()-1)
+                    / (acg.getLoci().size() * (deltaInput.get().getValue() - 1)
                     + acg.getTotalSequenceLength()));
-        else
-            thisLogP += Math.log(
-                    1.0/(acg.getLoci().size()*(deltaInput.get().getValue()-1)
-                            + acg.getTotalSequenceLength()));
+        } else {
+            if (!restrictedRegions)
+                thisLogP += Math.log(
+                        1.0 / (acg.getLoci().size() * (deltaInput.get().getValue() - 1)
+                                + acg.getTotalSequenceLength()));
+            else
+                return Double.NEGATIVE_INFINITY;
+        }
 
         // Probability of end site:
         if (conv.getEndSite() == conv.getLocus().getSiteCount()-1) {
             thisLogP += (conv.getLocus().getSiteCount()-1-conv.getStartSite())
                     *Math.log(1.0 - 1.0/deltaInput.get().getValue());
         } else {
-            thisLogP += (conv.getEndSite()-conv.getStartSite())
-                    *Math.log(1.0 - 1.0/deltaInput.get().getValue())
-                    -Math.log(deltaInput.get().getValue());
+            if  (!restrictedRegions)
+                thisLogP += (conv.getEndSite()-conv.getStartSite())
+                        *Math.log(1.0 - 1.0/deltaInput.get().getValue())
+                        -Math.log(deltaInput.get().getValue());
+            else
+                return Double.NEGATIVE_INFINITY;
         }
 
         return thisLogP;

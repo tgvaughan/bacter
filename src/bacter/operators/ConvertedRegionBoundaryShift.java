@@ -40,7 +40,7 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
     @Override
     public double proposal() {
         
-        if (acg.getTotalConvCount()<1)
+        if (acg.getTotalConvCount()<1 || acg.getRestricted())
             return Double.NEGATIVE_INFINITY;
         
         // Select random conversion and region edge:
