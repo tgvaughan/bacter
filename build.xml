@@ -27,6 +27,7 @@
     <property name="build" location="build"/>
     <property name="build-lib" location="build-lib"/>
     <property name="build-test" location="build-test"/>
+    <property name="build-beast" location="build-beast"/>
     <property name="test-reports" location="test-reports"/>
     <property name="dist" location="dist"/>
     <property name="pack" location="${dist}/package"/>
@@ -66,7 +67,6 @@
         <echo>No local copy of the beast2 source found at ${beastDir}.</echo>
         <echo>Compiling against version ${beast-version} from GitHub.</echo>
 
-        <property name="build-beast" location="build-beast"/>
         <mkdir dir="${build-beast}"/>
 
         <get src="https://github.com/CompEvol/beast2/archive/${beast-branch}.zip" dest="${build-beast}/beast.zip"/>
@@ -91,7 +91,6 @@
     <target name="build-local-beast" depends="find-beast" if="localBeastAvailable">
         <echo>Compiling against beast2 source found at ${beastDir}.</echo>
 
-        <property name="build-beast" location="build-beast"/>
         <mkdir dir="${build-beast}"/>
 
         <javac target="${targetVersion}" source="${sourceVersion}"
@@ -226,6 +225,7 @@
     <target name="clean">
         <delete dir="${build}" />
         <delete dir="${build-lib}" />
+        <delete dir="${build-beast}"/>
         <delete dir="${dist}" />
         <delete dir="${build-test}" />
         <delete dir="${test-reports}" />
