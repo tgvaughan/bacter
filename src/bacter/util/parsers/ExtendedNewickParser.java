@@ -1,4 +1,4 @@
-// Generated from /home/tvaughan/code/beast_and_friends/bacter/src/bacter/util/parsers/ExtendedNewick.g4 by ANTLR 4.5
+// Generated from /home/tvaughan/code/beast_and_friends/bacter/src/bacter/util/parsers/ExtendedNewick.g4 by ANTLR 4.5.3
 package bacter.util.parsers;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ExtendedNewickParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.5", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.5.3", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -64,7 +64,7 @@ public class ExtendedNewickParser extends Parser {
 	}
 
 	@Override
-	@NotNull
+
 	public Vocabulary getVocabulary() {
 		return VOCABULARY;
 	}
@@ -108,18 +108,18 @@ public class ExtendedNewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(22); 
+			setState(22);
 			node();
 			setState(24);
 			_la = _input.LA(1);
 			if (_la==T__0) {
 				{
-				setState(23); 
+				setState(23);
 				match(T__0);
 				}
 			}
 
-			setState(26); 
+			setState(26);
 			match(EOF);
 			}
 		}
@@ -166,9 +166,9 @@ public class ExtendedNewickParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==T__1) {
 				{
-				setState(28); 
+				setState(28);
 				match(T__1);
-				setState(29); 
+				setState(29);
 				node();
 				setState(34);
 				_errHandler.sync(this);
@@ -176,9 +176,9 @@ public class ExtendedNewickParser extends Parser {
 				while (_la==T__2) {
 					{
 					{
-					setState(30); 
+					setState(30);
 					match(T__2);
-					setState(31); 
+					setState(31);
 					node();
 					}
 					}
@@ -186,12 +186,12 @@ public class ExtendedNewickParser extends Parser {
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(37); 
+				setState(37);
 				match(T__3);
 				}
 			}
 
-			setState(41); 
+			setState(41);
 			post();
 			}
 		}
@@ -242,7 +242,7 @@ public class ExtendedNewickParser extends Parser {
 			_la = _input.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << FLOAT) | (1L << INT) | (1L << RECTYPE) | (1L << STRINGPRIM))) != 0)) {
 				{
-				setState(43); 
+				setState(43);
 				label();
 				}
 			}
@@ -251,7 +251,7 @@ public class ExtendedNewickParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==T__5) {
 				{
-				setState(46); 
+				setState(46);
 				hybrid();
 				}
 			}
@@ -260,7 +260,7 @@ public class ExtendedNewickParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==T__6) {
 				{
-				setState(49); 
+				setState(49);
 				meta();
 				}
 			}
@@ -269,9 +269,9 @@ public class ExtendedNewickParser extends Parser {
 			_la = _input.LA(1);
 			if (_la==T__4) {
 				{
-				setState(52); 
+				setState(52);
 				match(T__4);
-				setState(53); 
+				setState(53);
 				((PostContext)_localctx).length = number();
 				}
 			}
@@ -317,7 +317,7 @@ public class ExtendedNewickParser extends Parser {
 			case INT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(56); 
+				setState(56);
 				number();
 				}
 				break;
@@ -325,7 +325,7 @@ public class ExtendedNewickParser extends Parser {
 			case STRINGPRIM:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(57); 
+				setState(57);
 				string();
 				}
 				break;
@@ -366,18 +366,18 @@ public class ExtendedNewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(60); 
+			setState(60);
 			match(T__5);
 			setState(62);
 			_la = _input.LA(1);
 			if (_la==RECTYPE) {
 				{
-				setState(61); 
+				setState(61);
 				((HybridContext)_localctx).type = match(RECTYPE);
 				}
 			}
 
-			setState(64); 
+			setState(64);
 			match(INT);
 			}
 		}
@@ -417,9 +417,9 @@ public class ExtendedNewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(66); 
+			setState(66);
 			match(T__6);
-			setState(67); 
+			setState(67);
 			attrib();
 			setState(72);
 			_errHandler.sync(this);
@@ -427,9 +427,9 @@ public class ExtendedNewickParser extends Parser {
 			while (_la==T__2) {
 				{
 				{
-				setState(68); 
+				setState(68);
 				match(T__2);
-				setState(69); 
+				setState(69);
 				attrib();
 				}
 				}
@@ -437,7 +437,7 @@ public class ExtendedNewickParser extends Parser {
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(75); 
+			setState(75);
 			match(T__7);
 			}
 		}
@@ -477,11 +477,11 @@ public class ExtendedNewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(77); 
+			setState(77);
 			((AttribContext)_localctx).attribKey = string();
-			setState(78); 
+			setState(78);
 			match(T__8);
-			setState(79); 
+			setState(79);
 			attribValue();
 			}
 		}
@@ -527,7 +527,7 @@ public class ExtendedNewickParser extends Parser {
 			case INT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(81); 
+				setState(81);
 				number();
 				}
 				break;
@@ -535,14 +535,14 @@ public class ExtendedNewickParser extends Parser {
 			case STRINGPRIM:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(82); 
+				setState(82);
 				string();
 				}
 				break;
 			case T__9:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(83); 
+				setState(83);
 				vector();
 				}
 				break;
@@ -586,8 +586,9 @@ public class ExtendedNewickParser extends Parser {
 			_la = _input.LA(1);
 			if ( !(_la==FLOAT || _la==INT) ) {
 			_errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			consume();
 			}
 		}
 		catch (RecognitionException re) {
@@ -626,9 +627,9 @@ public class ExtendedNewickParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(88); 
+			setState(88);
 			match(T__9);
-			setState(89); 
+			setState(89);
 			attribValue();
 			setState(94);
 			_errHandler.sync(this);
@@ -636,9 +637,9 @@ public class ExtendedNewickParser extends Parser {
 			while (_la==T__2) {
 				{
 				{
-				setState(90); 
+				setState(90);
 				match(T__2);
-				setState(91); 
+				setState(91);
 				attribValue();
 				}
 				}
@@ -646,7 +647,7 @@ public class ExtendedNewickParser extends Parser {
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(97); 
+			setState(97);
 			match(T__10);
 			}
 		}
@@ -686,8 +687,9 @@ public class ExtendedNewickParser extends Parser {
 			_la = _input.LA(1);
 			if ( !(_la==RECTYPE || _la==STRINGPRIM) ) {
 			_errHandler.recoverInline(this);
+			} else {
+				consume();
 			}
-			consume();
 			}
 		}
 		catch (RecognitionException re) {

@@ -742,6 +742,17 @@ public class ConversionGraph extends Tree {
      * @param string extended newick representation of ACG
      */
     public void fromExtendedNewick(String string) {
+        fromExtendedNewick(string, false, taxaTranslationOffset);
+    }
+    /**
+     * Read in an ACG from a string in extended newick format.  Assumes
+     * that the network is stored with exactly the same metadata as written
+     * by the getExtendedNewick() method.
+     *
+     * @param string extended newick representation of ACG
+     * @param numbered true indicates that the ACG is numbered.
+     */
+    public void fromExtendedNewick(String string, boolean numbered, int nodeNumberoffset) {
 
         // Spin up ANTLR
         ANTLRInputStream input = new ANTLRInputStream(string);
@@ -879,7 +890,8 @@ public class ConversionGraph extends Tree {
                 root = stripHybridNodes(root);
                 root.setParent(null);
 
-                numberInternalNodes(root, root.getAllLeafNodes().size());
+                if (!numbered)
+                    numberInternalNodes(root, root.getAllLeafNodes().size());
 
                 return root;
             }
@@ -942,7 +954,7 @@ public class ConversionGraph extends Tree {
                 if (ctx.post().label() != null) {
                     node.setID(ctx.post().label().getText());
                     node.setNr(Integer.parseInt(ctx.post().label().getText())
-                            - taxaTranslationOffset);
+                            - nodeNumberoffset);
                 }
 
                 node.setHeight(Double.parseDouble(ctx.post().length.getText()));
