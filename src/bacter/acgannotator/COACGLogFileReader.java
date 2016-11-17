@@ -21,10 +21,7 @@ import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
 import beast.evolution.tree.Node;
-import org.xml.sax.XMLReader;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -38,17 +35,16 @@ import java.util.List;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
-
+public class COACGLogFileReader implements Iterable<ConversionGraph> {
     File logFile;
-    int nACGs = -1;
-    int burnin;
-
-    List<Locus> loci = new ArrayList<>();
 
     XMLStreamReader xmlStreamReader;
 
-    public ACGCOLogFileReader(File logFile, double burninPercentage) throws IOException, XMLStreamException {
+    List<Locus> loci = new ArrayList<>();
+
+    int nACGs, burnin;
+
+    public COACGLogFileReader(File logFile, double burninPercentage) throws IOException, XMLStreamException {
         this.logFile = logFile;
 
         reset();
@@ -57,6 +53,8 @@ public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
         List<String> locusName = null;
 
         String text;
+
+        nACGs = 0;
 
         while (xmlStreamReader.hasNext()) {
             int eventType = xmlStreamReader.next();
@@ -107,18 +105,42 @@ public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
         }
     }
 
-    public boolean skipUntil(XMLStreamReader xmlReader, String elementName) throws XMLStreamException {
-        while (xmlReader.hasNext()) {
-            if (xmlReader.next() == XMLStreamConstants.START_ELEMENT &&
-                    xmlReader.getLocalName().toLowerCase().equals(elementName))
+    /**
+     * Move through log file until the opening tag of the named element.
+     *
+     * @param elementName name of element to skip until
+     * @return true if element found, false otherwise
+     * @throws XMLStreamException
+     */
+    public boolean skipUntil(String elementName) throws XMLStreamException {
+        while (xmlStreamReader.hasNext()) {
+            if (xmlStreamReader.next() == XMLStreamConstants.START_ELEMENT &&
+                    xmlStreamReader.getLocalName().toLowerCase().equals(elementName))
                 return true;
         }
 
         return false;
     }
 
+    /**
+     * Skip burnin portion of log file
+     *
+     * @throws XMLStreamException
+     */
+    public void skipBurnin() throws XMLStreamException {
+        for (int i=0; i<burnin; i++)
+            skipUntil("iteration");
+    }
+
     @Override
     public Iterator<ConversionGraph> iterator() {
+
+        try {
+            reset();
+            skipBurnin();
+        } catch (XMLStreamException | IOException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
 
         return new Iterator<ConversionGraph>() {
 
@@ -126,19 +148,13 @@ public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
 
             @Override
             public boolean hasNext() {
-                return current < nACGs-1;
+                return current < nACGs;
             }
 
             @Override
             public ConversionGraph next() {
-                if (current >= nACGs)
-                    return null;
 
-                try {
-                    reset();
-                } catch (IOException e) {
-                    throw new IllegalStateException(e.getMessage());
-                }
+                current += 1;
 
                 ConversionGraph acg = new ConversionGraph();
                 for (Locus locus : loci)
@@ -158,9 +174,7 @@ public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
                 List<Double> rATos = new ArrayList<>();
 
                 try {
-                    skipUntil(xmlStreamReader, "iteration");
-
-                    System.out.println(xmlStreamReader.getLocalName());
+                    skipUntil("iteration");
 
                     while (xmlStreamReader.hasNext()) {
                         int type = xmlStreamReader.next();
@@ -180,17 +194,11 @@ public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
                                 break;
 
                             case "recedge":
-                                int start = -1, end = -1;
-                                int efrom = -1, eto = -1;
-                                double afrom = -1.0, ato = -1.0;
 
                                 while ((type = xmlStreamReader.next()) != XMLStreamConstants.END_ELEMENT ||
                                         !xmlStreamReader.getLocalName().toLowerCase().equals("recedge")) {
                                     if (type != XMLStreamConstants.START_ELEMENT)
                                         continue;
-
-                                    System.out.println(xmlStreamReader.getLocalName());
-
 
                                     switch (xmlStreamReader.getLocalName().toLowerCase()) {
                                         case "start":
@@ -234,7 +242,7 @@ public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
 
                     }
                 } catch (XMLStreamException e) {
-                    e.printStackTrace();
+                    throw new IllegalStateException(e.getMessage());
                 }
 
                 acg.fromExtendedNewick(newick, true, 0);
@@ -242,9 +250,19 @@ public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
                     Node fromNode = acg.getNode(rEFroms.get(i));
                     Node toNode = acg.getNode(rETos.get(i));
 
-                    Conversion conv = new Conversion(fromNode, rAFroms.get(i), toNode, rATos.get(i), rStarts.get(i), rEnds.get(i), acg, loci.get(0));
+                    Conversion conv = new Conversion(
+                            toNode,
+                            toNode.getHeight() + rATos.get(i),
+                            fromNode,
+                            fromNode.getHeight() + rAFroms.get(i),
+                            rStarts.get(i),
+                            rEnds.get(i),
+                            acg,
+                            loci.get(0));
                     acg.addConversion(conv);
                 }
+
+                current += 1;
 
                 return acg;
             }
@@ -253,8 +271,8 @@ public class ACGCOLogFileReader implements Iterable<ConversionGraph> {
 
     public static void main(String[] args) throws IOException, XMLStreamException {
 
-        ACGCOLogFileReader reader = new ACGCOLogFileReader(
-                new File("/home/tvaughan/articles/bacter-paper/simulation_studies/robustness/co_output.xml"),
+        COACGLogFileReader reader = new COACGLogFileReader(
+                new File("/home/tvaughan/articles/bacter-paper/simulation_studies/robustness/blah.xml"),
                 0);
 
         System.out.println("Iterations: " + reader.nACGs);
