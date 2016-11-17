@@ -37,7 +37,7 @@ import java.util.List;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-class ACGLogFileReader implements Iterable<ConversionGraph> {
+public class ACGLogFileReader implements Iterable<ConversionGraph> {
     File logFile;
     BufferedReader reader;
 
