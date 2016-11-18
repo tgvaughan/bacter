@@ -17,14 +17,17 @@
 
 package bacter.devutils;
 
+import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.acgannotator.ACGLogFileReader;
-import beast.app.util.Arguments;
+import beast.evolution.tree.Node;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.PrintStream;
+import java.util.*;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -33,12 +36,13 @@ public class DifferenceFromTrueACG {
 
     private static class Options {
         double burnin = 10.0;
-        File logFile, truthFile, outFile = new File("out.log");
+        double overlapTol = 50.0;
+        File logFile, truthFile, outFile;
         boolean useCOFormat = false;
     }
 
     public static void printUsageAndExit(int exitCode) {
-        System.out.println("Usage: DifferenceFromTrueACG [-burnin n] [-co] truth.tree log.trees");
+        System.out.println("Usage: DifferenceFromTrueACG [-burnin n] [-overlapTol] [-co] truth.tree log.trees output_file");
         System.exit(exitCode);
     }
 
@@ -71,6 +75,17 @@ public class DifferenceFromTrueACG {
                     options.useCOFormat = true;
                     break;
 
+                case "overlapTol":
+                    i += 1;
+                    if (i>=args.length)
+                        printUsageAndExit(1);
+                    try {
+                        options.overlapTol = Double.valueOf(args[i]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Argument to -overlapTol must be a number.");
+                        printUsageAndExit(1);
+                    }
+
                 default:
                     printUsageAndExit(1);
             }
@@ -78,16 +93,56 @@ public class DifferenceFromTrueACG {
             i++;
         }
 
-        if (args.length-i < 2 || args.length-i > 3)
+        if (args.length-i < 3)
             printUsageAndExit(0);
 
         options.truthFile = new File(args[i++]);
         options.logFile = new File(args[i++]);
-
-        if (i<args.length)
-            options.outFile = new File(args[i]);
+        options.outFile = new File(args[i]);
 
         return options;
+    }
+
+    public static class Clade extends BitSet { };
+    public static class CladePair {
+        Clade from, to;
+
+        public CladePair(Clade from, Clade to) {
+            this.from = from;
+            this.to = to;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            CladePair cladePair = (CladePair) o;
+
+            return from.equals(cladePair.from) && to.equals(cladePair.to);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = from.hashCode();
+            result = 31 * result + to.hashCode();
+            return result;
+        }
+    }
+
+    public static Clade getClades(Clade[] clades, Node node) {
+        Clade clade = new Clade();
+
+        if (node.isLeaf()) {
+            clade.set(node.getNr());
+        } else {
+            for (Node child : node.getChildren())
+                clade.or(getClades(clades, child));
+        }
+
+        clades[node.getNr()] = clade;
+
+        return clade;
     }
 
     public static void main(String[] args) throws IOException {
@@ -107,19 +162,59 @@ public class DifferenceFromTrueACG {
         for (ConversionGraph acg : truthReader)
             trueACG = acg;
 
-        // Load ARGs from log file
+        // Determine clades present in truth
+        Clade[] trueClades = new Clade[trueACG.getNodeCount()];
+        getClades(trueClades, trueACG.getRoot());
+        Set<Clade> trueCladeSet = new HashSet<>(Arrays.asList(trueClades));
 
-        List<ConversionGraph> sampledACGs = new ArrayList<>();
+        // Set up ARG log file reader
+
+        ACGLogFileReader logReader;
         if (options.useCOFormat) {
-
+            throw new IllegalStateException("Unimplemented!");
         } else {
-            ACGLogFileReader logReader = new ACGLogFileReader(options.logFile, options.burnin);
-
-            for (ConversionGraph acg : logReader)
-                sampledACGs.add(acg.copy());
+            logReader = new ACGLogFileReader(options.logFile, options.burnin);
         }
 
-        // Compute difference summaries and write to output
+        // Compute and write summary statistics to output file
+
+        try (PrintStream ps = new PrintStream(options.outFile)) {
+            ps.println("cladeCountError trueConvCount recoveredConvCount");
+
+            for (ConversionGraph acg : logReader) {
+
+                Clade[] clades = new Clade[acg.getNodeCount()];
+                getClades(clades, acg.getRoot());
+                Set<Clade> cladeSet = new HashSet<>(Arrays.asList(clades));
+
+                int foundConvs = 0;
+                for (Conversion trueConv : trueACG.getConversions(trueACG.getLoci().get(0))) {
+                    Clade trueFromClade = trueClades[trueConv.getNode1().getNr()];
+                    Clade trueToClade = trueClades[trueConv.getNode1().getNr()];
+                    for (Conversion conv : acg.getConversions(acg.getLoci().get(0)))  {
+                        Clade fromClade = clades[conv.getNode1().getNr()];
+                        Clade toClade = clades[conv.getNode1().getNr()];
+
+                        if (fromClade.equals(trueFromClade) && toClade.equals(trueToClade)) {
+                            int overlap = Math.min(conv.getEndSite(), trueConv.getEndSite()) -
+                                    Math.max(conv.getStartSite(), trueConv.getStartSite());
+
+                            if (overlap/(double)trueConv.getSiteCount()>options.overlapTol/100.0) {
+                                foundConvs += 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
+                ps.print(trueACG.getConvCount(trueACG.getLoci().get(0)) + "\t" +
+                        acg.getConvCount(acg.getLoci().get(0)) + "\t" +
+                        foundConvs + "\n");
+            }
+        }
+
+
 
     }
 }
