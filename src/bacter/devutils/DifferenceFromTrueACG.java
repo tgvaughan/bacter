@@ -19,11 +19,11 @@ package bacter.devutils;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
-import bacter.acgannotator.ACGLogFileReader;
+import bacter.util.BacterACGLogReader;
+import bacter.util.COACGLogFileReader;
 import beast.evolution.tree.Node;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 
+import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -35,14 +35,14 @@ import java.util.*;
 public class DifferenceFromTrueACG {
 
     private static class Options {
-        double burnin = 10.0;
-        double overlapTol = 50.0;
+        double boundaryTol = 0.2;
+        double ageTol = 0.2;
         File logFile, truthFile, outFile;
         boolean useCOFormat = false;
     }
 
     public static void printUsageAndExit(int exitCode) {
-        System.out.println("Usage: DifferenceFromTrueACG [-burnin n] [-overlapTol] [-co] truth.tree log.trees output_file");
+        System.out.println("Usage: DifferenceFromTrueACG [-boundaryTol t] [-ageTol t] [-co] truth.tree log.trees output_file");
         System.exit(exitCode);
     }
 
@@ -59,34 +59,36 @@ public class DifferenceFromTrueACG {
         int i=0;
         while (i<args.length && args[i].startsWith("-")) {
             switch (args[i].substring(1)) {
-                case "burnin":
-                    i += 1;
-                    if (i>=args.length)
-                        printUsageAndExit(1);
-                    try {
-                        options.burnin = Double.valueOf(args[i]);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Argument to -burnin must be a number.");
-                        printUsageAndExit(1);
-                    }
-                    break;
-
                 case "co":
                     options.useCOFormat = true;
                     break;
 
-                case "overlapTol":
+                case "boundaryTol":
                     i += 1;
                     if (i>=args.length)
                         printUsageAndExit(1);
                     try {
-                        options.overlapTol = Double.valueOf(args[i]);
+                        options.boundaryTol = Double.valueOf(args[i]);
                     } catch (NumberFormatException e) {
-                        System.out.println("Argument to -overlapTol must be a number.");
+                        System.out.println("Argument to -boundaryTol must be a number.");
                         printUsageAndExit(1);
                     }
+                    break;
+
+                case "ageTol":
+                    i += 1;
+                    if (i>=args.length)
+                        printUsageAndExit(1);
+                    try {
+                        options.ageTol = Double.valueOf(args[i]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Argument to -ageTol must be a number.");
+                        printUsageAndExit(1);
+                    }
+                    break;
 
                 default:
+                    System.err.println("Unknown argument: " + args[i]);
                     printUsageAndExit(1);
             }
 
@@ -103,35 +105,13 @@ public class DifferenceFromTrueACG {
         return options;
     }
 
-    public static class Clade extends BitSet { };
-    public static class CladePair {
-        Clade from, to;
-
-        public CladePair(Clade from, Clade to) {
-            this.from = from;
-            this.to = to;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            CladePair cladePair = (CladePair) o;
-
-            return from.equals(cladePair.from) && to.equals(cladePair.to);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = from.hashCode();
-            result = 31 * result + to.hashCode();
-            return result;
-        }
-    }
+    public static class Clade extends BitSet {
+        public double age;
+    };
 
     public static Clade getClades(Clade[] clades, Node node) {
         Clade clade = new Clade();
+        clade.age = node.getHeight();
 
         if (node.isLeaf()) {
             clade.set(node.getNr());
@@ -145,13 +125,86 @@ public class DifferenceFromTrueACG {
         return clade;
     }
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * Count number of true clades which exist in the provided sampled ARG.
+     *
+     * @param trueClades clades in true arg
+     * @param clades clades in sampled arg
+     * @param ageTol maximum relative age error
+     * @param cTimeErrors if non-null, errors in coalescence time between found clades are added to this list.
+     * @return number of found clades
+     */
+    public static int countFoundClades(Clade[] trueClades, Clade[] clades, double ageTol,
+                                       List<Double> cTimeErrors) {
+        int foundClades = 0;
+        for (Clade trueClade : trueClades) {
+            for (Clade clade : clades) {
+                if (!clade.equals(trueClade) || (clade.cardinality()>1 && (trueClade.age - clade.age)/trueClade.age > ageTol))
+                    continue;
+
+                foundClades += 1;
+                if (cTimeErrors != null && clade.cardinality()>1)
+                    cTimeErrors.add(Math.abs(trueClade.age - clade.age));
+
+                break;
+            }
+        }
+
+        return foundClades;
+    }
+
+    /**
+     * Count the number of true conversions which have correspondences on the
+     * provided sampled ARG.
+     *
+     * @param trueACG true arg
+     * @param trueClades clades in true arg
+     * @param acg sampled arg
+     * @param clades clades in sampled arg
+     * @param boundaryTol minimum relative error in region boundaries to allow.
+     * @param timeErrors if non-nill, errors in ages of found events are recorded
+     * @return number of found conversions
+     */
+    public static int countFoundConversions(ConversionGraph trueACG, Clade[] trueClades,
+                                            ConversionGraph acg, Clade[] clades,
+                                            double boundaryTol, double ageTol,
+                                            List<Double> timeErrors) {
+        int count = 0;
+        for (Conversion trueConv : trueACG.getConversions(trueACG.getLoci().get(0))) {
+            Clade trueFromClade = trueClades[trueConv.getNode1().getNr()];
+            Clade trueToClade = trueClades[trueConv.getNode1().getNr()];
+            for (Conversion conv : acg.getConversions(acg.getLoci().get(0)))  {
+                Clade fromClade = clades[conv.getNode1().getNr()];
+                Clade toClade = clades[conv.getNode1().getNr()];
+
+                if (fromClade.equals(trueFromClade) && toClade.equals(trueToClade)) {
+                    if (    Math.abs(trueConv.getStartSite()-conv.getStartSite())/trueConv.getSiteCount() <= boundaryTol &&
+                            Math.abs(trueConv.getEndSite()-conv.getEndSite())/trueConv.getSiteCount() <= boundaryTol &&
+//                            Math.abs(trueConv.getHeight1()-conv.getHeight1())/trueConv.getHeight1() <= ageTol &&
+                            Math.abs(trueConv.getHeight2()-conv.getHeight2())/trueConv.getHeight2() <= ageTol)
+                    {
+                        count += 1;
+
+                        if (timeErrors != null) {
+                            timeErrors.add(Math.abs(trueConv.getHeight2() - conv.getHeight2()));
+                            timeErrors.add(Math.abs(trueConv.getHeight1() - conv.getHeight1()));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public static void main(String[] args) throws IOException, XMLStreamException {
 
         Options options = processArguments(args);
 
         // Load true ARG
 
-        ACGLogFileReader truthReader = new ACGLogFileReader(options.truthFile, 0);
+        BacterACGLogReader truthReader = new BacterACGLogReader(options.truthFile, 0);
         if (truthReader.getACGCount() != 1) {
             System.out.println("Expected exactly 1 ACG in truth file. Found " +
                     truthReader.getACGCount());
@@ -169,48 +222,43 @@ public class DifferenceFromTrueACG {
 
         // Set up ARG log file reader
 
-        ACGLogFileReader logReader;
+        Iterable<ConversionGraph> logReader;
         if (options.useCOFormat) {
-            throw new IllegalStateException("Unimplemented!");
+            logReader = new COACGLogFileReader(options.logFile, 0);
         } else {
-            logReader = new ACGLogFileReader(options.logFile, options.burnin);
+            logReader = new BacterACGLogReader(options.logFile, 0);
         }
 
         // Compute and write summary statistics to output file
 
         try (PrintStream ps = new PrintStream(options.outFile)) {
-            ps.println("cladeCountError trueConvCount recoveredConvCount");
+            ps.println("trueCladeCount recoveredCladeCount trueConvCount sampledConvCount recoveredConvCount meanTimeError maxTimeError");
 
             for (ConversionGraph acg : logReader) {
 
                 Clade[] clades = new Clade[acg.getNodeCount()];
                 getClades(clades, acg.getRoot());
-                Set<Clade> cladeSet = new HashSet<>(Arrays.asList(clades));
 
-                int foundConvs = 0;
-                for (Conversion trueConv : trueACG.getConversions(trueACG.getLoci().get(0))) {
-                    Clade trueFromClade = trueClades[trueConv.getNode1().getNr()];
-                    Clade trueToClade = trueClades[trueConv.getNode1().getNr()];
-                    for (Conversion conv : acg.getConversions(acg.getLoci().get(0)))  {
-                        Clade fromClade = clades[conv.getNode1().getNr()];
-                        Clade toClade = clades[conv.getNode1().getNr()];
+                List<Double> timeErrors = new ArrayList<>();
+                int foundClades = countFoundClades(trueClades, clades, options.ageTol, timeErrors);
+                int foundConvs = countFoundConversions(trueACG, trueClades, acg, clades,
+                        options.boundaryTol, options.ageTol, timeErrors);
 
-                        if (fromClade.equals(trueFromClade) && toClade.equals(trueToClade)) {
-                            int overlap = Math.min(conv.getEndSite(), trueConv.getEndSite()) -
-                                    Math.max(conv.getStartSite(), trueConv.getStartSite());
-
-                            if (overlap/(double)trueConv.getSiteCount()>options.overlapTol/100.0) {
-                                foundConvs += 1;
-                                break;
-                            }
-                        }
-                    }
+                double meanTimeError = 0;
+                double maxTimeError = 0;
+                for (double error : timeErrors) {
+                    meanTimeError += error;
+                    maxTimeError = Math.max(maxTimeError, error);
                 }
+                meanTimeError /= timeErrors.size();
 
-
-                ps.print(trueACG.getConvCount(trueACG.getLoci().get(0)) + "\t" +
+                ps.print(trueACG.getNodeCount() + "\t" +
+                        foundClades + "\t" +
+                        trueACG.getConvCount(trueACG.getLoci().get(0)) + "\t" +
                         acg.getConvCount(acg.getLoci().get(0)) + "\t" +
-                        foundConvs + "\n");
+                        foundConvs + "\t" +
+                        meanTimeError + "\t" +
+                        maxTimeError + "\n");
             }
         }
 

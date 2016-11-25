@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.devutils;
+package bacter.util;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;

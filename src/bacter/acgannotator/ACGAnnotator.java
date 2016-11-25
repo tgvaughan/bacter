@@ -20,6 +20,7 @@ package bacter.acgannotator;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
+import bacter.util.BacterACGLogReader;
 import beast.evolution.tree.Node;
 import beast.math.statistic.DiscreteStatistics;
 
@@ -30,8 +31,6 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
-
-import static bacter.acgannotator.ACGCladeSystem.*;
 
 /**
  * A rewrite of TreeAnnotator targeted at summarizing ACG logs
@@ -73,7 +72,7 @@ public class ACGAnnotator {
 
         // Initialise reader
 
-        ACGLogFileReader logReader = new ACGLogFileReader(options.inFile,
+        BacterACGLogReader logReader = new BacterACGLogReader(options.inFile,
                 options.burninPercentage);
 
         System.out.println(logReader.getACGCount() + " ACGs in file.");

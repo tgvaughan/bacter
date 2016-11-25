@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Tim Vaughan <tgvaughan@gmail.com>
+ * Copyright (C) 2016 Tim Vaughan <tgvaughan@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bacter.acgannotator;
+package bacter.util;
 
 import bacter.ConversionGraph;
 import bacter.Locus;
@@ -37,7 +37,7 @@ import java.util.List;
  *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ACGLogFileReader implements Iterable<ConversionGraph> {
+public class BacterACGLogReader implements Iterable<ConversionGraph> {
     File logFile;
     BufferedReader reader;
 
@@ -55,7 +55,7 @@ public class ACGLogFileReader implements Iterable<ConversionGraph> {
      * @param logFile ACG log file.
      * @throws IOException
      */
-    public ACGLogFileReader(File logFile, double burninPercentage) throws IOException {
+    public BacterACGLogReader(File logFile, double burninPercentage) throws IOException {
         this.logFile = logFile;
 
         reader = new BufferedReader(new FileReader(logFile));
