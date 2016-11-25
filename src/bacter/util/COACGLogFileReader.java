@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class COACGLogFileReader implements Iterable<ConversionGraph> {
+public class COACGLogFileReader implements ACGLogReader {
     File logFile;
 
     XMLStreamReader xmlStreamReader;
@@ -91,6 +91,16 @@ public class COACGLogFileReader implements Iterable<ConversionGraph> {
             loci.add(new Locus(locusName.get(i), locusSize.get(i)));
 
         burnin = (int)Math.round(nACGs*burninPercentage/100);
+    }
+
+    @Override
+    public int getACGCount() {
+        return nACGs;
+    }
+
+    @Override
+    public int getCorrectedACGCount() {
+        return nACGs - burnin;
     }
 
     private void reset() throws IOException {

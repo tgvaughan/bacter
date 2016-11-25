@@ -19,6 +19,7 @@ package bacter.devutils;
 
 import bacter.Conversion;
 import bacter.ConversionGraph;
+import bacter.util.ACGLogReader;
 import bacter.util.BacterACGLogReader;
 import bacter.util.COACGLogFileReader;
 import beast.evolution.tree.Node;
@@ -35,14 +36,15 @@ import java.util.*;
 public class DifferenceFromTrueACG {
 
     private static class Options {
-        double boundaryTol = 0.2;
-        double ageTol = 0.2;
-        File logFile, truthFile, outFile;
+        double burninPerc = 10.0;
+        double boundaryTol = 0.25;
+        double ageTol = 0.25;
+        File logFile, truthFile, outFile, summaryFile;
         boolean useCOFormat = false;
     }
 
     public static void printUsageAndExit(int exitCode) {
-        System.out.println("Usage: DifferenceFromTrueACG [-boundaryTol t] [-ageTol t] [-co] truth.tree log.trees output_file");
+        System.out.println("Usage: DifferenceFromTrueACG [-burnin b] [-boundaryTol t] [-ageTol t] [-co] truth.tree log.trees output_file");
         System.exit(exitCode);
     }
 
@@ -61,6 +63,18 @@ public class DifferenceFromTrueACG {
             switch (args[i].substring(1)) {
                 case "co":
                     options.useCOFormat = true;
+                    break;
+
+                case "burnin":
+                    i += 1;
+                    if (i>=args.length)
+                        printUsageAndExit(1);
+                    try {
+                        options.burninPerc = Double.valueOf(args[i]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Argument to -burnin must be a number.");
+                        printUsageAndExit(1);
+                    }
                     break;
 
                 case "boundaryTol":
@@ -95,12 +109,13 @@ public class DifferenceFromTrueACG {
             i++;
         }
 
-        if (args.length-i < 3)
+        if (args.length-i < 4)
             printUsageAndExit(0);
 
         options.truthFile = new File(args[i++]);
         options.logFile = new File(args[i++]);
-        options.outFile = new File(args[i]);
+        options.outFile = new File(args[i++]);
+        options.summaryFile = new File(args[i]);
 
         return options;
     }
@@ -134,12 +149,12 @@ public class DifferenceFromTrueACG {
      * @param cladeHist
      * @return number of found clades
      */
-    public static int countFoundClades(Clade[] trueClades, Clade[] clades, double ageTol,
-                                       Map<Clade, Integer> cladeHist) {
+    public static int countSampledTrueClades(Clade[] trueClades, Clade[] clades, double ageTol,
+                                             Map<Clade, Integer> cladeHist) {
         int foundClades = 0;
         for (Clade trueClade : trueClades) {
             for (Clade clade : clades) {
-                if (!clade.equals(trueClade) || (clade.cardinality()>1 && (trueClade.age - clade.age)/trueClade.age > ageTol))
+                if (!clade.equals(trueClade)) // || (clade.cardinality()>1 && (trueClade.age - clade.age)/trueClade.age > ageTol))
                     continue;
 
                 foundClades += 1;
@@ -165,10 +180,10 @@ public class DifferenceFromTrueACG {
      * @param convHist
      * @return number of found conversions
      */
-    public static int countFoundConversions(ConversionGraph trueACG, Clade[] trueClades,
-                                            ConversionGraph acg, Clade[] clades,
-                                            double boundaryTol, double ageTol,
-                                            Map<Conversion, Integer> convHist) {
+    public static int countSampledTrueConversions(ConversionGraph trueACG, Clade[] trueClades,
+                                                  ConversionGraph acg, Clade[] clades,
+                                                  double boundaryTol, double ageTol,
+                                                  Map<Conversion, Integer> convHist) {
         int count = 0;
         for (Conversion trueConv : trueACG.getConversions(trueACG.getLoci().get(0))) {
             Clade trueFromClade = trueClades[trueConv.getNode1().getNr()];
@@ -178,10 +193,11 @@ public class DifferenceFromTrueACG {
                 Clade toClade = clades[conv.getNode1().getNr()];
 
                 if (fromClade.equals(trueFromClade) && toClade.equals(trueToClade)) {
-                    if (    Math.abs(trueConv.getStartSite()-conv.getStartSite())/trueConv.getSiteCount() <= boundaryTol &&
-                            Math.abs(trueConv.getEndSite()-conv.getEndSite())/trueConv.getSiteCount() <= boundaryTol &&
-//                            Math.abs(trueConv.getHeight1()-conv.getHeight1())/trueConv.getHeight1() <= ageTol &&
-                            Math.abs(trueConv.getHeight2()-conv.getHeight2())/trueConv.getHeight2() <= ageTol)
+                    if (    Math.abs(trueConv.getStartSite()-conv.getStartSite())/trueConv.getSiteCount() <= boundaryTol
+                            && Math.abs(trueConv.getEndSite()-conv.getEndSite())/trueConv.getSiteCount() <= boundaryTol
+//                            && Math.abs(trueConv.getHeight1()-conv.getHeight1())/trueConv.getHeight1() <= ageTol
+                            //&& Math.abs(trueConv.getHeight2()-conv.getHeight2())/trueConv.getHeight2() <= ageTol
+                            )
                     {
                         count += 1;
 
@@ -191,6 +207,44 @@ public class DifferenceFromTrueACG {
                     }
                 }
             }
+        }
+
+        return count;
+    }
+
+    /**
+     * Count the number of actual clades present with given support in posterior.
+     *
+     * @param cladeHist Mapping from clades to the number of sampled ACGs that
+     *                  contain them.
+     * @param nSampledACGs Total number of sampled ACGs
+     * @param minimumSupport Minimum fraction of samples clades must appear to
+     *                       be considered "recovered"
+     * @return number of recovered clades
+     */
+    public static int countRecoveredTrueClades(Map<Clade, Integer> cladeHist,
+                                               int nSampledACGs, double minimumSupport) {
+        int count = 0;
+
+        int sampleThresh = (int)Math.round(nSampledACGs*minimumSupport);
+
+        for (Clade clade : cladeHist.keySet()) {
+            if (cladeHist.get(clade) >= sampleThresh)
+                count += 1;
+        }
+
+        return count;
+    }
+
+    public static int countRecoveredTrueConvs(Map<Conversion, Integer> convHist,
+                                              int nSampledACGs, double minimumSupport) {
+        int count = 0;
+
+        int sampleThresh = (int)Math.round(nSampledACGs*minimumSupport);
+
+        for (Conversion conv : convHist.keySet()) {
+            if (convHist.get(conv) >= sampleThresh)
+                count += 1;
         }
 
         return count;
@@ -230,18 +284,18 @@ public class DifferenceFromTrueACG {
 
         // Set up ARG log file reader
 
-        Iterable<ConversionGraph> logReader;
+        ACGLogReader logReader;
         if (options.useCOFormat) {
-            logReader = new COACGLogFileReader(options.logFile, 0);
+            logReader = new COACGLogFileReader(options.logFile, options.burninPerc);
         } else {
-            logReader = new BacterACGLogReader(options.logFile, 0);
+            logReader = new BacterACGLogReader(options.logFile, options.burninPerc);
         }
 
 
         // Compute and write summary statistics to output file
 
         try (PrintStream ps = new PrintStream(options.outFile)) {
-            ps.println("trueCladeCount recoveredCladeCount trueConvCount sampledConvCount recoveredConvCount meanTimeError maxTimeError");
+            ps.println("trueCladeCount sampledTrueCladeCount trueConvCount sampledConvCount sampledTrueConvCount");
 
             for (ConversionGraph acg : logReader) {
 
@@ -249,19 +303,31 @@ public class DifferenceFromTrueACG {
                 getClades(clades, acg.getRoot());
 
                 List<Double> timeErrors = new ArrayList<>();
-                int foundClades = countFoundClades(trueClades, clades, options.ageTol, cladeHist);
-                int foundConvs = countFoundConversions(trueACG, trueClades, acg, clades,
+                int sampledTrueClades = countSampledTrueClades(trueClades, clades, options.ageTol, cladeHist);
+                int sampledTrueConvs = countSampledTrueConversions(trueACG, trueClades, acg, clades,
                         options.boundaryTol, options.ageTol, convHist);
 
-                ps.print(trueACG.getNodeCount() + "\t" +
-                        foundClades + "\t" +
+                ps.println(trueACG.getNodeCount() + "\t" +
+                        sampledTrueClades + "\t" +
                         trueACG.getConvCount(trueACG.getLoci().get(0)) + "\t" +
                         acg.getConvCount(acg.getLoci().get(0)) + "\t" +
-                        foundConvs + "\n");
+                        sampledTrueConvs);
             }
         }
 
+        try (PrintStream ps = new PrintStream(options.summaryFile)) {
+            ps.println("trueCladeCount recoveredCladeCount trueConvCount recoveredConvCount");
 
+            int recoveredTrueClades = countRecoveredTrueClades(cladeHist,
+                    logReader.getCorrectedACGCount(), 0.5);
 
+            int recoveredTrueConvs = countRecoveredTrueConvs(convHist,
+                    logReader.getCorrectedACGCount(), 0.5);
+
+            ps.println(trueACG.getNodeCount() + "\t" +
+                    recoveredTrueClades + "\t" +
+                    trueACG.getConvCount(trueACG.getLoci().get(0)) + "\t" +
+                    recoveredTrueConvs);
+        }
     }
 }
