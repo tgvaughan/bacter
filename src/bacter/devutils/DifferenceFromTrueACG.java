@@ -131,11 +131,11 @@ public class DifferenceFromTrueACG {
      * @param trueClades clades in true arg
      * @param clades clades in sampled arg
      * @param ageTol maximum relative age error
-     * @param cTimeErrors if non-null, errors in coalescence time between found clades are added to this list.
+     * @param cladeHist
      * @return number of found clades
      */
     public static int countFoundClades(Clade[] trueClades, Clade[] clades, double ageTol,
-                                       List<Double> cTimeErrors) {
+                                       Map<Clade, Integer> cladeHist) {
         int foundClades = 0;
         for (Clade trueClade : trueClades) {
             for (Clade clade : clades) {
@@ -143,8 +143,8 @@ public class DifferenceFromTrueACG {
                     continue;
 
                 foundClades += 1;
-                if (cTimeErrors != null && clade.cardinality()>1)
-                    cTimeErrors.add(Math.abs(trueClade.age - clade.age));
+
+                cladeHist.put(clade, cladeHist.get(clade)+1);
 
                 break;
             }
@@ -162,13 +162,13 @@ public class DifferenceFromTrueACG {
      * @param acg sampled arg
      * @param clades clades in sampled arg
      * @param boundaryTol minimum relative error in region boundaries to allow.
-     * @param timeErrors if non-nill, errors in ages of found events are recorded
+     * @param convHist
      * @return number of found conversions
      */
     public static int countFoundConversions(ConversionGraph trueACG, Clade[] trueClades,
                                             ConversionGraph acg, Clade[] clades,
                                             double boundaryTol, double ageTol,
-                                            List<Double> timeErrors) {
+                                            Map<Conversion, Integer> convHist) {
         int count = 0;
         for (Conversion trueConv : trueACG.getConversions(trueACG.getLoci().get(0))) {
             Clade trueFromClade = trueClades[trueConv.getNode1().getNr()];
@@ -185,10 +185,8 @@ public class DifferenceFromTrueACG {
                     {
                         count += 1;
 
-                        if (timeErrors != null) {
-                            timeErrors.add(Math.abs(trueConv.getHeight2() - conv.getHeight2()));
-                            timeErrors.add(Math.abs(trueConv.getHeight1() - conv.getHeight1()));
-                        }
+                        convHist.put(trueConv, convHist.get(trueConv) + 1);
+
                         break;
                     }
                 }
@@ -220,6 +218,16 @@ public class DifferenceFromTrueACG {
         getClades(trueClades, trueACG.getRoot());
         Set<Clade> trueCladeSet = new HashSet<>(Arrays.asList(trueClades));
 
+         // Set up histograms
+
+        Map<Clade, Integer> cladeHist = new HashMap<>();
+        for (Clade clade : trueClades)
+            cladeHist.put(clade, 0);
+
+        Map<Conversion, Integer> convHist = new HashMap<>();
+        for (Conversion conv : trueACG.getConversions(trueACG.getLoci().get(0)))
+            convHist.put(conv, 0);
+
         // Set up ARG log file reader
 
         Iterable<ConversionGraph> logReader;
@@ -228,6 +236,7 @@ public class DifferenceFromTrueACG {
         } else {
             logReader = new BacterACGLogReader(options.logFile, 0);
         }
+
 
         // Compute and write summary statistics to output file
 
@@ -240,25 +249,15 @@ public class DifferenceFromTrueACG {
                 getClades(clades, acg.getRoot());
 
                 List<Double> timeErrors = new ArrayList<>();
-                int foundClades = countFoundClades(trueClades, clades, options.ageTol, timeErrors);
+                int foundClades = countFoundClades(trueClades, clades, options.ageTol, cladeHist);
                 int foundConvs = countFoundConversions(trueACG, trueClades, acg, clades,
-                        options.boundaryTol, options.ageTol, timeErrors);
-
-                double meanTimeError = 0;
-                double maxTimeError = 0;
-                for (double error : timeErrors) {
-                    meanTimeError += error;
-                    maxTimeError = Math.max(maxTimeError, error);
-                }
-                meanTimeError /= timeErrors.size();
+                        options.boundaryTol, options.ageTol, convHist);
 
                 ps.print(trueACG.getNodeCount() + "\t" +
                         foundClades + "\t" +
                         trueACG.getConvCount(trueACG.getLoci().get(0)) + "\t" +
                         acg.getConvCount(acg.getLoci().get(0)) + "\t" +
-                        foundConvs + "\t" +
-                        meanTimeError + "\t" +
-                        maxTimeError + "\n");
+                        foundConvs + "\n");
             }
         }
 
