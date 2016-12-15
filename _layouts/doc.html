@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    {% include header.html %}
+
+    <body>
+
+        <div class="container-fluid doc-container">
+            <div class="row">
+                <div class="col-sm-2 sidebar">
+
+                    <a href="/"><img src="../images/logo.svg" class="img-responsive"></a>
+
+                    <hr>
+
+                    <ul class="nav nav-stacked nav-pills">
+                        <li role="presentation" {% if page.title == "Overview" %}class="active"{% endif %}>
+                            <a href="{{site.baseurl}}/doc">Overview</a></li>
+                        <li role="presentation" {% if page.title == "Installation" %}class="active"{% endif %}>
+                            <a href="{{site.baseurl}}/doc/installation.html">Installation</a></li>
+                        <li role="presentation" {% if page.title == "Tutorial" %}class="active"{% endif %}>
+                            <a href="{{site.baseurl}}/doc/basic_tutorial.html">Basic Tutorial</a></li>
+                    </ul>
+
+                    <hr>
+                </div>
+                <div class="col-sm-6 col-sm-offset-1">
+
+                    {{ content }}
+
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+
+    </body>
+</html>
+
