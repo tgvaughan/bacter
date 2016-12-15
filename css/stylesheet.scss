@@ -1,7 +1,15 @@
+---
+---
+
+@import "bootstrap";
+
+$purple: #6f00ff;
+$grey: #666;
+
 .jumbotron {
     text-align: center;
     background-color: transparent;
-    color: #666;
+    color: $grey;
     font-size: 21px;
 
     margin-bottom: 0px;
@@ -28,15 +36,15 @@
 }
 
 .btn-default {
-    color: #6f00ff;
-    border: 1px solid #6f00ff;
+    color: $purple;
+    border: 1px solid $purple;
     transition: color 0.2s, background-color 0.2s, border-color 0.2s;
 }
 
 .btn-default:hover {
     color: white;
-    background-color: #6f00ff;
-    border: 1px solid #6f00ff;
+    background-color: $purple;
+    border: 1px solid $purple;
 }
 
 @media (max-width: 767px) {
@@ -47,7 +55,7 @@
 }
 
 p,ol,ul {
-    color: #666;
+    color: $grey;
 }
 
 p .lead {
@@ -55,11 +63,11 @@ p .lead {
 }
 
 a {
-    color: #6f00ff;
+    color: $purple;
 }
 
 a:hover {
-    color: #6f00ff;
+    color: $purple;
 }
 
 hr.short-rule {
