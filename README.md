@@ -1,7 +1,7 @@
 bacter
 ======
 
-[![Build Status](https://travis-ci.org/tgvaughan/bacter.svg?branch=master)](https://travis-ci.org/tgvaughan/bacter) [![Documentation Status](https://readthedocs.org/projects/bacter/badge/?version=latest)](http://bacter.readthedocs.org/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/tgvaughan/bacter.svg?branch=master)](https://travis-ci.org/tgvaughan/bacter)
 
 Bacter is a [BEAST 2] (http://www.beast2.org)  package which facilitates
 inference of a (restricted kind of) ancestral recombination graph (ARG) and
