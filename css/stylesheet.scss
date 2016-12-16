@@ -1,10 +1,12 @@
 ---
 ---
 
-@import "bootstrap";
-
-$purple: #6f00ff;
 $grey: #666;
+$purple: #6f00ff;
+
+$brand-primary: $purple;
+
+@import "bootstrap";
 
 .jumbotron {
     text-align: center;
@@ -29,19 +31,20 @@ $grey: #666;
     margin-right: 10px;
 }
 
-.btn {
+.titlebuttons > .btn {
     display: inline-block;
     background-image: none;
     font-weight: normal;
 }
 
-.btn-default {
+.titlebuttons > .btn-primary {
     color: $purple;
+    background-color: white;
     border: 1px solid $purple;
     transition: color 0.2s, background-color 0.2s, border-color 0.2s;
 }
 
-.btn-default:hover {
+.titlebuttons > .btn-primary:hover {
     color: white;
     background-color: $purple;
     border: 1px solid $purple;
@@ -60,14 +63,6 @@ p,ol,ul {
 
 p .lead {
     font-size: 20px;
-}
-
-a {
-    color: $purple;
-}
-
-a:hover {
-    color: $purple;
 }
 
 hr.short-rule {
