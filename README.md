@@ -16,7 +16,6 @@ home page hosted at http://tgvaughan.github.io/bacter.
 Archive Contents
 ----------------
 
-* `/doc` : Source code for the [usage documentation] (http://bacter.readthedocs.org/).
 * `/examples` : Example XML files, simulated data for the tutorial and a
   Jupyter notebook with implementation validation details. (You can view this
   notebook [online] [2].) 
