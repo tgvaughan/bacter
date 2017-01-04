@@ -40,8 +40,8 @@ import java.util.regex.Pattern;
  */
 @Description("Conversion graph based around the clonal frame.")
 @Citation("TG Vaughan, D Welch, AJ Drummond, PJ Biggs, T George, NP French,\n" +
-        "Bayesian inference of ancestral recombination graphs for bacterial populations,\n" +
-        "bioRxiv 059105")
+        "Inferring Ancestral Recombination Graphs from Bacterial Genomic Data,\n" +
+        "Genetics, DOI: 10.1534/genetics.116.193425")
 public class ConversionGraph extends Tree {
     
     /**
