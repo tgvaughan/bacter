@@ -11,7 +11,7 @@ layout: main
             Documentation
         </a>
         <a class="btn btn-primary btn-lg btn-responsive"
-           href="https://github.com/tgvaughan/bacter">
+           href="{{site.github.repository_url}}">
             Source Code
         </a>
     </div>
@@ -27,121 +27,151 @@ model.</p>
 
 <hr class="short-rule">
 
-<h2>Use Bacter to infer...</h2>
-
 <div class="row">
-    <div class="col-sm-4">
-        <img src="images/arg.svg" class="img-responsive">
-        <h3>ARGs</h3>
-        <p>Bacter allows you to infer the ancestral recombination
-        graph (ARG) that gave rise to your sampled data, including
-        both clonal frame and the recombinant edges.  Loci and sites
-        affected by each conversion event are also inferred.</p>
+    <div class="col-xs-12 col-sm-12 col-md-9">
+
+        <h2>Use Bacter to infer...</h2>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <img src="images/arg.svg" class="img-responsive">
+                <h3>ARGs</h3>
+                <p>Bacter allows you to infer the ancestral recombination
+                graph (ARG) that gave rise to your sampled data, including
+                both clonal frame and the recombinant edges.  Loci and sites
+                affected by each conversion event are also inferred.</p>
+            </div>
+            <div class="col-sm-4">
+                <img src="images/param.svg" class="img-responsive">
+                <h3>Parameters</h3>
+                <p>For informative data sets, Bacter can sample posterior
+                distributions for parameters such as the recombination rate
+                and expected converted tract length jointly with the ARG.
+                For serially sampled data, joint estimation of the molecular
+                clock rate is also possible.</p>
+            </div>
+            <div class="col-sm-4">
+                <img src="images/skyline.svg" class="img-responsive">
+                <h3>Population dynamics</h3>
+                <p>Bacter includes support for producing Bayesian Skyline
+                Plot (BSP) inferences of bacterial population dynamics.  This
+                inference may actually be more powerful when recombination is
+                present in your data set.</p>
+            </div>
+        </div>
+
+        <hr class="short-rule">
+
+        <h2>Installation</h2>
+
+        <p>Bacter is a package that extends the
+        <a href="http://www.beast2.org/">BEAST 2</a>
+        computational phylogenetics system.  Installation of the latest version
+        ({{site.github.releases[0].tag_name | remove_first: "v"}})
+        is via  BEAST 2's built-in package manager and involves the following
+        steps:</p>
+        <ol>
+            <li>Download an install the latest version of BEAST 2
+                from the project's web page at
+                <a href="http://www.beast2.org">www.beast2.org</a>.</li>
+            <li>Open the BEAUti program.</li>
+            <li>From the File menu select "Manage Packages".</li>
+            <li>Locate Bacter in the list and select it.</li>
+            <li>Press the <kbd>Install/Upgrade</kbd> button.</li>
+        </ol>
+
+        <p>Congratulations, Bacter is now installed!</p>
+
+        <h2>Documentation</h2>
+
+        <p>The documentation for Bacter can be found <a href="doc/">here</a>.
+        This documentation is still in development and thus does not comprehensively describe
+        all features of Bacter, for instance treatment of Bayesian Skyline
+        Plots.  Documentation for these features will be be added soon.</p>
+
+        <h2>Citing Bacter</h2>
+
+        <p>If you use the Bacter package in research that leads to publication, please cite the
+        following papers:</p>
+        <ul>
+            <li>T. G. Vaughan, D. Welch, A. J. Drummond, P. J. Biggs, T. George, N. P. French,<br>
+                <b>Inferring Ancestral Recombination Graphs from Bacterial Genomic Data</b>,<br>
+                GENETICS Early online December 22, 2016;
+                DOI: <a href="http://dx.doi.org/10.1534/genetics.116.193425">10.1534/genetics.116.193425</a></li>
+            <li>X. Didelot, D. Lawson, A. Darling, D. Falush,<br>
+                <b>Inference of Homologous Recombination in Bacteria Using Whole-Genome Sequences</b>,</br>
+                GENETICS December 1, 2010 vol. 186 no. 4, 1435-1449;
+                DOI: <a href="http://dx.doi.org/10.1534/genetics.110.120121">10.1534/genetics.110.120121</a></li>
+        </ul>
+
+        <h2>Acknowledgements</h2>
+
+        <p>Bacter is maintained primarily by members of the
+        <a href="http://compevol.auckland.ac.nz/">Centre for Computational Evolution</a>
+        at the University of Auckland, New Zealand and
+        <a href="http://"><sup>m</sup>EpiLab</a>
+        at Massey University, New Zealand.  Its development is generously
+        supported by the following organizations:</p>
+
+        <div class="row">
+            <div class="col-sm-2">
+                <a href="http://www.allanwilsoncentre.ac.nz">
+                    <img src="images/AWC_logo.svg"
+                         alt="The Allan Wilson Centre for Molecular Ecology and Evolution"
+                         class="img-responsive center-block"
+                         style="height: 60pt; margin-top: 15pt;">
+                </a>
+            </div>
+            <div class="col-sm-2">
+                <a href="http://www.royalsociety.org.nz/programmes/funds/marsden/">
+                    <img src="images/MF_logo.png"
+                         alt="Marsden Fund, Royal Society of New Zealand"
+                         class="img-responsive center-block"
+                         style="height: 60pt; margin-top: 15pt;">
+                </a>
+            </div>
+
+            <div class="col-sm-5">
+                <a href="http://massey.ac.nz">
+                    <img src="images/MU_logo.svg"
+                         alt="Massey University, New Zealand"
+                         class="img-responsive center-block"
+                         style="height: 60pt; margin-top: 15pt;">
+                </a>
+            </div>
+            <div class="col-sm-3">
+                <a href="http://auckland.ac.nz">
+                    <img src="images/UoA_logo.svg"
+                         alt="The University of Auckland, New Zealand"
+                         class="img-responsive center-block"
+                         style="height: 60pt; margin-top: 15pt;">
+                </a>
+            </div>
+        </div>
+
+        <hr class="short-rule">
+
     </div>
-    <div class="col-sm-4">
-        <img src="images/param.svg" class="img-responsive">
-        <h3>Parameters</h3>
-        <p>For informative data sets, Bacter can sample posterior
-        distributions for parameters such as the recombination rate
-        and expected converted tract length jointly with the ARG.
-        For serially sampled data, joint estimation of the molecular
-        clock rate is also possible.</p>
+
+    <div class="hidden-xs hidden-sm col-md-3">
+        <div id="sidebar">
+        <h3>Recent Releases</h3>
+
+        <ul>
+            {% for release in site.github.releases %}
+            {% if forloop.index <= 5 %}
+            <li> <a href="{{release.html_url}}"><span class="version">{{release.tag_name}}</span></a>
+                <span class="date">({{release.published_at | date: "%b %-m, %Y"}})</span><br>
+                <span class="title">{{release.name}}</span>
+                <div class="desc">
+                    {{release.body | truncatewords: 20}}
+                </div>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        </div>
+
     </div>
-    <div class="col-sm-4">
-        <img src="images/skyline.svg" class="img-responsive">
-        <h3>Population dynamics</h3>
-        <p>Bacter includes support for producing Bayesian Skyline
-        Plot (BSP) inferences of bacterial population dynamics.  This
-        inference may actually be more powerful when recombination is
-        present in your data set.</p>
-    </div>
+
 </div>
-
-<hr class="short-rule">
-
-<h2>Installation</h2>
-
-<p>Bacter is a package that extends the
-<a href="http://www.beast2.org/">BEAST 2</a>
-computational phylogenetics system.  Installation is via  BEAST 2's
-built-in package manager and involves the following steps:</p>
-<ol>
-    <li>Download an install the latest version of BEAST 2
-        from the project's web page at
-        <a href="http://www.beast2.org">www.beast2.org</a>.</li>
-    <li>Open the BEAUti program.</li>
-    <li>From the File menu select "Manage Packages".</li>
-    <li>Locate Bacter in the list and select it.</li>
-    <li>Press the <kbd>Install/Upgrade</kbd> button.</li>
-</ol>
-
-<p>Congratulations, Bacter is now installed!</p>
-
-<h2>Documentation</h2>
-
-<p>The documentation for Bacter can be found <a href="doc/">here</a>.
-       This documentation is still in development and thus does not comprehensively describe
-       all features of Bacter, for instance treatment of Bayesian Skyline
-       Plots.  Documentation for these features will be be added soon.</p>
-
-<h2>Citing Bacter</h2>
-
-<p>If you use the Bacter package in research that leads to publication, please cite the
-following papers:</p>
-<ul>
-    <li>T. G. Vaughan, D. Welch, A. J. Drummond, P. J. Biggs, T. George, N. P. French,<br>
-        <b>Inferring Ancestral Recombination Graphs from Bacterial Genomic Data</b>,<br>
-        GENETICS Early online December 22, 2016;
-        DOI: <a href="http://dx.doi.org/10.1534/genetics.116.193425">10.1534/genetics.116.193425</a></li>
-    <li>X. Didelot, D. Lawson, A. Darling, D. Falush,<br>
-        <b>Inference of Homologous Recombination in Bacteria Using Whole-Genome Sequences</b>,</br>
-        GENETICS December 1, 2010 vol. 186 no. 4, 1435-1449;
-        DOI: <a href="http://dx.doi.org/10.1534/genetics.110.120121">10.1534/genetics.110.120121</a></li>
-</ul>
-
-<h2>Acknowledgements</h2>
-
-<p>Bacter is maintained primarily by members of the
-<a href="http://compevol.auckland.ac.nz/">Centre for Computational Evolution</a>
-at the University of Auckland, New Zealand and
-<a href="http://"><sup>m</sup>EpiLab</a>
-at Massey University, New Zealand.  Its development is generously
-supported by the following organizations:</p>
-
-<div class="row">
-    <div class="col-sm-2">
-        <a href="http://www.allanwilsoncentre.ac.nz">
-            <img src="images/AWC_logo.svg"
-                 alt="The Allan Wilson Centre for Molecular Ecology and Evolution"
-                 class="img-responsive center-block"
-                 style="height: 60pt; margin-top: 15pt;">
-        </a>
-    </div>
-    <div class="col-sm-2">
-        <a href="http://www.royalsociety.org.nz/programmes/funds/marsden/">
-            <img src="images/MF_logo.png"
-                 alt="Marsden Fund, Royal Society of New Zealand"
-                 class="img-responsive center-block"
-                 style="height: 60pt; margin-top: 15pt;">
-        </a>
-    </div>
-
-    <div class="col-sm-5">
-        <a href="http://massey.ac.nz">
-            <img src="images/MU_logo.svg"
-                 alt="Massey University, New Zealand"
-                 class="img-responsive center-block"
-                 style="height: 60pt; margin-top: 15pt;">
-        </a>
-    </div>
-    <div class="col-sm-3">
-        <a href="http://auckland.ac.nz">
-            <img src="images/UoA_logo.svg"
-                 alt="The University of Auckland, New Zealand"
-                 class="img-responsive center-block"
-                 style="height: 60pt; margin-top: 15pt;">
-        </a>
-    </div>
-</div>
-
-<hr class="short-rule">

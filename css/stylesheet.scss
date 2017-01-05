@@ -72,3 +72,22 @@ hr.short-rule {
 .doc-container {
     padding-top: 10px;
 }
+
+// Sidebar
+
+#sidebar.sidebar-fixed {
+    position: fixed;
+    top: 20px;
+}
+
+#sidebar li {
+    padding-bottom: 5px;
+}
+
+#sidebar .date {
+    font-style: italic;
+}
+
+#sidebar .title {
+    font-weight: bold;
+}

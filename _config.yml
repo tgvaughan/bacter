@@ -18,6 +18,7 @@ email: tgvaughan@gmail.com
 description: BEAST 2 package for inferring ARGs from bacterial sequence data.
 
 github_username:  tgvaughan
+repository: tgvaughan/bacter
 
 collections:
     doc:
