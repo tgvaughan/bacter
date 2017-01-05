@@ -161,7 +161,7 @@ model.</p>
             {% for release in site.github.releases %}
             {% if forloop.index <= 5 %}
             <li> <a href="{{release.html_url}}"><span class="version">{{release.tag_name}}</span></a>
-                <span class="date">({{release.published_at | date: "%b %-m, %Y"}})</span><br>
+                <span class="date">({{release.published_at | date: "%b %-d, %Y"}})</span><br>
                 <span class="title">{{release.name}}</span>
                 <div class="desc">
                     {{release.body | truncatewords: 20}}
