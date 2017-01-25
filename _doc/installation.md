@@ -13,7 +13,7 @@ In order to use Bacter and visualize its analysis results the following
 software must be installed:
 
 -   BEAST 2 version 2.4 or later. <http://www.beast2.org/>
--   Tracer version 1.6 or later. <http://https://github.com/beast-dev/tracer/releases/latest>
+-   Tracer version 1.6 or later. <https://github.com/beast-dev/tracer/releases/latest>
 -   A recent version of [Mozilla Firefox](http://www.mozilla.org/firefox)
     or [Google Chrome](http://www.google.com/chrome).
 
