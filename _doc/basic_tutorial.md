@@ -134,7 +134,7 @@ Analyzing the results
 ---------------------
 
 During the analysis results are written to several files which can
-usually located in the same directory as the directory containin the
+usually located in the same directory as the directory containing the
 input XML. These are:
 
 1.  The **log** file, which ends in the extension .log and contains
