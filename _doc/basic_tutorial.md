@@ -164,9 +164,9 @@ the results we already have.
 
 ### Viewing sampled ARGs
 
-The ARGs sampled during a Bacter analysis can be viewed using
+The ARGs sampled during a Bacter analysis can be viewed using the
 browser-based [IcyTree](http://tgvaughan.github.io/icytree) phylogenetic
-tree and network viewer. Betware that the viewer requires an up-to-date
+tree and network visualizer. Beware that the viewer requires an up-to-date
 version of Firefox or Chrome to function correctly.
 
 To use the viewer, simply open the
@@ -206,7 +206,7 @@ the inference result at best, and at worst they may be completely
 misleading. This is because they contain no indication in the
 uncertainty inherent in what the sequence data tells us of the events
 they describe. Thus, while a single ARG sample may contain features that
-are well-supported by the data, the same ARG will likeliy contain many
+are well-supported by the data, the same ARG will likely contain many
 features that have little or no support at all.
 
 What is needed is some kind of picture of the posterior \_distribution\_
@@ -222,7 +222,7 @@ distributed with BEAST 2.
 
 ![image](images/appstore.png){:.img-responsive}
 
-Ensure the ACGAnnotator icon is hilighted, then press the Launch button.
+Ensure the ACGAnnotator icon is highlighted, then press the Launch button.
 This will open a dialog from which you can select the ACG (tree) log
 file and the name and location of the file to which the summary is
 written. In addition, you can adjust:
@@ -281,7 +281,7 @@ In addition, notice the pair of low-support conversions between the
 clonal frame edges above leaf nodes t3 and t5/t14. These edges
 correspond to almost precisely the same sites on locus A. These two
 conversions actually represent uncertainty in the source edge of a
-single conversion comming from either t5 or t14 to arrive at t3. (From
+single conversion coming from either t5 or t14 to arrive at t3. (From
 the true ARG we see that the fragment actually comes from t5.) It is
 important to be aware of this artifact of the summary procedure. Even if
 a single connection point of a recombinant edge is known with a high
