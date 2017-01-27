@@ -66,13 +66,13 @@ getPopSizesLinear <- function(t, df, idstr) {
 }
 
 getNindices <- function(df, idstr) {
-    pattern <- paste("^", idstr, ".N", sep='')
+    pattern <- paste("^", gsub(":", ".", idstr), ".N", sep='')
 
     return(which(regexpr(pattern, names(df))>0))
 }
 
 getTindices <- function(df, idstr) {
-    pattern <- paste("^", idstr, ".t", sep='')
+    pattern <- paste("^", gsub(":", ".", idstr), ".t", sep='')
 
     return(which(regexpr(pattern, names(df))>0))
 }
