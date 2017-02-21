@@ -1,0 +1,81 @@
+<!--
+  ~ Copyright (C) 2015 Tim Vaughan <tgvaughan@gmail.com>
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<beast version='2.0'
+    namespace='beast.core
+    :beast.core.util
+    :beast.core.parameter
+    :beast.evolution.operators
+    :beast.evolution.sitemodel
+    :beast.evolution.substitutionmodel
+    :beast.evolution.tree
+    :beast.evolution.tree.coalescent
+    :beast.evolution.alignment
+    :beast.math.distributions
+    :beast.util
+    :bacter
+    :bacter.model
+    :bacter.operators
+    :bacter.util
+    :bacter.devutils'>
+
+    <taxonSet spec="TaxonSet" id="taxonSet">
+        <taxon spec="Taxon" id="t1"/>
+        <taxon spec="Taxon" id="t2"/>
+        <taxon spec="Taxon" id="t3"/>
+        <taxon spec="Taxon" id="t4"/>
+        <taxon spec="Taxon" id="t5"/>
+        <taxon spec="Taxon" id="t6"/>
+        <taxon spec="Taxon" id="t7"/>
+        <taxon spec="Taxon" id="t8"/>
+        <taxon spec="Taxon" id="t9"/>
+        <taxon spec="Taxon" id="t10"/>
+        <taxon spec="Taxon" id="t11"/>
+        <taxon spec="Taxon" id="t12"/>
+        <taxon spec="Taxon" id="t13"/>
+        <taxon spec="Taxon" id="t14"/>
+        <taxon spec="Taxon" id="t15"/>
+        <taxon spec="Taxon" id="t16"/>
+        <taxon spec="Taxon" id="t17"/>
+        <taxon spec="Taxon" id="t18"/>
+        <taxon spec="Taxon" id="t19"/>
+        <taxon spec="Taxon" id="t20"/>
+    </taxonSet>
+
+
+    <!-- Simulated ACG (Truth) -->
+
+    <input spec='SimulatedACG' id='acgTruth'
+        rho="0.005" delta="1000.0"
+        outputFileName="simulated_acg.nexus" taxonset="@taxonSet">
+        <locus spec="Locus" id="locus" siteCount="10000"/>
+        <populationModel spec='ConstantPopulation' popSize="1.0"/>
+    </input>
+
+    <!-- Simulated Alignment (Truth) -->
+
+    <input spec='SimulatedAlignment' id='a' acg="@acgTruth" locus="@locus"
+        outputFileName="simulated_alignment1.nexus" useNexus="true">
+        <siteModel spec='SiteModel' mutationRate="0.005">
+            <substModel spec='JukesCantor'/>
+        </siteModel>
+    </input>
+
+    <run spec="ComputeCPDMatrix" outFileName="$(filebase)_cpd.txt" alignment="@a"/>
+
+</beast>
+
