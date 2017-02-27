@@ -639,8 +639,8 @@ public class ConversionGraph extends Tree {
         }
         
         // Sort events from oldest to youngest.
-        Collections.sort(events, (Event e1, Event e2) -> {
-            if (e1.time>e2.time)
+        events.sort((Event e1, Event e2) -> {
+            if (e1.time > e2.time)
                 return -1;
             else
                 return 1;
