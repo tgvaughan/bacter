@@ -1,8 +1,10 @@
-language: java
+sudo: require
 
-jdk:
-  - oraclejdk8
+services:
+    - docker
 
-#sudo: false
-sudo: required
-dist: trusty
+before_install:
+    - docker build -t docker-image .
+
+script:
+    - docker run docker-image
