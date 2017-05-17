@@ -59,7 +59,7 @@ directory in the file named COPYING.
 Acknowledgements
 ----------------
 
-Work on this project is made possible by the support of the following insitutions:
+Work on this project is made possible by the support of the following institutions:
 
 * [The Allan Wilson Centre for Molecular Ecology and Evolution]
   (http://www.allanwilsoncentre.ac.nz)
