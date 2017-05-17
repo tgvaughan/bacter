@@ -6,7 +6,7 @@ bacter
 Bacter is a [BEAST 2] (http://www.beast2.org)  package which facilitates
 inference of a (restricted kind of) ancestral recombination graph (ARG) and
 related parameters from a sequence alignment.  It is based on the model
-described in [Didelot et al.'s 2010 Genetics paper] [1].
+described in [Didelot et al.'s 2010 Genetics paper][1].
 
 This archive contains the source code of the package and is therefore of
 primary interest to programmers.  For installation and usage instructions, as
@@ -18,7 +18,7 @@ Archive Contents
 
 * `/examples` : Example XML files, simulated data for the tutorial and a
   Jupyter notebook with implementation validation details. (You can view this
-  notebook [online] [2].) 
+  notebook [online][2].) 
 * `/lib` : Required libraries.
 * `/src` : Java source code.
 * `/test` : Java source code (unit tests).
@@ -61,15 +61,13 @@ Acknowledgements
 
 Work on this project is made possible by the support of the following institutions:
 
-* [The Allan Wilson Centre for Molecular Ecology and Evolution]
-  (http://www.allanwilsoncentre.ac.nz)
+* [The Allan Wilson Centre for Molecular Ecology and Evolution](http://www.allanwilsoncentre.ac.nz)
 
-* [The Royal Society of New Zealand's Marsden Fund]
-  (http://www.royalsociety.org.nz/programmes/funds/marsden/)
+* [The Royal Society of New Zealand's Marsden Fund](http://www.royalsociety.org.nz/programmes/funds/marsden/)
 
-* [The University of Auckland] (http://auckland.ac.nz)
+* [The University of Auckland](http://auckland.ac.nz)
 
-* [Massey University] (http://www.massey.ac.nz)
+* [Massey University](http://www.massey.ac.nz)
 
 [1]: http://www.genetics.org/content/186/4/1435
 [2]: http://nbviewer.jupyter.org/github/tgvaughan/bacter/blob/master/examples/Validation.ipynb
