@@ -3,7 +3,7 @@ bacter
 
 [![Build Status](https://travis-ci.org/tgvaughan/bacter.svg?branch=master)](https://travis-ci.org/tgvaughan/bacter)
 
-Bacter is a [BEAST 2] (http://www.beast2.org)  package which facilitates
+Bacter is a [BEAST 2](http://www.beast2.org)  package which facilitates
 inference of a (restricted kind of) ancestral recombination graph (ARG) and
 related parameters from a sequence alignment.  It is based on the model
 described in [Didelot et al.'s 2010 Genetics paper][1].
