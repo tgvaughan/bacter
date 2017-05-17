@@ -450,7 +450,7 @@ public class ConversionGraph extends Tree {
     
     @Override
     public void fromXML(final org.w3c.dom.Node node) {
-        fromExtendedNewick(node.getTextContent());
+        fromExtendedNewick(node.getTextContent().replaceAll("&amp", "&"));
     }
 
     @Override
