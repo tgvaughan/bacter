@@ -20,9 +20,15 @@ package bacter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import bacter.util.IntRanges;
+import beast.evolution.tree.Node;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -38,6 +44,12 @@ public class RegionList {
     private Locus locus;
     private boolean dirty;
 
+    private Map<Conversion, List<Integer>> affectedSites = new HashMap<>();
+    private Map<Conversion, Integer> affectedSiteCount = new HashMap<>();
+    private Map<Conversion, Double> affectedSiteFraction = new HashMap<>();
+    
+    private ACGEventList acgEventList;
+    
     /**
      * Ancestral conversion graph this list belongs to.
      */
@@ -64,7 +76,12 @@ public class RegionList {
      * @return region list
      */
     public List<Region> getRegions() {
-        updateRegionList();
+		synchronized (this) {
+			if (dirty) {
+				updateRegionList();
+				dirty = false;
+			}
+		}
 
         return regions;
     }
@@ -74,11 +91,11 @@ public class RegionList {
      * 
      * @return region count
      */
-    public int getRegionCount() {
-        updateRegionList();
-
-        return regions.size();
-    }
+//    public int getRegionCount() {
+//        updateRegionList();
+//
+//        return regions.size();
+//    }
 
     /**
      * Mark the region list as dirty.
@@ -87,75 +104,199 @@ public class RegionList {
         dirty = true;
     }
    
+    
+    public Map<Conversion, Integer> getAffectedSiteCount(){  
+    	return null;
+    }
+    
     /**
      * Assemble list of regions of contiguous sites that possess a single
      * marginal tree.
      */
-    public void updateRegionList() {
-        if (!dirty)
-            return;
+    private void updateRegionList() {
+    	
+		regions.clear();
 
-        regions.clear();
+		/*
+		 * Assemble lists of conversions ordered by start and end sites. Note
+		 * that these are COPIES of the conversion objects attached to the ACG.
+		 * This ensures that subsequent modifications of these objects won't
+		 * break our contract with the HashSet<Conversion> objects in the
+		 * likelihood code.
+		 */
+		List<Conversion> convOrderedByStart = new ArrayList<>();
+		Map<Conversion, Integer> affectedSiteCount = acg.affectedSiteList.getAffectedSiteCount();
+		acg.getConversions(locus).forEach(conversion -> {
+			if (affectedSiteCount.get(conversion) > 0)
+				convOrderedByStart.add(conversion.getCopy());
+		});
+		convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
 
-        AffectedSiteList affectedSiteList = new AffectedSiteList(acg);
+		List<Conversion> convOrderedByEnd = new ArrayList<>();
+		convOrderedByEnd.addAll(convOrderedByStart);
+		convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
 
-        /* Assemble lists of conversions ordered by start and end sites.
-        Note that these are COPIES of the conversion objects attached
-        to the ACG. This ensures that subsequent modifications of these
-        objects won't break our contract with the HashSet<Conversion>
-        objects in the likelihood code.
-        */
-        List<Conversion> convOrderedByStart = new ArrayList<>();
-        acg.getConversions(locus).forEach(conversion -> {
-            if (affectedSiteList.affectedSiteCount.get(conversion)>0)
-                convOrderedByStart.add(conversion.getCopy());
-        });
-        convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
+		Set<Conversion> activeConversions = Sets.newHashSet();
 
-        List<Conversion> convOrderedByEnd = new ArrayList<>();
-        convOrderedByEnd.addAll(convOrderedByStart);
-        convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
+		int lastBoundary = 0;
 
-        Set<Conversion> activeConversions = Sets.newHashSet();
+		while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
-        int lastBoundary = 0;
+			int nextStart;
+			if (!convOrderedByStart.isEmpty())
+				nextStart = convOrderedByStart.get(0).getStartSite();
+			else
+				nextStart = Integer.MAX_VALUE;
 
-        while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
+			int nextEnd;
+			if (!convOrderedByEnd.isEmpty())
+				nextEnd = convOrderedByEnd.get(0).getEndSite() + 1;
+			else
+				nextEnd = Integer.MAX_VALUE;
 
-            int nextStart;
-            if (!convOrderedByStart.isEmpty())
-                nextStart = convOrderedByStart.get(0).getStartSite();
-            else
-                nextStart = Integer.MAX_VALUE;
+			int nextBoundary = Math.min(nextStart, nextEnd);
+			if (nextBoundary > lastBoundary) {
+				Region region = new Region(lastBoundary, nextBoundary, activeConversions);
+				regions.add(region);
+			}
 
-            int nextEnd;
-            if (!convOrderedByEnd.isEmpty())
-                nextEnd = convOrderedByEnd.get(0).getEndSite() + 1;
-            else
-                nextEnd = Integer.MAX_VALUE;
+			if (nextStart < nextEnd) {
+				activeConversions.add(convOrderedByStart.get(0));
+				convOrderedByStart.remove(0);
+				lastBoundary = nextStart;
+			} else {
+				activeConversions.remove(convOrderedByEnd.get(0));
+				convOrderedByEnd.remove(0);
+				lastBoundary = nextEnd;
+			}
+		}
 
-            int nextBoundary = Math.min(nextStart, nextEnd);
-            if (nextBoundary > lastBoundary) {
-                Region region = new Region(lastBoundary, nextBoundary, activeConversions);
-                regions.add(region);
+		if (lastBoundary < locus.getSiteCount()) {
+			Region region = new Region(lastBoundary, locus.getSiteCount(), new HashSet<>());
+			regions.add(region);
+		}
+	}
+    
+    private void updateAffectedSiteCounts(Locus locus){
+    	
+        affectedSites.clear();
+        affectedSiteCount.clear();
+        affectedSiteFraction.clear();
+        
+        Map<Node, List<Integer>> activeCFNodes = new HashMap<>();
+        Set<Conversion> activeConversions = new HashSet<>();
+
+        //List<Integer> ancestralSitesCF;
+
+        int leavesSeen = 0;
+        boolean mrcaReached = false;
+        for (ACGEventList.Event event : acgEventList.getACGEvents()) {
+
+            if (mrcaReached) {
+                if (event.type == ACGEventList.EventType.CONV_DEPART) {
+                    affectedSites.put(event.conversion, new ArrayList<>());
+                    affectedSiteCount.put(event.conversion, 0);
+                    affectedSiteFraction.put(event.conversion, 0.0);
+                }
+
+                continue;
             }
 
-            if (nextStart < nextEnd) {
-                activeConversions.add(convOrderedByStart.get(0));
-                convOrderedByStart.remove(0);
-                lastBoundary = nextStart;
-            } else {
-                activeConversions.remove(convOrderedByEnd.get(0));
-                convOrderedByEnd.remove(0);
-                lastBoundary = nextEnd;
+            switch (event.type) {
+                case CF_LEAF:
+                	activeCFNodes.put(event.node, getLeafAncestralSites());
+                    leavesSeen += 1;
+                    break;
+
+                case CF_COALESCENCE:
+                    Node node1 = event.node.getLeft();
+                    Node node2 = event.node.getRight();
+
+                    List<Integer> ancestralSitesCF = IntRanges.getUnion(activeCFNodes.get(node1), activeCFNodes.get(node2));                    
+
+                    activeCFNodes.remove(node1);
+                    activeCFNodes.remove(node2);
+                    activeCFNodes.put(event.node, ancestralSitesCF);
+
+                    if (leavesSeen == acg.getLeafNodeCount() && haveReachedAllMRCAs(activeCFNodes, activeConversions))
+                        mrcaReached = true;
+
+                    break;
+
+                case CONV_DEPART:
+                	if(event.conversion.getLocus() == locus){
+                    List<Integer> inside = new ArrayList<>();
+                    List<Integer> outside = new ArrayList<>();
+                    IntRanges.partitionRanges(activeCFNodes.get(event.node),
+                            event.conversion.getStartSite(),
+                            event.conversion.getEndSite() + 1,
+                            inside, outside);
+
+                    affectedSites.put(event.conversion, inside);
+                    affectedSiteCount.put(event.conversion, IntRanges.getTotalSites(inside));
+                    affectedSiteFraction.put(event.conversion, IntRanges.getTotalSites(inside) / (double) event.conversion.getSiteCount());                
+                    activeCFNodes.put(event.node, outside);
+                    activeConversions.add(event.conversion);
+                	}
+                    break;
+
+                case CONV_ARRIVE:
+                	activeCFNodes.put(event.node, IntRanges.getUnion(affectedSites.get(event.conversion), activeCFNodes.get(event.node)));
+                    activeConversions.remove(event.conversion);
+
+                    if (leavesSeen == acg.getLeafNodeCount() && haveReachedAllMRCAs(activeCFNodes, activeConversions))
+                        mrcaReached = true;
+                    break;
             }
-        }
 
-        if (lastBoundary < locus.getSiteCount()) {
-            Region region = new Region(lastBoundary, locus.getSiteCount(), new HashSet<>());
-            regions.add(region);
         }
+    }
+    
+    /**
+     * Assembles complete site list for association with a leaf node.
+     *
+     * @return list of sites
+     */
+    protected List<Integer> getLeafAncestralSites() {
+    	List<Integer> siteRange = new ArrayList<>(2);
+    	siteRange.add(0);
+    	siteRange.add(locus.getSiteCount() - 1);
+        return siteRange;
+    }
 
-        dirty = false;
+    /**
+     * Test to see whether MRCA of every site has been found.
+     * This is actually pretty expensive.  There's got to be a better way...
+     *
+     * @param activeCFNodes set of active CF nodes and the sites they represent
+     * @param activeConversions set of active conversions and the sites they represent
+     * @return true if all sites have found an MRCA, false otherwise
+     */
+    protected boolean haveReachedAllMRCAs(Map<Node, List<Integer>> activeCFNodes, Set<Conversion> activeConversions) {
+
+            List<Integer> startSites = new ArrayList<>();
+            List<Integer> endSites = new ArrayList<>();
+            for (Node node : activeCFNodes.keySet()) {
+                for (int i = 0; i < activeCFNodes.get(node).size(); i += 2) {
+                    startSites.add(activeCFNodes.get(node).get(i));
+                    endSites.add(activeCFNodes.get(node).get(i + 1));
+                }
+            }
+
+            for (Conversion conv : activeConversions) {
+                for (int i = 0; i < affectedSites.get(conv).size(); i += 2) {
+                    startSites.add(affectedSites.get(conv).get(i));
+                    endSites.add(affectedSites.get(conv).get(i + 1));
+                }
+            }
+
+            Collections.sort(startSites);
+            Collections.sort(endSites);
+
+            for (int i = 0; i < startSites.size() - 1; i++) {
+                if (startSites.get(i + 1) < endSites.get(i))
+                    return false;
+            }
+        return true;
     }
 }

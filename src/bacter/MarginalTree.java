@@ -29,11 +29,27 @@ import java.util.*;
 public class MarginalTree {
 
     MarginalNode marginalRoot;
+    
+    MarginalNode postOrderNodes[];
+    Deque<MarginalNode> stack = new ArrayDeque<>();
+    ConversionGraph acg;
+	Map<Conversion, MarginalNode> activeConversions = new HashMap<>();
+    Map<Node, MarginalNode> activeCFlineages = new HashMap<>();
+    ArrayList<ConversionEvent> convEvents = new ArrayList<>();
 
     public MarginalNode getRoot() {
         return marginalRoot;
     }
 
+    public MarginalTree(ConversionGraph acg) {
+    	this.acg = acg;
+    	postOrderNodes = new MarginalNode[acg.getNodeCount()];
+    	
+    	for(int i = 0; i < acg.getNodeCount(); i++ ){
+    		postOrderNodes[i] = new MarginalNode();
+    	}
+    }
+    
     public MarginalTree(ConversionGraph acg, Region region) {
         this(acg, region.activeConversions);
     }
@@ -154,6 +170,148 @@ public class MarginalTree {
 
         // A single active CF lineage should remain:
         marginalRoot = activeCFlineages.get(acg.getRoot());
+    }
+    
+    public MarginalNode[] getPostOrderNodes(Set<Conversion> convSet){
+    	
+    	activeConversions.clear();
+        activeCFlineages.clear();
+        convEvents.clear();
+        
+        stack.clear();
+        for( MarginalNode node : postOrderNodes){
+        	stack.push(node);
+        }
+        
+        int nextNonLeafNr = acg.getLeafNodeCount();
+
+        convSet.forEach(conversion -> {
+            convEvents.add(new ConversionEvent(conversion, false));
+            convEvents.add(new ConversionEvent(conversion, true));
+        });
+        convEvents.sort((c1, c2) -> {
+            if (c1.height < c2.height)
+                return -1;
+
+            if (c1.height > c2.height)
+                return 1;
+
+            return 0;
+        });
+
+        List<CFEventList.Event> cfEvents = acg.getCFEvents();
+
+        int convEventIdx=0;
+        for (int eventIdx=0; eventIdx<cfEvents.size(); eventIdx++) {
+            CFEventList.Event event = cfEvents.get(eventIdx);
+
+            switch (event.getType()) {
+                case SAMPLE:
+                    MarginalNode marginalLeaf = stack.pop();
+                    marginalLeaf.removeAllChildren(false);
+                    marginalLeaf.setHeight(event.getHeight());
+                    marginalLeaf.setID(event.getNode().getID());
+                    marginalLeaf.setNr(event.getNode().getNr());
+                    marginalLeaf.cfNodeNr = event.getNode().getNr();
+                    activeCFlineages.put(event.getNode(), marginalLeaf);
+                    break;
+
+                case COALESCENCE:
+                    if (activeCFlineages.containsKey(event.getNode().getLeft())
+                            && activeCFlineages.containsKey(event.getNode().getRight())) {
+
+                        MarginalNode marginalNode = stack.pop();
+                        marginalNode.removeAllChildren(false);
+                        marginalNode.setNr(nextNonLeafNr++);
+                        marginalNode.cfNodeNr = event.getNode().getNr();
+                        Node marginalLeft = activeCFlineages.get(event.getNode().getLeft());
+                        Node marginalRight = activeCFlineages.get(event.getNode().getRight());
+
+                        marginalNode.setHeight(event.getHeight());
+                        marginalNode.addChild(marginalLeft);
+                        marginalNode.addChild(marginalRight);
+
+                        activeCFlineages.remove(event.getNode().getLeft());
+                        activeCFlineages.remove(event.getNode().getRight());
+                        activeCFlineages.put(event.getNode(), marginalNode);
+
+                    } else {
+
+                        if (activeCFlineages.containsKey(event.getNode().getLeft())) {
+                            MarginalNode marginalNode = activeCFlineages.get(event.getNode().getLeft());
+                            activeCFlineages.remove(event.getNode().getLeft());
+                            activeCFlineages.put(event.getNode(), marginalNode);
+                            break;
+                        }
+
+                        if (activeCFlineages.containsKey(event.getNode().getRight())) {
+                            MarginalNode marginalNode = activeCFlineages.get(event.getNode().getRight());
+                            activeCFlineages.remove(event.getNode().getRight());
+                            activeCFlineages.put(event.getNode(), marginalNode);
+                            break;
+                        }
+                    }
+                    break;
+            }
+
+            while (convEventIdx < convEvents.size() &&
+                    (event.node.isRoot() || convEvents.get(convEventIdx).height < cfEvents.get(eventIdx + 1).getHeight())) {
+                ConversionEvent convEvent = convEvents.get(convEventIdx++);
+
+                if (convEvent.isDeparture) {
+                    if (activeCFlineages.containsKey(convEvent.conversion.getNode1())) {
+                        MarginalNode marginalNode = activeCFlineages.get(convEvent.conversion.getNode1());
+                        activeCFlineages.remove(convEvent.conversion.getNode1());
+                        activeConversions.put(convEvent.conversion, marginalNode);
+                    }
+
+                } else {
+                    if (activeCFlineages.containsKey(convEvent.conversion.getNode2())
+
+                            && activeConversions.containsKey(convEvent.conversion)) {
+                        MarginalNode marginalNode = stack.pop();
+                        marginalNode.removeAllChildren(false);
+                        marginalNode.setNr(nextNonLeafNr++);
+                        marginalNode.cfNodeNr = -1;
+                        MarginalNode marginalLeft = activeCFlineages.get(convEvent.conversion.getNode2());
+                        MarginalNode marginalRight = activeConversions.get(convEvent.conversion);
+
+                        marginalNode.setHeight(convEvent.height);
+                        marginalNode.addChild(marginalLeft);
+                        marginalNode.addChild(marginalRight);
+
+                        activeConversions.remove(convEvent.conversion);
+                        activeCFlineages.put(convEvent.conversion.getNode2(), marginalNode);
+
+                    } else {
+
+                        if (activeConversions.containsKey(convEvent.conversion)) {
+                            MarginalNode marginalNode = activeConversions.get(convEvent.conversion);
+                            activeConversions.remove(convEvent.conversion);
+                            activeCFlineages.put(convEvent.conversion.getNode2(), marginalNode);
+                        }
+                    }
+                }
+            }
+        }
+
+        // A single active CF lineage should remain:
+        marginalRoot = activeCFlineages.get(acg.getRoot());
+        
+        
+        MarginalNode []postNodes = new MarginalNode[acg.getNodeCount()];
+        int i = postOrderNodes.length-1;
+        stack.push(marginalRoot);
+        while (!stack.isEmpty()) {
+            MarginalNode n = stack.pop();
+            if (!n.isLeaf()) {
+                stack.push((MarginalNode)n.getLeft());
+                stack.push((MarginalNode)n.getRight());
+            }
+            postNodes[i--] = n;
+        }
+        
+    	return postNodes;
     }
 
     @Override

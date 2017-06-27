@@ -137,40 +137,42 @@ public class CFEventList {
      * to these events.
      */
     public void updateEvents() {
-        if (!dirty)
-            return;
-        
-        events.clear();
-        
-        // Create event list
-        for (Node node : acg.getNodesAsArray()) {
-            Event event = new Event(node);
-            events.add(event);
-        }
-        
-        // Sort events in increasing order of their times
-        Collections.sort(events, (Event o1, Event o2) -> {
-            if (o1.t<o2.t)
-                return -1;
-            
-            if (o2.t<o1.t)
-                return 1;
-            
-            return 0;
-        });
-        
-        // Compute lineage counts:
-        int k=0;
-        for (Event event : events) {
-            if (event.type == EventType.SAMPLE)
-                k += 1;
-            else
-                k -= 1;
-            
-            event.lineages = k;
-        }
+    	
+		synchronized (this) {
+			if (dirty) {
 
+				events.clear();
 
-        dirty = false;
-    }
+				// Create event list
+				for (Node node : acg.getNodesAsArray()) {
+					Event event = new Event(node);
+					events.add(event);
+				}
+
+				// Sort events in increasing order of their times
+				Collections.sort(events, (Event o1, Event o2) -> {
+					if (o1.t < o2.t)
+						return -1;
+
+					if (o2.t < o1.t)
+						return 1;
+
+					return 0;
+				});
+
+				// Compute lineage counts:
+				int k = 0;
+				for (Event event : events) {
+					if (event.type == EventType.SAMPLE)
+						k += 1;
+					else
+						k -= 1;
+
+					event.lineages = k;
+				}
+
+				dirty = false;
+			}
+		}
+	}
 }

@@ -80,12 +80,17 @@ public class ConversionGraph extends Tree {
 
     protected List<Locus> loci;
     protected int totalSequenceLength;
+    
+    public AffectedSiteList affectedSiteList; //MF
+    
 
     @Override
     public void initAndValidate() {
 
         convs = new HashMap<>();
         storedConvs = new HashMap<>();
+
+        affectedSiteList = new AffectedSiteList(this);
 
         if (lociInput.get().isEmpty())
                 throw new RuntimeException("Must specify at least one locus " +
@@ -268,10 +273,9 @@ public class ConversionGraph extends Tree {
     }
 
     public int getUselessConvCount() {
-        AffectedSiteList asList = new AffectedSiteList(this);
 
         int count = 0;
-        for (int asCount : asList.affectedSiteCount.values()) {
+        for (int asCount : affectedSiteList.getAffectedSiteCount().values()) {
             if (asCount == 0)
                 count += 1;
         }
@@ -457,6 +461,8 @@ public class ConversionGraph extends Tree {
     public ConversionGraph copy() {
         ConversionGraph acg = new ConversionGraph();
 
+        acg.affectedSiteList = new AffectedSiteList(acg);
+
         acg.setID(getID());
 
         acg.index = index;
@@ -588,8 +594,9 @@ public class ConversionGraph extends Tree {
      */
     public String getExtendedNewick(boolean computeAffectedSites) {
         AffectedSiteList asList = null;
-        if (computeAffectedSites)
-            asList = new AffectedSiteList(this);
+        if (computeAffectedSites){
+            asList = affectedSiteList;
+        }
 
         return extendedNewickTraverse(root, asList, false) + ";";
 
@@ -676,8 +683,8 @@ public class ConversionGraph extends Tree {
 
                 if (asList != null) {
                     meta += String.format(", affectedSites=%d, uselessSiteFraction=%g",
-                            asList.affectedSiteCount.get(event.conv),
-                            1.0-asList.affectedSiteFraction.get(event.conv));
+                            asList.getAffectedSiteCount().get(event.conv),
+                            1.0-asList.getAffectedSiteFraction().get(event.conv));
                 }
 
                 if (event.conv.newickMetaDataMiddle != null)
@@ -1019,6 +1026,7 @@ public class ConversionGraph extends Tree {
         storedConvs = convs;
         convs = tmp;
 
+        affectedSiteList.makeDirty();
         cfEventList.makeDirty();
         for (Locus locus : loci)
             regionLists.get(locus).makeDirty();
@@ -1035,6 +1043,7 @@ public class ConversionGraph extends Tree {
         if (regionLists != null)
             for (RegionList regionList : regionLists.values())
                 regionList.makeDirty();
+        affectedSiteList.makeDirty();
     }
 
     /**

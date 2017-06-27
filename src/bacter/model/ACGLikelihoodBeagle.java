@@ -135,17 +135,20 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
 
     @Override
     public double calculateLogP() {
-        updatePatterns();
-        updateBeagleInstances();
+    	
+    	List<Region> regionList = acg.getRegions(locus);
+    	
+        updatePatterns(regionList);
+        updateBeagleInstances(regionList);
 
         logP = 0.0;
 
-        regionLogLikelihoods.keySet().retainAll(acg.getRegions(locus));
+        regionLogLikelihoods.keySet().retainAll(regionList);
 
         int rootNr = acg.getRoot().getNr();
         double[] regionLogP = new double[1];
 
-        for (Region region : acg.getRegions(locus)) {
+        for (Region region : regionList) {
 
             if (!regionLogLikelihoods.containsKey(region)) {
                 Beagle beagle = beagleInstances.get(region);
@@ -184,8 +187,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
     /**
      * Ensure pattern counts are up to date.
      */
-    private void updatePatterns() {
-        List<Region> regionList = acg.getRegions(locus);
+    private void updatePatterns(List<Region> regionList) {
 
         // Remove stale pattern sets
         patterns.keySet().retainAll(regionList);
@@ -238,9 +240,8 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
     /**
      * Initialize beagle instances.
      */
-    private void updateBeagleInstances() {
+    private void updateBeagleInstances(List<Region> regionList) {
 
-        List<Region> regionList = acg.getRegions(locus);
         beagleInstances.keySet().retainAll(regionList);
 
         for (Region region : regionList) {

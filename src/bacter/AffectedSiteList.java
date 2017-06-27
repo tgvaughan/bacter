@@ -14,12 +14,15 @@ import java.util.*;
  */
 public class AffectedSiteList {
 
-    ConversionGraph acg;
-    public Map<Conversion, List<Integer>> affectedSites;
-    public Map<Conversion, Integer> affectedSiteCount;
-    public Map<Conversion, Double> affectedSiteFraction;
+    private ConversionGraph acg;
+    private Map<Conversion, List<Integer>> affectedSites;
+    private Map<Conversion, Integer> affectedSiteCount;
+    private Map<Conversion, Double> affectedSiteFraction;
+    
 
-    ACGEventList acgEventList;
+    private boolean dirty;
+
+    private ACGEventList acgEventList;
 
     public AffectedSiteList(ConversionGraph acg) {
         this.acg = acg;
@@ -28,6 +31,40 @@ public class AffectedSiteList {
         affectedSites = new HashMap<>();
         affectedSiteCount = new HashMap<>();
         affectedSiteFraction = new HashMap<>();
+        
+        dirty = true;
+    }
+    
+    public void makeDirty() {
+        dirty = true;
+        acgEventList.makeDirty();
+    }
+
+    public Map<Conversion, Double> getAffectedSiteFraction(){
+    	synchronized(this){
+	    	if(dirty){
+	    		update();
+	    		dirty = false;
+	    	}
+    	}
+    	return affectedSiteFraction;
+    }
+    
+    public Map<Conversion, Integer> getAffectedSiteCount(){    	
+    	synchronized(this){
+	    	if(dirty){
+	    		update();
+	    		dirty = false;
+	    	}
+    	}
+    	return affectedSiteCount;
+    }
+    
+    private void update(){
+    	
+        affectedSites.clear();
+        affectedSiteCount.clear();
+        affectedSiteFraction.clear();
 
         Map<Node, Map<Locus, List<Integer>>> activeCFNodes = new HashMap<>();
         Map<Locus, Set<Conversion>> activeConversions = new HashMap<>();
@@ -117,7 +154,7 @@ public class AffectedSiteList {
         Map<Locus, List<Integer>> res = new HashMap<>();
 
         for (Locus locus : acg.getLoci()) {
-            List<Integer> siteRange = new ArrayList<>();
+            List<Integer> siteRange = new ArrayList<>(2);
             siteRange.add(0);
             siteRange.add(locus.getSiteCount() - 1);
             res.put(locus, siteRange);
