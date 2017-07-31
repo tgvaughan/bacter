@@ -20,6 +20,7 @@ import bacter.*;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.State;
+import beast.core.util.Log;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.branchratemodel.BranchRateModel;
 import beast.evolution.branchratemodel.StrictClockModel;
@@ -136,8 +137,32 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         probabilities = new double[(nStates+1)*(nStates+1)];
     }
 
+    protected double scaleFactor = 1.0;
+    protected double scaleFactorMultiplier = 1.01;
+    protected double maxScaleFactor = 100.0;
+
     @Override
     public double calculateLogP() {
+
+        while (true) {
+            doLogPCalculation();
+
+            if (logP>Double.NEGATIVE_INFINITY || scaleFactor>=maxScaleFactor)
+                return logP;
+
+            scaleFactor *= scaleFactorMultiplier;
+            Log.warning.println("Turning on scaling to prevent numeric instability. Scale factor: " + scaleFactor);
+
+            for (LikelihoodCore core : likelihoodCores.values())
+                core.setUseScaling(scaleFactor);
+
+            requiresRecalculation();
+        }
+    }
+
+
+
+    protected void doLogPCalculation() {
         updatePatterns();
         updateCores();
 
@@ -169,8 +194,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
         }
 
 //        System.out.println("Cache hit rate: " + cacheHits/(double)(cacheMisses + cacheHits));
-
-        return logP;
     }
 
     /**
@@ -251,13 +274,16 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 likelihoodCore = new BeerLikelihoodCore4();
             else
                 likelihoodCore = new BeerLikelihoodCore(nStates);
-                
+
             likelihoodCores.put(region, likelihoodCore);
 
             likelihoodCore.initialize(acg.getNodeCount(),
                     patterns.get(region).elementSet().size(),
                     siteModel.getCategoryCount(),
                     true, false);
+
+            if (scaleFactor>1.0)
+                likelihoodCore.setUseScaling(scaleFactor);
 
             if (useAmbiguitiesInput.get())
                 setPartials(likelihoodCore, patterns.get(region));
