@@ -28,6 +28,7 @@ Archive Contents
 * `build.xml` : Ant build script.
 * `.gitignore` : Causes SCM to ignore certain files
 * `.travis.yml` : Control file for Travis CI server
+* `Dockerfile`: Used by Travis to build a reproducible test environment.
 * `COPYING` : Software license.
 * `README.md` : This file.
 
