@@ -39,9 +39,9 @@ import java.util.regex.Pattern;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Conversion graph based around the clonal frame.")
-@Citation("TG Vaughan, D Welch, AJ Drummond, PJ Biggs, T George, NP French,\n" +
+@Citation("TG Vaughan, D Welch, AJ Drummond, PJ Biggs, T George, NP French\n" +
         "Inferring Ancestral Recombination Graphs from Bacterial Genomic Data,\n" +
-        "Genetics, DOI: 10.1534/genetics.116.193425")
+        "Genetics, 205(2):857 (2017)")
 public class ConversionGraph extends Tree {
     
     /**
