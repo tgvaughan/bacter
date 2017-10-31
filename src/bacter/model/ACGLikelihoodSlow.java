@@ -47,11 +47,20 @@ public class ACGLikelihoodSlow extends GenericTreeLikelihood {
             "Locus associated with alignment to evaluate probability of.",
             Input.Validate.REQUIRED);
 
+    public Input<Boolean> useAmbiguitiesInput = new Input<>(
+            "useAmbiguities",
+            "Whether sites containing ambiguous states should be handled " +
+                    "instead of ignored (the default)", false);
+
     protected ConversionGraph acg;
     protected Locus locus;
     protected Alignment alignment;
     protected SubstitutionModel.Base substitutionModel;
     protected SiteModel.Base siteModel;
+
+    public ACGLikelihoodSlow() {
+        dataInput.setRule(Input.Validate.OPTIONAL);
+    }
 
     @Override
     public void initAndValidate() {
@@ -94,7 +103,8 @@ public class ACGLikelihoodSlow extends GenericTreeLikelihood {
             treeLikelihood.initByName(
                     "data", margAlign,
                     "tree", margTree,
-                    "siteModel", siteModel);
+                    "siteModel", siteModel,
+                    "useAmbiguities", useAmbiguitiesInput.get());
 
             logP += treeLikelihood.calculateLogP();
         }
