@@ -280,7 +280,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
             likelihoodCore.initialize(acg.getNodeCount(),
                     patterns.get(region).elementSet().size(),
                     siteModel.getCategoryCount(),
-                    true, false);
+                    true, useAmbiguitiesInput.get());
 
             if (scaleFactor>1.0)
                 likelihoodCore.setUseScaling(scaleFactor);
