@@ -306,7 +306,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     void setStates(LikelihoodCore lhc, Multiset<int[]> patterns) {
         
         for (Node node : acg.getExternalNodes()) {
-            int[] states = new int[patterns.size()];
+            int[] states = new int[patterns.elementSet().size()];
             int taxon = alignment.getTaxonIndex(node.getID());
             int i=0;
             for (int [] pattern : patterns.elementSet()) {
@@ -333,7 +333,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
     protected void setPartials(LikelihoodCore lhc, Multiset<int[]> patterns) {
         for (Node node : acg.getExternalNodes()) {
             int nStates = alignment.getDataType().getStateCount();
-            double[] partials = new double[patterns.size() * nStates];
+            double[] partials = new double[patterns.elementSet().size() * nStates];
             int k = 0;
             int iTaxon = alignment.getTaxonIndex(node.getID());
             for (int[] pattern : patterns.elementSet()) {
