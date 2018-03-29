@@ -38,7 +38,7 @@ fragment D : [0-9] ;
 RECTYPE: 'R' | 'H' | 'LGT' ;
 
 STRINGPRIM :
-    [a-zA-Z0-9|*%/.-+_&]+  // these chars don't need quotes
+    [a-zA-Z0-9|*%/.\-+_&]+  // these chars don't need quotes
     | '"' .*? '"'
     | '\'' .*? '\''
     ;
