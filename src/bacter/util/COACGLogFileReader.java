@@ -33,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Reads log file output of ClonalOrigin.
+ *
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class COACGLogFileReader implements ACGLogReader {
@@ -108,7 +110,7 @@ public class COACGLogFileReader implements ACGLogReader {
             if (xmlStreamReader != null)
                 xmlStreamReader.close();
 
-            xmlStreamReader = XMLInputFactory.newFactory().createXMLStreamReader(
+            xmlStreamReader = XMLInputFactory.newInstance().createXMLStreamReader(
                     new BufferedInputStream(new FileInputStream(logFile)));
         } catch (XMLStreamException | FileNotFoundException e) {
             throw new IOException(e.getMessage());

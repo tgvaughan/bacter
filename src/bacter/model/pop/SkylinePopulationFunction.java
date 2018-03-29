@@ -312,7 +312,7 @@ public class SkylinePopulationFunction extends PopulationFunction.Abstract imple
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(long nSample, PrintStream out) {
         prepare();
 
         for (int i=0; i<popSizes.getDimension(); i++) {

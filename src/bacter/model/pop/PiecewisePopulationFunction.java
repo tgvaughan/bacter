@@ -179,7 +179,7 @@ public class PiecewisePopulationFunction extends PopulationFunction.Abstract imp
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(long nSample, PrintStream out) {
         prepare();
 
         for (int i=0; i<popSizes.getDimension(); i++) {

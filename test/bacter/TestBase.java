@@ -102,7 +102,7 @@ public abstract class TestBase {
                     .subList(region.leftBoundary, region.rightBoundary);
 
             String taxonName = alignment.getTaxaNames().get(leafIdx);
-            String charSequence = alignment.getDataType().state2string(stateSequence);
+            String charSequence = alignment.getDataType().encodingToString(stateSequence);
 
             sequences.add(new Sequence(taxonName, charSequence));
         }
@@ -195,7 +195,7 @@ public abstract class TestBase {
         Map<Clade, Double> cladeHeights = new HashMap<>();
         
         cladeHeights.put(new Clade(root), root.getHeight());
-        for (Node node : root.getAllChildNodes())
+        for (Node node : root.getAllChildNodesAndSelf())
             if (!node.isLeaf())
                 cladeHeights.put(new Clade(node), node.getHeight());
         

@@ -122,7 +122,7 @@ public class DifferenceFromTrueACG {
 
     public static class Clade extends BitSet {
         public double age;
-    };
+    }
 
     public static Clade getClades(Clade[] clades, Node node) {
         Clade clade = new Clade();

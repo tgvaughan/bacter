@@ -24,6 +24,8 @@ import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -755,7 +757,7 @@ public class ConversionGraph extends Tree {
     public void fromExtendedNewick(String string, boolean numbered, int nodeNumberoffset) {
 
         // Spin up ANTLR
-        ANTLRInputStream input = new ANTLRInputStream(string);
+        CharStream input = CharStreams.fromString(string);
         ExtendedNewickLexer lexer = new ExtendedNewickLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ExtendedNewickParser parser = new ExtendedNewickParser(tokens);
@@ -879,7 +881,7 @@ public class ConversionGraph extends Tree {
 
 
             @Override
-            public Node visitTree(@NotNull ExtendedNewickParser.TreeContext ctx) {
+            public Node visitTree(ExtendedNewickParser.TreeContext ctx) {
                 Node root =  visitNode(ctx.node());
 
                 double minHeight = branchLengthsToHeights(root);
@@ -897,7 +899,7 @@ public class ConversionGraph extends Tree {
             }
 
             @Override
-            public Node visitNode(@NotNull ExtendedNewickParser.NodeContext ctx) {
+            public Node visitNode(ExtendedNewickParser.NodeContext ctx) {
                 Node node = new Node();
 
                 if (ctx.post().hybrid() != null) {
@@ -963,7 +965,7 @@ public class ConversionGraph extends Tree {
             }
         }.visit(parseTree);
 
-        m_nodes = root.getAllChildNodes().toArray(m_nodes);
+        m_nodes = root.getAllChildNodesAndSelf().toArray(m_nodes);
         nodeCount = m_nodes.length;
         leafNodeCount = root.getAllLeafNodes().size();
 
@@ -1075,7 +1077,7 @@ public class ConversionGraph extends Tree {
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(long nSample, PrintStream out) {
         ConversionGraph arg = (ConversionGraph) getCurrent();
         
         out.print(String.format("tree STATE_%d = [&R] %s",

@@ -53,7 +53,7 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(long nSample, PrintStream out) {
 
         for (Locus locus : acgInput.get().getLoci()) {
             if (acgInput.get().getConvCount(locus) == 0) {

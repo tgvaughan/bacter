@@ -32,7 +32,7 @@ public class CFEventList {
     /**
      * Class of events types on clonal frame.
      */
-    public enum EventType {COALESCENCE, SAMPLE };
+    public enum EventType {COALESCENCE, SAMPLE }
 
     /**
      * Class of events on clonal frame.

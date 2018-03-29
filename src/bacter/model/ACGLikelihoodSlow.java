@@ -132,7 +132,7 @@ public class ACGLikelihoodSlow extends GenericTreeLikelihood {
                     .subList(region.leftBoundary, region.rightBoundary);
 
             String taxonName = alignment.getTaxaNames().get(leafIdx);
-            String charSequence = alignment.getDataType().state2string(stateSequence);
+            String charSequence = alignment.getDataType().encodingToString(stateSequence);
 
             sequences.add(new Sequence(taxonName, charSequence));
         }

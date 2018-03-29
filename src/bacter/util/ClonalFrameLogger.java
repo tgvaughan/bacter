@@ -34,7 +34,7 @@ import java.io.PrintStream;
 @Description("Logs clonal frame corresponding to conversion graph.")
 public class ClonalFrameLogger extends CalculationNode implements Loggable {
 
-    public Input<ConversionGraph> acgInput = new Input<ConversionGraph>(
+    public Input<ConversionGraph> acgInput = new Input<>(
             "acg", "Conversion graph whose clonal frame you want to log.",
             Validate.REQUIRED);
 
@@ -62,7 +62,7 @@ public class ClonalFrameLogger extends CalculationNode implements Loggable {
     }
 
     @Override
-    public void log(int sample, PrintStream out) {
+    public void log(long sample, PrintStream out) {
         Tree tree = (Tree) acg.getCurrent();
         out.print("tree STATE_" + sample + " = ");
         // Don't sort, this can confuse CalculationNodes relying on the tree

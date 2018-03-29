@@ -45,7 +45,7 @@ public class TrimmedACGLogger extends CalculationNode implements Loggable {
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(long nSample, PrintStream out) {
         ConversionGraph arg = acgInput.get();
 
         out.print("tree STATE_" + nSample + " = ");

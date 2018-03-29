@@ -231,7 +231,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
     }
 
     @Override
-    public void log(int nSample, PrintStream out) {
+    public void log(long nSample, PrintStream out) {
         out.print(acg.getRoot().getHeight() + "\t"
                 + acg.getClonalFrameLength() + "\t"
                 + acg.getTotalConvCount() + "\t"

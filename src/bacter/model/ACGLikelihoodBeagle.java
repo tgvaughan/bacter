@@ -217,7 +217,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
                     }
 
                 if (isConstant) {
-                    if (alignment.getDataType().isAmbiguousState(pattern[0])) {
+                    if (alignment.getDataType().isAmbiguousCode(pattern[0])) {
                         if (useAmbiguitiesInput.get()) {
                             for (int state : alignment.getDataType().getStatesForCode(pattern[0]))
                                 constantPatternList.add(patternIdx * nStates + state);

@@ -25,19 +25,18 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.Taxon;
 import beast.evolution.datatype.DataType;
 import beast.evolution.sitemodel.SiteModel;
 import beast.evolution.tree.Node;
-import beast.util.AddOnManager;
+import beast.util.PackageManager;
 import beast.util.Randomizer;
-import beast.util.XMLProducer;
 import feast.nexus.CharactersBlock;
 import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -178,7 +177,7 @@ public class SimulatedAlignment extends Alignment {
         }
         
         for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
-            String sSeq = dataType.state2string(alignment[leafIdx]);
+            String sSeq = dataType.encodingToString(alignment[leafIdx]);
             String sTaxon = acg.getNode(leafIdx).getID();
             sequenceInput.setValue(new Sequence(sTaxon, sSeq), this);
         }
@@ -261,18 +260,21 @@ public class SimulatedAlignment extends Alignment {
         } else {
 
             List<String> dataTypeDescList = new ArrayList<>();
-            List<String> classNames = AddOnManager.find(beast.evolution.datatype.DataType.class, "beast.evolution.datatype");
+            List<String> classNames = PackageManager.find(beast.evolution.datatype.DataType.class, "beast.evolution.datatype");
             for (String className : classNames) {
                 try {
-                    DataType thisDataType = (DataType) Class.forName(className).newInstance();
+                    DataType thisDataType = (DataType) Class.forName(className).getDeclaredConstructor().newInstance();
                     if (dataTypeInput.get().equals(thisDataType.getTypeDescription())) {
                         dataType = thisDataType;
                         break;
                     }
                     dataTypeDescList.add(thisDataType.getTypeDescription());
                 } catch (ClassNotFoundException
-                    | InstantiationException
-                    | IllegalAccessException e) {
+                        | InstantiationException
+                        | IllegalAccessException
+                        | NoSuchMethodException
+                        | InvocationTargetException e) {
+                    e.printStackTrace();
                 }
             }
             if (dataType == null) {
