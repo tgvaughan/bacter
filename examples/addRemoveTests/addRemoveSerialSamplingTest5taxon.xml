@@ -34,7 +34,7 @@
         </trait>
     </input>
 
-  <run spec="MCMC" id="mcmc" chainLength="20000000">
+  <run spec="MCMC" id="mcmc" chainLength="25000000">
     <state>
       <stateNode idref='acg'/>
     </state>
