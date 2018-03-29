@@ -665,10 +665,10 @@ public class ConversionGraph extends Tree {
                 thisLength = 0.0;
             else
                 thisLength = lastTime - event.time;
-            
+
             if (event.isArrival) {
-                String meta =  String.format("[&conv=%d, region={%d,%d}, " +
-                                "locus=\"%s\", relSize=%g",
+                String meta =  String.format(Locale.ENGLISH,
+                        "[&conv=%d, region={%d,%d}, locus=\"%s\", relSize=%g",
                         convs.get(event.conv.getLocus()).indexOf(event.conv),
                         event.conv.getStartSite(),
                         event.conv.getEndSite(),
@@ -677,7 +677,8 @@ public class ConversionGraph extends Tree {
                 );
 
                 if (asList != null) {
-                    meta += String.format(", affectedSites=%d, uselessSiteFraction=%g",
+                    meta += String.format(Locale.ENGLISH,
+                            ", affectedSites=%d, uselessSiteFraction=%g",
                             asList.affectedSiteCount.get(event.conv),
                             1.0-asList.affectedSiteFraction.get(event.conv));
                 }
