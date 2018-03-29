@@ -56,9 +56,9 @@ public class AddRemoveTest extends TestBase {
         LogAnalyser logAnalyser = new LogAnalyser("addRemoveTest2taxon.stats",
                 expectations);
 
-        for (int i=0; i<expectations.size(); i++) {
-            assertTrue(expectations.get(i).isValid());
-            assertTrue(expectations.get(i).isPassed());
+        for (Expectation expectation : expectations) {
+            assertTrue(expectation.isValid());
+            assertTrue(expectation.isPassed());
         }
 
         Files.deleteIfExists(Paths.get("addRemoveTest2taxon.stats"));
@@ -86,9 +86,9 @@ public class AddRemoveTest extends TestBase {
         LogAnalyser logAnalyser = new LogAnalyser("addRemoveTest5taxon.stats",
                 expectations);
 
-        for (int i=0; i<expectations.size(); i++) {
-            assertTrue(expectations.get(i).isValid());
-            assertTrue(expectations.get(i).isPassed());
+        for (Expectation expectation : expectations) {
+            assertTrue(expectation.isValid());
+            assertTrue(expectation.isPassed());
         }
 
         Files.deleteIfExists(Paths.get("addRemoveTest5taxon.stats"));
@@ -100,7 +100,7 @@ public class AddRemoveTest extends TestBase {
 
     @Test
     public void test5TaxonDynamicPopSize() throws Exception {
-        Randomizer.setSeed(1);
+        Randomizer.setSeed(2);
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
@@ -116,9 +116,9 @@ public class AddRemoveTest extends TestBase {
         LogAnalyser logAnalyser = new LogAnalyser("addRemoveDynamicPopSize5taxon.stats",
                 expectations);
 
-        for (int i=0; i<expectations.size(); i++) {
-            assertTrue(expectations.get(i).isValid());
-            assertTrue(expectations.get(i).isPassed());
+        for (Expectation expectation : expectations) {
+            assertTrue(expectation.isValid());
+            assertTrue(expectation.isPassed());
         }
 
         Files.deleteIfExists(Paths.get("addRemoveDynamicPopSize5taxon.stats"));
@@ -130,7 +130,7 @@ public class AddRemoveTest extends TestBase {
 
     @Test
     public void test5TaxonSerialSampling() throws Exception {
-        Randomizer.setSeed(42);
+        Randomizer.setSeed(2);
 
         XMLParser parser = new XMLParser();
         beast.core.Runnable runnable = parser.parseFile(
@@ -139,16 +139,16 @@ public class AddRemoveTest extends TestBase {
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
-        expectations.add(new Expectation("acg.CFheight", 1.909, 0.1));
-        expectations.add(new Expectation("acg.CFlength", 4.655, 0.2));
-        expectations.add(new Expectation("acg.nConv", 23.381, 1.0));
+        expectations.add(new Expectation("acg.CFheight", 2.07, 0.1));
+        expectations.add(new Expectation("acg.CFlength", 5.00, 0.2));
+        expectations.add(new Expectation("acg.nConv", 25.190, 1.0));
 
         LogAnalyser logAnalyser = new LogAnalyser("addRemoveSerialSamplingTest5taxon.stats",
                 expectations);
 
-        for (int i=0; i<expectations.size(); i++) {
-            assertTrue(expectations.get(i).isValid());
-            assertTrue(expectations.get(i).isPassed());
+        for (Expectation expectation : expectations) {
+            assertTrue(expectation.isValid());
+            assertTrue(expectation.isPassed());
         }
 
         Files.deleteIfExists(Paths.get("addRemoveSerialSamplingTest5taxon.stats"));
