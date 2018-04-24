@@ -493,23 +493,18 @@ public class ConversionGraph extends Tree {
         return acg;
     }
 
-    /**
-     * Use another StateNode to configure this ACG.  If the other StateNode
-     * is merely a tree, only the clonal frame is configured.
-     * 
-     * @param other StateNode used to configure ACG
-     */
-    @Override
-    public void assignFrom(StateNode other) {
-        super.assignFrom(other);
-        
+    private void generalAssignFrom(StateNode other, boolean fragileAssignment) {
+        if (fragileAssignment)
+            super.assignFromFragile(other);
+        else
+            super.assignFrom(other);
+
         if (other instanceof ConversionGraph) {
             ConversionGraph acg = (ConversionGraph)other;
 
-
             loci = acg.loci;
             convertibleLoci = acg.convertibleLoci;
-        
+
             convs.clear();
             storedConvs.clear();
             for (Locus locus : convertibleLoci) {
@@ -533,38 +528,21 @@ public class ConversionGraph extends Tree {
             }
         }
     }
+
+    /**
+     * Use another StateNode to configure this ACG.  If the other StateNode
+     * is merely a tree, only the clonal frame is configured.
+     * 
+     * @param other StateNode used to configure ACG
+     */
+    @Override
+    public void assignFrom(StateNode other) {
+        generalAssignFrom(other, false);
+    }
     
     @Override
     public void assignFromFragile(StateNode other) {
-        super.assignFromFragile(other);
-
-        if (other instanceof  ConversionGraph) {
-            ConversionGraph acg = (ConversionGraph) other;
-
-            loci = acg.loci;
-            convertibleLoci = acg.convertibleLoci;
-
-            convs.clear();
-            storedConvs.clear();
-            for (Locus locus : convertibleLoci) {
-                convs.put(locus, new ArrayList<>());
-                storedConvs.put(locus, new ArrayList<>());
-                for (Conversion conv : acg.getConversions(locus)) {
-                    Conversion convCopy = conv.getCopy();
-                    convCopy.setConversionGraph(this);
-                    convCopy.setNode1(m_nodes[conv.getNode1().getNr()]);
-                    convCopy.setNode2(m_nodes[conv.getNode2().getNr()]);
-                    convs.get(locus).add(convCopy);
-                }
-            }
-
-            if (cfEventList == null)
-                cfEventList = new CFEventList(null);
-
-            regionLists.clear();
-            for (Locus locus : convertibleLoci)
-                regionLists.put(locus, new RegionList(this, locus));
-        }
+        generalAssignFrom(other, true);
     }
     
     /**
