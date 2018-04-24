@@ -20,10 +20,7 @@ package bacter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -110,11 +107,11 @@ public class RegionList {
             if (affectedSiteList.affectedSiteCount.get(conversion)>0)
                 convOrderedByStart.add(conversion.getCopy());
         });
-        convOrderedByStart.sort((Conversion o1, Conversion o2) -> o1.startSite - o2.startSite);
+        convOrderedByStart.sort(Comparator.comparingInt((Conversion o) -> o.startSite));
 
         List<Conversion> convOrderedByEnd = new ArrayList<>();
         convOrderedByEnd.addAll(convOrderedByStart);
-        convOrderedByEnd.sort((Conversion o1, Conversion o2) -> o1.endSite - o2.endSite);
+        convOrderedByEnd.sort(Comparator.comparingInt((Conversion o) -> o.endSite));
 
         Set<Conversion> activeConversions = Sets.newHashSet();
 

@@ -72,6 +72,7 @@ public class ConversionGraph extends Tree {
      */
     protected Map<Locus, List<Conversion>> convs;
     protected Map<Locus, List<Conversion>> storedConvs;
+    protected final static List<Conversion> emptyConvList = new ArrayList<>();
 
     /**
      * Event and region lists.
@@ -114,7 +115,7 @@ public class ConversionGraph extends Tree {
         }
 
         regionLists = new HashMap<>();
-        for (Locus locus : convertibleLoci)
+        for (Locus locus : loci)
             regionLists.put(locus, new RegionList(this, locus));
 
         cfEventList = new CFEventList(this);
@@ -175,6 +176,9 @@ public class ConversionGraph extends Tree {
 
         Locus locus = conv.getLocus();
 
+        if (!locus.conversionsAllowed())
+            throw new IllegalStateException("Tried to add a conversion to a conversion-free locus.");
+
         int i;
         for (i=0; i<convs.get(locus).size(); i++)
             if (convs.get(locus).get(i).startSite>conv.startSite)
@@ -190,7 +194,10 @@ public class ConversionGraph extends Tree {
      */
     public void deleteConversion(Conversion conv) {
         startEditing(null);
-        
+
+        if (!conv.getLocus().conversionsAllowed())
+            throw new IllegalStateException("Tried to remove a conversion from a conversion-free locus.");
+
         convs.get(conv.getLocus()).remove(conv);
     }
     
@@ -201,7 +208,10 @@ public class ConversionGraph extends Tree {
      * @return List of conversions.
      */
     public List<Conversion> getConversions(Locus locus) {
-        return convs.get(locus);
+        if (locus.conversionsAllowed())
+            return convs.get(locus);
+        else
+            return emptyConvList;
     }
 
     /**
@@ -211,7 +221,10 @@ public class ConversionGraph extends Tree {
      * @return Number of conversions.
      */
     public int getConvCount(Locus locus) {
-        return convs.get(locus).size();
+        if (locus.conversionsAllowed())
+            return convs.get(locus).size();
+        else
+            return 0;
     }
 
     /**
@@ -523,7 +536,7 @@ public class ConversionGraph extends Tree {
                 cfEventList = new CFEventList(this);
 
             regionLists.clear();
-            for (Locus locus : convertibleLoci) {
+            for (Locus locus : loci) {
                 regionLists.put(locus, new RegionList(this, locus));
             }
         }
@@ -999,7 +1012,7 @@ public class ConversionGraph extends Tree {
         convs = tmp;
 
         cfEventList.makeDirty();
-        for (Locus locus : convertibleLoci)
+        for (Locus locus : loci)
             regionLists.get(locus).makeDirty();
     }
 
