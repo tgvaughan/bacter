@@ -31,7 +31,7 @@ public class AffectedSiteList {
 
         Map<Node, Map<Locus, List<Integer>>> activeCFNodes = new HashMap<>();
         Map<Locus, Set<Conversion>> activeConversions = new HashMap<>();
-        for (Locus locus : acg.getLoci())
+        for (Locus locus : acg.getConvertibleLoci())
             activeConversions.put(locus, new HashSet<>());
 
         Map<Locus, List<Integer>> ancestralSitesCF;
@@ -61,7 +61,7 @@ public class AffectedSiteList {
                     Node node2 = event.node.getRight();
 
                     ancestralSitesCF = new HashMap<>();
-                    for (Locus locus : acg.getLoci()) {
+                    for (Locus locus : acg.getConvertibleLoci()) {
                         ancestralSitesCF.put(locus,
                                 IntRanges.getUnion(activeCFNodes.get(node1).get(locus),
                                         activeCFNodes.get(node2).get(locus)));
@@ -116,7 +116,7 @@ public class AffectedSiteList {
     protected Map<Locus, List<Integer>> getLeafAncestralSites() {
         Map<Locus, List<Integer>> res = new HashMap<>();
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             List<Integer> siteRange = new ArrayList<>();
             siteRange.add(0);
             siteRange.add(locus.getSiteCount() - 1);
@@ -137,7 +137,7 @@ public class AffectedSiteList {
     protected boolean haveReachedAllMRCAs(Map<Node, Map<Locus, List<Integer>>> activeCFNodes,
                                 Map<Locus, Set<Conversion>> activeConversions) {
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             List<Integer> startSites = new ArrayList<>();
             List<Integer> endSites = new ArrayList<>();
             for (Node node : activeCFNodes.keySet()) {

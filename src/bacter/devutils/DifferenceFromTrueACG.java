@@ -185,10 +185,10 @@ public class DifferenceFromTrueACG {
                                                   double boundaryTol, double ageTol,
                                                   Map<Conversion, Integer> convHist) {
         int count = 0;
-        for (Conversion trueConv : trueACG.getConversions(trueACG.getLoci().get(0))) {
+        for (Conversion trueConv : trueACG.getConversions(trueACG.getConvertibleLoci().get(0))) {
             Clade trueFromClade = trueClades[trueConv.getNode1().getNr()];
             Clade trueToClade = trueClades[trueConv.getNode1().getNr()];
-            for (Conversion conv : acg.getConversions(acg.getLoci().get(0)))  {
+            for (Conversion conv : acg.getConversions(acg.getConvertibleLoci().get(0)))  {
                 Clade fromClade = clades[conv.getNode1().getNr()];
                 Clade toClade = clades[conv.getNode1().getNr()];
 
@@ -279,7 +279,7 @@ public class DifferenceFromTrueACG {
             cladeHist.put(clade, 0);
 
         Map<Conversion, Integer> convHist = new HashMap<>();
-        for (Conversion conv : trueACG.getConversions(trueACG.getLoci().get(0)))
+        for (Conversion conv : trueACG.getConversions(trueACG.getConvertibleLoci().get(0)))
             convHist.put(conv, 0);
 
         // Set up ARG log file reader
@@ -309,8 +309,8 @@ public class DifferenceFromTrueACG {
 
                 ps.println(trueACG.getNodeCount() + "\t" +
                         sampledTrueClades + "\t" +
-                        trueACG.getConvCount(trueACG.getLoci().get(0)) + "\t" +
-                        acg.getConvCount(acg.getLoci().get(0)) + "\t" +
+                        trueACG.getConvCount(trueACG.getConvertibleLoci().get(0)) + "\t" +
+                        acg.getConvCount(acg.getConvertibleLoci().get(0)) + "\t" +
                         sampledTrueConvs);
             }
         }
@@ -326,7 +326,7 @@ public class DifferenceFromTrueACG {
 
             ps.println(trueACG.getNodeCount() + "\t" +
                     recoveredTrueClades + "\t" +
-                    trueACG.getConvCount(trueACG.getLoci().get(0)) + "\t" +
+                    trueACG.getConvCount(trueACG.getConvertibleLoci().get(0)) + "\t" +
                     recoveredTrueConvs);
         }
     }

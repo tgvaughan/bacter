@@ -162,7 +162,7 @@ public class AddRemoveRedundantConversion extends ACGOperator {
 
         double maxL = acg.getRoot().getHeight()*apertureInput.get();
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
 
                 if (((conv.getNode1() == cfNode || conv.getNode1().getParent() == cfNode)
@@ -195,9 +195,9 @@ public class AddRemoveRedundantConversion extends ACGOperator {
     private double drawAffectedRegion(Conversion conv) {
         double logP = 0.0;
 
-        Locus locus = acg.getLoci().get(Randomizer.nextInt(acg.getLoci().size()));
+        Locus locus = acg.getConvertibleLoci().get(Randomizer.nextInt(acg.getConvertibleLoci().size()));
         conv.setLocus(locus);
-        logP += Math.log(1.0/acg.getLoci().size());
+        logP += Math.log(1.0/acg.getConvertibleLoci().size());
 
         if (!acg.wholeLocusModeOn()) {
             int site1 = Randomizer.nextInt(locus.getSiteCount());
@@ -225,7 +225,7 @@ public class AddRemoveRedundantConversion extends ACGOperator {
     private double getAffectedRegionProb(Conversion conv) {
         double logP = 0.0;
 
-        logP += Math.log(1.0/acg.getLoci().size());
+        logP += Math.log(1.0/acg.getConvertibleLoci().size());
 
         if (!acg.wholeLocusModeOn()) {
             logP += 2.0 * Math.log(1.0 / conv.getLocus().getSiteCount());

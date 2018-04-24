@@ -20,15 +20,12 @@ package bacter.devutils;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
-import bacter.operators.ACGOperator;
 import beast.core.*;
 import beast.evolution.tree.Node;
 import beast.util.XMLParser;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -63,7 +60,7 @@ public class CFConvSwapExperiment {
             grandParent.addChild(sister);
         }
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode1() == parent)
                     conv.setNode1(sister);
@@ -93,7 +90,7 @@ public class CFConvSwapExperiment {
 
         parent.setHeight(destTime);
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode1() == destEdgeBase && conv.getHeight1() > destTime)
                     conv.setNode1(parent);
@@ -130,7 +127,7 @@ public class CFConvSwapExperiment {
         disconnectEdge(acg, srcNode);
 
 
-        Locus locus = acg.getLoci().get(0);
+        Locus locus = acg.getConvertibleLoci().get(0);
         Conversion convToReplace = acg.getConversions(locus).get(27);
         acg.deleteConversion(convToReplace);
 

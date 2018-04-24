@@ -84,8 +84,8 @@ public class SimulatedAlignment extends Alignment {
         siteModel = siteModelInput.get();
 
         Locus locus;
-        if (acg.getLoci().size()==1)
-            locus = acg.getLoci().get(0);
+        if (acg.getConvertibleLoci().size()==1)
+            locus = acg.getConvertibleLoci().get(0);
         else {
             locus = locusInput.get();
             if (locus == null)

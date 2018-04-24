@@ -20,7 +20,6 @@ package bacter.operators;
 import bacter.Conversion;
 import bacter.Locus;
 import beast.core.Description;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
@@ -108,7 +107,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         // Count number of node1s and node2s attached to detour edge
         int node1Count = 0;
         int node2Count = 0;
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion thisConv : acg.getConversions(locus)) {
                 if (thisConv.getNode1() == detour && thisConv.getNode2() != detour)
                     node1Count += 1;
@@ -139,7 +138,7 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         List<Conversion> convApotentials = new ArrayList<>();
         List<Conversion> convBpotentials = new ArrayList<>();
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode2() == detour && conv.getNode1() != detour)
                     convApotentials.add(conv);

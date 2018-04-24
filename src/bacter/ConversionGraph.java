@@ -23,11 +23,9 @@ import beast.core.*;
 import beast.evolution.tree.Node;
 import beast.evolution.tree.Tree;
 import beast.util.TreeParser;
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.PrintStream;
@@ -36,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -80,8 +79,8 @@ public class ConversionGraph extends Tree {
     protected Map<Locus, RegionList> regionLists;
     protected CFEventList cfEventList;
 
-    protected List<Locus> loci;
-    protected int totalSequenceLength;
+    protected List<Locus> loci, convertibleLoci;
+    protected int totalConvertibleSequenceLength;
 
     @Override
     public void initAndValidate() {
@@ -96,13 +95,14 @@ public class ConversionGraph extends Tree {
         loci = lociInput.get();
 
         // Sort alignment list lexographically in order of BEASTObject IDs
-        loci.sort((l1, l2) -> l1.getID().compareTo(l2.getID()));
+        loci.sort(Comparator.comparing(BEASTObject::getID));
+        convertibleLoci = loci.stream().filter(Locus::conversionsAllowed).collect(Collectors.toList());
 
-        totalSequenceLength = 0;
-        for (Locus locus : loci) {
+        totalConvertibleSequenceLength = 0;
+        for (Locus locus : convertibleLoci) {
             convs.put(locus, new ArrayList<>());
             storedConvs.put(locus, new ArrayList<>());
-            totalSequenceLength += locus.getSiteCount();
+            totalConvertibleSequenceLength += locus.getSiteCount();
         }
         
         if (fromStringInput.get() != null) {
@@ -114,7 +114,7 @@ public class ConversionGraph extends Tree {
         }
 
         regionLists = new HashMap<>();
-        for (Locus locus : loci)
+        for (Locus locus : convertibleLoci)
             regionLists.put(locus, new RegionList(this, locus));
 
         cfEventList = new CFEventList(this);
@@ -127,8 +127,8 @@ public class ConversionGraph extends Tree {
      *
      * @return total sequence length
      */
-    public int getTotalSequenceLength() {
-        return totalSequenceLength;
+    public int getTotalConvertibleSequenceLength() {
+        return totalConvertibleSequenceLength;
     }
 
     /**
@@ -150,8 +150,8 @@ public class ConversionGraph extends Tree {
      *
      * @return list of associated alignments
      */
-    public List<Locus> getLoci() {
-        return loci;
+    public List<Locus> getConvertibleLoci() {
+        return convertibleLoci;
     }
 
     public boolean wholeLocusModeOn() {
@@ -221,7 +221,7 @@ public class ConversionGraph extends Tree {
      */
     public int getTotalConvCount() {
         int convCount = 0;
-        for (Locus locus : loci)
+        for (Locus locus : convertibleLoci)
             convCount += convs.get(locus).size();
 
         return convCount;
@@ -236,7 +236,7 @@ public class ConversionGraph extends Tree {
      */
     public int getConversionIndex(Conversion conv) {
         int index = 0;
-        for (Locus locus : getLoci()) {
+        for (Locus locus : getConvertibleLoci()) {
             if (locus == conv.getLocus()) {
                 index += getConversions(locus).indexOf(conv);
                 break;
@@ -314,15 +314,9 @@ public class ConversionGraph extends Tree {
      * @return true if all conversions are valid w.r.t. clonal frame.
      */
     public boolean isInvalid() {
-        for (Locus locus : loci) {
+        for (Locus locus : convertibleLoci) {
             for (Conversion conv : convs.get(locus)) {
                 if (!conv.isValid()) {
-                    return true;
-                }
-                if (conv.getStartSite() < 0
-                        || conv.getStartSite() >= locus.getSiteCount()
-                        || conv.getEndSite() < 0
-                        || conv.getEndSite() >= locus.getSiteCount()) {
                     return true;
                 }
             }
@@ -362,7 +356,7 @@ public class ConversionGraph extends Tree {
     public String toStringOld() {
         StringBuilder sb = new StringBuilder();
 
-        for (Locus locus : loci) {
+        for (Locus locus : convertibleLoci) {
             for (Conversion conv : getConversions(locus)) {
                 sb.append(String.format("[&%s,%d,%d,%s,%d,%d,%s] ",
                         locus.getID(),
@@ -417,7 +411,7 @@ public class ConversionGraph extends Tree {
         Matcher convMatcher = convPattern.matcher(str);
         
         // Process recombinations
-        for (Locus locus : getLoci())
+        for (Locus locus : convertibleLoci)
             convs.get(locus).clear();
 
         while(convMatcher.find()) {
@@ -475,7 +469,8 @@ public class ConversionGraph extends Tree {
         acg.storedConvs = new HashMap<>();
 
         acg.loci = loci;
-        for (Locus locus : getLoci()) {
+        acg.convertibleLoci = convertibleLoci;
+        for (Locus locus : convertibleLoci) {
             acg.convs.put(locus, new ArrayList<>());
             for (Conversion conv : convs.get(locus)) {
                 Conversion convCopy = conv.getCopy();
@@ -511,11 +506,13 @@ public class ConversionGraph extends Tree {
         if (other instanceof ConversionGraph) {
             ConversionGraph acg = (ConversionGraph)other;
 
-            loci = acg.getLoci();
+
+            loci = acg.loci;
+            convertibleLoci = acg.convertibleLoci;
         
             convs.clear();
             storedConvs.clear();
-            for (Locus locus : loci) {
+            for (Locus locus : convertibleLoci) {
                 convs.put(locus, new ArrayList<>());
                 storedConvs.put(locus, new ArrayList<>());
                 for (Conversion conv : acg.getConversions(locus)) {
@@ -531,7 +528,7 @@ public class ConversionGraph extends Tree {
                 cfEventList = new CFEventList(this);
 
             regionLists.clear();
-            for (Locus locus : loci) {
+            for (Locus locus : convertibleLoci) {
                 regionLists.put(locus, new RegionList(this, locus));
             }
         }
@@ -544,11 +541,12 @@ public class ConversionGraph extends Tree {
         if (other instanceof  ConversionGraph) {
             ConversionGraph acg = (ConversionGraph) other;
 
-            loci = acg.getLoci();
+            loci = acg.loci;
+            convertibleLoci = acg.convertibleLoci;
 
             convs.clear();
             storedConvs.clear();
-            for (Locus locus : loci) {
+            for (Locus locus : convertibleLoci) {
                 convs.put(locus, new ArrayList<>());
                 storedConvs.put(locus, new ArrayList<>());
                 for (Conversion conv : acg.getConversions(locus)) {
@@ -564,7 +562,7 @@ public class ConversionGraph extends Tree {
                 cfEventList = new CFEventList(null);
 
             regionLists.clear();
-            for (Locus locus : loci)
+            for (Locus locus : convertibleLoci)
                 regionLists.put(locus, new RegionList(this, locus));
         }
     }
@@ -628,7 +626,7 @@ public class ConversionGraph extends Tree {
             }
         }
         List<Event> events = new ArrayList<>();
-        for (Locus locus : getLoci()) {
+        for (Locus locus : getConvertibleLoci()) {
             for (Conversion conv : getConversions(locus)) {
                 if (intraCFOnly && conv.node2.isRoot())
                     continue;
@@ -932,7 +930,7 @@ public class ConversionGraph extends Tree {
                                         locusID = locusID.substring(1,locusID.length()-1);
 
                                     Locus locus = null;
-                                    for (Locus thisLocus : getLoci()) {
+                                    for (Locus thisLocus : getConvertibleLoci()) {
                                         if (thisLocus.getID().equals(locusID))
                                             locus = thisLocus;
                                     }
@@ -973,7 +971,7 @@ public class ConversionGraph extends Tree {
         setRoot(root);
         initArrays();
 
-        for (Locus locus : getLoci())
+        for (Locus locus : getConvertibleLoci())
             convs.get(locus).clear();
 
         for (Conversion conv : convIDMap.values())
@@ -989,7 +987,7 @@ public class ConversionGraph extends Tree {
     protected void store () {
         super.store();
         
-        for (Locus locus : getLoci()) {
+        for (Locus locus : convertibleLoci) {
             storedConvs.get(locus).clear();
 
             for (Conversion conv : convs.get(locus)) {
@@ -1023,7 +1021,7 @@ public class ConversionGraph extends Tree {
         convs = tmp;
 
         cfEventList.makeDirty();
-        for (Locus locus : loci)
+        for (Locus locus : convertibleLoci)
             regionLists.get(locus).makeDirty();
     }
 

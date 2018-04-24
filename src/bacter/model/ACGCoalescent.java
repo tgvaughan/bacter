@@ -95,8 +95,8 @@ public class ACGCoalescent extends TreeDistribution {
         logP = calculateClonalFrameLogP();
         double poissonMean = rhoInput.get().getValue()
                 *acg.getClonalFrameLength()
-                *(acg.getTotalSequenceLength()
-                +acg.getLoci().size()*(deltaInput.get().getValue()-1.0));
+                *(acg.getTotalConvertibleSequenceLength()
+                +acg.getConvertibleLoci().size()*(deltaInput.get().getValue()-1.0));
 
         // Probability of conversion count:
         if (poissonMean>0.0) {
@@ -108,7 +108,7 @@ public class ACGCoalescent extends TreeDistribution {
         }
         
 
-        for (Locus locus : acg.getLoci())
+        for (Locus locus : acg.getConvertibleLoci())
             for (Conversion conv : acg.getConversions(locus))
                 logP += calculateConversionLogP(conv);
         
@@ -197,13 +197,13 @@ public class ACGCoalescent extends TreeDistribution {
         // Probability of start site:
         if (conv.getStartSite()==0) {
             thisLogP += Math.log(deltaInput.get().getValue()
-                    / (acg.getLoci().size() * (deltaInput.get().getValue() - 1)
-                    + acg.getTotalSequenceLength()));
+                    / (acg.getConvertibleLoci().size() * (deltaInput.get().getValue() - 1)
+                    + acg.getTotalConvertibleSequenceLength()));
         } else {
             if (!acg.wholeLocusModeOn())
                 thisLogP += Math.log(
-                        1.0 / (acg.getLoci().size() * (deltaInput.get().getValue() - 1)
-                                + acg.getTotalSequenceLength()));
+                        1.0 / (acg.getConvertibleLoci().size() * (deltaInput.get().getValue() - 1)
+                                + acg.getTotalConvertibleSequenceLength()));
             else
                 return Double.NEGATIVE_INFINITY;
         }

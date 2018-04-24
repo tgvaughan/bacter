@@ -22,7 +22,6 @@ import bacter.Locus;
 import beast.core.Description;
 import beast.core.Input;
 import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
 import beast.evolution.tree.Node;
 import beast.util.Randomizer;
 
@@ -84,7 +83,7 @@ public class ACGScaler extends ACGOperator {
         }
         
         // Scale recombinant edges:
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion recomb : acg.getConversions(locus)) {
 
                 if (!rootOnly || recomb.getNode1().getParent().isRoot()) {

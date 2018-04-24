@@ -126,13 +126,13 @@ public class SimulatedACG extends ConversionGraph {
                     List<String> lines = new ArrayList<>();
 
                     String lociLine = "loci";
-                    for (Locus locus : getLoci())
+                    for (Locus locus : getConvertibleLoci())
                         lociLine += " " + locus.getID() + ":" + locus.getSiteCount();
                     lines.add(lociLine);
 
                     lines.add("clonalframe_labeled " + root.toNewick());
                     lines.add("clonalframe_numbered " + root.toShortNewick(true));
-                    for (Locus locus : getLoci()) {
+                    for (Locus locus : getConvertibleLoci()) {
                         for (Conversion conv : getConversions(locus)) {
                             lines.add("conversion node1=" + conv.getNode1().getNr()
                                     + " node2=" + conv.getNode2().getNr()
@@ -237,16 +237,16 @@ public class SimulatedACG extends ConversionGraph {
 
         // Draw number of conversions:
         int Nconv = (int) Randomizer.nextPoisson(rho*getClonalFrameLength()*
-            (getTotalSequenceLength()+(delta-1.0)*getLoci().size()));
+            (getTotalConvertibleSequenceLength()+(delta-1.0)* getConvertibleLoci().size()));
 
         // Generate conversions:
         for (int i=0; i<Nconv; i++) {
             // Choose alignment
-            double u = Randomizer.nextDouble()*(getTotalSequenceLength()
-                    + (delta-1.0)*getLoci().size());
+            double u = Randomizer.nextDouble()*(getTotalConvertibleSequenceLength()
+                    + (delta-1.0)* getConvertibleLoci().size());
 
             Locus affectedLocus = null;
-            for (Locus locus : getLoci()) {
+            for (Locus locus : getConvertibleLoci()) {
                 if (u < locus.getSiteCount() + delta - 1.0) {
                     affectedLocus = locus;
                     break;

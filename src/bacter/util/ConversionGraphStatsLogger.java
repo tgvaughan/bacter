@@ -174,7 +174,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             return Double.NaN;
         
         double mean = 0.0;
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus))
                 mean += conv.getHeight2() - conv.getHeight1();
         }
@@ -196,7 +196,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             return Double.NaN;
         
         double mean = 0.0;
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
                 mean += conv.getHeight1();
             }
@@ -219,7 +219,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
                 + id + ".meanEdgeLength\t"
                 + id + ".meanDepartureHeight\t");
 
-        for (Locus loci : acg.getLoci()) {
+        for (Locus loci : acg.getConvertibleLoci()) {
             String lid = id + "." + loci.getID();
             out.print(lid + ".meanTractLength\t"
                     + lid + ".meanRegionLength\t"
@@ -239,7 +239,7 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
                 + ConversionGraphStatsLogger.getMeanEdgeLength(acg) + "\t"
                 + ConversionGraphStatsLogger.getMeanDepartureHeight(acg) + "\t");
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             out.print(ConversionGraphStatsLogger.getMeanTractLength(acg, locus) + "\t"
                     + ConversionGraphStatsLogger.getMeanRegionLength(acg, locus) + "\t"
                     + ConversionGraphStatsLogger.getMeanStartSite(acg, locus) + "\t"

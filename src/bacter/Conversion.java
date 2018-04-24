@@ -259,8 +259,14 @@ public class Conversion {
         
         if (startSite>endSite)
             return false;
-        
-        return true;
+
+        if (endSite<0 || startSite<0)
+            return false;
+
+        if (startSite >= locus.getSiteCount() || endSite >= locus.getSiteCount())
+            return false;
+
+        return locus.conversionsAllowed();
     }
     
     /**

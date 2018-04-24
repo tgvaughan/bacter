@@ -37,6 +37,11 @@ public class Locus extends BEASTObject {
             "Initialize locus using this alignment.",
             Input.Validate.XOR, siteCountInput);
 
+    public Input<Boolean> conversionsAllowedInput = new Input<>(
+            "conversionsAllowed",
+            "If false, no conversions will be allowed on this locus. (Default true.)",
+            true);
+
     protected int siteCount;
     protected Alignment alignment;
 
@@ -94,5 +99,9 @@ public class Locus extends BEASTObject {
      */
     public boolean hasAlignment() {
         return alignment != null;
+    }
+
+    public boolean conversionsAllowed() {
+        return conversionsAllowedInput.get();
     }
 }

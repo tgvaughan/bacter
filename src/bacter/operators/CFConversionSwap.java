@@ -109,7 +109,7 @@ public class CFConversionSwap extends CFOperator {
      */
     private List<Conversion> getCompatibleConversions() {
         List<Conversion> compatible = new ArrayList<>();
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode1() != conv.getNode2())
                     compatible.add(conv);

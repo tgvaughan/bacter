@@ -74,7 +74,7 @@ public class ACGCladeSystem extends CladeSystem {
         Map<BitSet,Map<BitSet,Long>> geneFlowTemp = new HashMap<>();
 
         // Assemble list of conversions for each pair of clades on each locus
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
 
             conversionListsTemp.clear();
             for (Conversion conv : acg.getConversions(locus))  {

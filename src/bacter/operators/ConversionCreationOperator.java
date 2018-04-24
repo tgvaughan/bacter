@@ -41,10 +41,10 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
     @Override
     public void initAndValidate() {
 
-        relativeLocusSizes = new double[acgInput.get().getLoci().size()];
-        for (int i=0; i<acgInput.get().getLoci().size(); i++)
-            relativeLocusSizes[i] = acgInput.get().getLoci().get(i).getSiteCount()/
-                    (double)acgInput.get().getTotalSequenceLength();
+        relativeLocusSizes = new double[acgInput.get().getConvertibleLoci().size()];
+        for (int i = 0; i<acgInput.get().getConvertibleLoci().size(); i++)
+            relativeLocusSizes[i] = acgInput.get().getConvertibleLoci().get(i).getSiteCount()/
+                    (double)acgInput.get().getTotalConvertibleSequenceLength();
 
         super.initAndValidate();
     }
@@ -88,8 +88,8 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         double logP = 0.0;
 
         // Total effective number of possible start sites
-        double alpha = acg.getTotalSequenceLength()
-                + acg.getLoci().size()*(deltaInput.get().getValue() - 1.0);
+        double alpha = acg.getTotalConvertibleSequenceLength()
+                + acg.getConvertibleLoci().size()*(deltaInput.get().getValue() - 1.0);
 
         // Draw location of converted region.
         int startSite = -1;
@@ -97,7 +97,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         Locus locus = null;
 
         double u = Randomizer.nextDouble()*alpha;
-        for (Locus thisLocus : acg.getLoci()) {
+        for (Locus thisLocus : acg.getConvertibleLoci()) {
             if (u < deltaInput.get().getValue() - 1.0 + thisLocus.getSiteCount()) {
                 locus = thisLocus;
 
@@ -150,8 +150,8 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         double logP = 0.0;
 
         // Total effective number of possible start sites
-        double alpha = acg.getTotalSequenceLength()
-                + acg.getLoci().size()*(deltaInput.get().getValue() - 1.0);
+        double alpha = acg.getTotalConvertibleSequenceLength()
+                + acg.getConvertibleLoci().size()*(deltaInput.get().getValue() - 1.0);
 
         // Calculate probability of converted region.
         if (conv.getStartSite()==0)
@@ -180,7 +180,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
      */
     protected double drawAffectedRegionRestricted(Conversion conv) {
         int locusIdx = Randomizer.randomChoicePDF(relativeLocusSizes);
-        Locus locus = acg.getLoci().get(locusIdx);
+        Locus locus = acg.getConvertibleLoci().get(locusIdx);
 
         conv.setLocus(locus);
         conv.setStartSite(0);
@@ -200,6 +200,6 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         if (conv.getStartSite()>0 || conv.getEndSite()<conv.getLocus().getSiteCount()-1)
             return Double.NEGATIVE_INFINITY;
 
-        return Math.log(relativeLocusSizes[acg.getLoci().indexOf(conv.getLocus())]);
+        return Math.log(relativeLocusSizes[acg.getConvertibleLoci().indexOf(conv.getLocus())]);
     }
 }

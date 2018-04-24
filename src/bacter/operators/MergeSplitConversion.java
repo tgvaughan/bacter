@@ -49,6 +49,22 @@ public class MergeSplitConversion extends ACGOperator {
     }
 
     /**
+     * @return alignment selected proportional to its length
+     */
+    private Locus chooseLocus() {
+        int z = Randomizer.nextInt(acg.getTotalConvertibleSequenceLength());
+        for (Locus locus : acg.getConvertibleLoci()) {
+            if (z < locus.getSiteCount())
+                return locus;
+            else
+                z -= locus.getSiteCount();
+        }
+
+        throw new IllegalStateException("Programmer error: loop fell through" +
+                " in chooseAlignment().");
+    }
+
+    /**
      * Perform merge portion of merge/split move.
      *
      * @param locus locus on which to apply move

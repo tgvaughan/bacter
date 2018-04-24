@@ -85,7 +85,7 @@ public class CFUniform extends ConversionCreationOperator {
         }
 
         if (newHeight>oldHeight) {
-            for (Locus locus : acg.getLoci()) {
+            for (Locus locus : acg.getConvertibleLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == node && conv.getHeight1() < newHeight) {
                         conv.setNode1(Randomizer.nextBoolean() ? leftChild : rightChild);
@@ -105,7 +105,7 @@ public class CFUniform extends ConversionCreationOperator {
                 // Draw a number of conversions
                 double L = 2.0*(newHeight-oldHeight);
                 double Nexp = L*rhoInput.get().getValue()
-                        *(acg.getTotalSequenceLength()+acg.getLoci().size()*deltaInput.get().getValue());
+                        *(acg.getTotalConvertibleSequenceLength()+acg.getConvertibleLoci().size()*deltaInput.get().getValue());
                 int N = (int)Randomizer.nextPoisson(Nexp);
                 logHGF -= -Nexp + N*Math.log(Nexp); // N! cancels
 
@@ -132,7 +132,7 @@ public class CFUniform extends ConversionCreationOperator {
 
             List<Conversion> toRemove = new ArrayList<>();
 
-            for (Locus locus : acg.getLoci()) {
+            for (Locus locus : acg.getConvertibleLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
                     if ((conv.getNode1() == leftChild || conv.getNode1() == rightChild)
                             && conv.getHeight1() > newHeight) {
@@ -156,7 +156,7 @@ public class CFUniform extends ConversionCreationOperator {
             if (node.isRoot()) {
                 double L = 2.0*(oldHeight-newHeight);
                 double Nexp = L*rhoInput.get().getValue()*
-                        (acg.getTotalSequenceLength() + acg.getLoci().size()*deltaInput.get().getValue());
+                        (acg.getTotalConvertibleSequenceLength() + acg.getConvertibleLoci().size()*deltaInput.get().getValue());
                 logHGF += -Nexp + toRemove.size()*Math.log(Nexp); // N! cancels
 
                 for (Conversion conv : toRemove) {

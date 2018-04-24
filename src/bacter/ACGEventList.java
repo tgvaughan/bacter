@@ -104,7 +104,7 @@ public class ACGEventList {
 
         // Add conversion events:
         if (locus == null) {
-            for (Locus l : acg.getLoci()) {
+            for (Locus l : acg.getConvertibleLoci()) {
                 for (Conversion conv : acg.getConversions(l)) {
                     events.add(new Event(conv, true));
                     events.add(new Event(conv, false));

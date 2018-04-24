@@ -113,7 +113,7 @@ public class ACGAnnotator {
 
         // Remove conversions
 
-        for (Locus locus : acgBest.getLoci())
+        for (Locus locus : acgBest.getConvertibleLoci())
                 acgBest.getConversions(locus).clear();
 
         // Collect CF node heights
@@ -321,7 +321,7 @@ public class ACGAnnotator {
             for (int toNr=0; toNr<acg.getNodeCount(); toNr++) {
                 BitSet to = bitSets[toNr];
 
-                for (Locus locus : acg.getLoci()) {
+                for (Locus locus : acg.getConvertibleLoci()) {
                     List<ACGCladeSystem.ConversionSummary> conversionSummaries =
                             cladeSystem.getConversionSummaries(from, to, locus,
                                     nACGs, threshold);

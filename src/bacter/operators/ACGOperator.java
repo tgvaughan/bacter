@@ -88,7 +88,7 @@ public abstract class ACGOperator extends Operator {
             grandParent.addChild(sister);
         }
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode1() == parent)
                     conv.setNode1(sister);
@@ -130,7 +130,7 @@ public abstract class ACGOperator extends Operator {
 
         parent.setHeight(destTime);
 
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             for (Conversion conv : acg.getConversions(locus)) {
                 if (conv.getNode1() == destEdgeBase && conv.getHeight1() > destTime)
                     conv.setNode1(parent);
@@ -146,7 +146,7 @@ public abstract class ACGOperator extends Operator {
      */
     protected Conversion chooseConversion() {
         int idx = Randomizer.nextInt(acg.getTotalConvCount());
-        for (Locus locus : acg.getLoci()) {
+        for (Locus locus : acg.getConvertibleLoci()) {
             if (idx<acg.getConvCount(locus))
                 return acg.getConversions(locus).get(idx);
             else
@@ -155,22 +155,6 @@ public abstract class ACGOperator extends Operator {
 
         throw new IllegalStateException("Programmer error: loop fell through" +
                 " in chooseConversion().");
-    }
-
-    /**
-     * @return alignment selected proportional to its length
-     */
-    protected Locus chooseLocus() {
-        int z = Randomizer.nextInt(acg.getTotalSequenceLength());
-        for (Locus locus : acg.getLoci()) {
-            if (z < locus.getSiteCount())
-                return locus;
-            else
-                z -= locus.getSiteCount();
-        }
-
-        throw new IllegalStateException("Programmer error: loop fell through" +
-                " in chooseAlignment().");
     }
 
     /**

@@ -48,14 +48,14 @@ public class ConvertedRegionLogger extends BEASTObject implements Loggable {
                 ? arg.getID() + ".converted"
                 : getID();
 
-        for (Locus locus : acgInput.get().getLoci())
+        for (Locus locus : acgInput.get().getConvertibleLoci())
                 out.print(mainID + "." + locus.getID() + "\t");
     }
 
     @Override
     public void log(long nSample, PrintStream out) {
 
-        for (Locus locus : acgInput.get().getLoci()) {
+        for (Locus locus : acgInput.get().getConvertibleLoci()) {
             if (acgInput.get().getConvCount(locus) == 0) {
                 out.print("NA\t");
                 return;

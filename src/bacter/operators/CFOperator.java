@@ -48,7 +48,7 @@ public abstract class CFOperator extends ConversionCreationOperator {
             double upperBound = Math.min(node.getParent().getHeight(),
                     srcNodeP.getHeight());
 
-            for (Locus locus : acg.getLoci()) {
+            for (Locus locus : acg.getConvertibleLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getHeight1() > lowerBound && conv.getHeight1() < upperBound) {
                         if (conv.getNode1() == srcNode)
@@ -81,11 +81,11 @@ public abstract class CFOperator extends ConversionCreationOperator {
             double L = 2.0*(srcNode.getParent().getHeight() - volatileHeight);
 
             double Nexp = L*rhoInput.get().getValue()
-                    *(acg.getTotalSequenceLength()
-                    + acg.getLoci().size()*(deltaInput.get().getValue() - 1.0));
+                    *(acg.getTotalConvertibleSequenceLength()
+                    + acg.getConvertibleLoci().size()*(deltaInput.get().getValue() - 1.0));
 
             List<Conversion> toRemove = new ArrayList<>();
-            for (Locus locus : acg.getLoci()) {
+            for (Locus locus : acg.getConvertibleLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getHeight1() > volatileHeight)
                         toRemove.add(conv);
@@ -138,7 +138,7 @@ public abstract class CFOperator extends ConversionCreationOperator {
 
         Node node = srcNode.getParent();
         while (node != null) {
-            for (Locus locus : acg.getLoci()) {
+            for (Locus locus : acg.getConvertibleLoci()) {
                 for (Conversion conv : acg.getConversions(locus)) {
                     if (conv.getNode1() == node && conv.getHeight1() < destTime) {
                         if (Randomizer.nextBoolean())
@@ -169,8 +169,8 @@ public abstract class CFOperator extends ConversionCreationOperator {
 
             double L = 2.0*(destTime - volatileHeight);
             double Nexp = L*rhoInput.get().getValue()
-                    *(acg.getTotalSequenceLength()
-                    + acg.getLoci().size()*(deltaInput.get().getValue() - 1.0));
+                    *(acg.getTotalConvertibleSequenceLength()
+                    + acg.getConvertibleLoci().size()*(deltaInput.get().getValue() - 1.0));
             int N = (int)Randomizer.nextPoisson(Nexp);
 
             logP += -Nexp + N*Math.log(Nexp); // Factorial cancels
