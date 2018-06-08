@@ -21,6 +21,8 @@ import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
 import bacter.util.BacterACGLogReader;
+import beast.app.util.Utils;
+import beast.core.util.Log;
 import beast.evolution.tree.Node;
 import beast.math.statistic.DiscreteStatistics;
 
@@ -606,6 +608,7 @@ public class ACGAnnotator {
      * directed.
      */
     private static void setupGUIOutput() {
+
         JFrame frame = new JFrame();
         frame.setTitle("ACGAnnotator");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -787,6 +790,13 @@ public class ACGAnnotator {
 
         if (args.length == 0) {
             // Retrieve options from GUI:
+
+            try {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e) {
+                Log.warning.println("Error setting cross-platform look and feel.");
+            }
+
             try {
                 SwingUtilities.invokeAndWait(() -> {
                     if (!getOptionsGUI(options))
