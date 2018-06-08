@@ -15,6 +15,7 @@
 
 # Build directories:
 /build
+/build-lib
 /dist
 /out
 /doc/_build
@@ -35,3 +36,4 @@
 .localrc
 .localrcbye
 .ipynb_checkpoints
+.DS_Store
