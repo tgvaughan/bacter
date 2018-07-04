@@ -18,17 +18,14 @@
 package bacter.util;
 
 import bacter.ConversionGraph;
-import beast.core.BEASTObject;
-import beast.core.Function;
-import beast.core.Input;
-import beast.core.Loggable;
+import beast.core.*;
 
 import java.io.PrintStream;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
-public class ConversionCount extends BEASTObject implements Loggable, Function {
+public class ConversionCount extends CalculationNode implements Loggable, Function {
 
     public Input<ConversionGraph> acgInput = new Input<>("acg",
             "Conversion graph", Input.Validate.REQUIRED);
