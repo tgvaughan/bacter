@@ -346,15 +346,7 @@ public class ConversionGraph extends Tree {
      */
     @Override
     public String toString() {
-        String string = getExtendedNewick();
-
-        // Unfortunately, we must behave differently if we're being
-        // called by toXML().
-        StackTraceElement[] ste = Thread.currentThread().getStackTrace();
-        if (ste[2].getMethodName().equals("toXML"))
-            return string.replaceAll("&", "&amp;");
-        else
-            return string;
+        return getExtendedNewick();
     }
 
     /**
@@ -383,13 +375,7 @@ public class ConversionGraph extends Tree {
         }
         sb.append(super.toString());
 
-        // Unfortunately, we must behave differently if we're being
-        // called by toXML().
-        StackTraceElement[] ste = Thread.currentThread().getStackTrace();
-        if (ste[2].getMethodName().equals("toXML"))
-            return sb.toString().replaceAll("&", "&amp;");
-        else
-            return sb.toString();
+        return sb.toString();
     }
     
     /**
