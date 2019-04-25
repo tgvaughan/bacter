@@ -66,6 +66,8 @@ public class AddRemoveConversion extends ConversionCreationOperator {
 
         }
 
+        assert !acg.isInvalid() : "AddRemoveConv produced invalid state.";
+
         return logHGF;
     }
     

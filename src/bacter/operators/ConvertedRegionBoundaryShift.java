@@ -70,6 +70,8 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
             conv.setStartSite(newLocus);
         else
             conv.setEndSite(newLocus);
+
+        assert !acg.isInvalid() : "CRBS produced invalid state.";
         
         return 0;
     }

@@ -146,6 +146,8 @@ public class AddRemoveRedundantConversion extends ACGOperator {
 
         }
 
+        assert !acg.isInvalid() : "AddRemoveRedundantConv produced invalid state.";
+
         return logHGF;
     }
 

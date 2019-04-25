@@ -120,6 +120,8 @@ public class AddRemoveDetour extends ConversionCreationOperator {
         // Incorporate probability of reverse move:
         logHGF += Math.log(1.0 / ((acg.getNodeCount() - 1) * node1Count * node2Count));
 
+        assert !acg.isInvalid() : "ARDetour_add produced invalid state.";
+
         return logHGF;
     }
 
@@ -179,6 +181,8 @@ public class AddRemoveDetour extends ConversionCreationOperator {
                 + Math.log(1.0 / (acg.getNodeCount() - 1))
                 + Math.log(2.0) - 2.0 * Math.log(tUpperBound - tLowerBound)
                 + getAffectedRegionProb(convB);
+
+        assert !acg.isInvalid() : "ARDetour_remove produced invalid state.";
 
         return logHGF;
     }

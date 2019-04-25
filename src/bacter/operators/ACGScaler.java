@@ -145,6 +145,8 @@ public class ACGScaler extends ACGOperator {
             
             count -= paramInv.getDimension();
         }
+
+        assert !acg.isInvalid() : "ACGScaler produced invalid state.";
         
         // Return log of Hastings ratio:
         return (count-2)*Math.log(f);

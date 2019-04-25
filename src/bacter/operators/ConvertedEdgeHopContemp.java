@@ -70,6 +70,8 @@ public class ConvertedEdgeHopContemp extends ACGOperator {
         else
             conv.setNode2(intersectingEdges.get(Randomizer.nextInt(intersectingEdges.size())));
 
+        assert !acg.isInvalid() : "CEHContemp produced invalid state.";
+
         return 0.0;
     }
     

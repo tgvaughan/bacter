@@ -58,6 +58,8 @@ public class ConvertedRegionShift extends ACGOperator {
         
         conv.setStartSite(conv.getStartSite()+delta);
         conv.setEndSite(conv.getEndSite()+delta);
+
+        assert !acg.isInvalid() : "CRS produced invalid state.";
         
         return 0.0;
     }

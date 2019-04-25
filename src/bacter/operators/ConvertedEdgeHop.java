@@ -80,6 +80,8 @@ public class ConvertedEdgeHop extends ACGOperator {
                 recomb.setNode2(nodeBelow);
             }
         }
+
+        assert !acg.isInvalid() : "CEH produced invalid state.";
         
         return 0.0;
     }

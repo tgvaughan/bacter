@@ -115,6 +115,8 @@ public class MergeSplitConversion extends ACGOperator {
 
         logHGF += Math.log(1.0/acg.getConvCount(locus));
 
+        assert !acg.isInvalid() : "CRBS_merge produced invalid state.";
+
         return logHGF;
     }
 
@@ -196,6 +198,8 @@ public class MergeSplitConversion extends ACGOperator {
         acg.addConversion(conv2);
 
         logHGF += Math.log(1.0/(acg.getConvCount(locus)*(acg.getConvCount(locus)-1)));
+
+        assert !acg.isInvalid() : "CRBS_split produced invalid state.";
 
         return logHGF;
     }

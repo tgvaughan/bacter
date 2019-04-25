@@ -54,6 +54,8 @@ public class ReplaceConversion extends ConversionCreationOperator {
         // Add replacement conversion
         acg.addConversion(conv);
 
+        assert !acg.isInvalid() : "ReplaceConversion produced invalid state.";
+
         return logHGF;
     }
 }

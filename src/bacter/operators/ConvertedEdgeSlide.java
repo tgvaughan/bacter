@@ -113,6 +113,8 @@ public class ConvertedEdgeSlide extends ACGOperator {
             conv.setHeight2(newHeight);
             conv.setNode2(nodeBelow);
         }
+
+        assert !acg.isInvalid() : "CESlide produced invalid state";
         
         return logHR;
     }

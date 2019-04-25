@@ -170,8 +170,7 @@ public class CFUniform extends ConversionCreationOperator {
             node.setHeight(newHeight);
         }
 
-        if (acg.isInvalid())
-            throw new IllegalStateException("Something is broken: CFUniform proposed illegal state!");
+        assert !acg.isInvalid() : "CFUniform proposed invalid state.";
 
         return logHGF;
     }

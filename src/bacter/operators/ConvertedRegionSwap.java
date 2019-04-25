@@ -60,6 +60,8 @@ public class ConvertedRegionSwap extends ACGOperator {
         conv2.setHeight2(tmpHeight2);
         conv2.setNode1(tmpNode1);
         conv2.setNode2(tmpNode2);
+
+        assert !acg.isInvalid() : "CRS produced invalid state.";
         
         return 0.0;
     }

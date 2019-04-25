@@ -56,6 +56,8 @@ public class ConvertedEdgeFlip extends ACGOperator {
         
         recomb.setNode1(node2);
         recomb.setNode2(node1);
+
+        assert !acg.isInvalid() : "CEF produced invalid state.";
         
         return 0.0;
     }
