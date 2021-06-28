@@ -95,7 +95,7 @@ public class ConversionGraph extends Tree {
 
         loci = lociInput.get();
 
-        // Sort alignment list lexographically in order of BEASTObject IDs
+        // Sort alignment list lexicographically in order of BEASTObject IDs
         loci.sort(Comparator.comparing(BEASTObject::getID));
         convertibleLoci = loci.stream().filter(Locus::conversionsAllowed).collect(Collectors.toList());
 
@@ -105,7 +105,7 @@ public class ConversionGraph extends Tree {
             storedConvs.put(locus, new ArrayList<>());
             totalConvertibleSequenceLength += locus.getSiteCount();
         }
-        
+
         if (fromStringInput.get() != null) {
             fromStringOld(fromStringInput.get());
         }
@@ -401,7 +401,7 @@ public class ConversionGraph extends Tree {
             parser.offsetInput.setValue(0, parser);
             setRoot(parser.parseNewick(sNewick));
         } catch (Exception ex) {
-            Logger.getLogger(ConversionGraph.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
         }
 
         initArrays();
@@ -941,8 +941,6 @@ public class ConversionGraph extends Tree {
             }
         }.visit(parseTree);
 
-        m_nodes = root.getAllChildNodesAndSelf().toArray(m_nodes);
-        nodeCount = m_nodes.length;
         leafNodeCount = root.getAllLeafNodes().size();
 
         setRoot(root);

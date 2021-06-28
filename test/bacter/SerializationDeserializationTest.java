@@ -224,9 +224,7 @@ public class SerializationDeserializationTest extends TestBase {
         System.out.println(newickString);
 
         ConversionGraph acgNew = new ConversionGraph();
-        acgNew.initByName("locus", locus);
-
-        acgNew.fromExtendedNewick(newickString);
+        acgNew.initByName("locus", locus, "extendedNewick", newickString);
 
         // Check that new ACG matches old
         Conversion newConv1 = acgNew.getConversions(locus).get(0);
