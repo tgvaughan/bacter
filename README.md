@@ -2,7 +2,6 @@ bacter
 ======
 
 [![Build Status](https://github.com/tgvaughan/bacter/workflows/Unit%2Fintegration%20tests/badge.svg)](https://github.com/tgvaughan/bacter/actions?query=workflow%3A%22Unit%2Fintegration+tests%22)
-[![CodeFactor](https://www.codefactor.io/repository/github/tgvaughan/bacter/badge)](https://www.codefactor.io/repository/github/tgvaughan/bacter)
 
 Bacter is a [BEAST 2](http://www.beast2.org)  package which facilitates
 inference of a (restricted kind of) ancestral recombination graph (ARG) and
