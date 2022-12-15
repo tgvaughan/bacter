@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.evolution.tree.coalescent
+       namespace='beast.base.evolution.tree.coalescent
                  :beast.evolution.alignment
                  :bacter
                  :bacter.model
@@ -12,9 +12,9 @@
              <populationModel spec="ConstantPopulation" popSize="1.0"/>
              <clonalFrame spec='TreeParser' newick="(1:0.799841931948889,2:0.799841931948889):0.0;"/>
              <locus spec="Locus" id="locus" siteCount="10000"/>
-             <taxonset spec="TaxonSet">
-                 <taxon spec="Taxon" id="A"/>
-                 <taxon spec="Taxon" id="B"/>
+             <taxonset spec="beast.base.evolution.alignment.TaxonSet">
+                 <taxon spec="beast.base.evolution.alignment.Taxon" id="A"/>
+                 <taxon spec="beast.base.evolution.alignment.Taxon" id="B"/>
              </taxonset>
          </simACG>
          

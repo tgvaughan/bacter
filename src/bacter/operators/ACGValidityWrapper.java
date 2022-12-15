@@ -17,9 +17,9 @@
 
 package bacter.operators;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Operator;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>

@@ -18,8 +18,8 @@
 package bacter.operators;
 
 import bacter.Conversion;
-import beast.core.Description;
-import beast.evolution.tree.Node;
+import beast.base.core.Description;
+import beast.base.evolution.tree.Node;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>

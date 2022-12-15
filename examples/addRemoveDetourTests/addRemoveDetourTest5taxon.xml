@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.core
+       namespace='beast.pkgmgmt:beast.base.core:beast.base.inference
                  :beast.core.util
                  :beast.core.parameter
                  :beast.evolution.operators
@@ -15,14 +15,14 @@
     <input spec="SimulatedACG" id="acg"
            rho="0.0005" delta="50.0">
         <locus spec="Locus" id="locus" siteCount="10000"/>
-        <taxonset spec="TaxonSet">
-            <taxon spec="Taxon" id="t1"/>
-            <taxon spec="Taxon" id="t2"/>
-            <taxon spec="Taxon" id="t3"/>
-            <taxon spec="Taxon" id="t4"/>
-            <taxon spec="Taxon" id="t5"/>
+        <taxonset spec="beast.base.evolution.alignment.TaxonSet">
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t1"/>
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t2"/>
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t3"/>
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t4"/>
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t5"/>
         </taxonset>
-        <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
+        <populationModel spec="beast.base.evolution.tree.coalescent.ConstantPopulation" popSize="1.0" id="popFunc"/>
     </input>
 
   <run spec="MCMC" id="mcmc" chainLength="20000000">
@@ -32,8 +32,8 @@
     
     <distribution spec="CompoundDistribution" id="posterior">
         <distribution spec='ACGCoalescent' id="acgPrior">
-            <rho spec='RealParameter' value="0.0005" id="rho" estimate="false"/>
-            <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+            <rho spec="beast.base.inference.parameter.RealParameter" value="0.0005" id="rho" estimate="false"/>
+            <delta spec="beast.base.inference.parameter.RealParameter" value="50.0" id="delta" estimate="false"/>
             <tree idref="acg"/>
             <populationModel idref="popFunc"/>
         </distribution>
@@ -57,34 +57,34 @@
     </operator>
    
     <operator id="Uniform" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator spec='Uniform' weight="10">
+        <operator spec='beast.base.evolution.operator.Uniform' weight="10">
             <tree idref="acg"/>
         </operator>
     </operator>
     <operator id="STS" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator spec='SubtreeSlide' weight="5" gaussian="true" size="1.0">
+        <operator spec='beast.base.evolution.operator.SubtreeSlide' weight="5" gaussian="true" size="1.0">
             <tree idref="acg"/>
         </operator>
     </operator>
     <operator id="STXnarrow" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator id='narrow' spec='Exchange' isNarrow='true' weight="1">
+        <operator id='narrow' spec='beast.base.evolution.operator.Exchange' isNarrow='true' weight="1">
             <tree idref="acg"/>
         </operator>
     </operator>
     <operator id="STXwide" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator id='wide' spec='Exchange' isNarrow='false' weight="1">
+        <operator id='wide' spec='beast.base.evolution.operator.Exchange' isNarrow='false' weight="1">
             <tree idref="acg"/>
         </operator>
     </operator>
     <operator id="WB" spec='ACGValidityWrapper' acg="@acg" weight="1">
-        <operator spec='WilsonBalding' weight="1">
+        <operator spec='beast.base.evolution.operator.WilsonBalding' weight="1">
             <tree idref="acg"/>
         </operator>
     </operator>
 
     <logger logEvery="10000">
       <log idref="posterior"/>
-      <log spec='TreeHeightLogger' tree="@acg"/>
+      <log spec='beast.base.evolution.tree.TreeHeightLogger' tree="@acg"/>
     </logger>
     
     <logger logEvery="10000" fileName="$(filebase).trees" mode="tree">

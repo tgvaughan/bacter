@@ -20,12 +20,12 @@ import bacter.CFEventList;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.State;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.TreeDistribution;
-import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.State;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.tree.TreeDistribution;
+import beast.base.evolution.tree.coalescent.PopulationFunction;
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.PoissonDistributionImpl;
 

@@ -1,9 +1,12 @@
 package bacter.devutils;
 
-import beast.core.*;
-import beast.core.Runnable;
-import beast.util.Randomizer;
-import beast.util.XMLParser;
+import beast.base.inference.Logger;
+import beast.base.inference.MCMC;
+import beast.base.inference.Operator;
+import beast.base.inference.Runnable;
+import beast.base.inference.State;
+import beast.base.util.Randomizer;
+import beast.base.parser.XMLParser;
 
 import java.io.File;
 

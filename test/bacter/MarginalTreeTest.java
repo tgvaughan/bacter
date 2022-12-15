@@ -17,10 +17,15 @@
 
 package bacter;
 
-import beast.util.TreeParser;
-import org.junit.Test;
+import beast.base.evolution.tree.TreeParser;
 
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
 
 /**
  * Unit test for marginal tree traversal.
@@ -34,6 +39,8 @@ public class MarginalTreeTest extends TestBase {
 
     @Test
     public void testNonOverlapping() throws Exception {
+    	
+    	
 
         // Conversion graph
         String str = "[&locus,2,2759,0.3260126313706676,10,2808,0.42839862922656696] "
@@ -51,10 +58,14 @@ public class MarginalTreeTest extends TestBase {
 
         Locus locus = new Locus("locus", 10000);
         locus.setID("locus");
+        
+        
 
         ConversionGraph acg = new ConversionGraph();
+        
         acg.initByName("fromString", str, "locus", locus);
         //System.out.println(acg.getExtendedNewick(true));
+        
         
         // Test all marginals against truth
         // (I have eyeballed each of these trees and claim that they are correct.)
@@ -106,7 +117,7 @@ public class MarginalTreeTest extends TestBase {
 
         ConversionGraph acg = new ConversionGraph();
         acg.initByName("fromString", str, "locus", locus);
-//        System.out.println(acg.getExtendedNewick(true));
+        System.out.println(acg.getExtendedNewick(true));
         
         // Test all marginals against truth
         // (I have eyeballed each of these trees and claim that they are correct.)
@@ -127,7 +138,7 @@ public class MarginalTreeTest extends TestBase {
             MarginalTree marginalTree = new MarginalTree(acg,
                 acg.getRegions(locus).get(r));
 
-//            System.out.println(marginalTree + ";");
+            System.out.println(marginalTree + ";");
 
             assertTrue(treesEquivalent(marginalTree.getRoot(),
                 new TreeParser(correctNewickStrings[r],

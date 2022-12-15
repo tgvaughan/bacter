@@ -1,6 +1,56 @@
-<addon name="bacter" version="2.2.5">
-  <depends on="BEAST" atleast="2.6.0" atmost="2.6.9"/>
-  <addonapp class="bacter.acgannotator.ACGAnnotator"
+<package name="bacter" version="3.0.0">
+  <depends on='BEAST.base' atleast='2.7.2'/>
+  <depends on='BEAST.app' atleast='2.7.2'/>
+
+  <packageapp class="bacter.acgannotator.ACGAnnotator"
             description="ACGAnnotator"
             icon="bacter/acgannotator/icon.png"/>
-</addon>
+
+
+
+
+    <service type="beast.base.core.BEASTInterface">
+        <provider classname="bacter.ConversionGraph"/>
+        <provider classname="bacter.devutils.ComputeCPDMatrix"/>
+        <provider classname="bacter.devutils.MCMCTrace"/>
+        <provider classname="bacter.Locus"/>
+        <provider classname="bacter.MarginalNode"/>
+        <provider classname="bacter.model.ACGCoalescent"/>
+        <provider classname="bacter.model.ACGLikelihood"/>
+        <provider classname="bacter.model.ACGLikelihoodApprox"/>
+        <provider classname="bacter.model.ACGLikelihoodBeagle"/>
+        <provider classname="bacter.model.ACGLikelihoodSlow"/>
+        <provider classname="bacter.model.ACGSimulator"/>
+        <provider classname="bacter.model.AlignmentSimulator"/>
+        <provider classname="bacter.model.pop.PiecewisePopulationFunction"/>
+        <provider classname="bacter.model.pop.SkylinePopulationFunction"/>
+        <provider classname="bacter.model.SimulatedACG"/>
+        <provider classname="bacter.model.SimulatedAlignment"/>
+        <provider classname="bacter.operators.ACGScaler"/>
+        <provider classname="bacter.operators.ACGValidityWrapper"/>
+        <provider classname="bacter.operators.AddRemoveConversion"/>
+        <provider classname="bacter.operators.AddRemoveDetour"/>
+        <provider classname="bacter.operators.AddRemoveRedundantConversion"/>
+        <provider classname="bacter.operators.CFConversionSwap"/>
+        <provider classname="bacter.operators.CFSubtreeExchange"/>
+        <provider classname="bacter.operators.CFSubtreeSlide"/>
+        <provider classname="bacter.operators.CFUniform"/>
+        <provider classname="bacter.operators.CFWilsonBalding"/>
+        <provider classname="bacter.operators.ConvertedEdgeFlip"/>
+        <provider classname="bacter.operators.ConvertedEdgeHop"/>
+        <provider classname="bacter.operators.ConvertedEdgeHopContemp"/>
+        <provider classname="bacter.operators.ConvertedEdgeSlide"/>
+        <provider classname="bacter.operators.ConvertedRegionBoundaryShift"/>
+        <provider classname="bacter.operators.ConvertedRegionShift"/>
+        <provider classname="bacter.operators.ConvertedRegionSwap"/>
+        <provider classname="bacter.operators.MergeSplitConversion"/>
+        <provider classname="bacter.operators.ReplaceConversion"/>
+        <provider classname="bacter.util.ClonalFrameLogger"/>
+        <provider classname="bacter.util.ConversionCount"/>
+        <provider classname="bacter.util.ConversionCountBounds"/>
+        <provider classname="bacter.util.ConversionGraphStatsLogger"/>
+        <provider classname="bacter.util.ConvertedRegionLogger"/>
+        <provider classname="bacter.util.TrimmedACGLogger"/>
+    </service>
+            
+</package>

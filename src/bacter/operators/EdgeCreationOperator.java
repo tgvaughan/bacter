@@ -19,10 +19,10 @@ package bacter.operators;
 
 import bacter.CFEventList;
 import bacter.Conversion;
-import beast.core.Input;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.coalescent.PopulationFunction;
-import beast.util.Randomizer;
+import beast.base.core.Input;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.coalescent.PopulationFunction;
+import beast.base.util.Randomizer;
 import java.util.List;
 
 /**

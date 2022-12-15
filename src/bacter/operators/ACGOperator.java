@@ -20,10 +20,10 @@ package bacter.operators;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
-import beast.core.Input;
-import beast.core.Operator;
-import beast.evolution.tree.Node;
-import beast.util.Randomizer;
+import beast.base.core.Input;
+import beast.base.inference.Operator;
+import beast.base.evolution.tree.Node;
+import beast.base.util.Randomizer;
 
 /**
  * Abstract class of operators which act on the ConversionGraph state.

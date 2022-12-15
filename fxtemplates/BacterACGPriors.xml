@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+       namespace='beast.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.inference.distribution:beastfx.app.inputeditor:beastfx.app.beauti:beast.base.inference.util'>
 
     <mergewith point='ACGPriorTemplates'>
 
@@ -11,13 +11,13 @@
                 <tree idref="Tree.t:$(n)"/>
                 <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.001"/>
                 <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000"/>
-                <populationModel id="popModelConstant.t:$(n)" spec="beast.evolution.tree.coalescent.ConstantPopulation">
+                <populationModel id="popModelConstant.t:$(n)" spec="beast.base.evolution.tree.coalescent.ConstantPopulation">
                     <popSize id="popSize.t:$(n)" spec="parameter.RealParameter" value="1" />
                 </populationModel>
             </plugin>
 
             <prior id='popSizePrior.t:$(n)' x='@popSize.t:$(n)'>
-                <distr spec="beast.math.distributions.OneOnX"/>
+                <distr spec="beast.base.inference.distribution.OneOnX"/>
             </prior>
 
             <operator id='popSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
@@ -52,18 +52,18 @@
                 <tree idref="Tree.t:$(n)"/>
                 <rho id="rho.t:$(n)" spec="parameter.RealParameter" value="0.001"/>
                 <delta id="delta.t:$(n)" spec="parameter.RealParameter" value="1000"/>
-                <populationModel id="popModelExponentialGrowth.t:$(n)" spec="beast.evolution.tree.coalescent.ExponentialGrowth">
+                <populationModel id="popModelExponentialGrowth.t:$(n)" spec="beast.base.evolution.tree.coalescent.ExponentialGrowth">
                     <popSize id="popFinalSize.t:$(n)" spec="parameter.RealParameter" value="1" estimate="true"/>
                     <growthRate id="popGrowthRate.t:$(n)" spec="parameter.RealParameter" value="0.1" estimate="true"/>
                 </populationModel>
             </plugin>
 
             <prior id='popFinalSizePrior.t:$(n)' x='@popFinalSize.t:$(n)'>
-                <distr spec="beast.math.distributions.OneOnX"/>
+                <distr spec="beast.base.inference.distribution.OneOnX"/>
             </prior>
 
             <prior id='popGrowthRatePrior.t:$(n)' x='@popGrowthRate.t:$(n)'>
-                <distr spec="beast.math.distributions.OneOnX"/>
+                <distr spec="beast.base.inference.distribution.OneOnX"/>
             </prior>
 
             <operator id='popFinalSizeScaler.t:$(n)' spec='ScaleOperator' scaleFactor="0.8"
@@ -123,7 +123,7 @@
             </plugin>
 
             <distribution id="popSizesPrior.t:$(n)"
-                spec="beast.math.distributions.MarkovChainDistribution"
+                spec="beast.base.inference.distribution.MarkovChainDistribution"
                 jeffreys="true" parameter="@popSizes.t:$(n)"/>
 
             <operator id="popSizesScaler.t:$(n)" spec="ScaleOperator" weight="1.0"

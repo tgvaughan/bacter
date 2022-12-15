@@ -20,7 +20,7 @@ package bacter.util;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
-import beast.evolution.tree.Node;
+import beast.base.evolution.tree.Node;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;

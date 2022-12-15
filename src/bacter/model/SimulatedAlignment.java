@@ -21,16 +21,16 @@ import bacter.ConversionGraph;
 import bacter.Locus;
 import bacter.MarginalTree;
 import bacter.Region;
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.datatype.DataType;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.tree.Node;
-import beast.util.BEASTClassLoader;
-import beast.util.PackageManager;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.Sequence;
+import beast.base.evolution.datatype.DataType;
+import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.evolution.tree.Node;
+import beast.pkgmgmt.BEASTClassLoader;
+import beast.pkgmgmt.PackageManager;
+import beast.base.util.Randomizer;
 import feast.nexus.CharactersBlock;
 import feast.nexus.NexusBuilder;
 import feast.nexus.TaxaBlock;
@@ -261,7 +261,7 @@ public class SimulatedAlignment extends Alignment {
         } else {
 
             List<String> dataTypeDescList = new ArrayList<>();
-            List<String> classNames = PackageManager.find(beast.evolution.datatype.DataType.class, "beast.evolution.datatype");
+            List<String> classNames = PackageManager.find(beast.base.evolution.datatype.DataType.class, "beast.base.evolution.datatype");
             for (String className : classNames) {
                 try {
                     DataType thisDataType = (DataType) BEASTClassLoader.forName(className).getDeclaredConstructor().newInstance();

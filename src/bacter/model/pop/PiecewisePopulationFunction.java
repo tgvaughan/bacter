@@ -18,12 +18,12 @@
 package bacter.model.pop;
 
 import bacter.ConversionGraph;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Loggable;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
-import beast.evolution.tree.coalescent.PopulationFunction;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Loggable;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.tree.coalescent.PopulationFunction;
 
 import java.io.PrintStream;
 import java.util.ArrayList;

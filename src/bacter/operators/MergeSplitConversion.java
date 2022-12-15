@@ -18,8 +18,8 @@ package bacter.operators;
 
 import bacter.Conversion;
 import bacter.Locus;
-import beast.core.Description;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.util.Randomizer;
 
 /**
  * Merge-split move for the unrestricted model.  The merge move selects

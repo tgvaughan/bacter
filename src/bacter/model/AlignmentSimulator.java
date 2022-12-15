@@ -19,15 +19,15 @@ package bacter.model;
 
 import bacter.ConversionGraph;
 import bacter.Locus;
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.sitemodel.SiteModel;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.sitemodel.SiteModel;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Simulates an alignment down an existing ACG.")
-public class AlignmentSimulator extends beast.core.Runnable {
+public class AlignmentSimulator extends beast.base.inference.Runnable {
 
     public Input<ConversionGraph> acgInput = new Input<>(
             "acg",

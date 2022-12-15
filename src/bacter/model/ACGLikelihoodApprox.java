@@ -1,14 +1,14 @@
 package bacter.model;
 
 import bacter.*;
-import beast.core.Description;
-import beast.core.Distribution;
-import beast.core.Input;
-import beast.core.State;
-import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.tree.Node;
-import beast.math.Binomial;
+import beast.base.core.Description;
+import beast.base.inference.Distribution;
+import beast.base.core.Input;
+import beast.base.inference.State;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.tree.Node;
+import beast.base.util.Binomial;
 
 import java.util.*;
 

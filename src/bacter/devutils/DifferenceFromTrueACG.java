@@ -22,7 +22,7 @@ import bacter.ConversionGraph;
 import bacter.util.ACGLogReader;
 import bacter.util.BacterACGLogReader;
 import bacter.util.COACGLogFileReader;
-import beast.evolution.tree.Node;
+import beast.base.evolution.tree.Node;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;

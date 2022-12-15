@@ -20,8 +20,8 @@ package bacter.beauti;
 import bacter.model.ACGCoalescent;
 import bacter.model.ACGLikelihood;
 import bacter.model.SimulatedACG;
-import beast.app.beauti.BeautiDoc;
-import beast.core.BEASTInterface;
+import beastfx.app.inputeditor.BeautiDoc;
+import beast.base.core.BEASTInterface;
 
 /**
  * Class containing static methods to be accessed by BeautiConnector.

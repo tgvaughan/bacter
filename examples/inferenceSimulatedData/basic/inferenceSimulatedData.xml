@@ -1,42 +1,43 @@
 <beast version='2.0'
-    namespace='beast.core
-    :beast.core.util
-    :beast.core.parameter
-    :beast.evolution.operators
-    :beast.evolution.sitemodel
-    :beast.evolution.substitutionmodel
-    :beast.evolution.tree
-    :beast.evolution.tree.coalescent
-    :beast.evolution.alignment
-    :beast.math.distributions
-    :beast.util
+    namespace='beast.pkgmgmt:beast.base.core:beast.base.inference
+    :beast.base.core.util
+    :beast.base.core.parameter
+    :beast.base.evolution.operators
+    :beast.base.evolution.sitemodel
+    :beast.base.evolution.substitutionmodel
+    :beast.base.evolution.tree
+    :beast.base.evolution.tree.coalescent
+    :beast.base.inference.distribution
+    :beast.base.evolution.alignment
+    :beast.base.math.distributions
+    :beast.base.util
     :bacter
     :bacter.model
     :bacter.operators
     :bacter.util'>
 
 
-    <taxonSet spec="TaxonSet" id="taxonSet">
-        <taxon spec="Taxon" id="t1"/>
-        <taxon spec="Taxon" id="t2"/>
-        <taxon spec="Taxon" id="t3"/>
-        <taxon spec="Taxon" id="t4"/>
-        <taxon spec="Taxon" id="t5"/>
-        <taxon spec="Taxon" id="t6"/>
-        <taxon spec="Taxon" id="t7"/>
-        <taxon spec="Taxon" id="t8"/>
-        <taxon spec="Taxon" id="t9"/>
-        <taxon spec="Taxon" id="t10"/>
-        <taxon spec="Taxon" id="t11"/>
-        <taxon spec="Taxon" id="t12"/>
-        <taxon spec="Taxon" id="t13"/>
-        <taxon spec="Taxon" id="t14"/>
-        <taxon spec="Taxon" id="t15"/>
-        <taxon spec="Taxon" id="t16"/>
-        <taxon spec="Taxon" id="t17"/>
-        <taxon spec="Taxon" id="t18"/>
-        <taxon spec="Taxon" id="t19"/>
-        <taxon spec="Taxon" id="t20"/>
+    <taxonSet spec="beast.base.evolution.alignment.TaxonSet" id="taxonSet">
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t1"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t2"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t3"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t4"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t5"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t6"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t7"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t8"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t9"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t10"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t11"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t12"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t13"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t14"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t15"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t16"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t17"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t18"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t19"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t20"/>
     </taxonSet>
 
 
@@ -71,10 +72,10 @@
                 <populationModel spec='ConstantPopulation' popSize="5.0"/>
             </stateNode>
 
-            <stateNode id="rho" spec='RealParameter' value="0.005" />
-            <stateNode id="delta" spec='RealParameter' value="1000.0"/>
-            <stateNode id="popSize" spec='RealParameter' value="5.0"/>
-            <stateNode id="mutationRate" spec='RealParameter' value="0.005"/>
+            <stateNode id="rho" spec="beast.base.inference.parameter.RealParameter" value="0.005" />
+            <stateNode id="delta" spec="beast.base.inference.parameter.RealParameter" value="1000.0"/>
+            <stateNode id="popSize" spec="beast.base.inference.parameter.RealParameter" value="5.0"/>
+            <stateNode id="mutationRate" spec="beast.base.inference.parameter.RealParameter" value="0.005"/>
         </state>
 
         <!-- Posterior -->    

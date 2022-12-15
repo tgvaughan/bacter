@@ -16,10 +16,10 @@
  */
 package bacter;
 
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.tree.Node;
-import beast.util.ClusterTree;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.TaxonSet;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.ClusterTree;
 import java.io.ByteArrayInputStream;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.Test;

@@ -19,14 +19,15 @@ package bacter;
 import bacter.util.parsers.ExtendedNewickBaseVisitor;
 import bacter.util.parsers.ExtendedNewickLexer;
 import bacter.util.parsers.ExtendedNewickParser;
-import beast.core.*;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
-import beast.util.TreeParser;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
+import beast.base.core.BEASTObject;
+import beast.base.core.Citation;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.evolution.tree.TreeParser;
+import beast.base.inference.Operator;
+import beast.base.inference.StateNode;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -35,6 +36,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>
@@ -85,6 +91,7 @@ public class ConversionGraph extends Tree {
 
     @Override
     public void initAndValidate() {
+    	
 
         convs = new HashMap<>();
         storedConvs = new HashMap<>();
@@ -119,6 +126,7 @@ public class ConversionGraph extends Tree {
             regionLists.put(locus, new RegionList(this, locus));
 
         cfEventList = new CFEventList(this);
+        
 
         super.initAndValidate();
     }

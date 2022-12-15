@@ -17,9 +17,11 @@
 
 package bacter.devutils;
 
-import beast.core.*;
-import beast.core.util.CompoundDistribution;
-import beast.util.XMLParser;
+import beast.base.inference.CompoundDistribution;
+import beast.base.inference.Distribution;
+import beast.base.inference.MCMC;
+import beast.base.inference.State;
+import beast.base.parser.XMLParser;
 
 import java.io.File;
 
@@ -38,7 +40,7 @@ public class DensityCalculator {
         }
 
         XMLParser parser = new XMLParser();
-        beast.core.Runnable runnable = null;
+        beast.base.inference.Runnable runnable = null;
         try {
             runnable = parser.parseFile(new File(args[0]));
         } catch (Exception e) {

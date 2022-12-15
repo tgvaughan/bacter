@@ -21,11 +21,11 @@ import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
 import bacter.Region;
-import beast.core.CalculationNode;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.Loggable;
-import beast.util.Randomizer;
+import beast.base.inference.CalculationNode;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.core.Loggable;
+import beast.base.util.Randomizer;
 
 import java.io.PrintStream;
 

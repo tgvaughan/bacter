@@ -22,9 +22,9 @@ import bacter.Locus;
 import bacter.TestBase;
 import bacter.model.ACGCoalescent;
 import bacter.model.SimulatedACG;
-import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.tree.coalescent.ConstantPopulation;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.alignment.TaxonSet;
+import beast.base.evolution.tree.coalescent.ConstantPopulation;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 

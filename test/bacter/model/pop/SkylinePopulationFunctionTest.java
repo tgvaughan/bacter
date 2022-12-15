@@ -21,8 +21,8 @@ import bacter.CFEventList;
 import bacter.ConversionGraph;
 import bacter.Locus;
 import bacter.TestBase;
-import beast.core.parameter.IntegerParameter;
-import beast.core.parameter.RealParameter;
+import beast.base.inference.parameter.IntegerParameter;
+import beast.base.inference.parameter.RealParameter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

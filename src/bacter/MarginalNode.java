@@ -17,7 +17,7 @@
 
 package bacter;
 
-import beast.evolution.tree.Node;
+import beast.base.evolution.tree.Node;
 
 /**
  * Adds a field to the Node class specifying whether a given

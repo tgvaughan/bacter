@@ -17,13 +17,15 @@
 
 package bacter;
 
-import beast.core.*;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.Taxon;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.tree.Node;
-import beast.evolution.tree.Tree;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.Sequence;
+import beast.base.evolution.alignment.Taxon;
+import beast.base.evolution.alignment.TaxonSet;
+import beast.base.evolution.tree.Node;
+import beast.base.evolution.tree.Tree;
+import beast.base.inference.Logger;
+import beast.base.inference.MCMC;
+
 import com.google.common.collect.Lists;
 
 import java.util.*;
@@ -225,7 +227,7 @@ public abstract class TestBase {
      *
      * @param runnable from which to remove log.
      */
-    public void disableScreenLog(beast.core.Runnable runnable) {
+    public void disableScreenLog(beast.base.inference.Runnable runnable) {
         if (runnable instanceof MCMC) {
             MCMC mcmc = (MCMC)runnable;
 

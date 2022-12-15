@@ -18,10 +18,10 @@
 package bacter.model;
 
 import bacter.*;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
-import beast.util.ClusterTree;
-import beast.util.TreeParser;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.Sequence;
+import beast.base.evolution.tree.ClusterTree;
+import beast.base.evolution.tree.TreeParser;
 import org.junit.Assert;
 import org.junit.Test;
 

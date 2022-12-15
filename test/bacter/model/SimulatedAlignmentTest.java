@@ -18,14 +18,14 @@
 package bacter.model;
 
 import bacter.*;
-import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.TaxonSet;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.substitutionmodel.JukesCantor;
-import beast.evolution.tree.coalescent.ConstantPopulation;
-import beast.util.ClusterTree;
-import beast.util.Randomizer;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.TaxonSet;
+import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.evolution.substitutionmodel.JukesCantor;
+import beast.base.evolution.tree.coalescent.ConstantPopulation;
+import beast.base.evolution.tree.ClusterTree;
+import beast.base.util.Randomizer;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 

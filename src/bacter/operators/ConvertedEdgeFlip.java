@@ -19,9 +19,9 @@ package bacter.operators;
 
 import bacter.operators.ACGOperator;
 import bacter.Conversion;
-import beast.core.Description;
-import beast.evolution.tree.Node;
-import beast.util.Randomizer;
+import beast.base.core.Description;
+import beast.base.evolution.tree.Node;
+import beast.base.util.Randomizer;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>

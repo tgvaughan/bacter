@@ -18,7 +18,10 @@
 package bacter.util;
 
 import bacter.ConversionGraph;
-import beast.core.*;
+import beast.base.core.Function;
+import beast.base.core.Input;
+import beast.base.core.Loggable;
+import beast.base.inference.CalculationNode;
 
 import java.io.PrintStream;
 

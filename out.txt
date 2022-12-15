@@ -1,0 +1,4694 @@
+Buildfile: /home/jdou557/Documents/Marsden2019/beast2.7/bacter/build.xml
+
+init:
+
+init-test:
+
+find-beast:
+
+build-local-beast:
+     [echo] Compiling against beast2 source found at /home/jdou557/Documents/Marsden2019/beast2.7/beast2.
+    [mkdir] Created dir: /home/jdou557/Documents/Marsden2019/beast2.7/bacter/build-beast
+    [javac] Compiling 335 source files to /home/jdou557/Documents/Marsden2019/beast2.7/bacter/build-beast
+    [javac] Note: Some input files use or override a deprecated API.
+    [javac] Note: Recompile with -Xlint:deprecation for details.
+    [javac] Note: Some input files use unchecked or unsafe operations.
+    [javac] Note: Recompile with -Xlint:unchecked for details.
+      [jar] Building jar: /home/jdou557/Documents/Marsden2019/beast2.7/bacter/build-lib/beast2.jar
+   [delete] Deleting directory /home/jdou557/Documents/Marsden2019/beast2.7/bacter/build-beast
+
+build-remote-beast:
+
+build-beast:
+
+compile:
+
+copy-resources:
+
+compile-test:
+    [javac] Compiling 1 source file to /home/jdou557/Documents/Marsden2019/beast2.7/bacter/build-test
+
+test:
+    [junit] Running bacter.MarginalTreeTest
+    [junit] Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.033 sec
+    [junit] Test bacter.MarginalTreeTest FAILED
+    [junit] Running bacter.SerializationDeserializationTest
+    [junit] Tarsius_syrichta: 898 4
+    [junit] Lemur_catta: 898 4
+    [junit] Homo_sapiens: 898 4
+    [junit] Pan: 898 4
+    [junit] Gorilla: 898 4
+    [junit] Pongo: 898 4
+    [junit] Hylobates: 898 4
+    [junit] Macaca_fuscata: 898 4
+    [junit] M_mulatta: 898 4
+    [junit] M_fascicularis: 898 4
+    [junit] M_sylvanus: 898 4
+    [junit] Saimiri_sciureus: 898 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   898 sites
+    [junit]   418 patterns
+    [junit] 
+    [junit] Tarsius_syrichta: 898 4
+    [junit] Lemur_catta: 898 4
+    [junit] Homo_sapiens: 898 4
+    [junit] Pan: 898 4
+    [junit] Gorilla: 898 4
+    [junit] Pongo: 898 4
+    [junit] Hylobates: 898 4
+    [junit] Macaca_fuscata: 898 4
+    [junit] M_mulatta: 898 4
+    [junit] M_fascicularis: 898 4
+    [junit] M_sylvanus: 898 4
+    [junit] Saimiri_sciureus: 898 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   898 sites
+    [junit]   418 patterns
+    [junit] 
+    [junit] (((((1:0.07581602661351446)#0:0.07581602661351446,2:0.1516320532270289)13:0.020873255921980027,#0[&conv=0, region={100,200}, locus="locus", relSize=0.112472, affectedSites=101, uselessSiteFraction=0.00000]:0.09668928253549448):0.020873255921980027,((((((3:0.047419043175260994,4:0.047419043175260994)14:0.008952390061456483,5:0.05637143323671748)15:0.037165505090584944,6:0.09353693832730242)16:0.013330625419148201,7:0.10686756374645062)17:0.04225166985283413,(((8:0.01825455442302282,(9:0.00912727721151141)#1:0.00912727721151141)18:0.028541663901738273,10:0.046796218324761094)19:0.01874698282020043,11:0.06554320114496152)20:0.08357603245432323)21:0.024817387908291827,12:0.17393662150757658)22:0.01944194356341239)23:1.0,#1[&conv=1, region={300,400}, locus="locus", relSize=0.112472, affectedSites=101, uselessSiteFraction=0.00000]:1.1842512878594775):0.0;
+    [junit] Tarsius_syrichta: 898 4
+    [junit] Lemur_catta: 898 4
+    [junit] Homo_sapiens: 898 4
+    [junit] Pan: 898 4
+    [junit] Gorilla: 898 4
+    [junit] Pongo: 898 4
+    [junit] Hylobates: 898 4
+    [junit] Macaca_fuscata: 898 4
+    [junit] M_mulatta: 898 4
+    [junit] M_fascicularis: 898 4
+    [junit] M_sylvanus: 898 4
+    [junit] Saimiri_sciureus: 898 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   898 sites
+    [junit]   418 patterns
+    [junit] 
+    [junit] Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.199 sec
+    [junit] Test bacter.SerializationDeserializationTest FAILED
+    [junit] Running bacter.SiteAncestryTest
+    [junit] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.01 sec
+    [junit] Running bacter.model.ACGLikelihoodApproxTest
+    [junit] t1: 20 4
+    [junit] t2: 20 4
+    [junit] t3: 20 4
+    [junit] Alignment(null)
+    [junit]   3 taxa
+    [junit]   20 sites
+    [junit]   3 patterns
+    [junit] 
+    [junit] t1: 20 4
+    [junit] t2: 20 4
+    [junit] t3: 20 4
+    [junit] Alignment(null)
+    [junit]   3 taxa
+    [junit]   20 sites
+    [junit]   1 patterns
+    [junit] 
+    [junit] t1: 20 4
+    [junit] t2: 20 4
+    [junit] t3: 20 4
+    [junit] Alignment(null)
+    [junit]   3 taxa
+    [junit]   20 sites
+    [junit]   1 patterns
+    [junit] 
+    [junit] Tests run: 3, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.128 sec
+    [junit] Test bacter.model.ACGLikelihoodApproxTest FAILED
+    [junit] Running bacter.model.ACGLikelihoodTest
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Tarsius_syrichta: 898 4
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Lemur_catta: 898 4
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Homo_sapiens: 898 4
+    [junit] Pan: 898 4
+    [junit] Gorilla: 898 4
+    [junit] Pongo: 898 4
+    [junit] Hylobates: 898 4
+    [junit] Macaca_fuscata: 898 4
+    [junit] M_mulatta: 898 4
+    [junit] M_fascicularis: 898 4
+    [junit] M_sylvanus: 898 4
+    [junit] Saimiri_sciureus: 898 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   898 sites
+    [junit]   418 patterns
+    [junit] 
+    [junit] Tarsius_syrichta: 898 4
+    [junit] Lemur_catta: 898 4
+    [junit] Homo_sapiens: 898 4
+    [junit] Pan: 898 4
+    [junit] Gorilla: 898 4
+    [junit] Pongo: 898 4
+    [junit] Hylobates: 898 4
+    [junit] Macaca_fuscata: 898 4
+    [junit] M_mulatta: 898 4
+    [junit] M_fascicularis: 898 4
+    [junit] M_sylvanus: 898 4
+    [junit] Saimiri_sciureus: 898 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   898 sites
+    [junit]   418 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 418, 898]
+    [junit] Test 1.  Truth: -6443.81167833863 Value: -6443.811678338628
+    [junit] Tarsius_syrichta: 100 4
+    [junit] Lemur_catta: 100 4
+    [junit] Homo_sapiens: 100 4
+    [junit] Pan: 100 4
+    [junit] Gorilla: 100 4
+    [junit] Pongo: 100 4
+    [junit] Hylobates: 100 4
+    [junit] Macaca_fuscata: 100 4
+    [junit] M_mulatta: 100 4
+    [junit] M_fascicularis: 100 4
+    [junit] M_sylvanus: 100 4
+    [junit] Saimiri_sciureus: 100 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   100 sites
+    [junit]   53 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 53, 100]
+    [junit] Tarsius_syrichta: 101 4
+    [junit] Lemur_catta: 101 4
+    [junit] Homo_sapiens: 101 4
+    [junit] Pan: 101 4
+    [junit] Gorilla: 101 4
+    [junit] Pongo: 101 4
+    [junit] Hylobates: 101 4
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Macaca_fuscata: 101 4
+    [junit] M_mulatta: 101 4
+    [junit] M_fascicularis: 101 4
+    [junit] M_sylvanus: 101 4
+    [junit] Saimiri_sciureus: 101 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   101 sites
+    [junit]   59 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 59, 101]
+    [junit] Tarsius_syrichta: 697 4
+    [junit] Lemur_catta: 697 4
+    [junit] Homo_sapiens: 697 4
+    [junit] Pan: 697 4
+    [junit] Gorilla: 697 4
+    [junit] Pongo: 697 4
+    [junit] Hylobates: 697 4
+    [junit] Macaca_fuscata: 697 4
+    [junit] M_mulatta: 697 4
+    [junit] M_fascicularis: 697 4
+    [junit] M_sylvanus: 697 4
+    [junit] Saimiri_sciureus: 697 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   697 sites
+    [junit]   339 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 339, 697]
+    [junit] Tarsius_syrichta: 100 4
+    [junit] Lemur_catta: 100 4
+    [junit] Homo_sapiens: 100 4
+    [junit] Pan: 100 4
+    [junit] Gorilla: 100 4
+    [junit] Pongo: 100 4
+    [junit] Hylobates: 100 4
+    [junit] Macaca_fuscata: 100 4
+    [junit] M_mulatta: 100 4
+    [junit] M_fascicularis: 100 4
+    [junit] M_sylvanus: 100 4
+    [junit] Saimiri_sciureus: 100 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   100 sites
+    [junit]   53 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 53, 100]
+    [junit] Tarsius_syrichta: 101 4
+    [junit] Lemur_catta: 101 4
+    [junit] Homo_sapiens: 101 4
+    [junit] Pan: 101 4
+    [junit] Gorilla: 101 4
+    [junit] Pongo: 101 4
+    [junit] Hylobates: 101 4
+    [junit] Macaca_fuscata: 101 4
+    [junit] M_mulatta: 101 4
+    [junit] M_fascicularis: 101 4
+    [junit] M_sylvanus: 101 4
+    [junit] Saimiri_sciureus: 101 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   101 sites
+    [junit]   59 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 59, 101]
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Tarsius_syrichta: 49 4
+    [junit] Lemur_catta: 49 4
+    [junit] Homo_sapiens: 49 4
+    [junit] Pan: 49 4
+    [junit] Gorilla: 49 4
+    [junit] Pongo: 49 4
+    [junit] Hylobates: 49 4
+    [junit] Macaca_fuscata: 49 4
+    [junit] M_mulatta: 49 4
+    [junit] M_fascicularis: 49 4
+    [junit] M_sylvanus: 49 4
+    [junit] Saimiri_sciureus: 49 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   49 sites
+    [junit]   36 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 36, 49]
+    [junit] Tarsius_syrichta: 51 4
+    [junit] Lemur_catta: 51 4
+    [junit] Homo_sapiens: 51 4
+    [junit] Pan: 51 4
+    [junit] Gorilla: 51 4
+    [junit] Pongo: 51 4
+    [junit] Hylobates: 51 4
+    [junit] Macaca_fuscata: 51 4
+    [junit] M_mulatta: 51 4
+    [junit] M_fascicularis: 51 4
+    [junit] M_sylvanus: 51 4
+    [junit] Saimiri_sciureus: 51 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   51 sites
+    [junit]   35 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 35, 51]
+    [junit] Tarsius_syrichta: 597 4
+    [junit] Lemur_catta: 597 4
+    [junit] Homo_sapiens: 597 4
+    [junit] Pan: 597 4
+    [junit] Gorilla: 597 4
+    [junit] Pongo: 597 4
+    [junit] Hylobates: 597 4
+    [junit] Macaca_fuscata: 597 4
+    [junit] M_mulatta: 597 4
+    [junit] M_fascicularis: 597 4
+    [junit] M_sylvanus: 597 4
+    [junit] Saimiri_sciureus: 597 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   597 sites
+    [junit]   291 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 291, 597]
+    [junit] Tarsius_syrichta: 898 4
+    [junit] Lemur_catta: 898 4
+    [junit] Homo_sapiens: 898 4
+    [junit] Pan: 898 4
+    [junit] Gorilla: 898 4
+    [junit] Pongo: 898 4
+    [junit] Hylobates: 898 4
+    [junit] Macaca_fuscata: 898 4
+    [junit] M_mulatta: 898 4
+    [junit] M_fascicularis: 898 4
+    [junit] M_sylvanus: 898 4
+    [junit] Saimiri_sciureus: 898 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   898 sites
+    [junit]   418 patterns
+    [junit] 
+    [junit] Tarsius_syrichta: 898 4
+    [junit] Lemur_catta: 898 4
+    [junit] Homo_sapiens: 898 4
+    [junit] Pan: 898 4
+    [junit] Gorilla: 898 4
+    [junit] Pongo: 898 4
+    [junit] Hylobates: 898 4
+    [junit] Macaca_fuscata: 898 4
+    [junit] M_mulatta: 898 4
+    [junit] M_fascicularis: 898 4
+    [junit] M_sylvanus: 898 4
+    [junit] Saimiri_sciureus: 898 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   898 sites
+    [junit]   418 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 418, 898]
+    [junit] Tarsius_syrichta: 100 4
+    [junit] Lemur_catta: 100 4
+    [junit] Homo_sapiens: 100 4
+    [junit] Pan: 100 4
+    [junit] Gorilla: 100 4
+    [junit] Pongo: 100 4
+    [junit] Hylobates: 100 4
+    [junit] Macaca_fuscata: 100 4
+    [junit] M_mulatta: 100 4
+    [junit] M_fascicularis: 100 4
+    [junit] M_sylvanus: 100 4
+    [junit] Saimiri_sciureus: 100 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   100 sites
+    [junit]   53 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 53, 100]
+    [junit] Tarsius_syrichta: 101 4
+    [junit] Lemur_catta: 101 4
+    [junit] Homo_sapiens: 101 4
+    [junit] Pan: 101 4
+    [junit] Gorilla: 101 4
+    [junit] Pongo: 101 4
+    [junit] Hylobates: 101 4
+    [junit] Macaca_fuscata: 101 4
+    [junit] M_mulatta: 101 4
+    [junit] M_fascicularis: 101 4
+    [junit] M_sylvanus: 101 4
+    [junit] Saimiri_sciureus: 101 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   101 sites
+    [junit]   59 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 59, 101]
+    [junit] Tarsius_syrichta: 697 4
+    [junit] Lemur_catta: 697 4
+    [junit] Homo_sapiens: 697 4
+    [junit] Pan: 697 4
+    [junit] Gorilla: 697 4
+    [junit] Pongo: 697 4
+    [junit] Hylobates: 697 4
+    [junit] Macaca_fuscata: 697 4
+    [junit] M_mulatta: 697 4
+    [junit] M_fascicularis: 697 4
+    [junit] M_sylvanus: 697 4
+    [junit] Saimiri_sciureus: 697 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   697 sites
+    [junit]   339 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 339, 697]
+    [junit] Tarsius_syrichta: 100 4
+    [junit] Lemur_catta: 100 4
+    [junit] Homo_sapiens: 100 4
+    [junit] Pan: 100 4
+    [junit] Gorilla: 100 4
+    [junit] Pongo: 100 4
+    [junit] Hylobates: 100 4
+    [junit] Macaca_fuscata: 100 4
+    [junit] M_mulatta: 100 4
+    [junit] M_fascicularis: 100 4
+    [junit] M_sylvanus: 100 4
+    [junit] Saimiri_sciureus: 100 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   100 sites
+    [junit]   53 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 53, 100]
+    [junit] Tarsius_syrichta: 101 4
+    [junit] Lemur_catta: 101 4
+    [junit] Homo_sapiens: 101 4
+    [junit] Pan: 101 4
+    [junit] Gorilla: 101 4
+    [junit] Pongo: 101 4
+    [junit] Hylobates: 101 4
+    [junit] Macaca_fuscata: 101 4
+    [junit] M_mulatta: 101 4
+    [junit] M_fascicularis: 101 4
+    [junit] M_sylvanus: 101 4
+    [junit] Saimiri_sciureus: 101 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   101 sites
+    [junit]   59 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 59, 101]
+    [junit] Tarsius_syrichta: 49 4
+    [junit] Lemur_catta: 49 4
+    [junit] Homo_sapiens: 49 4
+    [junit] Pan: 49 4
+    [junit] Gorilla: 49 4
+    [junit] Pongo: 49 4
+    [junit] Hylobates: 49 4
+    [junit] Macaca_fuscata: 49 4
+    [junit] M_mulatta: 49 4
+    [junit] M_fascicularis: 49 4
+    [junit] M_sylvanus: 49 4
+    [junit] Saimiri_sciureus: 49 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   49 sites
+    [junit]   36 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 36, 49]
+    [junit] Tarsius_syrichta: 51 4
+    [junit] Lemur_catta: 51 4
+    [junit] Homo_sapiens: 51 4
+    [junit] Pan: 51 4
+    [junit] Gorilla: 51 4
+    [junit] Pongo: 51 4
+    [junit] Hylobates: 51 4
+    [junit] Macaca_fuscata: 51 4
+    [junit] M_mulatta: 51 4
+    [junit] M_fascicularis: 51 4
+    [junit] M_sylvanus: 51 4
+    [junit] Saimiri_sciureus: 51 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   51 sites
+    [junit]   35 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 35, 51]
+    [junit] Tarsius_syrichta: 597 4
+    [junit] Lemur_catta: 597 4
+    [junit] Homo_sapiens: 597 4
+    [junit] Pan: 597 4
+    [junit] Gorilla: 597 4
+    [junit] Pongo: 597 4
+    [junit] Hylobates: 597 4
+    [junit] Macaca_fuscata: 597 4
+    [junit] M_mulatta: 597 4
+    [junit] M_fascicularis: 597 4
+    [junit] M_sylvanus: 597 4
+    [junit] Saimiri_sciureus: 597 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   597 sites
+    [junit]   291 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [12, 291, 597]
+    [junit] ((((((((((((((((((((((((((((((((9:0.28561360853337947)#43:0.026079243970282384)#11:0.24042270035780888,((((((7:0.03587043758715211,#51[&conv=51, region={7814,9112}, locus="locus", relSize=0.129900, affectedSites=1299, uselessSiteFraction=0.00000]:0.03206039634121405):0.007856361809442006,#57[&conv=57, region={8869,9235}, locus="locus", relSize=0.0367000, affectedSites=367, uselessSiteFraction=0.00000]:0.03763750595455578):0.09902816845009783,#54[&conv=54, region={8419,8890}, locus="locus", relSize=0.0472000, affectedSites=472, uselessSiteFraction=0.00000]:0.08483431850156503):0.04883270113818752,#24[&conv=24, region={3529,3741}, locus="locus", relSize=0.0213000, affectedSites=213, uselessSiteFraction=0.00000]:0.03997717211090754):0.20627372631528554,#15[&conv=15, region={2481,2690}, locus="locus", relSize=0.0210000, affectedSites=210, uselessSiteFraction=0.00000]:0.06999151967167055):0.010371663501514083,#34[&conv=34, region={5393,5462}, locus="locus", relSize=0.00700000, affectedSites=70, uselessSiteFraction=0.00000]:0.3722056053630151):0.14388249405979164)16:0.17502755316110896)#48:0.19539115947706343)#1:0.08358182920046442)#25:0.2902521915844689)#53:0.13758447972759402)#6:0.002335335385377668,((((((((((((((((((((((((((6:0.0038100412459380617)#51:0.024124936019341278,3:0.02793497726527934)12:0.008092476173384641)#34:0.11558304343530795)#24:0.0061078251092056,((4:0.069038959084816,(8:0.05792064934512692)#54:0.01111830973968908)13:0.0736274962553709)#4:0.01505186664299063)15:0.05959997343570678)#40:5.980839872243293E-4,#8[&conv=8, region={713,3229}, locus="locus", relSize=0.251700, affectedSites=2517, uselessSiteFraction=0.00000]:0.15818610378135667):0.050627993139728655,#23[&conv=23, region={3513,5196}, locus="locus", relSize=0.168400, affectedSites=1684, uselessSiteFraction=0.00000]:0.07664579434523472):0.05932550308265716)#15:0.023705263260539178,#11[&conv=11, region={1708,2695}, locus="locus", relSize=0.0988000, affectedSites=988, uselessSiteFraction=0.00000]:0.03988228638537178):0.16414571016557739,#40[&conv=40, region={6223,6405}, locus="locus", relSize=0.0183000, affectedSites=183, uselessSiteFraction=0.00000]:0.2984025536357267):0.01063737633993822,#0[&conv=0, region={0,192}, locus="locus", relSize=0.0193000, affectedSites=193, uselessSiteFraction=0.00000]:0.06546007206072924):0.10942315760946586)#7:0.08170165118616435)#61:0.024699444621946176,#13[&conv=13, region={2282,3033}, locus="locus", relSize=0.0752000, affectedSites=752, uselessSiteFraction=0.00000]:0.17595769295756036):0.010910891481849982,#7[&conv=7, region={404,3846}, locus="locus", relSize=0.344300, affectedSites=3443, uselessSiteFraction=0.00000]:0.1173119872899605):0.08802954908540217,#61[&conv=61, region={9088,9379}, locus="locus", relSize=0.0292000, affectedSites=292, uselessSiteFraction=0.00000]:0.12363988518919833):0.10543529668518514)#55:0.06922055971072627)#42:0.04407444640889402)#52:0.05462062710101456)#62:0.03008812845423625,#31[&conv=31, region={5212,6794}, locus="locus", relSize=0.158300, affectedSites=1053, uselessSiteFraction=0.334807]:0.4633887387052673):0.07608652130286364)#10:0.027780442807885386,#55[&conv=55, region={8599,9199}, locus="locus", relSize=0.0601000, affectedSites=601, uselessSiteFraction=0.00000]:0.30187072578562013):0.05921966475406193,#25[&conv=25, region={3820,5014}, locus="locus", relSize=0.119500, affectedSites=1195, uselessSiteFraction=0.00000]:0.30153251190413743):0.05048968667675946,#53[&conv=53, region={8114,9143}, locus="locus", relSize=0.103000, affectedSites=481, uselessSiteFraction=0.533010]:0.061770006996427984):0.0781498081165437)17:0.05877995859468865,#42[&conv=42, region={6708,6709}, locus="locus", relSize=0.000200000, affectedSites=2, uselessSiteFraction=0.00000]:0.4792892842169476):0.015364222599343558)#9:0.13006413257106075)#63:0.19149101560916715,#30[&conv=30, region={4730,5976}, locus="locus", relSize=0.124700, affectedSites=1247, uselessSiteFraction=0.00000]:0.6140363277811483):0.07508148340606713,#26[&conv=26, region={4180,4870}, locus="locus", relSize=0.0691000, affectedSites=0, uselessSiteFraction=1.00000]:0.6379979514610119):0.15504608014699972)#35:0.020553858975087547,#17[&conv=17, region={2602,2862}, locus="locus", relSize=0.0261000, affectedSites=186, uselessSiteFraction=0.287356]:0.26626469459993163):0.016678455945516646,#12[&conv=12, region={1802,2605}, locus="locus", relSize=0.0804000, affectedSites=482, uselessSiteFraction=0.400498]:0.041874592243566156):0.017360164589990124)#44:0.06185390689821979,#64[&conv=64, region={9909,9999}, locus="locus", relSize=0.00910000, affectedSites=90, uselessSiteFraction=0.0109890]:0.33889423996352197):0.055232382649556655,#9[&conv=9, region={865,1437}, locus="locus", relSize=0.0573000, affectedSites=573, uselessSiteFraction=0.00000]:0.7233614807916655):0.16861924313200038)#5:0.11894802975225272,#46[&conv=46, region={7557,9693}, locus="locus", relSize=0.213700, affectedSites=2137, uselessSiteFraction=0.00000]:0.9042686765603059):0.06566215188058155,#5[&conv=5, region={0,267}, locus="locus", relSize=0.0268000, affectedSites=268, uselessSiteFraction=0.00000]:0.18461018163283427):0.068655190879086,#27[&conv=27, region={4287,4700}, locus="locus", relSize=0.0414000, affectedSites=6, uselessSiteFraction=0.985507]:0.6756815569365644):0.009458436997567876,#59[&conv=59, region={8962,9295}, locus="locus", relSize=0.0334000, affectedSites=187, uselessSiteFraction=0.440120]:0.002218312326130345):0.1530178290880162)#22:0.19947298702562577,#22[&conv=22, region={3352,3629}, locus="locus", relSize=0.0278000, affectedSites=278, uselessSiteFraction=0.00000]:0.19947298702562577):0.008708187920442256)#41:0.1028576424693659,((((((((((((((((((((((((((((((((((((((((((5:0.05973027562475196)#8:0.015015111418355417,(1:0.006089293442038332)#57:0.06865609360106904)14:0.08365327660391905)#50:0.14348751236711937,#20[&conv=20, region={2843,3718}, locus="locus", relSize=0.0876000, affectedSites=670, uselessSiteFraction=0.235160]:0.09692256961265128):0.19734328842131232)#3:0.06699532141910713)#13:0.12498166067551142,#50[&conv=50, region={7796,9263}, locus="locus", relSize=0.146800, affectedSites=1468, uselessSiteFraction=0.00000]:0.5328077828830502):0.01712325351976829,#33[&conv=33, region={5366,7576}, locus="locus", relSize=0.221100, affectedSites=530, uselessSiteFraction=0.760289]:0.36062812535853206):0.044802399768330003,#3[&conv=3, region={0,227}, locus="locus", relSize=0.0228000, affectedSites=228, uselessSiteFraction=0.00000]:0.25390263538271685):0.05399822436784829,#48[&conv=48, region={7733,8662}, locus="locus", relSize=0.0930000, affectedSites=930, uselessSiteFraction=0.00000]:0.07998721816344356):0.18711825104538415)#29:0.022962217250679373,#29[&conv=29, region={4657,4765}, locus="locus", relSize=0.0109000, affectedSites=109, uselessSiteFraction=0.00000]:0.022962217250679373):0.09110741979432824)#16:0.025629196529506126,#52[&conv=52, region={7896,8172}, locus="locus", relSize=0.0277000, affectedSites=277, uselessSiteFraction=0.00000]:0.07409418662173795):0.08400369418473885)#30:0.01645740385866179,#10[&conv=10, region={1614,2283}, locus="locus", relSize=0.0670000, affectedSites=670, uselessSiteFraction=0.00000]:0.013760007807024133):0.11120036558127055)#37:0.023519329295108582,#37[&conv=37, region={5845,7102}, locus="locus", relSize=0.125800, affectedSites=1126, uselessSiteFraction=0.104928]:0.023519329295108582):3.6396125316717765E-4,#19[&conv=19, region={2788,3917}, locus="locus", relSize=0.113000, affectedSites=143, uselessSiteFraction=0.873451]:0.021355052754571613):0.0879977610789815,#62[&conv=62, region={9093,9867}, locus="locus", relSize=0.0775000, affectedSites=668, uselessSiteFraction=0.138065]:0.34301607477265184):0.07879925583366143)#21:0.1545572313053123)#32:0.0409680768847962,#36[&conv=36, region={5518,5556}, locus="locus", relSize=0.00390000, affectedSites=0, uselessSiteFraction=1.00000]:0.029813021782344906):0.12786866598754054)#49:0.017110519233987098)#45:0.02313735181719756,#45[&conv=45, region={7284,8469}, locus="locus", relSize=0.118600, affectedSites=1035, uselessSiteFraction=0.127319]:0.02313735181719756):0.054018202991804154)#14:0.019766657591579806,#32[&conv=32, region={5267,5687}, locus="locus", relSize=0.0421000, affectedSites=0, uselessSiteFraction=1.00000]:0.28286947450690536):0.006280936386873437)#27:0.04735388951649)#28:0.030122005394821016)#12:0.12441556028309808,#49[&conv=49, region={7778,7928}, locus="locus", relSize=0.0151000, affectedSites=151, uselessSiteFraction=0.00000]:0.32220512321585115):0.07338014524062819,(((((((((((((((((((((((((((((10:0.017395933233100833,2:0.017395933233100833)11:0.045504009023654715)#38:0.12899863594384703)#23:0.013065028200891948)#20:0.14273796828981838)#33:0.04066876143825804,#43[&conv=43, region={6863,6942}, locus="locus", relSize=0.00800000, affectedSites=80, uselessSiteFraction=0.00000]:0.10275672759619148):3.4220122008377096E-5,#38[&conv=38, region={5896,7696}, locus="locus", relSize=0.180100, affectedSites=1801, uselessSiteFraction=0.00000]:0.3255046139948238):0.07249359708224068)#0:0.008830391364963275,#4[&conv=4, region={0,665}, locus="locus", relSize=0.0666000, affectedSites=666, uselessSiteFraction=0.00000]:0.3270620893585964):0.21144469433538343)#31:0.5621567926279298,#16[&conv=16, region={2600,3121}, locus="locus", relSize=0.0522000, affectedSites=88, uselessSiteFraction=0.831418]:0.13501181938568152):0.025740931054766936)#26:0.05837322309761639)#47:0.020692924409816627)#19:0.09223075988973517,#47[&conv=47, region={7658,8884}, locus="locus", relSize=0.122700, affectedSites=1227, uselessSiteFraction=0.00000]:0.1129236842995518):0.17672448959316145)#46:0.0849091065920815)#36:0.007435985618895913,#6[&conv=6, region={117,654}, locus="locus", relSize=0.0538000, affectedSites=98, uselessSiteFraction=0.817844]:0.27548468590600006):0.10696670678186049)#17:0.023262982070136218)#64:0.006280386732274046)#39:0.09812223918153862)#56:0.0033757256151247805,#63[&conv=63, region={9608,9892}, locus="locus", relSize=0.0285000, affectedSites=285, uselessSiteFraction=0.00000]:0.3069490771364636):0.0059269670234356475,#1[&conv=1, region={0,556}, locus="locus", relSize=0.0557000, affectedSites=557, uselessSiteFraction=0.00000]:1.0308381938228972):7.458227004970563E-4,#14[&conv=14, region={2405,3583}, locus="locus", relSize=0.117900, affectedSites=314, uselessSiteFraction=0.733673]:1.6905391088850585E-4):0.1453908694823458,#35[&conv=35, region={5461,6489}, locus="locus", relSize=0.102900, affectedSites=1029, uselessSiteFraction=0.00000]:0.03739415718050809):0.019469725169560803,#44[&conv=44, region={6910,7239}, locus="locus", relSize=0.0330000, affectedSites=330, uselessSiteFraction=0.00000]:0.002271402839474579):0.045916464167341076,#56[&conv=56, region={8719,9999}, locus="locus", relSize=0.128100, affectedSites=215, uselessSiteFraction=0.832162]:0.22082557415830517):0.06087377565803509)#18:0.02949930602531925)18:0.2418865677678541)#58:0.03858071123304052,#21[&conv=21, region={3293,4694}, locus="locus", relSize=0.140200, affectedSites=1402, uselessSiteFraction=0.00000]:0.999446521635023):0.12718280217207)#59:0.025031192884803488)#2:0.014984087214989117)#60:0.005857608632904743,#18[&conv=18, region={2651,3448}, locus="locus", relSize=0.0798000, affectedSites=314, uselessSiteFraction=0.606516]:0.48302227593098124):0.01495595685664819,#2[&conv=2, region={0,1359}, locus="locus", relSize=0.136000, affectedSites=1360, uselessSiteFraction=0.00000]:0.03579765270454205):0.1704900802501852,#58[&conv=58, region={8939,9108}, locus="locus", relSize=0.0170000, affectedSites=170, uselessSiteFraction=0.00000]:0.39708243924464126):0.18769622159735677,#28[&conv=28, region={4610,4797}, locus="locus", relSize=0.0188000, affectedSites=29, uselessSiteFraction=0.845745]:1.0545829395283994):0.047259811392692974)19:0.10641817033292655,#60[&conv=60, region={9022,9203}, locus="locus", relSize=0.0182000, affectedSites=0, uselessSiteFraction=1.00000]:0.5326778490627144):0.08494881623161499,#39[&conv=39, region={6198,6223}, locus="locus", relSize=0.00260000, affectedSites=0, uselessSiteFraction=1.00000]:1.4746129215902848):1.1464361685326345,#41[&conv=41, region={6623,9496}, locus="locus", relSize=0.287400, affectedSites=2544, uselessSiteFraction=0.114823]:1.440660797566542):0.0;
+    [junit] Loading package bModelTest v1.3.2 SpeciesNetwork v1.0.0 OBAMA v1.1.1 CoalRe v1.0.0 Babel v0.4.0 BEAST.base v2.7.2 BICEPS v1.1.1 speedemon v1.1.0 BEASTLabs v2.0.0 starbeast2 v1.0.0 feast v9.2.0 SA v2.1.0 MultiTypeTree v8.0.0 FastRelaxedClockLogNormal v1.2.0 aaRS v0.0.1 bacter v3.0.0 Mascot v3.0.0 starbeast3 v1.1.3 CoupledMCMC v1.2.0 ORC v1.1.1 MM v1.2.0 BEAST.app v2.7.2 besp v1.0.0   bacter v3.0.0 BEAST.app v2.7.3 BEAST.base v2.7.3 
+    [junit] 117 segregating sites in region 0-116 (6 active conversions)
+    [junit] 76 segregating sites in region 117-192 (7 active conversions)
+    [junit] 35 segregating sites in region 193-227 (6 active conversions)
+    [junit] 40 segregating sites in region 228-267 (5 active conversions)
+    [junit] 136 segregating sites in region 268-403 (4 active conversions)
+    [junit] 153 segregating sites in region 404-556 (5 active conversions)
+    [junit] 98 segregating sites in region 557-654 (4 active conversions)
+    [junit] 10 segregating sites in region 655-665 (3 active conversions)
+    [junit] 47 segregating sites in region 666-712 (2 active conversions)
+    [junit] 152 segregating sites in region 713-864 (3 active conversions)
+    [junit] 492 segregating sites in region 865-1359 (4 active conversions)
+    [junit] 77 segregating sites in region 1360-1437 (3 active conversions)
+    [junit] 176 segregating sites in region 1438-1613 (2 active conversions)
+    [junit] 94 segregating sites in region 1614-1707 (3 active conversions)
+    [junit] 93 segregating sites in region 1708-1801 (4 active conversions)
+    [junit] 477 segregating sites in region 1802-2281 (5 active conversions)
+    [junit] 2 segregating sites in region 2282-2283 (6 active conversions)
+    [junit] 121 segregating sites in region 2284-2404 (5 active conversions)
+    [junit] 75 segregating sites in region 2405-2480 (6 active conversions)
+    [junit] 118 segregating sites in region 2481-2599 (7 active conversions)
+    [junit] 2 segregating sites in region 2600-2601 (8 active conversions)
+    [junit] 4 segregating sites in region 2602-2605 (9 active conversions)
+    [junit] 45 segregating sites in region 2606-2650 (8 active conversions)
+    [junit] 40 segregating sites in region 2651-2690 (9 active conversions)
+    [junit] 5 segregating sites in region 2691-2695 (8 active conversions)
+    [junit] 91 segregating sites in region 2696-2787 (7 active conversions)
+    [junit] 55 segregating sites in region 2788-2842 (8 active conversions)
+    [junit] 20 segregating sites in region 2843-2862 (9 active conversions)
+    [junit] 170 segregating sites in region 2863-3033 (8 active conversions)
+    [junit] 88 segregating sites in region 3034-3121 (7 active conversions)
+    [junit] 106 segregating sites in region 3122-3229 (6 active conversions)
+    [junit] 62 segregating sites in region 3230-3292 (5 active conversions)
+    [junit] 57 segregating sites in region 3293-3351 (6 active conversions)
+    [junit] 95 segregating sites in region 3352-3448 (7 active conversions)
+    [junit] 63 segregating sites in region 3449-3512 (6 active conversions)
+    [junit] 16 segregating sites in region 3513-3528 (7 active conversions)
+    [junit] 55 segregating sites in region 3529-3583 (8 active conversions)
+    [junit] 46 segregating sites in region 3584-3629 (7 active conversions)
+    [junit] 87 segregating sites in region 3630-3718 (6 active conversions)
+    [junit] 23 segregating sites in region 3719-3741 (5 active conversions)
+    [junit] 76 segregating sites in region 3742-3819 (4 active conversions)
+    [junit] 26 segregating sites in region 3820-3846 (5 active conversions)
+    [junit] 70 segregating sites in region 3847-3917 (4 active conversions)
+    [junit] 364 segregating sites in region 3918-4286 (3 active conversions)
+    [junit] 320 segregating sites in region 4287-4609 (4 active conversions)
+    [junit] 47 segregating sites in region 4610-4656 (5 active conversions)
+    [junit] 38 segregating sites in region 4657-4694 (6 active conversions)
+    [junit] 6 segregating sites in region 4695-4700 (5 active conversions)
+    [junit] 28 segregating sites in region 4701-4729 (4 active conversions)
+    [junit] 36 segregating sites in region 4730-4765 (5 active conversions)
+    [junit] 31 segregating sites in region 4766-4797 (4 active conversions)
+    [junit] 214 segregating sites in region 4798-5014 (3 active conversions)
+    [junit] 179 segregating sites in region 5015-5196 (2 active conversions)
+    [junit] 15 segregating sites in region 5197-5211 (1 active conversions)
+    [junit] 154 segregating sites in region 5212-5365 (2 active conversions)
+    [junit] 26 segregating sites in region 5366-5392 (3 active conversions)
+    [junit] 68 segregating sites in region 5393-5460 (4 active conversions)
+    [junit] 2 segregating sites in region 5461-5462 (5 active conversions)
+    [junit] 381 segregating sites in region 5463-5844 (4 active conversions)
+    [junit] 51 segregating sites in region 5845-5895 (5 active conversions)
+    [junit] 81 segregating sites in region 5896-5976 (6 active conversions)
+    [junit] 245 segregating sites in region 5977-6222 (5 active conversions)
+    [junit] 183 segregating sites in region 6223-6405 (6 active conversions)
+    [junit] 84 segregating sites in region 6406-6489 (5 active conversions)
+    [junit] 132 segregating sites in region 6490-6622 (4 active conversions)
+    [junit] 85 segregating sites in region 6623-6707 (5 active conversions)
+    [junit] 2 segregating sites in region 6708-6709 (6 active conversions)
+    [junit] 85 segregating sites in region 6710-6794 (5 active conversions)
+    [junit] 67 segregating sites in region 6795-6862 (4 active conversions)
+    [junit] 47 segregating sites in region 6863-6909 (5 active conversions)
+    [junit] 32 segregating sites in region 6910-6942 (6 active conversions)
+    [junit] 160 segregating sites in region 6943-7102 (5 active conversions)
+    [junit] 136 segregating sites in region 7103-7239 (4 active conversions)
+    [junit] 43 segregating sites in region 7240-7283 (3 active conversions)
+    [junit] 273 segregating sites in region 7284-7556 (4 active conversions)
+    [junit] 20 segregating sites in region 7557-7576 (5 active conversions)
+    [junit] 81 segregating sites in region 7577-7657 (4 active conversions)
+    [junit] 39 segregating sites in region 7658-7696 (5 active conversions)
+    [junit] 36 segregating sites in region 7697-7732 (4 active conversions)
+    [junit] 45 segregating sites in region 7733-7777 (5 active conversions)
+    [junit] 18 segregating sites in region 7778-7795 (6 active conversions)
+    [junit] 18 segregating sites in region 7796-7813 (7 active conversions)
+    [junit] 81 segregating sites in region 7814-7895 (8 active conversions)
+    [junit] 33 segregating sites in region 7896-7928 (9 active conversions)
+    [junit] 184 segregating sites in region 7929-8113 (8 active conversions)
+    [junit] 57 segregating sites in region 8114-8172 (9 active conversions)
+    [junit] 244 segregating sites in region 8173-8418 (8 active conversions)
+    [junit] 51 segregating sites in region 8419-8469 (9 active conversions)
+    [junit] 128 segregating sites in region 8470-8598 (8 active conversions)
+    [junit] 64 segregating sites in region 8599-8662 (9 active conversions)
+    [junit] 56 segregating sites in region 8663-8718 (8 active conversions)
+    [junit] 148 segregating sites in region 8719-8868 (9 active conversions)
+    [junit] 16 segregating sites in region 8869-8884 (10 active conversions)
+    [junit] 6 segregating sites in region 8885-8890 (9 active conversions)
+    [junit] 48 segregating sites in region 8891-8938 (8 active conversions)
+    [junit] 23 segregating sites in region 8939-8961 (9 active conversions)
+    [junit] 126 segregating sites in region 8962-9087 (10 active conversions)
+    [junit] 5 segregating sites in region 9088-9092 (11 active conversions)
+    [junit] 16 segregating sites in region 9093-9108 (12 active conversions)
+    [junit] 4 segregating sites in region 9109-9112 (11 active conversions)
+    [junit] 30 segregating sites in region 9113-9143 (10 active conversions)
+    [junit] 55 segregating sites in region 9144-9199 (9 active conversions)
+    [junit] 36 segregating sites in region 9200-9235 (8 active conversions)
+    [junit] 28 segregating sites in region 9236-9263 (7 active conversions)
+    [junit] 32 segregating sites in region 9264-9295 (6 active conversions)
+    [junit] 84 segregating sites in region 9296-9379 (5 active conversions)
+    [junit] 117 segregating sites in region 9380-9496 (4 active conversions)
+    [junit] 111 segregating sites in region 9497-9607 (3 active conversions)
+    [junit] 86 segregating sites in region 9608-9693 (4 active conversions)
+    [junit] 174 segregating sites in region 9694-9867 (3 active conversions)
+    [junit] 24 segregating sites in region 9868-9892 (2 active conversions)
+    [junit] 16 segregating sites in region 9893-9908 (1 active conversions)
+    [junit] 89 segregating sites in region 9909-9999 (2 active conversions)
+    [junit] t0: 10000 4
+    [junit] t1: 10000 4
+    [junit] t2: 10000 4
+    [junit] t3: 10000 4
+    [junit] t4: 10000 4
+    [junit] t5: 10000 4
+    [junit] t6: 10000 4
+    [junit] t7: 10000 4
+    [junit] t8: 10000 4
+    [junit] t9: 10000 4
+    [junit] SimulatedAlignment(null)
+    [junit]   10 taxa
+    [junit]   10000 sites
+    [junit]   6214 patterns
+    [junit] 
+    [junit] t0: 117 4
+    [junit] t1: 117 4
+    [junit] t2: 117 4
+    [junit] t3: 117 4
+    [junit] t4: 117 4
+    [junit] t5: 117 4
+    [junit] t6: 117 4
+    [junit] t7: 117 4
+    [junit] t8: 117 4
+    [junit] t9: 117 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   117 sites
+    [junit]   116 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 116, 117]
+    [junit] t0: 76 4
+    [junit] t1: 76 4
+    [junit] t2: 76 4
+    [junit] t3: 76 4
+    [junit] t4: 76 4
+    [junit] t5: 76 4
+    [junit] t6: 76 4
+    [junit] t7: 76 4
+    [junit] t8: 76 4
+    [junit] t9: 76 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   76 sites
+    [junit]   76 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 76, 76]
+    [junit] t0: 35 4
+    [junit] t1: 35 4
+    [junit] t2: 35 4
+    [junit] t3: 35 4
+    [junit] t4: 35 4
+    [junit] t5: 35 4
+    [junit] t6: 35 4
+    [junit] t7: 35 4
+    [junit] t8: 35 4
+    [junit] t9: 35 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   35 sites
+    [junit]   35 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 35, 35]
+    [junit] t0: 40 4
+    [junit] t1: 40 4
+    [junit] t2: 40 4
+    [junit] t3: 40 4
+    [junit] t4: 40 4
+    [junit] t5: 40 4
+    [junit] t6: 40 4
+    [junit] t7: 40 4
+    [junit] t8: 40 4
+    [junit] t9: 40 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   40 sites
+    [junit]   40 patterns
+    [junit] 
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 40, 40]
+    [junit] t0: 136 4
+    [junit] t1: 136 4
+    [junit] t2: 136 4
+    [junit] t3: 136 4
+    [junit] t4: 136 4
+    [junit] t5: 136 4
+    [junit] t6: 136 4
+    [junit] t7: 136 4
+    [junit] t8: 136 4
+    [junit] t9: 136 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   136 sites
+    [junit]   135 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 135, 136]
+    [junit] t0: 153 4
+    [junit] t1: 153 4
+    [junit] t2: 153 4
+    [junit] t3: 153 4
+    [junit] t4: 153 4
+    [junit] t5: 153 4
+    [junit] t6: 153 4
+    [junit] t7: 153 4
+    [junit] t8: 153 4
+    [junit] t9: 153 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   153 sites
+    [junit]   152 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 152, 153]
+    [junit] t0: 98 4
+    [junit] t1: 98 4
+    [junit] t2: 98 4
+    [junit] t3: 98 4
+    [junit] t4: 98 4
+    [junit] t5: 98 4
+    [junit] t6: 98 4
+    [junit] t7: 98 4
+    [junit] t8: 98 4
+    [junit] t9: 98 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   98 sites
+    [junit]   98 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 98, 98]
+    [junit] t0: 11 4
+    [junit] t1: 11 4
+    [junit] t2: 11 4
+    [junit] t3: 11 4
+    [junit] t4: 11 4
+    [junit] t5: 11 4
+    [junit] t6: 11 4
+    [junit] t7: 11 4
+    [junit] t8: 11 4
+    [junit] t9: 11 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   11 sites
+    [junit]   11 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 11, 11]
+    [junit] t0: 47 4
+    [junit] t1: 47 4
+    [junit] t2: 47 4
+    [junit] t3: 47 4
+    [junit] t4: 47 4
+    [junit] t5: 47 4
+    [junit] t6: 47 4
+    [junit] t7: 47 4
+    [junit] t8: 47 4
+    [junit] t9: 47 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   47 sites
+    [junit]   47 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 47, 47]
+    [junit] t0: 152 4
+    [junit] t1: 152 4
+    [junit] t2: 152 4
+    [junit] t3: 152 4
+    [junit] t4: 152 4
+    [junit] t5: 152 4
+    [junit] t6: 152 4
+    [junit] t7: 152 4
+    [junit] t8: 152 4
+    [junit] t9: 152 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   152 sites
+    [junit]   147 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 147, 152]
+    [junit] t0: 495 4
+    [junit] t1: 495 4
+    [junit] t2: 495 4
+    [junit] t3: 495 4
+    [junit] t4: 495 4
+    [junit] t5: 495 4
+    [junit] t6: 495 4
+    [junit] t7: 495 4
+    [junit] t8: 495 4
+    [junit] t9: 495 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   495 sites
+    [junit]   469 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 469, 495]
+    [junit] t0: 78 4
+    [junit] t1: 78 4
+    [junit] t2: 78 4
+    [junit] t3: 78 4
+    [junit] t4: 78 4
+    [junit] t5: 78 4
+    [junit] t6: 78 4
+    [junit] t7: 78 4
+    [junit] t8: 78 4
+    [junit] t9: 78 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   78 sites
+    [junit]   78 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 78, 78]
+    [junit] t0: 176 4
+    [junit] t1: 176 4
+    [junit] t2: 176 4
+    [junit] t3: 176 4
+    [junit] t4: 176 4
+    [junit] t5: 176 4
+    [junit] t6: 176 4
+    [junit] t7: 176 4
+    [junit] t8: 176 4
+    [junit] t9: 176 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   176 sites
+    [junit]   170 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 170, 176]
+    [junit] t0: 94 4
+    [junit] t1: 94 4
+    [junit] t2: 94 4
+    [junit] t3: 94 4
+    [junit] t4: 94 4
+    [junit] t5: 94 4
+    [junit] t6: 94 4
+    [junit] t7: 94 4
+    [junit] t8: 94 4
+    [junit] t9: 94 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   94 sites
+    [junit]   93 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 93, 94]
+    [junit] t0: 94 4
+    [junit] t1: 94 4
+    [junit] t2: 94 4
+    [junit] t3: 94 4
+    [junit] t4: 94 4
+    [junit] t5: 94 4
+    [junit] t6: 94 4
+    [junit] t7: 94 4
+    [junit] t8: 94 4
+    [junit] t9: 94 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   94 sites
+    [junit]   92 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 92, 94]
+    [junit] t0: 480 4
+    [junit] t1: 480 4
+    [junit] t2: 480 4
+    [junit] t3: 480 4
+    [junit] t4: 480 4
+    [junit] t5: 480 4
+    [junit] t6: 480 4
+    [junit] t7: 480 4
+    [junit] t8: 480 4
+    [junit] t9: 480 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   480 sites
+    [junit]   440 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 440, 480]
+    [junit] t0: 2 4
+    [junit] t1: 2 4
+    [junit] t2: 2 4
+    [junit] t3: 2 4
+    [junit] t4: 2 4
+    [junit] t5: 2 4
+    [junit] t6: 2 4
+    [junit] t7: 2 4
+    [junit] t8: 2 4
+    [junit] t9: 2 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   2 sites
+    [junit]   2 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 2, 2]
+    [junit] t0: 121 4
+    [junit] t1: 121 4
+    [junit] t2: 121 4
+    [junit] t3: 121 4
+    [junit] t4: 121 4
+    [junit] t5: 121 4
+    [junit] t6: 121 4
+    [junit] t7: 121 4
+    [junit] t8: 121 4
+    [junit] t9: 121 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   121 sites
+    [junit]   119 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 119, 121]
+    [junit] t0: 76 4
+    [junit] t1: 76 4
+    [junit] t2: 76 4
+    [junit] t3: 76 4
+    [junit] t4: 76 4
+    [junit] t5: 76 4
+    [junit] t6: 76 4
+    [junit] t7: 76 4
+    [junit] t8: 76 4
+    [junit] t9: 76 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   76 sites
+    [junit]   75 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 75, 76]
+    [junit] t0: 119 4
+    [junit] t1: 119 4
+    [junit] t2: 119 4
+    [junit] t3: 119 4
+    [junit] t4: 119 4
+    [junit] t5: 119 4
+    [junit] t6: 119 4
+    [junit] t7: 119 4
+    [junit] t8: 119 4
+    [junit] t9: 119 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   119 sites
+    [junit]   115 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 115, 119]
+    [junit] t0: 2 4
+    [junit] t1: 2 4
+    [junit] t2: 2 4
+    [junit] t3: 2 4
+    [junit] t4: 2 4
+    [junit] t5: 2 4
+    [junit] t6: 2 4
+    [junit] t7: 2 4
+    [junit] t8: 2 4
+    [junit] t9: 2 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   2 sites
+    [junit]   2 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 2, 2]
+    [junit] t0: 4 4
+    [junit] t1: 4 4
+    [junit] t2: 4 4
+    [junit] t3: 4 4
+    [junit] t4: 4 4
+    [junit] t5: 4 4
+    [junit] t6: 4 4
+    [junit] t7: 4 4
+    [junit] t8: 4 4
+    [junit] t9: 4 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   4 sites
+    [junit]   4 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 4, 4]
+    [junit] t0: 45 4
+    [junit] t1: 45 4
+    [junit] t2: 45 4
+    [junit] t3: 45 4
+    [junit] t4: 45 4
+    [junit] t5: 45 4
+    [junit] t6: 45 4
+    [junit] t7: 45 4
+    [junit] t8: 45 4
+    [junit] t9: 45 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   45 sites
+    [junit]   45 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 45, 45]
+    [junit] t0: 40 4
+    [junit] t1: 40 4
+    [junit] t2: 40 4
+    [junit] t3: 40 4
+    [junit] t4: 40 4
+    [junit] t5: 40 4
+    [junit] t6: 40 4
+    [junit] t7: 40 4
+    [junit] t8: 40 4
+    [junit] t9: 40 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   40 sites
+    [junit]   40 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 40, 40]
+    [junit] t0: 5 4
+    [junit] t1: 5 4
+    [junit] t2: 5 4
+    [junit] t3: 5 4
+    [junit] t4: 5 4
+    [junit] t5: 5 4
+    [junit] t6: 5 4
+    [junit] t7: 5 4
+    [junit] t8: 5 4
+    [junit] t9: 5 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   5 sites
+    [junit]   5 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 5, 5]
+    [junit] t0: 92 4
+    [junit] t1: 92 4
+    [junit] t2: 92 4
+    [junit] t3: 92 4
+    [junit] t4: 92 4
+    [junit] t5: 92 4
+    [junit] t6: 92 4
+    [junit] t7: 92 4
+    [junit] t8: 92 4
+    [junit] t9: 92 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   92 sites
+    [junit]   90 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 90, 92]
+    [junit] t0: 55 4
+    [junit] t1: 55 4
+    [junit] t2: 55 4
+    [junit] t3: 55 4
+    [junit] t4: 55 4
+    [junit] t5: 55 4
+    [junit] t6: 55 4
+    [junit] t7: 55 4
+    [junit] t8: 55 4
+    [junit] t9: 55 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   55 sites
+    [junit]   55 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 55, 55]
+    [junit] t0: 20 4
+    [junit] t1: 20 4
+    [junit] t2: 20 4
+    [junit] t3: 20 4
+    [junit] t4: 20 4
+    [junit] t5: 20 4
+    [junit] t6: 20 4
+    [junit] t7: 20 4
+    [junit] t8: 20 4
+    [junit] t9: 20 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   20 sites
+    [junit]   20 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 20, 20]
+    [junit] t0: 171 4
+    [junit] t1: 171 4
+    [junit] t2: 171 4
+    [junit] t3: 171 4
+    [junit] t4: 171 4
+    [junit] t5: 171 4
+    [junit] t6: 171 4
+    [junit] t7: 171 4
+    [junit] t8: 171 4
+    [junit] t9: 171 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   171 sites
+    [junit]   162 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 162, 171]
+    [junit] t0: 88 4
+    [junit] t1: 88 4
+    [junit] t2: 88 4
+    [junit] t3: 88 4
+    [junit] t4: 88 4
+    [junit] t5: 88 4
+    [junit] t6: 88 4
+    [junit] t7: 88 4
+    [junit] t8: 88 4
+    [junit] t9: 88 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   88 sites
+    [junit]   87 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 87, 88]
+    [junit] t0: 108 4
+    [junit] t1: 108 4
+    [junit] t2: 108 4
+    [junit] t3: 108 4
+    [junit] t4: 108 4
+    [junit] t5: 108 4
+    [junit] t6: 108 4
+    [junit] t7: 108 4
+    [junit] t8: 108 4
+    [junit] t9: 108 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   108 sites
+    [junit]   103 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 103, 108]
+    [junit] t0: 63 4
+    [junit] t1: 63 4
+    [junit] t2: 63 4
+    [junit] t3: 63 4
+    [junit] t4: 63 4
+    [junit] t5: 63 4
+    [junit] t6: 63 4
+    [junit] t7: 63 4
+    [junit] t8: 63 4
+    [junit] t9: 63 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   63 sites
+    [junit]   63 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 63, 63]
+    [junit] t0: 59 4
+    [junit] t1: 59 4
+    [junit] t2: 59 4
+    [junit] t3: 59 4
+    [junit] t4: 59 4
+    [junit] t5: 59 4
+    [junit] t6: 59 4
+    [junit] t7: 59 4
+    [junit] t8: 59 4
+    [junit] t9: 59 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   59 sites
+    [junit]   58 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 58, 59]
+    [junit] t0: 97 4
+    [junit] t1: 97 4
+    [junit] t2: 97 4
+    [junit] t3: 97 4
+    [junit] t4: 97 4
+    [junit] t5: 97 4
+    [junit] t6: 97 4
+    [junit] t7: 97 4
+    [junit] t8: 97 4
+    [junit] t9: 97 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   97 sites
+    [junit]   95 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 95, 97]
+    [junit] t0: 64 4
+    [junit] t1: 64 4
+    [junit] t2: 64 4
+    [junit] t3: 64 4
+    [junit] t4: 64 4
+    [junit] t5: 64 4
+    [junit] t6: 64 4
+    [junit] t7: 64 4
+    [junit] t8: 64 4
+    [junit] t9: 64 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   64 sites
+    [junit]   61 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 61, 64]
+    [junit] t0: 16 4
+    [junit] t1: 16 4
+    [junit] t2: 16 4
+    [junit] t3: 16 4
+    [junit] t4: 16 4
+    [junit] t5: 16 4
+    [junit] t6: 16 4
+    [junit] t7: 16 4
+    [junit] t8: 16 4
+    [junit] t9: 16 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   16 sites
+    [junit]   15 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 15, 16]
+    [junit] t0: 55 4
+    [junit] t1: 55 4
+    [junit] t2: 55 4
+    [junit] t3: 55 4
+    [junit] t4: 55 4
+    [junit] t5: 55 4
+    [junit] t6: 55 4
+    [junit] t7: 55 4
+    [junit] t8: 55 4
+    [junit] t9: 55 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   55 sites
+    [junit]   52 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 52, 55]
+    [junit] t0: 46 4
+    [junit] t1: 46 4
+    [junit] t2: 46 4
+    [junit] t3: 46 4
+    [junit] t4: 46 4
+    [junit] t5: 46 4
+    [junit] t6: 46 4
+    [junit] t7: 46 4
+    [junit] t8: 46 4
+    [junit] t9: 46 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   46 sites
+    [junit]   46 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 46, 46]
+    [junit] t0: 89 4
+    [junit] t1: 89 4
+    [junit] t2: 89 4
+    [junit] t3: 89 4
+    [junit] t4: 89 4
+    [junit] t5: 89 4
+    [junit] t6: 89 4
+    [junit] t7: 89 4
+    [junit] t8: 89 4
+    [junit] t9: 89 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   89 sites
+    [junit]   84 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 84, 89]
+    [junit] t0: 23 4
+    [junit] t1: 23 4
+    [junit] t2: 23 4
+    [junit] t3: 23 4
+    [junit] t4: 23 4
+    [junit] t5: 23 4
+    [junit] t6: 23 4
+    [junit] t7: 23 4
+    [junit] t8: 23 4
+    [junit] t9: 23 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   23 sites
+    [junit]   23 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 23, 23]
+    [junit] t0: 78 4
+    [junit] t1: 78 4
+    [junit] t2: 78 4
+    [junit] t3: 78 4
+    [junit] t4: 78 4
+    [junit] t5: 78 4
+    [junit] t6: 78 4
+    [junit] t7: 78 4
+    [junit] t8: 78 4
+    [junit] t9: 78 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   78 sites
+    [junit]   77 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 77, 78]
+    [junit] t0: 27 4
+    [junit] t1: 27 4
+    [junit] t2: 27 4
+    [junit] t3: 27 4
+    [junit] t4: 27 4
+    [junit] t5: 27 4
+    [junit] t6: 27 4
+    [junit] t7: 27 4
+    [junit] t8: 27 4
+    [junit] t9: 27 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   27 sites
+    [junit]   27 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 27, 27]
+    [junit] t0: 71 4
+    [junit] t1: 71 4
+    [junit] t2: 71 4
+    [junit] t3: 71 4
+    [junit] t4: 71 4
+    [junit] t5: 71 4
+    [junit] t6: 71 4
+    [junit] t7: 71 4
+    [junit] t8: 71 4
+    [junit] t9: 71 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   71 sites
+    [junit]   69 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 69, 71]
+    [junit] t0: 369 4
+    [junit] t1: 369 4
+    [junit] t2: 369 4
+    [junit] t3: 369 4
+    [junit] t4: 369 4
+    [junit] t5: 369 4
+    [junit] t6: 369 4
+    [junit] t7: 369 4
+    [junit] t8: 369 4
+    [junit] t9: 369 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   369 sites
+    [junit]   323 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 323, 369]
+    [junit] t0: 323 4
+    [junit] t1: 323 4
+    [junit] t2: 323 4
+    [junit] t3: 323 4
+    [junit] t4: 323 4
+    [junit] t5: 323 4
+    [junit] t6: 323 4
+    [junit] t7: 323 4
+    [junit] t8: 323 4
+    [junit] t9: 323 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   323 sites
+    [junit]   287 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 287, 323]
+    [junit] t0: 47 4
+    [junit] t1: 47 4
+    [junit] t2: 47 4
+    [junit] t3: 47 4
+    [junit] t4: 47 4
+    [junit] t5: 47 4
+    [junit] t6: 47 4
+    [junit] t7: 47 4
+    [junit] t8: 47 4
+    [junit] t9: 47 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   47 sites
+    [junit]   47 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 47, 47]
+    [junit] t0: 38 4
+    [junit] t1: 38 4
+    [junit] t2: 38 4
+    [junit] t3: 38 4
+    [junit] t4: 38 4
+    [junit] t5: 38 4
+    [junit] t6: 38 4
+    [junit] t7: 38 4
+    [junit] t8: 38 4
+    [junit] t9: 38 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   38 sites
+    [junit]   38 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 38, 38]
+    [junit] t0: 6 4
+    [junit] t1: 6 4
+    [junit] t2: 6 4
+    [junit] t3: 6 4
+    [junit] t4: 6 4
+    [junit] t5: 6 4
+    [junit] t6: 6 4
+    [junit] t7: 6 4
+    [junit] t8: 6 4
+    [junit] t9: 6 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   6 sites
+    [junit]   6 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 6, 6]
+    [junit] t0: 29 4
+    [junit] t1: 29 4
+    [junit] t2: 29 4
+    [junit] t3: 29 4
+    [junit] t4: 29 4
+    [junit] t5: 29 4
+    [junit] t6: 29 4
+    [junit] t7: 29 4
+    [junit] t8: 29 4
+    [junit] t9: 29 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   29 sites
+    [junit]   29 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 29, 29]
+    [junit] t0: 36 4
+    [junit] t1: 36 4
+    [junit] t2: 36 4
+    [junit] t3: 36 4
+    [junit] t4: 36 4
+    [junit] t5: 36 4
+    [junit] t6: 36 4
+    [junit] t7: 36 4
+    [junit] t8: 36 4
+    [junit] t9: 36 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   36 sites
+    [junit]   36 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 36, 36]
+    [junit] t0: 32 4
+    [junit] t1: 32 4
+    [junit] t2: 32 4
+    [junit] t3: 32 4
+    [junit] t4: 32 4
+    [junit] t5: 32 4
+    [junit] t6: 32 4
+    [junit] t7: 32 4
+    [junit] t8: 32 4
+    [junit] t9: 32 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   32 sites
+    [junit]   31 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 31, 32]
+    [junit] t0: 217 4
+    [junit] t1: 217 4
+    [junit] t2: 217 4
+    [junit] t3: 217 4
+    [junit] t4: 217 4
+    [junit] t5: 217 4
+    [junit] t6: 217 4
+    [junit] t7: 217 4
+    [junit] t8: 217 4
+    [junit] t9: 217 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   217 sites
+    [junit]   203 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 203, 217]
+    [junit] t0: 182 4
+    [junit] t1: 182 4
+    [junit] t2: 182 4
+    [junit] t3: 182 4
+    [junit] t4: 182 4
+    [junit] t5: 182 4
+    [junit] t6: 182 4
+    [junit] t7: 182 4
+    [junit] t8: 182 4
+    [junit] t9: 182 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   182 sites
+    [junit]   169 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 169, 182]
+    [junit] t0: 15 4
+    [junit] t1: 15 4
+    [junit] t2: 15 4
+    [junit] t3: 15 4
+    [junit] t4: 15 4
+    [junit] t5: 15 4
+    [junit] t6: 15 4
+    [junit] t7: 15 4
+    [junit] t8: 15 4
+    [junit] t9: 15 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   15 sites
+    [junit]   15 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 15, 15]
+    [junit] t0: 154 4
+    [junit] t1: 154 4
+    [junit] t2: 154 4
+    [junit] t3: 154 4
+    [junit] t4: 154 4
+    [junit] t5: 154 4
+    [junit] t6: 154 4
+    [junit] t7: 154 4
+    [junit] t8: 154 4
+    [junit] t9: 154 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   154 sites
+    [junit]   150 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 150, 154]
+    [junit] t0: 27 4
+    [junit] t1: 27 4
+    [junit] t2: 27 4
+    [junit] t3: 27 4
+    [junit] t4: 27 4
+    [junit] t5: 27 4
+    [junit] t6: 27 4
+    [junit] t7: 27 4
+    [junit] t8: 27 4
+    [junit] t9: 27 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   27 sites
+    [junit]   27 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 27, 27]
+    [junit] t0: 68 4
+    [junit] t1: 68 4
+    [junit] t2: 68 4
+    [junit] t3: 68 4
+    [junit] t4: 68 4
+    [junit] t5: 68 4
+    [junit] t6: 68 4
+    [junit] t7: 68 4
+    [junit] t8: 68 4
+    [junit] t9: 68 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   68 sites
+    [junit]   68 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 68, 68]
+    [junit] t0: 2 4
+    [junit] t1: 2 4
+    [junit] t2: 2 4
+    [junit] t3: 2 4
+    [junit] t4: 2 4
+    [junit] t5: 2 4
+    [junit] t6: 2 4
+    [junit] t7: 2 4
+    [junit] t8: 2 4
+    [junit] t9: 2 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   2 sites
+    [junit]   2 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 2, 2]
+    [junit] t0: 382 4
+    [junit] t1: 382 4
+    [junit] t2: 382 4
+    [junit] t3: 382 4
+    [junit] t4: 382 4
+    [junit] t5: 382 4
+    [junit] t6: 382 4
+    [junit] t7: 382 4
+    [junit] t8: 382 4
+    [junit] t9: 382 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   382 sites
+    [junit]   351 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 351, 382]
+    [junit] t0: 51 4
+    [junit] t1: 51 4
+    [junit] t2: 51 4
+    [junit] t3: 51 4
+    [junit] t4: 51 4
+    [junit] t5: 51 4
+    [junit] t6: 51 4
+    [junit] t7: 51 4
+    [junit] t8: 51 4
+    [junit] t9: 51 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   51 sites
+    [junit]   49 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 49, 51]
+    [junit] t0: 81 4
+    [junit] t1: 81 4
+    [junit] t2: 81 4
+    [junit] t3: 81 4
+    [junit] t4: 81 4
+    [junit] t5: 81 4
+    [junit] t6: 81 4
+    [junit] t7: 81 4
+    [junit] t8: 81 4
+    [junit] t9: 81 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   81 sites
+    [junit]   81 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 81, 81]
+    [junit] t0: 246 4
+    [junit] t1: 246 4
+    [junit] t2: 246 4
+    [junit] t3: 246 4
+    [junit] t4: 246 4
+    [junit] t5: 246 4
+    [junit] t6: 246 4
+    [junit] t7: 246 4
+    [junit] t8: 246 4
+    [junit] t9: 246 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   246 sites
+    [junit]   232 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 232, 246]
+    [junit] t0: 183 4
+    [junit] t1: 183 4
+    [junit] t2: 183 4
+    [junit] t3: 183 4
+    [junit] t4: 183 4
+    [junit] t5: 183 4
+    [junit] t6: 183 4
+    [junit] t7: 183 4
+    [junit] t8: 183 4
+    [junit] t9: 183 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   183 sites
+    [junit]   175 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 175, 183]
+    [junit] t0: 84 4
+    [junit] t1: 84 4
+    [junit] t2: 84 4
+    [junit] t3: 84 4
+    [junit] t4: 84 4
+    [junit] t5: 84 4
+    [junit] t6: 84 4
+    [junit] t7: 84 4
+    [junit] t8: 84 4
+    [junit] t9: 84 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   84 sites
+    [junit]   83 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 83, 84]
+    [junit] t0: 133 4
+    [junit] t1: 133 4
+    [junit] t2: 133 4
+    [junit] t3: 133 4
+    [junit] t4: 133 4
+    [junit] t5: 133 4
+    [junit] t6: 133 4
+    [junit] t7: 133 4
+    [junit] t8: 133 4
+    [junit] t9: 133 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   133 sites
+    [junit]   127 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 127, 133]
+    [junit] t0: 85 4
+    [junit] t1: 85 4
+    [junit] t2: 85 4
+    [junit] t3: 85 4
+    [junit] t4: 85 4
+    [junit] t5: 85 4
+    [junit] t6: 85 4
+    [junit] t7: 85 4
+    [junit] t8: 85 4
+    [junit] t9: 85 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   85 sites
+    [junit]   82 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 82, 85]
+    [junit] t0: 2 4
+    [junit] t1: 2 4
+    [junit] t2: 2 4
+    [junit] t3: 2 4
+    [junit] t4: 2 4
+    [junit] t5: 2 4
+    [junit] t6: 2 4
+    [junit] t7: 2 4
+    [junit] t8: 2 4
+    [junit] t9: 2 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   2 sites
+    [junit]   2 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 2, 2]
+    [junit] t0: 85 4
+    [junit] t1: 85 4
+    [junit] t2: 85 4
+    [junit] t3: 85 4
+    [junit] t4: 85 4
+    [junit] t5: 85 4
+    [junit] t6: 85 4
+    [junit] t7: 85 4
+    [junit] t8: 85 4
+    [junit] t9: 85 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   85 sites
+    [junit]   83 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 83, 85]
+    [junit] t0: 68 4
+    [junit] t1: 68 4
+    [junit] t2: 68 4
+    [junit] t3: 68 4
+    [junit] t4: 68 4
+    [junit] t5: 68 4
+    [junit] t6: 68 4
+    [junit] t7: 68 4
+    [junit] t8: 68 4
+    [junit] t9: 68 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   68 sites
+    [junit]   67 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 67, 68]
+    [junit] t0: 47 4
+    [junit] t1: 47 4
+    [junit] t2: 47 4
+    [junit] t3: 47 4
+    [junit] t4: 47 4
+    [junit] t5: 47 4
+    [junit] t6: 47 4
+    [junit] t7: 47 4
+    [junit] t8: 47 4
+    [junit] t9: 47 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   47 sites
+    [junit]   47 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 47, 47]
+    [junit] t0: 33 4
+    [junit] t1: 33 4
+    [junit] t2: 33 4
+    [junit] t3: 33 4
+    [junit] t4: 33 4
+    [junit] t5: 33 4
+    [junit] t6: 33 4
+    [junit] t7: 33 4
+    [junit] t8: 33 4
+    [junit] t9: 33 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   33 sites
+    [junit]   33 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 33, 33]
+    [junit] t0: 160 4
+    [junit] t1: 160 4
+    [junit] t2: 160 4
+    [junit] t3: 160 4
+    [junit] t4: 160 4
+    [junit] t5: 160 4
+    [junit] t6: 160 4
+    [junit] t7: 160 4
+    [junit] t8: 160 4
+    [junit] t9: 160 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   160 sites
+    [junit]   158 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 158, 160]
+    [junit] t0: 137 4
+    [junit] t1: 137 4
+    [junit] t2: 137 4
+    [junit] t3: 137 4
+    [junit] t4: 137 4
+    [junit] t5: 137 4
+    [junit] t6: 137 4
+    [junit] t7: 137 4
+    [junit] t8: 137 4
+    [junit] t9: 137 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   137 sites
+    [junit]   133 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 133, 137]
+    [junit] t0: 44 4
+    [junit] t1: 44 4
+    [junit] t2: 44 4
+    [junit] t3: 44 4
+    [junit] t4: 44 4
+    [junit] t5: 44 4
+    [junit] t6: 44 4
+    [junit] t7: 44 4
+    [junit] t8: 44 4
+    [junit] t9: 44 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   44 sites
+    [junit]   44 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 44, 44]
+    [junit] t0: 273 4
+    [junit] t1: 273 4
+    [junit] t2: 273 4
+    [junit] t3: 273 4
+    [junit] t4: 273 4
+    [junit] t5: 273 4
+    [junit] t6: 273 4
+    [junit] t7: 273 4
+    [junit] t8: 273 4
+    [junit] t9: 273 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   273 sites
+    [junit]   262 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 262, 273]
+    [junit] t0: 20 4
+    [junit] t1: 20 4
+    [junit] t2: 20 4
+    [junit] t3: 20 4
+    [junit] t4: 20 4
+    [junit] t5: 20 4
+    [junit] t6: 20 4
+    [junit] t7: 20 4
+    [junit] t8: 20 4
+    [junit] t9: 20 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   20 sites
+    [junit]   20 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 20, 20]
+    [junit] t0: 81 4
+    [junit] t1: 81 4
+    [junit] t2: 81 4
+    [junit] t3: 81 4
+    [junit] t4: 81 4
+    [junit] t5: 81 4
+    [junit] t6: 81 4
+    [junit] t7: 81 4
+    [junit] t8: 81 4
+    [junit] t9: 81 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   81 sites
+    [junit]   79 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 79, 81]
+    [junit] t0: 39 4
+    [junit] t1: 39 4
+    [junit] t2: 39 4
+    [junit] t3: 39 4
+    [junit] t4: 39 4
+    [junit] t5: 39 4
+    [junit] t6: 39 4
+    [junit] t7: 39 4
+    [junit] t8: 39 4
+    [junit] t9: 39 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   39 sites
+    [junit]   39 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 39, 39]
+    [junit] t0: 36 4
+    [junit] t1: 36 4
+    [junit] t2: 36 4
+    [junit] t3: 36 4
+    [junit] t4: 36 4
+    [junit] t5: 36 4
+    [junit] t6: 36 4
+    [junit] t7: 36 4
+    [junit] t8: 36 4
+    [junit] t9: 36 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   36 sites
+    [junit]   35 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 35, 36]
+    [junit] t0: 45 4
+    [junit] t1: 45 4
+    [junit] t2: 45 4
+    [junit] t3: 45 4
+    [junit] t4: 45 4
+    [junit] t5: 45 4
+    [junit] t6: 45 4
+    [junit] t7: 45 4
+    [junit] t8: 45 4
+    [junit] t9: 45 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   45 sites
+    [junit]   45 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 45, 45]
+    [junit] t0: 18 4
+    [junit] t1: 18 4
+    [junit] t2: 18 4
+    [junit] t3: 18 4
+    [junit] t4: 18 4
+    [junit] t5: 18 4
+    [junit] t6: 18 4
+    [junit] t7: 18 4
+    [junit] t8: 18 4
+    [junit] t9: 18 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   18 sites
+    [junit]   17 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 17, 18]
+    [junit] t0: 18 4
+    [junit] t1: 18 4
+    [junit] t2: 18 4
+    [junit] t3: 18 4
+    [junit] t4: 18 4
+    [junit] t5: 18 4
+    [junit] t6: 18 4
+    [junit] t7: 18 4
+    [junit] t8: 18 4
+    [junit] t9: 18 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   18 sites
+    [junit]   18 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 18, 18]
+    [junit] t0: 82 4
+    [junit] t1: 82 4
+    [junit] t2: 82 4
+    [junit] t3: 82 4
+    [junit] t4: 82 4
+    [junit] t5: 82 4
+    [junit] t6: 82 4
+    [junit] t7: 82 4
+    [junit] t8: 82 4
+    [junit] t9: 82 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   82 sites
+    [junit]   81 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 81, 82]
+    [junit] t0: 33 4
+    [junit] t1: 33 4
+    [junit] t2: 33 4
+    [junit] t3: 33 4
+    [junit] t4: 33 4
+    [junit] t5: 33 4
+    [junit] t6: 33 4
+    [junit] t7: 33 4
+    [junit] t8: 33 4
+    [junit] t9: 33 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   33 sites
+    [junit]   33 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 33, 33]
+    [junit] t0: 185 4
+    [junit] t1: 185 4
+    [junit] t2: 185 4
+    [junit] t3: 185 4
+    [junit] t4: 185 4
+    [junit] t5: 185 4
+    [junit] t6: 185 4
+    [junit] t7: 185 4
+    [junit] t8: 185 4
+    [junit] t9: 185 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   185 sites
+    [junit]   178 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 178, 185]
+    [junit] t0: 59 4
+    [junit] t1: 59 4
+    [junit] t2: 59 4
+    [junit] t3: 59 4
+    [junit] t4: 59 4
+    [junit] t5: 59 4
+    [junit] t6: 59 4
+    [junit] t7: 59 4
+    [junit] t8: 59 4
+    [junit] t9: 59 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   59 sites
+    [junit]   59 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 59, 59]
+    [junit] t0: 246 4
+    [junit] t1: 246 4
+    [junit] t2: 246 4
+    [junit] t3: 246 4
+    [junit] t4: 246 4
+    [junit] t5: 246 4
+    [junit] t6: 246 4
+    [junit] t7: 246 4
+    [junit] t8: 246 4
+    [junit] t9: 246 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   246 sites
+    [junit]   236 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 236, 246]
+    [junit] t0: 51 4
+    [junit] t1: 51 4
+    [junit] t2: 51 4
+    [junit] t3: 51 4
+    [junit] t4: 51 4
+    [junit] t5: 51 4
+    [junit] t6: 51 4
+    [junit] t7: 51 4
+    [junit] t8: 51 4
+    [junit] t9: 51 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   51 sites
+    [junit]   50 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 50, 51]
+    [junit] t0: 129 4
+    [junit] t1: 129 4
+    [junit] t2: 129 4
+    [junit] t3: 129 4
+    [junit] t4: 129 4
+    [junit] t5: 129 4
+    [junit] t6: 129 4
+    [junit] t7: 129 4
+    [junit] t8: 129 4
+    [junit] t9: 129 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   129 sites
+    [junit]   125 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 125, 129]
+    [junit] t0: 64 4
+    [junit] t1: 64 4
+    [junit] t2: 64 4
+    [junit] t3: 64 4
+    [junit] t4: 64 4
+    [junit] t5: 64 4
+    [junit] t6: 64 4
+    [junit] t7: 64 4
+    [junit] t8: 64 4
+    [junit] t9: 64 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   64 sites
+    [junit]   63 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 63, 64]
+    [junit] t0: 56 4
+    [junit] t1: 56 4
+    [junit] t2: 56 4
+    [junit] t3: 56 4
+    [junit] t4: 56 4
+    [junit] t5: 56 4
+    [junit] t6: 56 4
+    [junit] t7: 56 4
+    [junit] t8: 56 4
+    [junit] t9: 56 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   56 sites
+    [junit]   56 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 56, 56]
+    [junit] t0: 150 4
+    [junit] t1: 150 4
+    [junit] t2: 150 4
+    [junit] t3: 150 4
+    [junit] t4: 150 4
+    [junit] t5: 150 4
+    [junit] t6: 150 4
+    [junit] t7: 150 4
+    [junit] t8: 150 4
+    [junit] t9: 150 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   150 sites
+    [junit]   150 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 150, 150]
+    [junit] t0: 16 4
+    [junit] t1: 16 4
+    [junit] t2: 16 4
+    [junit] t3: 16 4
+    [junit] t4: 16 4
+    [junit] t5: 16 4
+    [junit] t6: 16 4
+    [junit] t7: 16 4
+    [junit] t8: 16 4
+    [junit] t9: 16 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   16 sites
+    [junit]   15 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 15, 16]
+    [junit] t0: 6 4
+    [junit] t1: 6 4
+    [junit] t2: 6 4
+    [junit] t3: 6 4
+    [junit] t4: 6 4
+    [junit] t5: 6 4
+    [junit] t6: 6 4
+    [junit] t7: 6 4
+    [junit] t8: 6 4
+    [junit] t9: 6 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   6 sites
+    [junit]   6 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 6, 6]
+    [junit] t0: 48 4
+    [junit] t1: 48 4
+    [junit] t2: 48 4
+    [junit] t3: 48 4
+    [junit] t4: 48 4
+    [junit] t5: 48 4
+    [junit] t6: 48 4
+    [junit] t7: 48 4
+    [junit] t8: 48 4
+    [junit] t9: 48 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   48 sites
+    [junit]   48 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 48, 48]
+    [junit] t0: 23 4
+    [junit] t1: 23 4
+    [junit] t2: 23 4
+    [junit] t3: 23 4
+    [junit] t4: 23 4
+    [junit] t5: 23 4
+    [junit] t6: 23 4
+    [junit] t7: 23 4
+    [junit] t8: 23 4
+    [junit] t9: 23 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   23 sites
+    [junit]   22 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 22, 23]
+    [junit] t0: 126 4
+    [junit] t1: 126 4
+    [junit] t2: 126 4
+    [junit] t3: 126 4
+    [junit] t4: 126 4
+    [junit] t5: 126 4
+    [junit] t6: 126 4
+    [junit] t7: 126 4
+    [junit] t8: 126 4
+    [junit] t9: 126 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   126 sites
+    [junit]   121 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 121, 126]
+    [junit] t0: 5 4
+    [junit] t1: 5 4
+    [junit] t2: 5 4
+    [junit] t3: 5 4
+    [junit] t4: 5 4
+    [junit] t5: 5 4
+    [junit] t6: 5 4
+    [junit] t7: 5 4
+    [junit] t8: 5 4
+    [junit] t9: 5 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   5 sites
+    [junit]   5 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 5, 5]
+    [junit] t0: 16 4
+    [junit] t1: 16 4
+    [junit] t2: 16 4
+    [junit] t3: 16 4
+    [junit] t4: 16 4
+    [junit] t5: 16 4
+    [junit] t6: 16 4
+    [junit] t7: 16 4
+    [junit] t8: 16 4
+    [junit] t9: 16 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   16 sites
+    [junit]   16 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 16, 16]
+    [junit] t0: 4 4
+    [junit] t1: 4 4
+    [junit] t2: 4 4
+    [junit] t3: 4 4
+    [junit] t4: 4 4
+    [junit] t5: 4 4
+    [junit] t6: 4 4
+    [junit] t7: 4 4
+    [junit] t8: 4 4
+    [junit] t9: 4 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   4 sites
+    [junit]   4 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 4, 4]
+    [junit] t0: 31 4
+    [junit] t1: 31 4
+    [junit] t2: 31 4
+    [junit] t3: 31 4
+    [junit] t4: 31 4
+    [junit] t5: 31 4
+    [junit] t6: 31 4
+    [junit] t7: 31 4
+    [junit] t8: 31 4
+    [junit] t9: 31 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   31 sites
+    [junit]   29 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 29, 31]
+    [junit] t0: 56 4
+    [junit] t1: 56 4
+    [junit] t2: 56 4
+    [junit] t3: 56 4
+    [junit] t4: 56 4
+    [junit] t5: 56 4
+    [junit] t6: 56 4
+    [junit] t7: 56 4
+    [junit] t8: 56 4
+    [junit] t9: 56 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   56 sites
+    [junit]   56 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 56, 56]
+    [junit] t0: 36 4
+    [junit] t1: 36 4
+    [junit] t2: 36 4
+    [junit] t3: 36 4
+    [junit] t4: 36 4
+    [junit] t5: 36 4
+    [junit] t6: 36 4
+    [junit] t7: 36 4
+    [junit] t8: 36 4
+    [junit] t9: 36 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   36 sites
+    [junit]   36 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 36, 36]
+    [junit] t0: 28 4
+    [junit] t1: 28 4
+    [junit] t2: 28 4
+    [junit] t3: 28 4
+    [junit] t4: 28 4
+    [junit] t5: 28 4
+    [junit] t6: 28 4
+    [junit] t7: 28 4
+    [junit] t8: 28 4
+    [junit] t9: 28 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   28 sites
+    [junit]   28 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 28, 28]
+    [junit] t0: 32 4
+    [junit] t1: 32 4
+    [junit] t2: 32 4
+    [junit] t3: 32 4
+    [junit] t4: 32 4
+    [junit] t5: 32 4
+    [junit] t6: 32 4
+    [junit] t7: 32 4
+    [junit] t8: 32 4
+    [junit] t9: 32 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   32 sites
+    [junit]   32 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 32, 32]
+    [junit] t0: 84 4
+    [junit] t1: 84 4
+    [junit] t2: 84 4
+    [junit] t3: 84 4
+    [junit] t4: 84 4
+    [junit] t5: 84 4
+    [junit] t6: 84 4
+    [junit] t7: 84 4
+    [junit] t8: 84 4
+    [junit] t9: 84 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   84 sites
+    [junit]   83 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 83, 84]
+    [junit] t0: 117 4
+    [junit] t1: 117 4
+    [junit] t2: 117 4
+    [junit] t3: 117 4
+    [junit] t4: 117 4
+    [junit] t5: 117 4
+    [junit] t6: 117 4
+    [junit] t7: 117 4
+    [junit] t8: 117 4
+    [junit] t9: 117 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   117 sites
+    [junit]   113 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 113, 117]
+    [junit] t0: 111 4
+    [junit] t1: 111 4
+    [junit] t2: 111 4
+    [junit] t3: 111 4
+    [junit] t4: 111 4
+    [junit] t5: 111 4
+    [junit] t6: 111 4
+    [junit] t7: 111 4
+    [junit] t8: 111 4
+    [junit] t9: 111 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   111 sites
+    [junit]   109 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 109, 111]
+    [junit] t0: 86 4
+    [junit] t1: 86 4
+    [junit] t2: 86 4
+    [junit] t3: 86 4
+    [junit] t4: 86 4
+    [junit] t5: 86 4
+    [junit] t6: 86 4
+    [junit] t7: 86 4
+    [junit] t8: 86 4
+    [junit] t9: 86 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   86 sites
+    [junit]   83 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 83, 86]
+    [junit] t0: 174 4
+    [junit] t1: 174 4
+    [junit] t2: 174 4
+    [junit] t3: 174 4
+    [junit] t4: 174 4
+    [junit] t5: 174 4
+    [junit] t6: 174 4
+    [junit] t7: 174 4
+    [junit] t8: 174 4
+    [junit] t9: 174 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   174 sites
+    [junit]   170 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 170, 174]
+    [junit] t0: 25 4
+    [junit] t1: 25 4
+    [junit] t2: 25 4
+    [junit] t3: 25 4
+    [junit] t4: 25 4
+    [junit] t5: 25 4
+    [junit] t6: 25 4
+    [junit] t7: 25 4
+    [junit] t8: 25 4
+    [junit] t9: 25 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   25 sites
+    [junit]   25 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 25, 25]
+    [junit] t0: 16 4
+    [junit] t1: 16 4
+    [junit] t2: 16 4
+    [junit] t3: 16 4
+    [junit] t4: 16 4
+    [junit] t5: 16 4
+    [junit] t6: 16 4
+    [junit] t7: 16 4
+    [junit] t8: 16 4
+    [junit] t9: 16 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   16 sites
+    [junit]   16 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 16, 16]
+    [junit] t0: 91 4
+    [junit] t1: 91 4
+    [junit] t2: 91 4
+    [junit] t3: 91 4
+    [junit] t4: 91 4
+    [junit] t5: 91 4
+    [junit] t6: 91 4
+    [junit] t7: 91 4
+    [junit] t8: 91 4
+    [junit] t9: 91 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   91 sites
+    [junit]   88 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 88, 91]
+    [junit] logP=-91409.0
+    [junit] logPprime=-91409.0
+    [junit] relError=0.00000
+    [junit] (((((((((((((((((((((1:0.0256742968132777,#15[&conv=15, region={7305,8087}, locus="locus", relSize=0.0783000, affectedSites=783, uselessSiteFraction=0.00000]:0.006823605201527201):0.20007285665902516,#0[&conv=0, region={0,1438}, locus="locus", relSize=0.143900, affectedSites=1439, uselessSiteFraction=0.00000]:0.0864097370892746):0.024024309324066462)#4:0.08517467191219677)#8:0.00965357797103561)#11:0.005500692768612148,#7[&conv=7, region={3556,3602}, locus="locus", relSize=0.00470000, affectedSites=47, uselessSiteFraction=0.00000]:0.1832512662882305):0.12637048822742508)#17:0.03366544046322878,((((4:0.17148156081415916,#2[&conv=2, region={660,681}, locus="locus", relSize=0.00220000, affectedSites=22, uselessSiteFraction=0.00000]:0.10979681614101855):0.15807858457259788,#13[&conv=13, region={6094,6268}, locus="locus", relSize=0.0175000, affectedSites=175, uselessSiteFraction=0.00000]:0.2724731464602537):0.1029237744650553)#5:0.03239135998821807,#3[&conv=3, region={2271,2326}, locus="locus", relSize=0.00560000, affectedSites=56, uselessSiteFraction=0.00000]:0.43084971983387144):0.04526105429883731)18:0.02092826458693542)#6:0.012982757100158171)#18:0.030916033353102335)#12:0.057063276092720105,#8[&conv=8, region={3925,4144}, locus="locus", relSize=0.0220000, affectedSites=0, uselessSiteFraction=1.00000]:0.29708053056321765):5.854579534870785E-4,#6[&conv=6, region={3112,3926}, locus="locus", relSize=0.0815000, affectedSites=238, uselessSiteFraction=0.707975]:0.10154752449946769):0.07030536339434923,#5[&conv=5, region={2874,3735}, locus="locus", relSize=0.0862000, affectedSites=862, uselessSiteFraction=0.00000]:0.2704335667678077):0.07402299622674768,(((((3:0.1652415882173683,((10:0.06168474467314061)#2:0.04375929139363968)#16:0.05979755215058802)14:0.16892598393137256,(((7:0.04581078901435663,9:0.04581078901435663)11:0.009187973524191095)#1:0.13157269409173195,#16[&conv=16, region={7494,7978}, locus="locus", relSize=0.0485000, affectedSites=485, uselessSiteFraction=0.00000]:0.08112742056349939):0.1475961155184612)16:0.14600405878703865,(((((((8:0.0188506916117505)#15:0.038236307314752804)#13:0.008854087974891359,(6:0.034025560006158945)#3:0.03191552689523572)13:0.011055803308612305)#14:0.08479152910208768,#1[&conv=1, region={177,991}, locus="locus", relSize=0.0815000, affectedSites=815, uselessSiteFraction=0.00000]:0.10678965677354692):0.06767318428498839,((((2:0.0568217664019718,5:0.0568217664019718)12:0.020535550335185684)#10:0.061980099645870784)#0:0.0275117227769551)#7:0.06261246443709967)15:0.08167828811725272,#10[&conv=10, region={5133,5918}, locus="locus", relSize=0.0786000, affectedSites=786, uselessSiteFraction=0.00000]:0.23378257497717828):0.16903173922144377)17:0.14937754295337646)#9:0.08562216827361713,#9[&conv=9, region={4952,5798}, locus="locus", relSize=0.0847000, affectedSites=847, uselessSiteFraction=0.00000]:0.08562216827361713):0.061769140683594626)19:0.19789986534737236,#12[&conv=12, region={5710,7589}, locus="locus", relSize=0.188000, affectedSites=1880, uselessSiteFraction=0.00000]:0.39987695901467646):0.04225116837535625,#18[&conv=18, region={9870,9999}, locus="locus", relSize=0.0130000, affectedSites=129, uselessSiteFraction=0.00769231]:0.47304416074313504):0.18469107717770483,#14[&conv=14, region={7145,7628}, locus="locus", relSize=0.0484000, affectedSites=484, uselessSiteFraction=0.00000]:1.1247857035367943):0.049665027292104647,#4[&conv=4, region={2830,4245}, locus="locus", relSize=0.141600, affectedSites=1416, uselessSiteFraction=0.00000]:1.0016761582425364):0.12397264367579686,#17[&conv=17, region={9331,9445}, locus="locus", relSize=0.0115000, affectedSites=115, uselessSiteFraction=0.00000]:0.8989493710390637):3.122318211627281,#11[&conv=11, region={5295,5448}, locus="locus", relSize=0.0154000, affectedSites=154, uselessSiteFraction=0.00000]:4.1531387636623815):0.0;
+    [junit] 170 segregating sites in region 0-176 (1 active conversions)
+    [junit] 460 segregating sites in region 177-659 (2 active conversions)
+    [junit] 21 segregating sites in region 660-681 (3 active conversions)
+    [junit] 301 segregating sites in region 682-991 (2 active conversions)
+    [junit] 431 segregating sites in region 992-1438 (1 active conversions)
+    [junit] 806 segregating sites in region 1439-2270 (CF)
+    [junit] 52 segregating sites in region 2271-2326 (1 active conversions)
+    [junit] 482 segregating sites in region 2327-2829 (CF)
+    [junit] 41 segregating sites in region 2830-2873 (1 active conversions)
+    [junit] 231 segregating sites in region 2874-3111 (2 active conversions)
+    [junit] 436 segregating sites in region 3112-3555 (3 active conversions)
+    [junit] 47 segregating sites in region 3556-3602 (4 active conversions)
+    [junit] 130 segregating sites in region 3603-3735 (3 active conversions)
+    [junit] 187 segregating sites in region 3736-3926 (2 active conversions)
+    [junit] 313 segregating sites in region 3927-4245 (1 active conversions)
+    [junit] 686 segregating sites in region 4246-4951 (CF)
+    [junit] 172 segregating sites in region 4952-5132 (1 active conversions)
+    [junit] 153 segregating sites in region 5133-5294 (2 active conversions)
+    [junit] 149 segregating sites in region 5295-5448 (3 active conversions)
+    [junit] 255 segregating sites in region 5449-5709 (2 active conversions)
+    [junit] 86 segregating sites in region 5710-5798 (3 active conversions)
+    [junit] 118 segregating sites in region 5799-5918 (2 active conversions)
+    [junit] 171 segregating sites in region 5919-6093 (1 active conversions)
+    [junit] 171 segregating sites in region 6094-6268 (2 active conversions)
+    [junit] 842 segregating sites in region 6269-7144 (1 active conversions)
+    [junit] 157 segregating sites in region 7145-7304 (2 active conversions)
+    [junit] 187 segregating sites in region 7305-7493 (3 active conversions)
+    [junit] 93 segregating sites in region 7494-7589 (4 active conversions)
+    [junit] 36 segregating sites in region 7590-7628 (3 active conversions)
+    [junit] 335 segregating sites in region 7629-7978 (2 active conversions)
+    [junit] 107 segregating sites in region 7979-8087 (1 active conversions)
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] 1186 segregating sites in region 8088-9330 (CF)
+    [junit] 112 segregating sites in region 9331-9445 (1 active conversions)
+    [junit] 406 segregating sites in region 9446-9869 (CF)
+    [junit] 127 segregating sites in region 9870-9999 (1 active conversions)
+    [junit] t0: 10000 4
+    [junit] t1: 10000 4
+    [junit] t2: 10000 4
+    [junit] t3: 10000 4
+    [junit] t4: 10000 4
+    [junit] t5: 10000 4
+    [junit] t6: 10000 4
+    [junit] t7: 10000 4
+    [junit] t8: 10000 4
+    [junit] t9: 10000 4
+    [junit] SimulatedAlignment(null)
+    [junit]   10 taxa
+    [junit]   10000 sites
+    [junit]   6082 patterns
+    [junit] 
+    [junit] t0: 177 4
+    [junit] t1: 177 4
+    [junit] t2: 177 4
+    [junit] t3: 177 4
+    [junit] t4: 177 4
+    [junit] t5: 177 4
+    [junit] t6: 177 4
+    [junit] t7: 177 4
+    [junit] t8: 177 4
+    [junit] t9: 177 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   177 sites
+    [junit]   166 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 166, 177]
+    [junit] t0: 483 4
+    [junit] t1: 483 4
+    [junit] t2: 483 4
+    [junit] t3: 483 4
+    [junit] t4: 483 4
+    [junit] t5: 483 4
+    [junit] t6: 483 4
+    [junit] t7: 483 4
+    [junit] t8: 483 4
+    [junit] t9: 483 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   483 sites
+    [junit]   420 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 420, 483]
+    [junit] t0: 22 4
+    [junit] t1: 22 4
+    [junit] t2: 22 4
+    [junit] t3: 22 4
+    [junit] t4: 22 4
+    [junit] t5: 22 4
+    [junit] t6: 22 4
+    [junit] t7: 22 4
+    [junit] t8: 22 4
+    [junit] t9: 22 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   22 sites
+    [junit]   22 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 22, 22]
+    [junit] t0: 310 4
+    [junit] t1: 310 4
+    [junit] t2: 310 4
+    [junit] t3: 310 4
+    [junit] t4: 310 4
+    [junit] t5: 310 4
+    [junit] t6: 310 4
+    [junit] t7: 310 4
+    [junit] t8: 310 4
+    [junit] t9: 310 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   310 sites
+    [junit]   284 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 284, 310]
+    [junit] t0: 447 4
+    [junit] t1: 447 4
+    [junit] t2: 447 4
+    [junit] t3: 447 4
+    [junit] t4: 447 4
+    [junit] t5: 447 4
+    [junit] t6: 447 4
+    [junit] t7: 447 4
+    [junit] t8: 447 4
+    [junit] t9: 447 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   447 sites
+    [junit]   403 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 403, 447]
+    [junit] t0: 832 4
+    [junit] t1: 832 4
+    [junit] t2: 832 4
+    [junit] t3: 832 4
+    [junit] t4: 832 4
+    [junit] t5: 832 4
+    [junit] t6: 832 4
+    [junit] t7: 832 4
+    [junit] t8: 832 4
+    [junit] t9: 832 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   832 sites
+    [junit]   725 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 725, 832]
+    [junit] t0: 56 4
+    [junit] t1: 56 4
+    [junit] t2: 56 4
+    [junit] t3: 56 4
+    [junit] t4: 56 4
+    [junit] t5: 56 4
+    [junit] t6: 56 4
+    [junit] t7: 56 4
+    [junit] t8: 56 4
+    [junit] t9: 56 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   56 sites
+    [junit]   54 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 54, 56]
+    [junit] t0: 503 4
+    [junit] t1: 503 4
+    [junit] t2: 503 4
+    [junit] t3: 503 4
+    [junit] t4: 503 4
+    [junit] t5: 503 4
+    [junit] t6: 503 4
+    [junit] t7: 503 4
+    [junit] t8: 503 4
+    [junit] t9: 503 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   503 sites
+    [junit]   442 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 442, 503]
+    [junit] t0: 44 4
+    [junit] t1: 44 4
+    [junit] t2: 44 4
+    [junit] t3: 44 4
+    [junit] t4: 44 4
+    [junit] t5: 44 4
+    [junit] t6: 44 4
+    [junit] t7: 44 4
+    [junit] t8: 44 4
+    [junit] t9: 44 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   44 sites
+    [junit]   44 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 44, 44]
+    [junit] t0: 238 4
+    [junit] t1: 238 4
+    [junit] t2: 238 4
+    [junit] t3: 238 4
+    [junit] t4: 238 4
+    [junit] t5: 238 4
+    [junit] t6: 238 4
+    [junit] t7: 238 4
+    [junit] t8: 238 4
+    [junit] t9: 238 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   238 sites
+    [junit]   224 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 224, 238]
+    [junit] t0: 444 4
+    [junit] t1: 444 4
+    [junit] t2: 444 4
+    [junit] t3: 444 4
+    [junit] t4: 444 4
+    [junit] t5: 444 4
+    [junit] t6: 444 4
+    [junit] t7: 444 4
+    [junit] t8: 444 4
+    [junit] t9: 444 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   444 sites
+    [junit]   400 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 400, 444]
+    [junit] t0: 47 4
+    [junit] t1: 47 4
+    [junit] t2: 47 4
+    [junit] t3: 47 4
+    [junit] t4: 47 4
+    [junit] t5: 47 4
+    [junit] t6: 47 4
+    [junit] t7: 47 4
+    [junit] t8: 47 4
+    [junit] t9: 47 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   47 sites
+    [junit]   47 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 47, 47]
+    [junit] t0: 133 4
+    [junit] t1: 133 4
+    [junit] t2: 133 4
+    [junit] t3: 133 4
+    [junit] t4: 133 4
+    [junit] t5: 133 4
+    [junit] t6: 133 4
+    [junit] t7: 133 4
+    [junit] t8: 133 4
+    [junit] t9: 133 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   133 sites
+    [junit]   127 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 127, 133]
+    [junit] t0: 191 4
+    [junit] t1: 191 4
+    [junit] t2: 191 4
+    [junit] t3: 191 4
+    [junit] t4: 191 4
+    [junit] t5: 191 4
+    [junit] t6: 191 4
+    [junit] t7: 191 4
+    [junit] t8: 191 4
+    [junit] t9: 191 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   191 sites
+    [junit]   184 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 184, 191]
+    [junit] t0: 319 4
+    [junit] t1: 319 4
+    [junit] t2: 319 4
+    [junit] t3: 319 4
+    [junit] t4: 319 4
+    [junit] t5: 319 4
+    [junit] t6: 319 4
+    [junit] t7: 319 4
+    [junit] t8: 319 4
+    [junit] t9: 319 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   319 sites
+    [junit]   297 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 297, 319]
+    [junit] t0: 706 4
+    [junit] t1: 706 4
+    [junit] t2: 706 4
+    [junit] t3: 706 4
+    [junit] t4: 706 4
+    [junit] t5: 706 4
+    [junit] t6: 706 4
+    [junit] t7: 706 4
+    [junit] t8: 706 4
+    [junit] t9: 706 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   706 sites
+    [junit]   620 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 620, 706]
+    [junit] t0: 181 4
+    [junit] t1: 181 4
+    [junit] t2: 181 4
+    [junit] t3: 181 4
+    [junit] t4: 181 4
+    [junit] t5: 181 4
+    [junit] t6: 181 4
+    [junit] t7: 181 4
+    [junit] t8: 181 4
+    [junit] t9: 181 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   181 sites
+    [junit]   167 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 167, 181]
+    [junit] t0: 162 4
+    [junit] t1: 162 4
+    [junit] t2: 162 4
+    [junit] t3: 162 4
+    [junit] t4: 162 4
+    [junit] t5: 162 4
+    [junit] t6: 162 4
+    [junit] t7: 162 4
+    [junit] t8: 162 4
+    [junit] t9: 162 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   162 sites
+    [junit]   156 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 156, 162]
+    [junit] t0: 154 4
+    [junit] t1: 154 4
+    [junit] t2: 154 4
+    [junit] t3: 154 4
+    [junit] t4: 154 4
+    [junit] t5: 154 4
+    [junit] t6: 154 4
+    [junit] t7: 154 4
+    [junit] t8: 154 4
+    [junit] t9: 154 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   154 sites
+    [junit]   150 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 150, 154]
+    [junit] t0: 261 4
+    [junit] t1: 261 4
+    [junit] t2: 261 4
+    [junit] t3: 261 4
+    [junit] t4: 261 4
+    [junit] t5: 261 4
+    [junit] t6: 261 4
+    [junit] t7: 261 4
+    [junit] t8: 261 4
+    [junit] t9: 261 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   261 sites
+    [junit]   253 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 253, 261]
+    [junit] t0: 89 4
+    [junit] t1: 89 4
+    [junit] t2: 89 4
+    [junit] t3: 89 4
+    [junit] t4: 89 4
+    [junit] t5: 89 4
+    [junit] t6: 89 4
+    [junit] t7: 89 4
+    [junit] t8: 89 4
+    [junit] t9: 89 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   89 sites
+    [junit]   87 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 87, 89]
+    [junit] t0: 120 4
+    [junit] t1: 120 4
+    [junit] t2: 120 4
+    [junit] t3: 120 4
+    [junit] t4: 120 4
+    [junit] t5: 120 4
+    [junit] t6: 120 4
+    [junit] t7: 120 4
+    [junit] t8: 120 4
+    [junit] t9: 120 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   120 sites
+    [junit]   113 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 113, 120]
+    [junit] t0: 175 4
+    [junit] t1: 175 4
+    [junit] t2: 175 4
+    [junit] t3: 175 4
+    [junit] t4: 175 4
+    [junit] t5: 175 4
+    [junit] t6: 175 4
+    [junit] t7: 175 4
+    [junit] t8: 175 4
+    [junit] t9: 175 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   175 sites
+    [junit]   171 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 171, 175]
+    [junit] t0: 175 4
+    [junit] t1: 175 4
+    [junit] t2: 175 4
+    [junit] t3: 175 4
+    [junit] t4: 175 4
+    [junit] t5: 175 4
+    [junit] t6: 175 4
+    [junit] t7: 175 4
+    [junit] t8: 175 4
+    [junit] t9: 175 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   175 sites
+    [junit]   173 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 173, 175]
+    [junit] t0: 876 4
+    [junit] t1: 876 4
+    [junit] t2: 876 4
+    [junit] t3: 876 4
+    [junit] t4: 876 4
+    [junit] t5: 876 4
+    [junit] t6: 876 4
+    [junit] t7: 876 4
+    [junit] t8: 876 4
+    [junit] t9: 876 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   876 sites
+    [junit]   736 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 736, 876]
+    [junit] t0: 160 4
+    [junit] t1: 160 4
+    [junit] t2: 160 4
+    [junit] t3: 160 4
+    [junit] t4: 160 4
+    [junit] t5: 160 4
+    [junit] t6: 160 4
+    [junit] t7: 160 4
+    [junit] t8: 160 4
+    [junit] t9: 160 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   160 sites
+    [junit]   160 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 160, 160]
+    [junit] t0: 189 4
+    [junit] t1: 189 4
+    [junit] t2: 189 4
+    [junit] t3: 189 4
+    [junit] t4: 189 4
+    [junit] t5: 189 4
+    [junit] t6: 189 4
+    [junit] t7: 189 4
+    [junit] t8: 189 4
+    [junit] t9: 189 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   189 sites
+    [junit]   183 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 183, 189]
+    [junit] t0: 96 4
+    [junit] t1: 96 4
+    [junit] t2: 96 4
+    [junit] t3: 96 4
+    [junit] t4: 96 4
+    [junit] t5: 96 4
+    [junit] t6: 96 4
+    [junit] t7: 96 4
+    [junit] t8: 96 4
+    [junit] t9: 96 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   96 sites
+    [junit]   95 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 95, 96]
+    [junit] t0: 39 4
+    [junit] t1: 39 4
+    [junit] t2: 39 4
+    [junit] t3: 39 4
+    [junit] t4: 39 4
+    [junit] t5: 39 4
+    [junit] t6: 39 4
+    [junit] t7: 39 4
+    [junit] t8: 39 4
+    [junit] t9: 39 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   39 sites
+    [junit]   38 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 38, 39]
+    [junit] t0: 350 4
+    [junit] t1: 350 4
+    [junit] t2: 350 4
+    [junit] t3: 350 4
+    [junit] t4: 350 4
+    [junit] t5: 350 4
+    [junit] t6: 350 4
+    [junit] t7: 350 4
+    [junit] t8: 350 4
+    [junit] t9: 350 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   350 sites
+    [junit]   316 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 316, 350]
+    [junit] t0: 109 4
+    [junit] t1: 109 4
+    [junit] t2: 109 4
+    [junit] t3: 109 4
+    [junit] t4: 109 4
+    [junit] t5: 109 4
+    [junit] t6: 109 4
+    [junit] t7: 109 4
+    [junit] t8: 109 4
+    [junit] t9: 109 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   109 sites
+    [junit]   107 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 107, 109]
+    [junit] t0: 1243 4
+    [junit] t1: 1243 4
+    [junit] t2: 1243 4
+    [junit] t3: 1243 4
+    [junit] t4: 1243 4
+    [junit] t5: 1243 4
+    [junit] t6: 1243 4
+    [junit] t7: 1243 4
+    [junit] t8: 1243 4
+    [junit] t9: 1243 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   1243 sites
+    [junit]   970 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 970, 1243]
+    [junit] t0: 115 4
+    [junit] t1: 115 4
+    [junit] t2: 115 4
+    [junit] t3: 115 4
+    [junit] t4: 115 4
+    [junit] t5: 115 4
+    [junit] t6: 115 4
+    [junit] t7: 115 4
+    [junit] t8: 115 4
+    [junit] t9: 115 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   115 sites
+    [junit]   109 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 109, 115]
+    [junit] t0: 424 4
+    [junit] t1: 424 4
+    [junit] t2: 424 4
+    [junit] t3: 424 4
+    [junit] t4: 424 4
+    [junit] t5: 424 4
+    [junit] t6: 424 4
+    [junit] t7: 424 4
+    [junit] t8: 424 4
+    [junit] t9: 424 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   424 sites
+    [junit]   372 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 372, 424]
+    [junit] t0: 130 4
+    [junit] t1: 130 4
+    [junit] t2: 130 4
+    [junit] t3: 130 4
+    [junit] t4: 130 4
+    [junit] t5: 130 4
+    [junit] t6: 130 4
+    [junit] t7: 130 4
+    [junit] t8: 130 4
+    [junit] t9: 130 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   130 sites
+    [junit]   125 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 125, 130]
+    [junit] logP=-94608.9
+    [junit] logPprime=-94608.9
+    [junit] relError=1.53811e-16
+    [junit] t0: 177 4
+    [junit] t1: 177 4
+    [junit] t2: 177 4
+    [junit] t3: 177 4
+    [junit] t4: 177 4
+    [junit] t5: 177 4
+    [junit] t6: 177 4
+    [junit] t7: 177 4
+    [junit] t8: 177 4
+    [junit] t9: 177 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   177 sites
+    [junit]   166 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 166, 177]
+    [junit] t0: 323 4
+    [junit] t1: 323 4
+    [junit] t2: 323 4
+    [junit] t3: 323 4
+    [junit] t4: 323 4
+    [junit] t5: 323 4
+    [junit] t6: 323 4
+    [junit] t7: 323 4
+    [junit] t8: 323 4
+    [junit] t9: 323 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   323 sites
+    [junit]   288 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 288, 323]
+    [junit] t0: 101 4
+    [junit] t1: 101 4
+    [junit] t2: 101 4
+    [junit] t3: 101 4
+    [junit] t4: 101 4
+    [junit] t5: 101 4
+    [junit] t6: 101 4
+    [junit] t7: 101 4
+    [junit] t8: 101 4
+    [junit] t9: 101 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   101 sites
+    [junit]   96 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 96, 101]
+    [junit] t0: 59 4
+    [junit] t1: 59 4
+    [junit] t2: 59 4
+    [junit] t3: 59 4
+    [junit] t4: 59 4
+    [junit] t5: 59 4
+    [junit] t6: 59 4
+    [junit] t7: 59 4
+    [junit] t8: 59 4
+    [junit] t9: 59 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   59 sites
+    [junit]   56 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 56, 59]
+    [junit] t0: 22 4
+    [junit] t1: 22 4
+    [junit] t2: 22 4
+    [junit] t3: 22 4
+    [junit] t4: 22 4
+    [junit] t5: 22 4
+    [junit] t6: 22 4
+    [junit] t7: 22 4
+    [junit] t8: 22 4
+    [junit] t9: 22 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   22 sites
+    [junit]   22 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 22, 22]
+    [junit] t0: 310 4
+    [junit] t1: 310 4
+    [junit] t2: 310 4
+    [junit] t3: 310 4
+    [junit] t4: 310 4
+    [junit] t5: 310 4
+    [junit] t6: 310 4
+    [junit] t7: 310 4
+    [junit] t8: 310 4
+    [junit] t9: 310 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   310 sites
+    [junit]   284 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 284, 310]
+    [junit] t0: 447 4
+    [junit] t1: 447 4
+    [junit] t2: 447 4
+    [junit] t3: 447 4
+    [junit] t4: 447 4
+    [junit] t5: 447 4
+    [junit] t6: 447 4
+    [junit] t7: 447 4
+    [junit] t8: 447 4
+    [junit] t9: 447 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   447 sites
+    [junit]   403 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 403, 447]
+    [junit] t0: 832 4
+    [junit] t1: 832 4
+    [junit] t2: 832 4
+    [junit] t3: 832 4
+    [junit] t4: 832 4
+    [junit] t5: 832 4
+    [junit] t6: 832 4
+    [junit] t7: 832 4
+    [junit] t8: 832 4
+    [junit] t9: 832 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   832 sites
+    [junit]   725 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 725, 832]
+    [junit] t0: 56 4
+    [junit] t1: 56 4
+    [junit] t2: 56 4
+    [junit] t3: 56 4
+    [junit] t4: 56 4
+    [junit] t5: 56 4
+    [junit] t6: 56 4
+    [junit] t7: 56 4
+    [junit] t8: 56 4
+    [junit] t9: 56 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   56 sites
+    [junit]   54 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 54, 56]
+    [junit] t0: 503 4
+    [junit] t1: 503 4
+    [junit] t2: 503 4
+    [junit] t3: 503 4
+    [junit] t4: 503 4
+    [junit] t5: 503 4
+    [junit] t6: 503 4
+    [junit] t7: 503 4
+    [junit] t8: 503 4
+    [junit] t9: 503 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   503 sites
+    [junit]   442 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 442, 503]
+    [junit] t0: 44 4
+    [junit] t1: 44 4
+    [junit] t2: 44 4
+    [junit] t3: 44 4
+    [junit] t4: 44 4
+    [junit] t5: 44 4
+    [junit] t6: 44 4
+    [junit] t7: 44 4
+    [junit] t8: 44 4
+    [junit] t9: 44 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   44 sites
+    [junit]   44 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 44, 44]
+    [junit] t0: 238 4
+    [junit] t1: 238 4
+    [junit] t2: 238 4
+    [junit] t3: 238 4
+    [junit] t4: 238 4
+    [junit] t5: 238 4
+    [junit] t6: 238 4
+    [junit] t7: 238 4
+    [junit] t8: 238 4
+    [junit] t9: 238 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   238 sites
+    [junit]   224 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 224, 238]
+    [junit] t0: 444 4
+    [junit] t1: 444 4
+    [junit] t2: 444 4
+    [junit] t3: 444 4
+    [junit] t4: 444 4
+    [junit] t5: 444 4
+    [junit] t6: 444 4
+    [junit] t7: 444 4
+    [junit] t8: 444 4
+    [junit] t9: 444 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   444 sites
+    [junit]   400 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 400, 444]
+    [junit] t0: 47 4
+    [junit] t1: 47 4
+    [junit] t2: 47 4
+    [junit] t3: 47 4
+    [junit] t4: 47 4
+    [junit] t5: 47 4
+    [junit] t6: 47 4
+    [junit] t7: 47 4
+    [junit] t8: 47 4
+    [junit] t9: 47 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   47 sites
+    [junit]   47 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 47, 47]
+    [junit] t0: 133 4
+    [junit] t1: 133 4
+    [junit] t2: 133 4
+    [junit] t3: 133 4
+    [junit] t4: 133 4
+    [junit] t5: 133 4
+    [junit] t6: 133 4
+    [junit] t7: 133 4
+    [junit] t8: 133 4
+    [junit] t9: 133 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   133 sites
+    [junit]   127 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 127, 133]
+    [junit] t0: 191 4
+    [junit] t1: 191 4
+    [junit] t2: 191 4
+    [junit] t3: 191 4
+    [junit] t4: 191 4
+    [junit] t5: 191 4
+    [junit] t6: 191 4
+    [junit] t7: 191 4
+    [junit] t8: 191 4
+    [junit] t9: 191 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   191 sites
+    [junit]   184 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 184, 191]
+    [junit] t0: 319 4
+    [junit] t1: 319 4
+    [junit] t2: 319 4
+    [junit] t3: 319 4
+    [junit] t4: 319 4
+    [junit] t5: 319 4
+    [junit] t6: 319 4
+    [junit] t7: 319 4
+    [junit] t8: 319 4
+    [junit] t9: 319 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   319 sites
+    [junit]   297 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 297, 319]
+    [junit] t0: 706 4
+    [junit] t1: 706 4
+    [junit] t2: 706 4
+    [junit] t3: 706 4
+    [junit] t4: 706 4
+    [junit] t5: 706 4
+    [junit] t6: 706 4
+    [junit] t7: 706 4
+    [junit] t8: 706 4
+    [junit] t9: 706 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   706 sites
+    [junit]   620 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 620, 706]
+    [junit] t0: 181 4
+    [junit] t1: 181 4
+    [junit] t2: 181 4
+    [junit] t3: 181 4
+    [junit] t4: 181 4
+    [junit] t5: 181 4
+    [junit] t6: 181 4
+    [junit] t7: 181 4
+    [junit] t8: 181 4
+    [junit] t9: 181 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   181 sites
+    [junit]   167 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 167, 181]
+    [junit] t0: 162 4
+    [junit] t1: 162 4
+    [junit] t2: 162 4
+    [junit] t3: 162 4
+    [junit] t4: 162 4
+    [junit] t5: 162 4
+    [junit] t6: 162 4
+    [junit] t7: 162 4
+    [junit] t8: 162 4
+    [junit] t9: 162 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   162 sites
+    [junit]   156 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 156, 162]
+    [junit] t0: 154 4
+    [junit] t1: 154 4
+    [junit] t2: 154 4
+    [junit] t3: 154 4
+    [junit] t4: 154 4
+    [junit] t5: 154 4
+    [junit] t6: 154 4
+    [junit] t7: 154 4
+    [junit] t8: 154 4
+    [junit] t9: 154 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   154 sites
+    [junit]   150 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 150, 154]
+    [junit] t0: 261 4
+    [junit] t1: 261 4
+    [junit] t2: 261 4
+    [junit] t3: 261 4
+    [junit] t4: 261 4
+    [junit] t5: 261 4
+    [junit] t6: 261 4
+    [junit] t7: 261 4
+    [junit] t8: 261 4
+    [junit] t9: 261 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   261 sites
+    [junit]   253 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 253, 261]
+    [junit] t0: 89 4
+    [junit] t1: 89 4
+    [junit] t2: 89 4
+    [junit] t3: 89 4
+    [junit] t4: 89 4
+    [junit] t5: 89 4
+    [junit] t6: 89 4
+    [junit] t7: 89 4
+    [junit] t8: 89 4
+    [junit] t9: 89 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   89 sites
+    [junit]   87 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 87, 89]
+    [junit] t0: 120 4
+    [junit] t1: 120 4
+    [junit] t2: 120 4
+    [junit] t3: 120 4
+    [junit] t4: 120 4
+    [junit] t5: 120 4
+    [junit] t6: 120 4
+    [junit] t7: 120 4
+    [junit] t8: 120 4
+    [junit] t9: 120 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   120 sites
+    [junit]   113 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 113, 120]
+    [junit] t0: 175 4
+    [junit] t1: 175 4
+    [junit] t2: 175 4
+    [junit] t3: 175 4
+    [junit] t4: 175 4
+    [junit] t5: 175 4
+    [junit] t6: 175 4
+    [junit] t7: 175 4
+    [junit] t8: 175 4
+    [junit] t9: 175 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   175 sites
+    [junit]   171 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 171, 175]
+    [junit] t0: 175 4
+    [junit] t1: 175 4
+    [junit] t2: 175 4
+    [junit] t3: 175 4
+    [junit] t4: 175 4
+    [junit] t5: 175 4
+    [junit] t6: 175 4
+    [junit] t7: 175 4
+    [junit] t8: 175 4
+    [junit] t9: 175 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   175 sites
+    [junit]   173 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 173, 175]
+    [junit] t0: 876 4
+    [junit] t1: 876 4
+    [junit] t2: 876 4
+    [junit] t3: 876 4
+    [junit] t4: 876 4
+    [junit] t5: 876 4
+    [junit] t6: 876 4
+    [junit] t7: 876 4
+    [junit] t8: 876 4
+    [junit] t9: 876 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   876 sites
+    [junit]   736 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 736, 876]
+    [junit] t0: 160 4
+    [junit] t1: 160 4
+    [junit] t2: 160 4
+    [junit] t3: 160 4
+    [junit] t4: 160 4
+    [junit] t5: 160 4
+    [junit] t6: 160 4
+    [junit] t7: 160 4
+    [junit] t8: 160 4
+    [junit] t9: 160 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   160 sites
+    [junit]   160 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 160, 160]
+    [junit] t0: 189 4
+    [junit] t1: 189 4
+    [junit] t2: 189 4
+    [junit] t3: 189 4
+    [junit] t4: 189 4
+    [junit] t5: 189 4
+    [junit] t6: 189 4
+    [junit] t7: 189 4
+    [junit] t8: 189 4
+    [junit] t9: 189 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   189 sites
+    [junit]   183 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 183, 189]
+    [junit] t0: 96 4
+    [junit] t1: 96 4
+    [junit] t2: 96 4
+    [junit] t3: 96 4
+    [junit] t4: 96 4
+    [junit] t5: 96 4
+    [junit] t6: 96 4
+    [junit] t7: 96 4
+    [junit] t8: 96 4
+    [junit] t9: 96 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   96 sites
+    [junit]   95 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 95, 96]
+    [junit] t0: 39 4
+    [junit] t1: 39 4
+    [junit] t2: 39 4
+    [junit] t3: 39 4
+    [junit] t4: 39 4
+    [junit] t5: 39 4
+    [junit] t6: 39 4
+    [junit] t7: 39 4
+    [junit] t8: 39 4
+    [junit] t9: 39 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   39 sites
+    [junit]   38 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 38, 39]
+    [junit] t0: 350 4
+    [junit] t1: 350 4
+    [junit] t2: 350 4
+    [junit] t3: 350 4
+    [junit] t4: 350 4
+    [junit] t5: 350 4
+    [junit] t6: 350 4
+    [junit] t7: 350 4
+    [junit] t8: 350 4
+    [junit] t9: 350 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   350 sites
+    [junit]   316 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 316, 350]
+    [junit] t0: 109 4
+    [junit] t1: 109 4
+    [junit] t2: 109 4
+    [junit] t3: 109 4
+    [junit] t4: 109 4
+    [junit] t5: 109 4
+    [junit] t6: 109 4
+    [junit] t7: 109 4
+    [junit] t8: 109 4
+    [junit] t9: 109 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   109 sites
+    [junit]   107 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 107, 109]
+    [junit] t0: 1243 4
+    [junit] t1: 1243 4
+    [junit] t2: 1243 4
+    [junit] t3: 1243 4
+    [junit] t4: 1243 4
+    [junit] t5: 1243 4
+    [junit] t6: 1243 4
+    [junit] t7: 1243 4
+    [junit] t8: 1243 4
+    [junit] t9: 1243 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   1243 sites
+    [junit]   970 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 970, 1243]
+    [junit] t0: 115 4
+    [junit] t1: 115 4
+    [junit] t2: 115 4
+    [junit] t3: 115 4
+    [junit] t4: 115 4
+    [junit] t5: 115 4
+    [junit] t6: 115 4
+    [junit] t7: 115 4
+    [junit] t8: 115 4
+    [junit] t9: 115 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   115 sites
+    [junit]   109 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 109, 115]
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] t0: 424 4
+    [junit] t1: 424 4
+    [junit] t2: 424 4
+    [junit] t3: 424 4
+    [junit] t4: 424 4
+    [junit] t5: 424 4
+    [junit] t6: 424 4
+    [junit] t7: 424 4
+    [junit] t8: 424 4
+    [junit] t9: 424 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   424 sites
+    [junit]   372 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 372, 424]
+    [junit] t0: 130 4
+    [junit] t1: 130 4
+    [junit] t2: 130 4
+    [junit] t3: 130 4
+    [junit] t4: 130 4
+    [junit] t5: 130 4
+    [junit] t6: 130 4
+    [junit] t7: 130 4
+    [junit] t8: 130 4
+    [junit] t9: 130 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   130 sites
+    [junit]   125 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 125, 130]
+    [junit] logP=-94607.6
+    [junit] logPprime=-94607.6
+    [junit] relError=1.53813e-16
+    [junit] t0: 177 4
+    [junit] t1: 177 4
+    [junit] t2: 177 4
+    [junit] t3: 177 4
+    [junit] t4: 177 4
+    [junit] t5: 177 4
+    [junit] t6: 177 4
+    [junit] t7: 177 4
+    [junit] t8: 177 4
+    [junit] t9: 177 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   177 sites
+    [junit]   166 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 166, 177]
+    [junit] t0: 483 4
+    [junit] t1: 483 4
+    [junit] t2: 483 4
+    [junit] t3: 483 4
+    [junit] t4: 483 4
+    [junit] t5: 483 4
+    [junit] t6: 483 4
+    [junit] t7: 483 4
+    [junit] t8: 483 4
+    [junit] t9: 483 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   483 sites
+    [junit]   420 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 420, 483]
+    [junit] t0: 22 4
+    [junit] t1: 22 4
+    [junit] t2: 22 4
+    [junit] t3: 22 4
+    [junit] t4: 22 4
+    [junit] t5: 22 4
+    [junit] t6: 22 4
+    [junit] t7: 22 4
+    [junit] t8: 22 4
+    [junit] t9: 22 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   22 sites
+    [junit]   22 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 22, 22]
+    [junit] t0: 310 4
+    [junit] t1: 310 4
+    [junit] t2: 310 4
+    [junit] t3: 310 4
+    [junit] t4: 310 4
+    [junit] t5: 310 4
+    [junit] t6: 310 4
+    [junit] t7: 310 4
+    [junit] t8: 310 4
+    [junit] t9: 310 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   310 sites
+    [junit]   284 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 284, 310]
+    [junit] t0: 447 4
+    [junit] t1: 447 4
+    [junit] t2: 447 4
+    [junit] t3: 447 4
+    [junit] t4: 447 4
+    [junit] t5: 447 4
+    [junit] t6: 447 4
+    [junit] t7: 447 4
+    [junit] t8: 447 4
+    [junit] t9: 447 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   447 sites
+    [junit]   403 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 403, 447]
+    [junit] t0: 832 4
+    [junit] t1: 832 4
+    [junit] t2: 832 4
+    [junit] t3: 832 4
+    [junit] t4: 832 4
+    [junit] t5: 832 4
+    [junit] t6: 832 4
+    [junit] t7: 832 4
+    [junit] t8: 832 4
+    [junit] t9: 832 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   832 sites
+    [junit]   725 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 725, 832]
+    [junit] t0: 56 4
+    [junit] t1: 56 4
+    [junit] t2: 56 4
+    [junit] t3: 56 4
+    [junit] t4: 56 4
+    [junit] t5: 56 4
+    [junit] t6: 56 4
+    [junit] t7: 56 4
+    [junit] t8: 56 4
+    [junit] t9: 56 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   56 sites
+    [junit]   54 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 54, 56]
+    [junit] t0: 503 4
+    [junit] t1: 503 4
+    [junit] t2: 503 4
+    [junit] t3: 503 4
+    [junit] t4: 503 4
+    [junit] t5: 503 4
+    [junit] t6: 503 4
+    [junit] t7: 503 4
+    [junit] t8: 503 4
+    [junit] t9: 503 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   503 sites
+    [junit]   442 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 442, 503]
+    [junit] t0: 44 4
+    [junit] t1: 44 4
+    [junit] t2: 44 4
+    [junit] t3: 44 4
+    [junit] t4: 44 4
+    [junit] t5: 44 4
+    [junit] t6: 44 4
+    [junit] t7: 44 4
+    [junit] t8: 44 4
+    [junit] t9: 44 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   44 sites
+    [junit]   44 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 44, 44]
+    [junit] t0: 238 4
+    [junit] t1: 238 4
+    [junit] t2: 238 4
+    [junit] t3: 238 4
+    [junit] t4: 238 4
+    [junit] t5: 238 4
+    [junit] t6: 238 4
+    [junit] t7: 238 4
+    [junit] t8: 238 4
+    [junit] t9: 238 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   238 sites
+    [junit]   224 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 224, 238]
+    [junit] t0: 444 4
+    [junit] t1: 444 4
+    [junit] t2: 444 4
+    [junit] t3: 444 4
+    [junit] t4: 444 4
+    [junit] t5: 444 4
+    [junit] t6: 444 4
+    [junit] t7: 444 4
+    [junit] t8: 444 4
+    [junit] t9: 444 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   444 sites
+    [junit]   400 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 400, 444]
+    [junit] t0: 47 4
+    [junit] t1: 47 4
+    [junit] t2: 47 4
+    [junit] t3: 47 4
+    [junit] t4: 47 4
+    [junit] t5: 47 4
+    [junit] t6: 47 4
+    [junit] t7: 47 4
+    [junit] t8: 47 4
+    [junit] t9: 47 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   47 sites
+    [junit]   47 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 47, 47]
+    [junit] t0: 133 4
+    [junit] t1: 133 4
+    [junit] t2: 133 4
+    [junit] t3: 133 4
+    [junit] t4: 133 4
+    [junit] t5: 133 4
+    [junit] t6: 133 4
+    [junit] t7: 133 4
+    [junit] t8: 133 4
+    [junit] t9: 133 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   133 sites
+    [junit]   127 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 127, 133]
+    [junit] t0: 191 4
+    [junit] t1: 191 4
+    [junit] t2: 191 4
+    [junit] t3: 191 4
+    [junit] t4: 191 4
+    [junit] t5: 191 4
+    [junit] t6: 191 4
+    [junit] t7: 191 4
+    [junit] t8: 191 4
+    [junit] t9: 191 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   191 sites
+    [junit]   184 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 184, 191]
+    [junit] t0: 319 4
+    [junit] t1: 319 4
+    [junit] t2: 319 4
+    [junit] t3: 319 4
+    [junit] t4: 319 4
+    [junit] t5: 319 4
+    [junit] t6: 319 4
+    [junit] t7: 319 4
+    [junit] t8: 319 4
+    [junit] t9: 319 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   319 sites
+    [junit]   297 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 297, 319]
+    [junit] t0: 706 4
+    [junit] t1: 706 4
+    [junit] t2: 706 4
+    [junit] t3: 706 4
+    [junit] t4: 706 4
+    [junit] t5: 706 4
+    [junit] t6: 706 4
+    [junit] t7: 706 4
+    [junit] t8: 706 4
+    [junit] t9: 706 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   706 sites
+    [junit]   620 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 620, 706]
+    [junit] t0: 181 4
+    [junit] t1: 181 4
+    [junit] t2: 181 4
+    [junit] t3: 181 4
+    [junit] t4: 181 4
+    [junit] t5: 181 4
+    [junit] t6: 181 4
+    [junit] t7: 181 4
+    [junit] t8: 181 4
+    [junit] t9: 181 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   181 sites
+    [junit]   167 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 167, 181]
+    [junit] t0: 162 4
+    [junit] t1: 162 4
+    [junit] t2: 162 4
+    [junit] t3: 162 4
+    [junit] t4: 162 4
+    [junit] t5: 162 4
+    [junit] t6: 162 4
+    [junit] t7: 162 4
+    [junit] t8: 162 4
+    [junit] t9: 162 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   162 sites
+    [junit]   156 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 156, 162]
+    [junit] t0: 154 4
+    [junit] t1: 154 4
+    [junit] t2: 154 4
+    [junit] t3: 154 4
+    [junit] t4: 154 4
+    [junit] t5: 154 4
+    [junit] t6: 154 4
+    [junit] t7: 154 4
+    [junit] t8: 154 4
+    [junit] t9: 154 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   154 sites
+    [junit]   150 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 150, 154]
+    [junit] t0: 261 4
+    [junit] t1: 261 4
+    [junit] t2: 261 4
+    [junit] t3: 261 4
+    [junit] t4: 261 4
+    [junit] t5: 261 4
+    [junit] t6: 261 4
+    [junit] t7: 261 4
+    [junit] t8: 261 4
+    [junit] t9: 261 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   261 sites
+    [junit]   253 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 253, 261]
+    [junit] t0: 89 4
+    [junit] t1: 89 4
+    [junit] t2: 89 4
+    [junit] t3: 89 4
+    [junit] t4: 89 4
+    [junit] t5: 89 4
+    [junit] t6: 89 4
+    [junit] t7: 89 4
+    [junit] t8: 89 4
+    [junit] t9: 89 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   89 sites
+    [junit]   87 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 87, 89]
+    [junit] t0: 120 4
+    [junit] t1: 120 4
+    [junit] t2: 120 4
+    [junit] t3: 120 4
+    [junit] t4: 120 4
+    [junit] t5: 120 4
+    [junit] t6: 120 4
+    [junit] t7: 120 4
+    [junit] t8: 120 4
+    [junit] t9: 120 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   120 sites
+    [junit]   113 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 113, 120]
+    [junit] t0: 175 4
+    [junit] t1: 175 4
+    [junit] t2: 175 4
+    [junit] t3: 175 4
+    [junit] t4: 175 4
+    [junit] t5: 175 4
+    [junit] t6: 175 4
+    [junit] t7: 175 4
+    [junit] t8: 175 4
+    [junit] t9: 175 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   175 sites
+    [junit]   171 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 171, 175]
+    [junit] t0: 175 4
+    [junit] t1: 175 4
+    [junit] t2: 175 4
+    [junit] t3: 175 4
+    [junit] t4: 175 4
+    [junit] t5: 175 4
+    [junit] t6: 175 4
+    [junit] t7: 175 4
+    [junit] t8: 175 4
+    [junit] t9: 175 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   175 sites
+    [junit]   173 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 173, 175]
+    [junit] t0: 876 4
+    [junit] t1: 876 4
+    [junit] t2: 876 4
+    [junit] t3: 876 4
+    [junit] t4: 876 4
+    [junit] t5: 876 4
+    [junit] t6: 876 4
+    [junit] t7: 876 4
+    [junit] t8: 876 4
+    [junit] t9: 876 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   876 sites
+    [junit]   736 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 736, 876]
+    [junit] t0: 160 4
+    [junit] t1: 160 4
+    [junit] t2: 160 4
+    [junit] t3: 160 4
+    [junit] t4: 160 4
+    [junit] t5: 160 4
+    [junit] t6: 160 4
+    [junit] t7: 160 4
+    [junit] t8: 160 4
+    [junit] t9: 160 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   160 sites
+    [junit]   160 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 160, 160]
+    [junit] t0: 189 4
+    [junit] t1: 189 4
+    [junit] t2: 189 4
+    [junit] t3: 189 4
+    [junit] t4: 189 4
+    [junit] t5: 189 4
+    [junit] t6: 189 4
+    [junit] t7: 189 4
+    [junit] t8: 189 4
+    [junit] t9: 189 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   189 sites
+    [junit]   183 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 183, 189]
+    [junit] t0: 96 4
+    [junit] t1: 96 4
+    [junit] t2: 96 4
+    [junit] t3: 96 4
+    [junit] t4: 96 4
+    [junit] t5: 96 4
+    [junit] t6: 96 4
+    [junit] t7: 96 4
+    [junit] t8: 96 4
+    [junit] t9: 96 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   96 sites
+    [junit]   95 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 95, 96]
+    [junit] t0: 39 4
+    [junit] t1: 39 4
+    [junit] t2: 39 4
+    [junit] t3: 39 4
+    [junit] t4: 39 4
+    [junit] t5: 39 4
+    [junit] t6: 39 4
+    [junit] t7: 39 4
+    [junit] t8: 39 4
+    [junit] t9: 39 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   39 sites
+    [junit]   38 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 38, 39]
+    [junit] t0: 350 4
+    [junit] t1: 350 4
+    [junit] t2: 350 4
+    [junit] t3: 350 4
+    [junit] t4: 350 4
+    [junit] t5: 350 4
+    [junit] t6: 350 4
+    [junit] t7: 350 4
+    [junit] t8: 350 4
+    [junit] t9: 350 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   350 sites
+    [junit]   316 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 316, 350]
+    [junit] t0: 109 4
+    [junit] t1: 109 4
+    [junit] t2: 109 4
+    [junit] t3: 109 4
+    [junit] t4: 109 4
+    [junit] t5: 109 4
+    [junit] t6: 109 4
+    [junit] t7: 109 4
+    [junit] t8: 109 4
+    [junit] t9: 109 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   109 sites
+    [junit]   107 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 107, 109]
+    [junit] t0: 1243 4
+    [junit] t1: 1243 4
+    [junit] t2: 1243 4
+    [junit] t3: 1243 4
+    [junit] t4: 1243 4
+    [junit] t5: 1243 4
+    [junit] t6: 1243 4
+    [junit] t7: 1243 4
+    [junit] t8: 1243 4
+    [junit] t9: 1243 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   1243 sites
+    [junit]   970 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 970, 1243]
+    [junit] t0: 115 4
+    [junit] t1: 115 4
+    [junit] t2: 115 4
+    [junit] t3: 115 4
+    [junit] t4: 115 4
+    [junit] t5: 115 4
+    [junit] t6: 115 4
+    [junit] t7: 115 4
+    [junit] t8: 115 4
+    [junit] t9: 115 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   115 sites
+    [junit]   109 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 109, 115]
+    [junit] t0: 424 4
+    [junit] t1: 424 4
+    [junit] t2: 424 4
+    [junit] t3: 424 4
+    [junit] t4: 424 4
+    [junit] t5: 424 4
+    [junit] t6: 424 4
+    [junit] t7: 424 4
+    [junit] t8: 424 4
+    [junit] t9: 424 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   424 sites
+    [junit]   372 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 372, 424]
+    [junit] t0: 130 4
+    [junit] t1: 130 4
+    [junit] t2: 130 4
+    [junit] t3: 130 4
+    [junit] t4: 130 4
+    [junit] t5: 130 4
+    [junit] t6: 130 4
+    [junit] t7: 130 4
+    [junit] t8: 130 4
+    [junit] t9: 130 4
+    [junit] Alignment(null)
+    [junit]   10 taxa
+    [junit]   130 sites
+    [junit]   125 patterns
+    [junit] 
+    [junit] TreeLikelihood(null) uses BeerLikelihoodCore4
+    [junit]   Alignment(null): [taxa, patterns, sites] = [10, 125, 130]
+    [junit] logP=-94608.9
+    [junit] logPprime=-94608.9
+    [junit] relError=1.53811e-16
+    [junit] Tarsius_syrichta: 898 4
+    [junit] Lemur_catta: 898 4
+    [junit] Homo_sapiens: 898 4
+    [junit] Pan: 898 4
+    [junit] Gorilla: 898 4
+    [junit] Pongo: 898 4
+    [junit] Hylobates: 898 4
+    [junit] Macaca_fuscata: 898 4
+    [junit] M_mulatta: 898 4
+    [junit] M_fascicularis: 898 4
+    [junit] M_sylvanus: 898 4
+    [junit] Saimiri_sciureus: 898 4
+    [junit] Alignment(null)
+    [junit]   12 taxa
+    [junit]   898 sites
+    [junit]   418 patterns
+    [junit] 
+    [junit] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.842 sec
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Failed to load BEAGLE library: no hmsbeagle-jni in java.library.path: /usr/local/lib::/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+    [junit] Beagle library not found: skipping beagle likelihood test.
+    [junit] Running bacter.model.SimulatedAlignmentTest
+    [junit] ((((8:0.0559448484577818)#1:0.29593984052344285,2:0.35188468898122466)16:0.23302262647261668,((1:0.13747832436657312,#1[&conv=1, region={10689,10992}, locus="locus", relSize=0.00304000, affectedSites=304, uselessSiteFraction=0.00000]:0.08153347590879131):0.3771036360574129,#2[&conv=2, region={46742,48179}, locus="locus", relSize=0.0143800, affectedSites=1438, uselessSiteFraction=0.00000]:0.3843109696253956):0.07032535502985526)18:0.06658439860803955,((((((7:0.06412469502232977,(5:0.04888966307728223,10:0.04888966307728223)11:0.015235031945047543)12:0.021854012111904506)#0:0.014020686403421634,3:0.09999939353765591)13:0.03719762535395171,(9:0.13027099079859045)#2:0.006926028093017178)15:0.17288675017381033,#0[&conv=0, region={2899,3161}, locus="locus", relSize=0.00263000, affectedSites=263, uselessSiteFraction=0.00000]:0.22410506193118368):0.101329150853121,(6:0.13063722037767417,4:0.13063722037767417)14:0.2807756995408648)17:0.24007879414334193)19:0.0;
+    [junit] Loading package bModelTest v1.3.2 SpeciesNetwork v1.0.0 OBAMA v1.1.1 CoalRe v1.0.0 Babel v0.4.0 BEAST.base v2.7.2 BICEPS v1.1.1 speedemon v1.1.0 BEASTLabs v2.0.0 starbeast2 v1.0.0 feast v9.2.0 SA v2.1.0 MultiTypeTree v8.0.0 FastRelaxedClockLogNormal v1.2.0 aaRS v0.0.1 bacter v3.0.0 Mascot v3.0.0 starbeast3 v1.1.3 CoupledMCMC v1.2.0 ORC v1.1.1 MM v1.2.0 BEAST.app v2.7.2 besp v1.0.0   bacter v3.0.0 BEAST.app v2.7.3 BEAST.base v2.7.3 
+    [junit] 2758 segregating sites in region 0-2898 (CF)
+    [junit] 255 segregating sites in region 2899-3161 (1 active conversions)
+    [junit] 7164 segregating sites in region 3162-10688 (CF)
+    [junit] 284 segregating sites in region 10689-10992 (1 active conversions)

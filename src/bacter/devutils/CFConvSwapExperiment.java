@@ -20,9 +20,10 @@ package bacter.devutils;
 import bacter.Conversion;
 import bacter.ConversionGraph;
 import bacter.Locus;
-import beast.core.*;
-import beast.evolution.tree.Node;
-import beast.util.XMLParser;
+import beast.base.evolution.tree.Node;
+import beast.base.inference.MCMC;
+import beast.base.inference.State;
+import beast.base.parser.XMLParser;
 
 import java.io.File;
 import java.io.PrintStream;

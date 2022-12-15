@@ -1,12 +1,14 @@
 <beast version='2.0'
-       namespace='beast.core
-                 :beast.core.util
-                 :beast.core.parameter
-                 :beast.evolution.operators
-                 :beast.evolution.tree
-                 :beast.evolution.tree.coalescent
-                 :beast.evolution.alignment
-                 :beast.util
+       namespace='beast.pkgmgmt:beast.base.core:beast.base.inference
+                 :beast.base.core.util
+                 :beast.base.core.parameter
+                 :beast.base.evolution.operator
+                 :beast.base.evolution.tree
+                 :beast.base.evolution.tree.coalescent
+                 :beast.base.evolution.alignment
+                 :beast.base.inference.distribution
+                 :beast.base.inference.parameter
+                 :beast.base.util
                  :bacter
                  :bacter.model
                  :bacter.operators
@@ -15,12 +17,12 @@
     <input spec="SimulatedACG" id="acg"
            rho="0.0005" delta="50.0">
         <locus spec="Locus" id="locus" siteCount="10000"/>
-        <taxonset spec="TaxonSet">
-            <taxon spec="Taxon" id="t1"/>
-            <taxon spec="Taxon" id="t2"/>
-            <taxon spec="Taxon" id="t3"/>
-            <taxon spec="Taxon" id="t4"/>
-            <taxon spec="Taxon" id="t5"/>
+        <taxonset spec="beast.base.evolution.alignment.TaxonSet">
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t1"/>
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t2"/>
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t3"/>
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t4"/>
+            <taxon spec="beast.base.evolution.alignment.Taxon" id="t5"/>
         </taxonset>
         <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
     </input>

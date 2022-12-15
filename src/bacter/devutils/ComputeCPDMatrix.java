@@ -1,10 +1,11 @@
 package bacter.devutils;
 
 import bacter.*;
-import beast.core.*;
-import beast.core.parameter.RealParameter;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.tree.Node;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.tree.Node;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -14,7 +15,7 @@ import java.util.*;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 @Description("Approximate ACG likelihood using pairwise distances.")
-public class ComputeCPDMatrix extends beast.core.Runnable {
+public class ComputeCPDMatrix extends beast.base.inference.Runnable {
 
     public Input<Alignment> alignmentInput = new Input<>(
             "alignment",

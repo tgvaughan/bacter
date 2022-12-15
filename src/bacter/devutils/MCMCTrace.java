@@ -17,11 +17,15 @@
 
 package bacter.devutils;
 
-import beast.core.*;
-import beast.core.util.CompoundDistribution;
-import beast.core.util.Evaluator;
-import beast.core.util.Log;
-import beast.util.Randomizer;
+import beast.base.inference.CompoundDistribution;
+import beast.base.inference.Distribution;
+import beast.base.inference.Evaluator;
+import beast.base.inference.MCMC;
+import beast.base.inference.Operator;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Log;
+import beast.base.util.Randomizer;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

@@ -17,10 +17,10 @@
 
 package bacter;
 
-import beast.core.BEASTObject;
-import beast.core.Description;
-import beast.core.Input;
-import beast.evolution.alignment.Alignment;
+import beast.base.core.BEASTObject;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.evolution.alignment.Alignment;
 
 /**
  * @author Tim Vaughan <tgvaughan@gmail.com>

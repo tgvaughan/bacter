@@ -17,8 +17,8 @@
 
 package bacter.xmltests;
 
-import beast.util.Randomizer;
-import beast.util.XMLParser;
+import beast.base.util.Randomizer;
+import beast.base.parser.XMLParser;
 import org.junit.Test;
 import test.beast.beast2vs1.trace.Expectation;
 import test.beast.beast2vs1.trace.LogAnalyser;
@@ -41,7 +41,7 @@ public class SimulatedACGTest {
         Randomizer.setSeed(1);
 
         XMLParser parser = new XMLParser();
-        beast.core.Runnable runnable = parser.parseFile(
+        beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/ACGsimulations/simulateACGs2taxon.xml"));
         runnable.run();
 
@@ -68,7 +68,7 @@ public class SimulatedACGTest {
         Randomizer.setSeed(1);
 
         XMLParser parser = new XMLParser();
-        beast.core.Runnable runnable = parser.parseFile(
+        beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/ACGsimulations/simulateACGs5taxon.xml"));
         runnable.run();
 
@@ -95,7 +95,7 @@ public class SimulatedACGTest {
         Randomizer.setSeed(1);
 
         XMLParser parser = new XMLParser();
-        beast.core.Runnable runnable = parser.parseFile(
+        beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/ACGsimulations/simulateACGs5taxonDynamicPopSize.xml"));
         runnable.run();
 
@@ -122,7 +122,7 @@ public class SimulatedACGTest {
         Randomizer.setSeed(1);
 
         XMLParser parser = new XMLParser();
-        beast.core.Runnable runnable = parser.parseFile(
+        beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/ACGsimulations/simulateACGs5taxonSerialSampling.xml"));
         runnable.run();
 
@@ -149,7 +149,7 @@ public class SimulatedACGTest {
         Randomizer.setSeed(1);
 
         XMLParser parser = new XMLParser();
-        beast.core.Runnable runnable = parser.parseFile(
+        beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/ACGsimulations/simulateACGs5taxonMultiLocus.xml"));
         runnable.run();
 

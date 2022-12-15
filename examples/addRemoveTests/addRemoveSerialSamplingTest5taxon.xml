@@ -1,29 +1,28 @@
 <beast version='2.0'
-       namespace='beast.core
-                 :beast.core.util
-                 :beast.core.parameter
-                 :beast.evolution.operators
-                 :beast.evolution.tree
-                 :beast.evolution.tree.coalescent
-                 :beast.evolution.alignment
-                 :beast.util
+       namespace='beast.pkgmgmt:beast.base.core:beast.base.inference
+                 :beast.base.core.util
+                 :beast.base.core.parameter
+                 :beast.base.evolution.operator
+                 :beast.base.evolution.tree
+                 :beast.base.evolution.tree.coalescent
+                 :beast.base.evolution.alignment
                  :bacter
                  :bacter.model
                  :bacter.operators
                  :bacter.util'>
 
-    <taxonset spec="TaxonSet" id="taxonSet">
-        <taxon spec="Taxon" id="t1"/>
-        <taxon spec="Taxon" id="t2"/>
-        <taxon spec="Taxon" id="t3"/>
-        <taxon spec="Taxon" id="t4"/>
-        <taxon spec="Taxon" id="t5"/>
+    <taxonset spec="beast.base.evolution.alignment.TaxonSet" id="taxonSet">
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t1"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t2"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t3"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t4"/>
+        <taxon spec="beast.base.evolution.alignment.Taxon" id="t5"/>
     </taxonset>
 
     <input spec="SimulatedACG" id="acg"
            rho="0.0005" delta="50.0" taxonset="@taxonSet">
         <locus spec="Locus" id="locus" siteCount="10000"/>
-        <populationModel spec="ConstantPopulation" popSize="1.0" id="popFunc"/>
+        <populationModel spec="beast.base.evolution.tree.coalescent.ConstantPopulation" popSize="1.0" id="popFunc"/>
         <trait spec='TraitSet' id="timeTrait" taxa="@taxonSet"
             traitname="date-backward">
             t1=0.0,
@@ -41,8 +40,8 @@
     
     <distribution spec="CompoundDistribution" id="posterior">
         <distribution spec='ACGCoalescent' id="acgPrior">
-            <rho spec='RealParameter' value="0.0005" id="rho" estimate="false"/>
-            <delta spec='RealParameter' value="50.0" id="delta" estimate="false"/>
+            <rho spec="beast.base.inference.parameter.RealParameter" value="0.0005" id="rho" estimate="false"/>
+            <delta spec="beast.base.inference.parameter.RealParameter" value="50.0" id="delta" estimate="false"/>
             <tree idref="acg"/>
             <populationModel idref="popFunc"/>
         </distribution>

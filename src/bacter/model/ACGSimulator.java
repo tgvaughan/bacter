@@ -17,9 +17,9 @@
 
 package bacter.model;
 
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Logger;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.inference.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Description("Simulates an ACG - can be used for chain initialization or for "
         + "sampler validation.")
-public class ACGSimulator extends beast.core.Runnable {
+public class ACGSimulator extends beast.base.inference.Runnable {
 
     public Input<SimulatedACG> simACGInput = new Input<>(
             "simACG",
