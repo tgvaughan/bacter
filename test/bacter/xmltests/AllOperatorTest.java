@@ -44,7 +44,7 @@ public class AllOperatorTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/allOperatorTests/allOperatorTestSeriallySampled.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -74,7 +74,7 @@ public class AllOperatorTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/allOperatorTests/allOperatorTestSSMultiLocus.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -104,7 +104,7 @@ public class AllOperatorTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/allOperatorTests/allOperatorTestShortSSML.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();

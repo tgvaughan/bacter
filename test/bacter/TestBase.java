@@ -224,10 +224,11 @@ public abstract class TestBase {
      * Remove screen log (if it exists) from given runnable, if that
      * runnable is of dynamic type MCMC.  This prevents needlessly
      * verbose test log output.
+     * Also, cause loggers to overwrite existing files by default.
      *
      * @param runnable from which to remove log.
      */
-    public void disableScreenLog(beast.base.inference.Runnable runnable) {
+    public void setupTestLoggers(beast.base.inference.Runnable runnable) {
         if (runnable instanceof MCMC) {
             MCMC mcmc = (MCMC)runnable;
 
@@ -242,5 +243,7 @@ public abstract class TestBase {
             if (screenLog != null)
                 mcmc.loggersInput.get().remove(screenLog);
         }
+
+        Logger.FILE_MODE = Logger.LogFileMode.overwrite;
     }
 }

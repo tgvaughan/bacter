@@ -44,7 +44,7 @@ public class RegionShiftTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/regionShiftTests/regionShiftTest5taxon.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -74,7 +74,7 @@ public class RegionShiftTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/regionShiftTests/boundaryShiftTest5taxon.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();

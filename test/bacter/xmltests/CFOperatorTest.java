@@ -44,7 +44,7 @@ public class CFOperatorTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/CFOperatorTests/CFUniformTest5taxon.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -74,7 +74,7 @@ public class CFOperatorTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/CFOperatorTests/CFWilsonBaldingTest5taxon.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -103,7 +103,7 @@ public class CFOperatorTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/CFOperatorTests/CFConversionSwapTest5taxon.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -132,7 +132,7 @@ public class CFOperatorTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/CFOperatorTests/CFSubtreeSlideTest5taxon.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
@@ -159,7 +159,7 @@ public class CFOperatorTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/CFOperatorTests/CFSubtreeExchangeTest5taxon.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();

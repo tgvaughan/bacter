@@ -44,7 +44,7 @@ public class MergeSplitTest extends TestBase {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/mergeSplitTests/mergeSplitTest5taxon.xml"));
-        disableScreenLog(runnable);
+        setupTestLoggers(runnable);
         runnable.run();
 
         List<Expectation> expectations = new ArrayList<>();
