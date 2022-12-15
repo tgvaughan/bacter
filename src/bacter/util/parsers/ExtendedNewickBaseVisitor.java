@@ -1,4 +1,4 @@
-// Generated from /Users/vaughant/code/beast_and_friends/bacter/src/bacter/util/parsers/ExtendedNewick.g4 by ANTLR 4.7
+// Generated from /Users/vaughant/code/beast_and_friends/bacter/src/bacter/util/parsers/ExtendedNewick.g4 by ANTLR 4.10.1
 package bacter.util.parsers;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 

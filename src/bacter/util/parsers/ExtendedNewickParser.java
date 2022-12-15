@@ -1,4 +1,4 @@
-// Generated from /Users/vaughant/code/beast_and_friends/bacter/src/bacter/util/parsers/ExtendedNewick.g4 by ANTLR 4.7
+// Generated from /Users/vaughant/code/beast_and_friends/bacter/src/bacter/util/parsers/ExtendedNewick.g4 by ANTLR 4.10.1
 package bacter.util.parsers;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ExtendedNewickParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.7", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -23,19 +23,28 @@ public class ExtendedNewickParser extends Parser {
 		RULE_tree = 0, RULE_node = 1, RULE_post = 2, RULE_label = 3, RULE_hybrid = 4, 
 		RULE_meta = 5, RULE_attrib = 6, RULE_attribValue = 7, RULE_number = 8, 
 		RULE_vector = 9, RULE_string = 10;
-	public static final String[] ruleNames = {
-		"tree", "node", "post", "label", "hybrid", "meta", "attrib", "attribValue", 
-		"number", "vector", "string"
-	};
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"tree", "node", "post", "label", "hybrid", "meta", "attrib", "attribValue", 
+			"number", "vector", "string"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
 
-	private static final String[] _LITERAL_NAMES = {
-		null, "';'", "'('", "','", "')'", "':'", "'#'", "'[&'", "']'", "'='", 
-		"'{'", "'}'"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		"FLOAT", "INT", "RECTYPE", "STRINGPRIM", "WHITESPACE"
-	};
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, "';'", "'('", "','", "')'", "':'", "'#'", "'[&'", "']'", "'='", 
+			"'{'", "'}'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			"FLOAT", "INT", "RECTYPE", "STRINGPRIM", "WHITESPACE"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
@@ -85,6 +94,7 @@ public class ExtendedNewickParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+
 	public static class TreeContext extends ParserRuleContext {
 		public NodeContext node() {
 			return getRuleContext(NodeContext.class,0);
@@ -94,6 +104,14 @@ public class ExtendedNewickParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_tree; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterTree(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitTree(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitTree(this);
@@ -149,6 +167,14 @@ public class ExtendedNewickParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_node; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterNode(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitNode(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitNode(this);
@@ -226,6 +252,14 @@ public class ExtendedNewickParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_post; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterPost(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitPost(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitPost(this);
@@ -307,6 +341,14 @@ public class ExtendedNewickParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_label; }
 		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterLabel(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitLabel(this);
+		}
+		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitLabel(this);
 			else return visitor.visitChildren(this);
@@ -360,6 +402,14 @@ public class ExtendedNewickParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_hybrid; }
 		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterHybrid(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitHybrid(this);
+		}
+		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitHybrid(this);
 			else return visitor.visitChildren(this);
@@ -411,6 +461,14 @@ public class ExtendedNewickParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_meta; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterMeta(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitMeta(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitMeta(this);
@@ -473,6 +531,14 @@ public class ExtendedNewickParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_attrib; }
 		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterAttrib(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitAttrib(this);
+		}
+		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitAttrib(this);
 			else return visitor.visitChildren(this);
@@ -518,6 +584,14 @@ public class ExtendedNewickParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_attribValue; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterAttribValue(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitAttribValue(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitAttribValue(this);
@@ -578,6 +652,14 @@ public class ExtendedNewickParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_number; }
 		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterNumber(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitNumber(this);
+		}
+		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitNumber(this);
 			else return visitor.visitChildren(this);
@@ -625,6 +707,14 @@ public class ExtendedNewickParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_vector; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterVector(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitVector(this);
+		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitVector(this);
@@ -682,6 +772,14 @@ public class ExtendedNewickParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_string; }
 		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).enterString(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExtendedNewickListener ) ((ExtendedNewickListener)listener).exitString(this);
+		}
+		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof ExtendedNewickVisitor ) return ((ExtendedNewickVisitor<? extends T>)visitor).visitString(this);
 			else return visitor.visitChildren(this);
@@ -719,32 +817,63 @@ public class ExtendedNewickParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\22h\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4"+
-		"\f\t\f\3\2\3\2\5\2\33\n\2\3\2\3\2\3\3\3\3\3\3\3\3\7\3#\n\3\f\3\16\3&\13"+
-		"\3\3\3\3\3\5\3*\n\3\3\3\3\3\3\4\5\4/\n\4\3\4\5\4\62\n\4\3\4\5\4\65\n\4"+
-		"\3\4\3\4\5\49\n\4\3\5\3\5\5\5=\n\5\3\6\3\6\5\6A\n\6\3\6\3\6\3\7\3\7\3"+
-		"\7\3\7\7\7I\n\7\f\7\16\7L\13\7\3\7\3\7\3\b\3\b\3\b\3\b\3\t\3\t\3\t\5\t"+
-		"W\n\t\3\n\3\n\3\13\3\13\3\13\3\13\7\13_\n\13\f\13\16\13b\13\13\3\13\3"+
-		"\13\3\f\3\f\3\f\2\2\r\2\4\6\b\n\f\16\20\22\24\26\2\4\3\2\16\17\3\2\20"+
-		"\21\2i\2\30\3\2\2\2\4)\3\2\2\2\6.\3\2\2\2\b<\3\2\2\2\n>\3\2\2\2\fD\3\2"+
-		"\2\2\16O\3\2\2\2\20V\3\2\2\2\22X\3\2\2\2\24Z\3\2\2\2\26e\3\2\2\2\30\32"+
-		"\5\4\3\2\31\33\7\3\2\2\32\31\3\2\2\2\32\33\3\2\2\2\33\34\3\2\2\2\34\35"+
-		"\7\2\2\3\35\3\3\2\2\2\36\37\7\4\2\2\37$\5\4\3\2 !\7\5\2\2!#\5\4\3\2\""+
-		" \3\2\2\2#&\3\2\2\2$\"\3\2\2\2$%\3\2\2\2%\'\3\2\2\2&$\3\2\2\2\'(\7\6\2"+
-		"\2(*\3\2\2\2)\36\3\2\2\2)*\3\2\2\2*+\3\2\2\2+,\5\6\4\2,\5\3\2\2\2-/\5"+
-		"\b\5\2.-\3\2\2\2./\3\2\2\2/\61\3\2\2\2\60\62\5\n\6\2\61\60\3\2\2\2\61"+
-		"\62\3\2\2\2\62\64\3\2\2\2\63\65\5\f\7\2\64\63\3\2\2\2\64\65\3\2\2\2\65"+
-		"8\3\2\2\2\66\67\7\7\2\2\679\5\22\n\28\66\3\2\2\289\3\2\2\29\7\3\2\2\2"+
-		":=\5\22\n\2;=\5\26\f\2<:\3\2\2\2<;\3\2\2\2=\t\3\2\2\2>@\7\b\2\2?A\7\20"+
-		"\2\2@?\3\2\2\2@A\3\2\2\2AB\3\2\2\2BC\7\17\2\2C\13\3\2\2\2DE\7\t\2\2EJ"+
-		"\5\16\b\2FG\7\5\2\2GI\5\16\b\2HF\3\2\2\2IL\3\2\2\2JH\3\2\2\2JK\3\2\2\2"+
-		"KM\3\2\2\2LJ\3\2\2\2MN\7\n\2\2N\r\3\2\2\2OP\5\26\f\2PQ\7\13\2\2QR\5\20"+
-		"\t\2R\17\3\2\2\2SW\5\22\n\2TW\5\26\f\2UW\5\24\13\2VS\3\2\2\2VT\3\2\2\2"+
-		"VU\3\2\2\2W\21\3\2\2\2XY\t\2\2\2Y\23\3\2\2\2Z[\7\f\2\2[`\5\20\t\2\\]\7"+
-		"\5\2\2]_\5\20\t\2^\\\3\2\2\2_b\3\2\2\2`^\3\2\2\2`a\3\2\2\2ac\3\2\2\2b"+
-		"`\3\2\2\2cd\7\r\2\2d\25\3\2\2\2ef\t\3\2\2f\27\3\2\2\2\16\32$).\61\648"+
-		"<@JV`";
+		"\u0004\u0001\u0010f\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
+		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
+		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0001\u0000\u0001\u0000\u0003"+
+		"\u0000\u0019\b\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0005\u0001!\b\u0001\n\u0001\f\u0001$\t\u0001\u0001"+
+		"\u0001\u0001\u0001\u0003\u0001(\b\u0001\u0001\u0001\u0001\u0001\u0001"+
+		"\u0002\u0003\u0002-\b\u0002\u0001\u0002\u0003\u00020\b\u0002\u0001\u0002"+
+		"\u0003\u00023\b\u0002\u0001\u0002\u0001\u0002\u0003\u00027\b\u0002\u0001"+
+		"\u0003\u0001\u0003\u0003\u0003;\b\u0003\u0001\u0004\u0001\u0004\u0003"+
+		"\u0004?\b\u0004\u0001\u0004\u0001\u0004\u0001\u0005\u0001\u0005\u0001"+
+		"\u0005\u0001\u0005\u0005\u0005G\b\u0005\n\u0005\f\u0005J\t\u0005\u0001"+
+		"\u0005\u0001\u0005\u0001\u0006\u0001\u0006\u0001\u0006\u0001\u0006\u0001"+
+		"\u0007\u0001\u0007\u0001\u0007\u0003\u0007U\b\u0007\u0001\b\u0001\b\u0001"+
+		"\t\u0001\t\u0001\t\u0001\t\u0005\t]\b\t\n\t\f\t`\t\t\u0001\t\u0001\t\u0001"+
+		"\n\u0001\n\u0001\n\u0000\u0000\u000b\u0000\u0002\u0004\u0006\b\n\f\u000e"+
+		"\u0010\u0012\u0014\u0000\u0002\u0001\u0000\f\r\u0001\u0000\u000e\u000f"+
+		"g\u0000\u0016\u0001\u0000\u0000\u0000\u0002\'\u0001\u0000\u0000\u0000"+
+		"\u0004,\u0001\u0000\u0000\u0000\u0006:\u0001\u0000\u0000\u0000\b<\u0001"+
+		"\u0000\u0000\u0000\nB\u0001\u0000\u0000\u0000\fM\u0001\u0000\u0000\u0000"+
+		"\u000eT\u0001\u0000\u0000\u0000\u0010V\u0001\u0000\u0000\u0000\u0012X"+
+		"\u0001\u0000\u0000\u0000\u0014c\u0001\u0000\u0000\u0000\u0016\u0018\u0003"+
+		"\u0002\u0001\u0000\u0017\u0019\u0005\u0001\u0000\u0000\u0018\u0017\u0001"+
+		"\u0000\u0000\u0000\u0018\u0019\u0001\u0000\u0000\u0000\u0019\u001a\u0001"+
+		"\u0000\u0000\u0000\u001a\u001b\u0005\u0000\u0000\u0001\u001b\u0001\u0001"+
+		"\u0000\u0000\u0000\u001c\u001d\u0005\u0002\u0000\u0000\u001d\"\u0003\u0002"+
+		"\u0001\u0000\u001e\u001f\u0005\u0003\u0000\u0000\u001f!\u0003\u0002\u0001"+
+		"\u0000 \u001e\u0001\u0000\u0000\u0000!$\u0001\u0000\u0000\u0000\" \u0001"+
+		"\u0000\u0000\u0000\"#\u0001\u0000\u0000\u0000#%\u0001\u0000\u0000\u0000"+
+		"$\"\u0001\u0000\u0000\u0000%&\u0005\u0004\u0000\u0000&(\u0001\u0000\u0000"+
+		"\u0000\'\u001c\u0001\u0000\u0000\u0000\'(\u0001\u0000\u0000\u0000()\u0001"+
+		"\u0000\u0000\u0000)*\u0003\u0004\u0002\u0000*\u0003\u0001\u0000\u0000"+
+		"\u0000+-\u0003\u0006\u0003\u0000,+\u0001\u0000\u0000\u0000,-\u0001\u0000"+
+		"\u0000\u0000-/\u0001\u0000\u0000\u0000.0\u0003\b\u0004\u0000/.\u0001\u0000"+
+		"\u0000\u0000/0\u0001\u0000\u0000\u000002\u0001\u0000\u0000\u000013\u0003"+
+		"\n\u0005\u000021\u0001\u0000\u0000\u000023\u0001\u0000\u0000\u000036\u0001"+
+		"\u0000\u0000\u000045\u0005\u0005\u0000\u000057\u0003\u0010\b\u000064\u0001"+
+		"\u0000\u0000\u000067\u0001\u0000\u0000\u00007\u0005\u0001\u0000\u0000"+
+		"\u00008;\u0003\u0010\b\u00009;\u0003\u0014\n\u0000:8\u0001\u0000\u0000"+
+		"\u0000:9\u0001\u0000\u0000\u0000;\u0007\u0001\u0000\u0000\u0000<>\u0005"+
+		"\u0006\u0000\u0000=?\u0005\u000e\u0000\u0000>=\u0001\u0000\u0000\u0000"+
+		">?\u0001\u0000\u0000\u0000?@\u0001\u0000\u0000\u0000@A\u0005\r\u0000\u0000"+
+		"A\t\u0001\u0000\u0000\u0000BC\u0005\u0007\u0000\u0000CH\u0003\f\u0006"+
+		"\u0000DE\u0005\u0003\u0000\u0000EG\u0003\f\u0006\u0000FD\u0001\u0000\u0000"+
+		"\u0000GJ\u0001\u0000\u0000\u0000HF\u0001\u0000\u0000\u0000HI\u0001\u0000"+
+		"\u0000\u0000IK\u0001\u0000\u0000\u0000JH\u0001\u0000\u0000\u0000KL\u0005"+
+		"\b\u0000\u0000L\u000b\u0001\u0000\u0000\u0000MN\u0003\u0014\n\u0000NO"+
+		"\u0005\t\u0000\u0000OP\u0003\u000e\u0007\u0000P\r\u0001\u0000\u0000\u0000"+
+		"QU\u0003\u0010\b\u0000RU\u0003\u0014\n\u0000SU\u0003\u0012\t\u0000TQ\u0001"+
+		"\u0000\u0000\u0000TR\u0001\u0000\u0000\u0000TS\u0001\u0000\u0000\u0000"+
+		"U\u000f\u0001\u0000\u0000\u0000VW\u0007\u0000\u0000\u0000W\u0011\u0001"+
+		"\u0000\u0000\u0000XY\u0005\n\u0000\u0000Y^\u0003\u000e\u0007\u0000Z[\u0005"+
+		"\u0003\u0000\u0000[]\u0003\u000e\u0007\u0000\\Z\u0001\u0000\u0000\u0000"+
+		"]`\u0001\u0000\u0000\u0000^\\\u0001\u0000\u0000\u0000^_\u0001\u0000\u0000"+
+		"\u0000_a\u0001\u0000\u0000\u0000`^\u0001\u0000\u0000\u0000ab\u0005\u000b"+
+		"\u0000\u0000b\u0013\u0001\u0000\u0000\u0000cd\u0007\u0001\u0000\u0000"+
+		"d\u0015\u0001\u0000\u0000\u0000\f\u0018\"\',/26:>HT^";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
