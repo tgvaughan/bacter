@@ -25,7 +25,7 @@
           <log spec="ConversionGraphStatsLogger" acg="@acg"/>
         </logger>
 
-        <logger logEvery="1000" fileName="$(filebase).trees">
+        <logger logEvery="1000" mode="tree" fileName="$(filebase).trees">
             <log idref="acg"/>
         </logger>
     </run>

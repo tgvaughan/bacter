@@ -1,6 +1,7 @@
 package bacter.util;
 
 import bacter.ConversionGraph;
+import bacter.TestBase;
 import beast.base.util.Randomizer;
 import beast.base.parser.XMLParser;
 import org.junit.Test;
@@ -11,7 +12,7 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 
-public class BacterACGLogReaderTest {
+public class BacterACGLogReaderTest extends TestBase {
 
     @Test
     public void test() throws Exception {
@@ -20,6 +21,7 @@ public class BacterACGLogReaderTest {
         XMLParser parser = new XMLParser();
         beast.base.inference.Runnable runnable = parser.parseFile(
                 new File("examples/ACGsimulations/simulateACGs2taxon.xml"));
+        setupTestLoggers(runnable);
         runnable.run();
 
         BacterACGLogReader logReader = new BacterACGLogReader(new File("simulateACGs2taxon.trees"), 0.0);
