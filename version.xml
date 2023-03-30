@@ -1,4 +1,4 @@
-<package name="bacter" version="3.0.0">
+<package name="bacter" version="3.0.1">
   <depends on='BEAST.base' atleast='2.7.2'/>
   <depends on='BEAST.app' atleast='2.7.2'/>
   <depends on='feast' atleast='9.0.0'/>
