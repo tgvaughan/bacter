@@ -69,7 +69,7 @@ public class ACGCoalescent extends TreeDistribution {
     public Input<Boolean> wholeLocusConversionsInput = new Input<>(
             "wholeLocusConversionsOnly",
             "Only allow whole loci to be converted.", false);
-    //TODO: check adjustment for circular genome
+    //circular genome mode edit
     public Input<Boolean> circularGenomeInput = new Input<>(
             "circularGenome",
             "The alignment is a circular genome", false);
@@ -99,13 +99,13 @@ public class ACGCoalescent extends TreeDistribution {
         // The following condition makes sure that in the case of a complete genome
         // the mean conversion length is smaller than half of the genome length
         // (following the convention of defining the shorter sequence part as conversion).
-        //TODO: check adjustment for circular genome
+        //circular genome mode edit
         if (circularGenomeInput.get()){
             if (deltaInput.get().getValue() >= 0.5 * acg.getTotalConvertibleSequenceLength())
                 throw new IllegalArgumentException("Delta prior input " +
                         "must be smaller than half of the genome length.");
             if (deltaInput.get().getUpper()>= 0.5 * acg.getTotalConvertibleSequenceLength()) {
-                deltaInput.get().setUpper(Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5));                                //todo: check adjustment (circular genome)
+                deltaInput.get().setUpper(Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5));
                 System.out.println("Upper bound of delta is set to " + (Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5)));
             }
             if (!acg.circularGenomeModeOn()) {
@@ -129,7 +129,7 @@ public class ACGCoalescent extends TreeDistribution {
                 || acg.getTotalConvCount()>upperCCBoundInput.get())
             return Double.NEGATIVE_INFINITY;
 
-        //TODO: check adjustment for circular genome
+        //circular genome mode edit
         logP = calculateClonalFrameLogP();
         double poissonMean = rhoInput.get().getValue()
                 *acg.getClonalFrameLength()
@@ -233,7 +233,8 @@ public class ACGCoalescent extends TreeDistribution {
         // Probability of single coalescence event
         thisLogP += Math.log(1.0/popFunc.getPopSize(conv.getHeight2()));
 
-        // Probability of start site:               //TODO: check adjustment (circular genome)
+        // Probability of start site:
+        //circular genome mode edit
         if (acg.circularGenomeModeOn()) {
             thisLogP += Math.log(1.0 / acg.getTotalConvertibleSequenceLength());
         } else if (conv.getStartSite()==0) {
@@ -250,9 +251,10 @@ public class ACGCoalescent extends TreeDistribution {
         }
 
         // Probability of end site:
+        //circular genome mode edit
         if (acg.circularGenomeModeOn()) {
             if (acg.endSiteBetaBinomOn()) {
-                int halfGenomeLength = (int) Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5); //max int being smaller than half of the genome length
+                int halfGenomeLength = (int) Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5);
                 int kBetaBinom = conv.getSiteCount() - 1;
                 double aBetaBinom = halfGenomeLength / (halfGenomeLength - deltaInput.get().getValue());
                 double bBetaBinom = halfGenomeLength / deltaInput.get().getValue();
@@ -315,7 +317,6 @@ public class ACGCoalescent extends TreeDistribution {
             double probConvGamma = GammaFunction.lnGamma(n + 1) - GammaFunction.lnGamma(k + 1) - GammaFunction.lnGamma(n - k + 1)
                     + GammaFunction.lnGamma(k + alpha) + GammaFunction.lnGamma(n - k + beta) - GammaFunction.lnGamma(beta)
                     - GammaFunction.lnGamma(n + alpha + beta) + GammaFunction.lnGamma(alpha + beta) - GammaFunction.lnGamma(alpha);
-            //double probConvBeta = CombinatoricsUtils.binomialCoefficientLog(n, k) + Beta.logBeta(alpha+k, beta+n-k) - Beta.logBeta(alpha, beta);
         }
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);

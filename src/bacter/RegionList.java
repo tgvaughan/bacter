@@ -116,7 +116,7 @@ public class RegionList {
 
         Set<Conversion> activeConversions = Sets.newHashSet();
 
-        //todo: revise and check adjustment (circular genome)
+        //circular genome mode edit
         int numOverlap = 0;
         for (Conversion conv : convOrderedByEnd) {
             if (conv.getEndSite() < conv.getStartSite()) {
@@ -125,14 +125,13 @@ public class RegionList {
             }
         }
 
+		//circular genome mode edit
         int lastBoundary = 0;
-        //boolean convOverlap = numOverlap > 0;
         boolean firstStep = false, noConv = true;
         if (acg.circularGenomeModeOn() && !convOrderedByStart.isEmpty()) {
             lastBoundary = Math.max(convOrderedByEnd.get(convOrderedByEnd.size() - 1).getEndSite() + 1, convOrderedByStart.get(convOrderedByStart.size() - 1).getStartSite());
-            //lastBoundary = (lastBoundary == acg.getTotalConvertibleSequenceLength()) ? 0 : lastBoundary;
             noConv = false;
-            firstStep = true;//!convOverlap;
+            firstStep = true;
         }
 
         while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
@@ -150,15 +149,7 @@ public class RegionList {
                 nextEnd = Integer.MAX_VALUE;
 
             int nextBoundary = Math.min(nextStart, nextEnd);
-            /*
-            if (convOverlap) {
-                activeConversions.add(convOrderedByEnd.get(0));
-                Region region = new Region(lastBoundary, nextBoundary, activeConversions, acg.getTotalConvertibleSequenceLength());
-                regions.add(region);
-                activeConversions.remove(convOrderedByEnd.get(0));
-                convOrderedByEnd.remove(0);
-            }
-             */
+
             if (nextBoundary > lastBoundary || firstStep) {
                 if (nextBoundary == 0) {
                     nextBoundary = locus.getSiteCount();
@@ -172,22 +163,15 @@ public class RegionList {
                 activeConversions.add(convOrderedByStart.get(0));
                 convOrderedByStart.remove(0);
                 lastBoundary = nextStart;
-            } else { //if (!convOverlap) {
+            } else {
                 activeConversions.remove(convOrderedByEnd.get(0));
                 convOrderedByEnd.remove(0);
                 lastBoundary = nextEnd;
-            }/*
-            else {
-                lastBoundary = nextBoundary;
-                convOverlap = false;
-                firstStep = true;
             }
-                 */
         }
 
         if ((lastBoundary < locus.getSiteCount()) && noConv) {
             Region region = new Region(lastBoundary, locus.getSiteCount(), new HashSet<>(), acg.getTotalConvertibleSequenceLength());
-            //Region region = new Region(lastBoundary, locus.getSiteCount(), new HashSet<>());
             regions.add(region);
         }
 

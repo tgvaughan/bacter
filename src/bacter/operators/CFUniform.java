@@ -103,8 +103,9 @@ public class CFUniform extends ConversionCreationOperator {
 
             if (node.isRoot()) {
                 // Draw a number of conversions
+                //circular genome mode edit
                 double L = 2.0*(newHeight-oldHeight);
-                double Nexp = L*rhoInput.get().getValue()                   //todo: check adjustment circular genome
+                double Nexp = L*rhoInput.get().getValue()
                         *(acg.getTotalConvertibleSequenceLength()+
                         (acg.circularGenomeModeOn() ? 0 : acg.getConvertibleLoci().size()*deltaInput.get().getValue()) );
                 int N = (int)Randomizer.nextPoisson(Nexp);
@@ -155,8 +156,9 @@ public class CFUniform extends ConversionCreationOperator {
             }
 
             if (node.isRoot()) {
+            	//circular genome mode edit
                 double L = 2.0*(oldHeight-newHeight);
-                double Nexp = L*rhoInput.get().getValue()*                              //todo: check adjustment (circular genome)
+                double Nexp = L*rhoInput.get().getValue()*
                         (acg.getTotalConvertibleSequenceLength() +
                                 ( acg.circularGenomeModeOn() ? 0 :  acg.getConvertibleLoci().size()*deltaInput.get().getValue()) );
                 logHGF += -Nexp + toRemove.size()*Math.log(Nexp); // N! cancels

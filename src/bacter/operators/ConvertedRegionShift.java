@@ -53,7 +53,8 @@ public class ConvertedRegionShift extends ACGOperator {
         int newStart = conv.getStartSite()+delta;
         int newEnd = conv.getEndSite()+delta;
 
-        if (!acg.circularGenomeModeOn()) {                                                      //todo: check adjustment circular genome
+		//circular genome mode edit
+        if (!acg.circularGenomeModeOn()) {
             if (newEnd > conv.getLocus().getSiteCount() - 1)
                 return Double.NEGATIVE_INFINITY;
             if (newStart < 0)

@@ -243,7 +243,7 @@ public class SimulatedAlignment extends Alignment {
         
         int nTaxa = alignment.length;
         
-        //TODO: check adjustment for cicular genome
+        //circular genome mode edit
         if (!(region.leftBoundary > region.rightBoundary)) {
             for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
                 System.arraycopy(regionAlignment[leafIdx], 0,

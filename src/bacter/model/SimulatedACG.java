@@ -83,7 +83,8 @@ public class SimulatedACG extends ConversionGraph {
 
     private double rho, delta;
     private PopulationFunction popFunc;
-    private boolean circularGenomeMode, endSiteBetaBinom; //TODO: check adjustment circular genome
+    //circular genome mode edit
+    private boolean circularGenomeMode, endSiteBetaBinom;
 
     public SimulatedACG() {
         m_taxonset.setRule(Input.Validate.REQUIRED);
@@ -95,7 +96,8 @@ public class SimulatedACG extends ConversionGraph {
         rho = rhoInput.get();
         delta = deltaInput.get();
         popFunc = popFuncInput.get();
-        circularGenomeMode = circularGenomeInput.get(); //TODO: check adjustment circular genome
+        //circular genome mode edit
+        circularGenomeMode = circularGenomeInput.get();
         endSiteBetaBinom = betaBinomialEndSiteInput.get();
 
         // Need to do this here as Tree.processTraits(), which is called
@@ -108,7 +110,7 @@ public class SimulatedACG extends ConversionGraph {
         else
             assignFromWithoutID(clonalFrameInput.get());
 
-        //TODO: check adjustment circular genome
+        //circular genome mode edit: by convention the smaller part of the genome is considered to be the conversion
         if (circularGenomeMode) {
             if (delta >= 0.5 * getTotalConvertibleSequenceLength())
                 throw new IllegalArgumentException("Delta prior input " +
@@ -259,7 +261,7 @@ public class SimulatedACG extends ConversionGraph {
     private void generateConversions() {
 
         // Draw number of conversions:
-        //TODO: check adjustment circular genome
+        //circular genome mode edit
         int Nconv = (int) Randomizer.nextPoisson(rho*getClonalFrameLength()*
                 (getTotalConvertibleSequenceLength() + (!circularGenomeMode ? (delta-1.0)* getConvertibleLoci().size() : 0) ));
         int startSite = 0;
@@ -301,7 +303,8 @@ public class SimulatedACG extends ConversionGraph {
                 associateConversionWithCF(conv);
                 addConversion(conv);
             }
-        } else if (!endSiteBetaBinom) {                         //todo: check adjustment (circular genome)
+        //circular genome mode edit
+        } else if (!endSiteBetaBinom) {
             int convLength;
             for (int i = 0; i < Nconv; i++) {
                 startSite = Randomizer.nextInt(getTotalConvertibleSequenceLength());
@@ -318,10 +321,11 @@ public class SimulatedACG extends ConversionGraph {
                 associateConversionWithCF(conv);
                 addConversion(conv);
             }
-        } else {                                                //todo: check adjustment (circular genome)
+        //circular genome mode edit
+        } else {
             MersenneTwister rng = new MersenneTwister();
             int numTrials = (int) Math.floor((getTotalConvertibleSequenceLength() - 1.) * 0.5);
-            rng.setSeed(Randomizer.nextInt()); //todo: check if ok as replacement of Randomizer.getSeed()
+            rng.setSeed(Randomizer.nextInt());
             BetaDistribution beta_dist = new BetaDistribution(rng, numTrials/(numTrials-delta), numTrials/delta, 1.0E-9D);
             int convLength;
 
@@ -437,9 +441,10 @@ public class SimulatedACG extends ConversionGraph {
             int n = 6343; //3234;
             double delta = 1200.0;
 
+			//circular genome mode edit
             MersenneTwister rng = new MersenneTwister();
             int numTrials = (int) Math.floor((n - 1.) * 0.5);
-            rng.setSeed(Randomizer.nextInt()); //todo: check if alright instead of Randomizer.getSeed()
+            rng.setSeed(Randomizer.nextInt());
             BetaDistribution beta_dist = new BetaDistribution(rng, numTrials / (numTrials - delta), numTrials / delta, 1.0E-9D);
             int convLength;
 
@@ -456,33 +461,6 @@ public class SimulatedACG extends ConversionGraph {
 
         }
         ;
-        /*long startTime = System.nanoTime();
-        for (int i=0; i<100000; i++) {
-
-            MersenneTwister rng = new MersenneTwister();
-            rng.setSeed(Randomizer.getSeed());
-            BetaDistribution beta_dist = new BetaDistribution(rng, n / (n - delta), n / delta, 1.0E-9D);
-            BinomialDistribution binom_dist = new BinomialDistribution(rng, n, beta_dist.sample());
-            int convLength = binom_dist.sample();
-
-
-            double RVunif1 = 1.0;
-            double RVunif2 = 1.0;
-            while (RVunif1 + RVunif2 > 1) {
-                RVunif1 = Math.pow(Randomizer.nextDouble(), (n * 0.5 - delta) / (n * 0.5));
-                RVunif2 = Math.pow(Randomizer.nextDouble(), (delta / (n * 0.5)));
-            }
-            double probSuccess = RVunif1 / (RVunif1 + RVunif2); //random sample from Beta distribution
-            int numSuccess = 0;
-            for (int j = 0; j < n * 0.5; j++) {
-                numSuccess += (Randomizer.nextDouble() <= probSuccess) ? 1 : 0;
-            }
-
-        }
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-        System.out.println(duration/Math.pow(10,9));
-         */
     }
 
 }

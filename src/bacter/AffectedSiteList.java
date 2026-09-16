@@ -80,7 +80,7 @@ public class AffectedSiteList {
                     List<Integer> inside = new ArrayList<>();
                     List<Integer> outside = new ArrayList<>();
 
-                    //TODO: check adjustment for circular genome
+                    //circular genome mode edit
                     if (event.conversion.getEndSite() >= event.conversion.getStartSite()) {
                         IntRanges.partitionRanges(activeCFNodes.get(event.node).get(event.conversion.getLocus()),
                                 event.conversion.getStartSite(),
@@ -102,7 +102,7 @@ public class AffectedSiteList {
                     }
 
                     affectedSites.put(event.conversion, inside);
-                    affectedSiteCount.put(event.conversion, IntRanges.getTotalSites(inside));           //exception of circular genome considered in getTotalSide method
+                    affectedSiteCount.put(event.conversion, IntRanges.getTotalSites(inside));
 
                     affectedSiteFraction.put(event.conversion,
                             IntRanges.getTotalSites(inside) / (double) event.conversion.getSiteCount());

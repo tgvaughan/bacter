@@ -203,7 +203,7 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
                 patSet.add(pat);
             }
 
-            //todo: check adjustment (circular genome)
+            //circular genome mode edit
             if (region.leftBoundary > region.rightBoundary) {
                 for (int j=region.leftBoundary; j<acg.getTotalConvertibleSequenceLength(); j++) {
                     int[] pat = alignment.getPattern(alignment.getPatternIndex(j));
@@ -258,18 +258,18 @@ public class ACGLikelihoodBeagle extends GenericTreeLikelihood {
 
         for (Region region : regionList) {
             Beagle beagleInstance = BeagleFactory.loadBeagleInstance(
-                    acg.getLeafNodeCount(), // Number of tips
-                    acg.getNodeCount(), // Number of partials
-                    useAmbiguitiesInput.get() ? 0 : acg.getLeafNodeCount(), // Number of compacts
-                    nStates, // Number of discrete states in model (4 for DNA)
-                    patterns.get(region).elementSet().size(), // Number of patterns
-                    1, // Number of eigen decompositions
-                    acg.getNodeCount()-1, // Number of transition matrices (one per edge)
-                    siteModel.getCategoryCount(), // Number of rate categories
-                    0, // Number of scaling buffers (0 means not needed)
-                    null, // Potential resource list (null -> no restriction)
-                    0, // bit flags indicating preferred implementation characteristics
-                    0); // bit flags indicating required implementation characteristics
+                    acg.getLeafNodeCount(), 
+                    acg.getNodeCount(), 
+                    useAmbiguitiesInput.get() ? 0 : acg.getLeafNodeCount(), 
+                    nStates, 
+                    patterns.get(region).elementSet().size(), 
+                    1, 
+                    acg.getNodeCount()-1, 
+                    siteModel.getCategoryCount(), 
+                    0, 
+                    null, 
+                    0, 
+                    0);
 
             if (useAmbiguitiesInput.get()) {
                 setPartials(beagleInstance, patterns.get(region));

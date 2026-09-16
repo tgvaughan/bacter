@@ -92,10 +92,12 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         double logP = 0.0;
 
         // Total effective number of possible start sites
-        double alpha = acg.getTotalConvertibleSequenceLength()                      //todo: check adjustment (circular genome)
+        //circular genome mode edit
+        double alpha = acg.getTotalConvertibleSequenceLength()                      
                 + (acg.circularGenomeModeOn() ? 0 : acg.getConvertibleLoci().size()*(deltaInput.get().getValue() - 1.0));
 
         // Draw location of converted region.
+        //circular genome mode edit
         int startSite = -1;
         int endSite;
         Locus locus = null;
@@ -119,7 +121,7 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
 
                 u -= deltaInput.get().getValue() - 1.0 + thisLocus.getSiteCount();
             }
-        } else {                                                                                //todo: check adjustment (circular genome)
+        } else {
             locus = acg.getConvertibleLoci().get(0); //only one locus if genome circular
             startSite = (int) u;
             logP += Math.log(1.0 / alpha);
@@ -129,10 +131,11 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             throw new IllegalStateException("Programmer error: " +
                     "loop in drawAffectedRegion() fell through.");
 
+		//circular genome mode edit
         if (!acg.circularGenomeModeOn()) {
             endSite = startSite + (int) Randomizer.nextGeometric(1.0 / deltaInput.get().getValue());
             endSite = Math.min(endSite, locus.getSiteCount() - 1);
-        } else if (!acg.endSiteBetaBinomOn()) {                                               //todo: check adjustment (circular genome)
+        } else if (!acg.endSiteBetaBinomOn()) {
             int convLength;
             convLength = acg.getTotalConvertibleSequenceLength();
             while (convLength >= 0.5*acg.getTotalConvertibleSequenceLength()){
@@ -141,10 +144,10 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
             endSite = ((startSite + convLength) >= acg.getTotalConvertibleSequenceLength()) ?
                     (startSite - acg.getTotalConvertibleSequenceLength() + convLength) : (startSite + convLength);
 
-        } else {                                                                              //todo: check adjustment (circular genome)
+        } else {
             MersenneTwister rng = new MersenneTwister();
             int numTrials = (int) Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5);
-            rng.setSeed(Randomizer.nextInt()); //todo: check if ok as replacement of Randomizer.getSeed()
+            rng.setSeed(Randomizer.nextInt());
             BetaDistribution beta_dist = new BetaDistribution(rng, numTrials/(numTrials-deltaInput.get().getValue()),
                     numTrials/deltaInput.get().getValue(), 1.0E-9D);
             int convLength;
@@ -155,9 +158,10 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         }
 
         // Probability of end site:
-        if (acg.circularGenomeModeOn()) {                                                       //todo: check adjustment (circular genome)
+        //circular genome mode edit
+        if (acg.circularGenomeModeOn()) {
             if (acg.endSiteBetaBinomOn()) {
-                int halfGenomeLength = (int) Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5); //max int being smaller than half of the genome length
+                int halfGenomeLength = (int) Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5);
                 int kBetaBinom = (startSite <= endSite) ? (endSite - startSite) : (acg.getTotalConvertibleSequenceLength() - startSite + endSite);
                 double aBetaBinom = halfGenomeLength / (halfGenomeLength - deltaInput.get().getValue());
                 double bBetaBinom = halfGenomeLength / deltaInput.get().getValue();
@@ -197,20 +201,23 @@ public abstract class ConversionCreationOperator extends EdgeCreationOperator {
         double logP = 0.0;
 
         // Total effective number of possible start sites
-        double alpha;                                                       //todo: check adjustment (circular genome)
+        //circular genome mode edit
+        double alpha;
         alpha = acg.getTotalConvertibleSequenceLength()
                 + ( acg.circularGenomeModeOn() ? 0 : acg.getConvertibleLoci().size() * (deltaInput.get().getValue() - 1.0) );
 
         // Calculate probability of converted region.
-        if (conv.getStartSite()==0 && !acg.circularGenomeModeOn())          //todo: check adjustment (circular genome)
+        //circular genome mode edit
+        if (conv.getStartSite()==0 && !acg.circularGenomeModeOn())
             logP += Math.log(deltaInput.get().getValue() / alpha);
         else
             logP += Math.log(1.0 / alpha);
 
         // Probability of end site:
-        if (acg.circularGenomeModeOn()) {                                    //todo: check adjustment (circular genome)
+        //circular genome mode edit
+        if (acg.circularGenomeModeOn()) {
             if (acg.endSiteBetaBinomOn()) {
-                int halfGenomeLength = (int) Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5); //max int being smaller than half of the genome length
+                int halfGenomeLength = (int) Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5);
                 int kBetaBinom = conv.getSiteCount() - 1;
                 double aBetaBinom = halfGenomeLength / (halfGenomeLength - deltaInput.get().getValue());
                 double bBetaBinom = halfGenomeLength / deltaInput.get().getValue();

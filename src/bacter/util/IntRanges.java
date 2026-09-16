@@ -134,8 +134,7 @@ public class IntRanges {
                 i += 1;
         }
 
-        //TODO: adjust for circular genome
-
+        //circular genome mode edit
         while (i<as.size() && (as.get(i)<y))
             inside.add(as.get(i++));
 
@@ -178,7 +177,7 @@ public class IntRanges {
             res += as.get(i+1)-as.get(i);
         }
 
-        return res;                            // todo: check if Math.abs() needed if that does not break anything
+        return res; //Math.abs() needed?
     }
 
     /**

@@ -66,7 +66,8 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
 
         int convLength = conv.getSiteCount() + (moveStart ? -1*randShift : randShift);
 
-        if (acg.circularGenomeModeOn()) {                                                       //todo: check adjustment circular genome
+		//circular genome mode edit
+        if (acg.circularGenomeModeOn()) {
             if ((newLocus < 0 || newLocus >= acg.getTotalConvertibleSequenceLength())) {
                 newLocus = (newLocus < 0 ? 1 : -1) * acg.getTotalConvertibleSequenceLength() + newLocus;
             }

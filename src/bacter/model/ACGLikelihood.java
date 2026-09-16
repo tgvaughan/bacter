@@ -220,7 +220,7 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 patSet.add(pat);
             }
 
-            //todo: check adjustment (circular genome)
+            //circular genome mode edit
             if (region.leftBoundary > region.rightBoundary) {
                 for (int j=region.leftBoundary; j<acg.getTotalConvertibleSequenceLength(); j++) {
                     int[] pat = alignment.getPattern(alignment.getPatternIndex(j));

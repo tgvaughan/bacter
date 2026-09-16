@@ -72,7 +72,8 @@ public class ConversionGraph extends Tree {
     public Input<Boolean> wholeLocusConversionsInput = new Input<>(
             "wholeLocusConversionsOnly",
             "Force region boundaries to coincide with locus boundaries.", false);
-    public Input<Boolean> circularGenomeInput = new Input<>(    //TODO: check adjustment for circular genome
+    //circular genome mode edit
+    public Input<Boolean> circularGenomeInput = new Input<>(
             "circularGenome",
             "The alignment is a circular genome.", false);
 

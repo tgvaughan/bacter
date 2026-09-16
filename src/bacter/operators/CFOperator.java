@@ -80,7 +80,8 @@ public abstract class CFOperator extends ConversionCreationOperator {
         if (reverseRootMove) {
             double L = 2.0*(srcNode.getParent().getHeight() - volatileHeight);
 
-            double Nexp = L*rhoInput.get().getValue()                                //todo: check adjustment (circular genome)
+			//circular genome mode edit
+            double Nexp = L*rhoInput.get().getValue()
                     *(acg.getTotalConvertibleSequenceLength()
                     + ( acg.circularGenomeModeOn() ? 0 :  acg.getConvertibleLoci().size()*(deltaInput.get().getValue()-1.0) ) );
 
@@ -166,9 +167,9 @@ public abstract class CFOperator extends ConversionCreationOperator {
         // this was a forward root move
         if (forwardRootMove) {
             acg.setRoot(srcNode.getParent());
-
+			//circular genome mode edit
             double L = 2.0*(destTime - volatileHeight);
-            double Nexp = L*rhoInput.get().getValue()                               //todo: check adjustment circular genome
+            double Nexp = L*rhoInput.get().getValue()
                     * (acg.getTotalConvertibleSequenceLength() + ( acg.circularGenomeModeOn() ?
                     0 :  acg.getConvertibleLoci().size()*(deltaInput.get().getValue()-1.0) ));
 

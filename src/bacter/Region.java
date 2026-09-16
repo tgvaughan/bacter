@@ -35,7 +35,7 @@ public class Region {
 
     final int hashCodeCached;
 
-    //todo: check adjustment (circular genome)
+    //circular genome mode edit
     public Region(int leftBoundary, int rightBoundary, Set<Conversion> activeConversions, int acgTotalConvertibleSequenceLength) {
         this(leftBoundary,  rightBoundary, activeConversions);
         this.acgTotalConvertibleSequenceLength = acgTotalConvertibleSequenceLength;
@@ -54,7 +54,7 @@ public class Region {
         hashCodeCached = result;
     }
 
-    //todo: check adjustment (circular genome)
+    //circular genome mode edit
     public int getRegionLength() {
         return (rightBoundary > leftBoundary) ? rightBoundary - leftBoundary : rightBoundary - leftBoundary + acgTotalConvertibleSequenceLength;
      }
