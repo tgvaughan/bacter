@@ -3,7 +3,7 @@
 FROM debian:stable
 
 RUN apt-get update
-RUN apt-get install -y openjdk-17-jdk openjfx ant
+RUN apt-get install -y openjdk-21-jdk openjfx ant
 
 WORKDIR /root
 
