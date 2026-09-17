@@ -87,7 +87,7 @@ public class AddRemoveConversionTest extends TestBase {
         
         System.out.println("logP1 = " + logP1);
         
-        // Identify new recomination
+        // Identify new recombination
         Conversion newRecomb = null;
         for (Conversion recomb : acg.getConversions(locus)) {
             if (!oldConversions.contains(recomb))

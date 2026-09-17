@@ -199,26 +199,39 @@ public class AddRemoveRedundantConversion extends ACGOperator {
 
         Locus locus = acg.getConvertibleLoci().get(Randomizer.nextInt(acg.getConvertibleLoci().size()));
         conv.setLocus(locus);
-        logP += Math.log(1.0/acg.getConvertibleLoci().size());
+        logP += Math.log(1.0 / acg.getConvertibleLoci().size());
 
-        if (!acg.wholeLocusModeOn()) {
-            int site1 = Randomizer.nextInt(locus.getSiteCount());
-            int site2 = Randomizer.nextInt(locus.getSiteCount());
+		//circular genome mode edit
+        if (acg.circularGenomeModeOn()) {
+            int startSite = Randomizer.nextInt(locus.getSiteCount());
+            int convLength = Randomizer.nextInt((int) Math.floor((acg.getTotalConvertibleSequenceLength() - 1.) * 0.5));
+            int endSite = ((startSite + convLength) >= acg.getTotalConvertibleSequenceLength()) ? (startSite - acg.getTotalConvertibleSequenceLength() + convLength) : (startSite + convLength);
 
-            if (site1 < site2) {
-                conv.setStartSite(site1);
-                conv.setEndSite(site2);
+            logP += Math.log(1.0 / locus.getSiteCount());
+            logP += Math.log(2.0 / locus.getSiteCount());
+            conv.setStartSite(startSite);
+            conv.setEndSite(endSite);
+        } else {
+            if (!acg.wholeLocusModeOn()) {
+                int site1 = Randomizer.nextInt(locus.getSiteCount());
+                int site2 = Randomizer.nextInt(locus.getSiteCount());
+
+                if (site1 < site2) {
+                    conv.setStartSite(site1);
+                    conv.setEndSite(site2);
+                } else {
+                    conv.setStartSite(site2);
+                    conv.setEndSite(site1);
+                }
+
+                logP += 2.0 * Math.log(1.0 / locus.getSiteCount());
+                if (site1 != site2)
+                    logP += Math.log(2.0);
             } else {
-                conv.setStartSite(site2);
-                conv.setEndSite(site1);
+                conv.setStartSite(0);
+                conv.setEndSite(locus.getSiteCount() - 1);
             }
 
-            logP += 2.0 * Math.log(1.0 / locus.getSiteCount());
-            if (site1 != site2)
-                logP += Math.log(2.0);
-        } else {
-            conv.setStartSite(0);
-            conv.setEndSite(locus.getSiteCount()-1);
         }
 
         return logP;
@@ -229,6 +242,11 @@ public class AddRemoveRedundantConversion extends ACGOperator {
 
         logP += Math.log(1.0/acg.getConvertibleLoci().size());
 
+		//circular genome mode edit
+        if (acg.circularGenomeModeOn()) {
+            logP += Math.log(1.0 / conv.getLocus().getSiteCount());
+            logP += Math.log(2.0 / conv.getLocus().getSiteCount());
+        }
         if (!acg.wholeLocusModeOn()) {
             logP += 2.0 * Math.log(1.0 / conv.getLocus().getSiteCount());
             if (conv.getStartSite() != conv.getEndSite())

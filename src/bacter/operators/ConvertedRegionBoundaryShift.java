@@ -39,7 +39,7 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
 
     @Override
     public double proposal() {
-        
+
         if (acg.getTotalConvCount()<1 || acg.wholeLocusModeOn())
             return Double.NEGATIVE_INFINITY;
         
@@ -60,10 +60,21 @@ public class ConvertedRegionBoundaryShift extends ACGOperator {
         
         int radius = (int)Math.round(conv.getLocus().getSiteCount()
                 * apertureSizeInput.get())/2;
-        
-        int newLocus = currentLocus + Randomizer.nextInt(2*radius+1)-radius;
-        
-        if (newLocus < minLocus || newLocus > maxLocus)
+
+        int randShift = Randomizer.nextInt(2*radius+1)-radius;
+        int newLocus = currentLocus + randShift;
+
+        int convLength = conv.getSiteCount() + (moveStart ? -1*randShift : randShift);
+
+		//circular genome mode edit
+        if (acg.circularGenomeModeOn()) {
+            if ((newLocus < 0 || newLocus >= acg.getTotalConvertibleSequenceLength())) {
+                newLocus = (newLocus < 0 ? 1 : -1) * acg.getTotalConvertibleSequenceLength() + newLocus;
+            }
+            if (convLength >= acg.getTotalConvertibleSequenceLength() * 0.5 || convLength < 0) {
+                return Double.NEGATIVE_INFINITY;
+            }
+        } else if ((newLocus < minLocus || newLocus > maxLocus))
             return Double.NEGATIVE_INFINITY;
 
         if (moveStart)

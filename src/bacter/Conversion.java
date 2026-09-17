@@ -16,11 +16,7 @@
  */
 package bacter;
 
-import beast.base.evolution.alignment.Alignment;
 import beast.base.evolution.tree.Node;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * A class representing recombination events that are one-edge
@@ -31,7 +27,7 @@ import java.util.Objects;
  * @author Tim Vaughan <tgvaughan@gmail.com>
  */
 public class Conversion {
-    
+
     protected ConversionGraph acg;
 
     /**
@@ -55,7 +51,7 @@ public class Conversion {
     protected Locus locus;
 
     /**
-     * Used by ACGAnnotator to incoroporate additional metadata into
+     * Used by ACGAnnotator to incorporate additional metadata into
      * the summary ACG.
      */
     public String newickMetaDataBottom, newickMetaDataMiddle, newickMetaDataTop;
@@ -89,6 +85,8 @@ public class Conversion {
         this.startSite = startSite;
         this.endSite = endSite;
         this.locus = locus;
+        //circular genome mode edit
+        this.acg = acg;
     }
 
     /**
@@ -229,7 +227,12 @@ public class Conversion {
      * @return total number of sites affected by this conversion.
      */
     public int getSiteCount() {
-        return (int)(endSite - startSite + 1);
+        //circular genome mode edit
+        if (endSite >= startSite) {
+            return (int) (endSite - startSite + 1);
+        } else {
+            return (int) (getLocus().getSiteCount() - startSite + endSite + 1);
+        }
     }
     
     /**
@@ -257,7 +260,11 @@ public class Conversion {
         if (!node2.isRoot() && node2.getParent().getHeight()<height2)
             return false;
         
-        if (startSite>endSite)
+        //circular genome mode edit
+        if (startSite>endSite && !acg.circularGenomeModeOn())
+            return false;
+
+        if (acg.circularGenomeModeOn() && getSiteCount() >= getLocus().getSiteCount() * 0.5)
             return false;
 
         if (endSite<0 || startSite<0)

@@ -192,7 +192,6 @@ public class ACGLikelihood extends GenericTreeLikelihood {
                 logP += regionLogLikelihoods.get(region);
             }
         }
-
 //        System.out.println("Cache hit rate: " + cacheHits/(double)(cacheMisses + cacheHits));
     }
 
@@ -215,10 +214,24 @@ public class ACGLikelihood extends GenericTreeLikelihood {
 
             // Add new pattern set
             Multiset<int[]> patSet = LinkedHashMultiset.create();
+
             for (int j=region.leftBoundary; j<region.rightBoundary; j++) {
                 int [] pat = alignment.getPattern(alignment.getPatternIndex(j));
                 patSet.add(pat);
             }
+
+            //circular genome mode edit
+            if (region.leftBoundary > region.rightBoundary) {
+                for (int j=region.leftBoundary; j<acg.getTotalConvertibleSequenceLength(); j++) {
+                    int[] pat = alignment.getPattern(alignment.getPatternIndex(j));
+                    patSet.add(pat);
+                }
+                for (int j=0; j<region.rightBoundary; j++) {
+                    int[] pat = alignment.getPattern(alignment.getPatternIndex(j));
+                    patSet.add(pat);
+                }
+            }
+
             patterns.put(region, patSet);
 
             // Allocate memory for corresponding log likelihoods and root partials

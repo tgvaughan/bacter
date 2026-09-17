@@ -46,7 +46,10 @@ public class CustomConnectors {
             if (coalescent == null)
                 continue;
 
+			//circular genome mode edit
             acg.setWholeLocusMode(coalescent.wholeLocusConversionsInput.get());
+            acg.setCircularGenomeMode(coalescent.circularGenomeInput.get());
+            acg.setEndSiteBetaBinomOn(coalescent.betaBinomialEndSiteInput.get());
         }
     }
 }

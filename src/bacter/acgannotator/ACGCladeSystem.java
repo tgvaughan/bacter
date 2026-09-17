@@ -22,6 +22,7 @@ import bacter.ConversionGraph;
 import bacter.Locus;
 import beast.base.evolution.tree.Node;
 import beastfx.app.treeannotator.CladeSystem;
+import beast.base.util.Randomizer;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -67,19 +68,23 @@ public class ACGCladeSystem extends CladeSystem {
      * for later summary.
      *
      * @param acg conversion graph from which to extract conversions
+     * @param receiverBranchMode
      */
-    public void collectConversions(ConversionGraph acg) {
+    public void collectConversions(ConversionGraph acg, boolean receiverBranchMode) {
         getBitSets(acg);
 
         Map<BitSet,Map<BitSet,Long>> geneFlowTemp = new HashMap<>();
 
         // Assemble list of conversions for each pair of clades on each locus
+        //receiver branch mode edit
         for (Locus locus : acg.getConvertibleLoci()) {
 
             conversionListsTemp.clear();
             for (Conversion conv : acg.getConversions(locus))  {
                 conv.acgIndex = acgIndex;
                 BitSetPair bsPair = new BitSetPair(conv);
+                if(receiverBranchMode)
+                    bsPair.to = new BitSet(); //set the to bitSet to empty if the receiverBranch mode is used
 
                 if (!conversionListsTemp.containsKey(bsPair))
                     conversionListsTemp.put(bsPair, new ArrayList<>());
@@ -130,8 +135,37 @@ public class ACGCladeSystem extends CladeSystem {
         int nActive = 0;
         Conversion currentMergedConv = null;
         int mergedConvCount = 0;
-        double mergedConvHeight1 = 0.0;
-        double mergedConvHeight2 = 0.0;
+        List<Double> mergedConvHeight1 = new ArrayList<>();
+        List<Double> mergedConvHeight2 = new ArrayList<>();
+        List<Double> mergedConvHeight1First = new ArrayList<Double>();
+        List<Double> mergedConvHeight2First = new ArrayList<Double>();
+        List<Node> mergedNodes2 = new ArrayList<>();
+        List<Node> mergedNodes2First = new ArrayList<>();
+
+        //circular genome mode edit
+        Map<Node, Integer> node2counts = new HashMap<>();
+        Map<Node, Integer> node2countsFirst = new HashMap<>();
+        int numFirst = 0;
+
+        boolean firstStep = true;
+        int minOverlapStart = Integer.MAX_VALUE;
+        int indConv = 0;
+        for (int i = 0; i < convOrderedByEnd.size(); i++) {
+            Conversion conv = convOrderedByStart.get(indConv);
+            if (conv.getEndSite() < conv.getStartSite()) {
+                nActive += 1;
+                mergedConvCount += 1;
+                mergedConvHeight1.add(conv.getHeight1());
+                mergedConvHeight2.add(conv.getHeight2());
+                mergedNodes2.add(conv.getNode2());
+                minOverlapStart = Math.min(minOverlapStart, conv.getStartSite());
+                currentMergedConv = conv.getStartSite() <= minOverlapStart ? conv.getCopy() : currentMergedConv;
+                currentMergedConv.acgIndex = conv.acgIndex;
+                convOrderedByStart.remove(indConv);
+                indConv -= 1;
+            }
+            indConv += 1;
+        }
 
         while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
@@ -150,12 +184,17 @@ public class ACGCladeSystem extends CladeSystem {
                     currentMergedConv = convOrderedByStart.get(0).getCopy();
                     currentMergedConv.acgIndex = convOrderedByStart.get(0).acgIndex;
                     mergedConvCount = 1;
-                    mergedConvHeight1 = currentMergedConv.getHeight1();
-                    mergedConvHeight2 = currentMergedConv.getHeight2();
+                    mergedConvHeight1.clear();
+                    mergedConvHeight2.clear();
+                    mergedNodes2.clear();
+                    mergedConvHeight1.add(currentMergedConv.getHeight1());
+                    mergedConvHeight2.add(currentMergedConv.getHeight2());
+                    mergedNodes2.add(currentMergedConv.getNode2());
                 } else {
                     mergedConvCount += 1;
-                    mergedConvHeight1 += convOrderedByStart.get(0).getHeight1();
-                    mergedConvHeight2 += convOrderedByStart.get(0).getHeight2();
+                    mergedConvHeight1.add(convOrderedByStart.get(0).getHeight1());
+                    mergedConvHeight2.add(convOrderedByStart.get(0).getHeight2());
+                    mergedNodes2.add(convOrderedByStart.get(0).getNode2());
                 }
 
                 convOrderedByStart.remove(0);
@@ -166,15 +205,77 @@ public class ACGCladeSystem extends CladeSystem {
                 if (nActive == 0 ) {
                     assert currentMergedConv != null;
                     currentMergedConv.setEndSite(nextEnd);
-                    currentMergedConv.setHeight1(mergedConvHeight1/mergedConvCount);
-                    currentMergedConv.setHeight2(mergedConvHeight2 / mergedConvCount);
+                    //receiver branch mode edit
+                    node2counts.clear();
+                    for (Node node2 : mergedNodes2) {
+                        Integer count = node2counts.get(node2);
+                        node2counts.put(node2, count != null ? count+1 : 1);
+                    }
+                    int maxNode2count = 0;
+                    Node selectedNode = null;
+                    for (Node node2 : node2counts.keySet()){
+                        if (node2counts.get(node2) > maxNode2count){
+                            maxNode2count = node2counts.get(node2);
+                            selectedNode = node2;
+                        } else if (node2counts.get(node2) == maxNode2count){
+                            selectedNode = Randomizer.nextBoolean() ? node2 : selectedNode;
+                        }
+                    }
+                    double sumSelectedHeights1 = 0;
+                    double sumSelectedHeights2 = 0;
+                    for (int i = 0; i <  mergedConvCount; i++ ){
+                        if (mergedNodes2.get(i).equals(selectedNode))
+                            sumSelectedHeights2 += mergedConvHeight2.get(i);
+                        sumSelectedHeights1 += mergedConvHeight1.get(i);
+                    }
+                    currentMergedConv.setHeight1(sumSelectedHeights1 / mergedConvCount);
+                    currentMergedConv.setHeight2(sumSelectedHeights2 / maxNode2count);
+                    currentMergedConv.setNode2(selectedNode);
                     mergedList.add(currentMergedConv);
+                    //circular genome mode edit
+                    if (firstStep) {
+                        mergedConvHeight1First = new ArrayList<Double>(mergedConvHeight1);
+                        mergedConvHeight2First = new ArrayList<Double>(mergedConvHeight2);
+                        mergedNodes2First = new ArrayList<Node>(mergedNodes2);
+                        node2counts.forEach((key, value) -> node2countsFirst.merge(key, value, Integer::sum));
+                        numFirst = mergedConvCount;
+                        firstStep = false;
+                    }
                 }
 
                 convOrderedByEnd.remove(0);
             }
         }
-
+        //circular genome mode edit
+        if (mergedList.size() > 1 && (currentMergedConv.getEndSite() >= minOverlapStart)) {
+            mergedList.remove(mergedList.size()-1);
+            mergedList.get(0).setStartSite(currentMergedConv.getStartSite());
+            node2countsFirst.forEach((key, value) -> node2counts.merge(key, value, Integer::sum));
+            mergedConvHeight1.addAll(mergedConvHeight1First);
+            mergedConvHeight2.addAll(mergedConvHeight2First);
+            mergedNodes2.addAll(mergedNodes2First);
+            //receiver branch mode edit
+            int maxNode2count = 0;
+            Node selectedNode = null;
+            for (Node node2 : node2counts.keySet()){
+                if (node2counts.get(node2) > maxNode2count){
+                    maxNode2count = node2counts.get(node2);
+                    selectedNode = node2;
+                } else if (node2counts.get(node2) == maxNode2count){
+                    selectedNode = Randomizer.nextBoolean() ? node2 : selectedNode;
+                }
+            }
+            double sumSelectedHeights1 = 0;
+            double sumSelectedHeights2 = 0;
+            for (int i = 0; i <  mergedConvCount; i++ ){
+                if (mergedNodes2.get(i).equals(selectedNode))
+                    sumSelectedHeights2 += mergedConvHeight2.get(i);
+                sumSelectedHeights1 += mergedConvHeight1.get(i);
+            }
+            mergedList.get(0).setHeight1(sumSelectedHeights1 / (mergedConvCount + numFirst));
+            mergedList.get(0).setHeight2(sumSelectedHeights2 / (maxNode2count));
+            mergedList.get(0).setNode2(selectedNode);
+        }
         return mergedList;
     }
 
@@ -197,7 +298,7 @@ public class ACGCladeSystem extends CladeSystem {
 
         List<ConversionSummary> convSummaryList = new ArrayList<>();
 
-        // Return empty list if on conversions meet the criteria.
+        // Return empty list if no conversions meet the criteria.
         if (!conversionLists.containsKey(bsPair)
                 || !conversionLists.get(bsPair).containsKey(locus))
             return convSummaryList;
@@ -218,6 +319,28 @@ public class ACGCladeSystem extends CladeSystem {
         ConversionSummary conversionSummary = null;
 
         BitSet includedACGindices = new BitSet();
+
+        //circular genome mode edit
+        int numOverlap = 0;
+        for (Conversion conv : convOrderedByStart) {
+            if (conv.getEndSite() < conv.getStartSite()) {
+                activeConversions.add(conv);
+                includedACGindices.set(conv.acgIndex);
+                numOverlap += 1;
+            }
+        }
+
+        int overlapStartBound = Integer.MAX_VALUE;
+        boolean overlapRegion = false;
+        if (!activeConversions.isEmpty() && activeConversions.size() >= thresholdCount) {
+            overlapStartBound = activeConversions.get(thresholdCount > 0 ? thresholdCount - 1 : 0).getStartSite();
+            overlapRegion = true;
+            conversionSummary = new ConversionSummary();
+            convSummaryList.add(conversionSummary);
+            conversionSummary.addConvs(activeConversions);
+        }
+        //circular genome mode edit
+        int maxEndSite = !convOrderedByEnd.isEmpty() ? convOrderedByEnd.get(convOrderedByEnd.size() - 1).getEndSite() : Integer.MAX_VALUE;
 
         while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
@@ -242,12 +365,23 @@ public class ACGCladeSystem extends CladeSystem {
                         for (Conversion conv : activeConversions)
                             includedACGindices.set(conv.acgIndex);
                     } else {
-                        conversionSummary.addConv(convOrderedByStart.get(0));
-                        includedACGindices.set(convOrderedByStart.get(0).acgIndex);
+                        if (convOrderedByStart.get(0).getStartSite() <= convOrderedByStart.get(0).getEndSite()) {
+                            conversionSummary.addConv(convOrderedByStart.get(0));
+                            includedACGindices.set(convOrderedByStart.get(0).acgIndex);
+                        }
                     }
                 }
                 convOrderedByStart.remove(0);
             } else {
+                //circular genome mode edit
+                if (conversionSummary != null && overlapRegion && nextEnd > overlapStartBound && nextEnd == maxEndSite) {
+                    if (convSummaryList.size() > 1) {
+                        convSummaryList.remove(conversionSummary);
+                        convSummaryList.get(0).mergeConvSum(conversionSummary);
+                        convSummaryList.get(0).nIncludedACGs += conversionSummary.nIncludedACGs;
+                    }
+                    conversionSummary = null;
+                }
                 activeConversions.remove(convOrderedByEnd.get(0));
                 if (activeConversions.size() == thresholdCount-1) {
                     assert conversionSummary != null;
@@ -257,7 +391,9 @@ public class ACGCladeSystem extends CladeSystem {
                 convOrderedByEnd.remove(0);
             }
         }
-
+        if (conversionSummary != null && thresholdCount > 0) {
+            convSummaryList.remove(conversionSummary);
+        }
         return convSummaryList;
     }
 
@@ -290,6 +426,27 @@ public class ACGCladeSystem extends CladeSystem {
 
         return bits;
     }
+
+
+        /**
+         * Get bitset corresponding to a clade
+         *
+         * @param node MRCA of clade
+         * @return BitSet representing clade.
+         */
+        //receiver branch mode edit
+        public BitSet getBitSet(Node node) {
+            BitSet bitset = new BitSet();
+
+            if (node.isLeaf()) {
+                bitset.set(2 * node.getNr());
+            } else {
+                for (Node child : node.getChildren())
+                    bitset.or(getBitSet(child));
+            }
+
+            return bitset;
+        }
 
 
 
@@ -343,7 +500,8 @@ public class ACGCladeSystem extends CladeSystem {
         List<Double> height2s = new ArrayList<>();
         List<Integer> startSites = new ArrayList<>();
         List<Integer> ends = new ArrayList<>();
-
+        //receiver branch mode edit
+        List<BitSet> node2s = new ArrayList<>();
         public int nIncludedACGs = 0;
 
         /**
@@ -356,6 +514,7 @@ public class ACGCladeSystem extends CladeSystem {
             height2s.add(conv.getHeight2());
             startSites.add(conv.getStartSite());
             ends.add(conv.getEndSite());
+            node2s.add(getBitSet(conv.getNode2()));
         }
 
         /**
@@ -367,6 +526,19 @@ public class ACGCladeSystem extends CladeSystem {
         public void addConvs(List<Conversion> convs) {
             for (Conversion conv : convs)
                 addConv(conv);
+        }
+
+        /**
+         * Merge metrics associated in given conversion summary with this summary.
+         *
+         //* @param ConversionSummary convSum
+         */
+        public void mergeConvSum(ConversionSummary convSum) {
+            height1s.addAll(convSum.height1s);
+            height2s.addAll(convSum.height2s);
+            startSites.addAll(convSum.startSites);
+            ends.addAll(convSum.ends);
+            node2s.addAll(convSum.node2s);
         }
 
         /**

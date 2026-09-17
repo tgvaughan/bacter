@@ -60,7 +60,17 @@ public abstract class TestBase {
         return new Alignment(sequences, "nucleotide");
     }
 
-    public TaxonSet getTaxonSet(int nTaxa) {
+    public Alignment getSimpleAlignment() throws Exception {
+
+        List<Sequence> sequences = new ArrayList<>();
+        sequences.add(new Sequence("testtaxon", "TAATAATAATAA")); //"AATTAAAAATTAAA"));//
+        sequences.add(new Sequence("testtaxon2", "TTATTATTATTA")); //"ATTTTTTATTTTTT"));
+        sequences.add(new Sequence("testtaxon3","TTTTTTTTTTTT")); //"TTTTTTTTTTTTTT"));
+        return new Alignment(sequences, "nucleotide");
+
+    }
+
+        public TaxonSet getTaxonSet(int nTaxa) {
 
         List<Taxon> taxonList = new ArrayList<>();
         for (int i=0; i<nTaxa; i++) {

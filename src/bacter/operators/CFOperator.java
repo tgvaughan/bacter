@@ -80,9 +80,10 @@ public abstract class CFOperator extends ConversionCreationOperator {
         if (reverseRootMove) {
             double L = 2.0*(srcNode.getParent().getHeight() - volatileHeight);
 
+			//circular genome mode edit
             double Nexp = L*rhoInput.get().getValue()
                     *(acg.getTotalConvertibleSequenceLength()
-                    + acg.getConvertibleLoci().size()*(deltaInput.get().getValue() - 1.0));
+                    + ( acg.circularGenomeModeOn() ? 0 :  acg.getConvertibleLoci().size()*(deltaInput.get().getValue()-1.0) ) );
 
             List<Conversion> toRemove = new ArrayList<>();
             for (Locus locus : acg.getConvertibleLoci()) {
@@ -166,11 +167,12 @@ public abstract class CFOperator extends ConversionCreationOperator {
         // this was a forward root move
         if (forwardRootMove) {
             acg.setRoot(srcNode.getParent());
-
+			//circular genome mode edit
             double L = 2.0*(destTime - volatileHeight);
             double Nexp = L*rhoInput.get().getValue()
-                    *(acg.getTotalConvertibleSequenceLength()
-                    + acg.getConvertibleLoci().size()*(deltaInput.get().getValue() - 1.0));
+                    * (acg.getTotalConvertibleSequenceLength() + ( acg.circularGenomeModeOn() ?
+                    0 :  acg.getConvertibleLoci().size()*(deltaInput.get().getValue()-1.0) ));
+
             int N = (int)Randomizer.nextPoisson(Nexp);
 
             logP += -Nexp + N*Math.log(Nexp); // Factorial cancels

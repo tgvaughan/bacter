@@ -110,9 +110,9 @@ public abstract class EdgeCreationOperator extends ACGOperator {
         
         // Locate event immediately below departure point
         int startIdx = 0;
-        while (events.get(startIdx+1).getHeight()<conv.getHeight1())
+        while (events.get(startIdx+1).getHeight()<conv.getHeight1()) {
             startIdx += 1;
-                
+        }
         // Choose edge length in dimensionless time.
         double u = Randomizer.nextExponential(1.0);
         

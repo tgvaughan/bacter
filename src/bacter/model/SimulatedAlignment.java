@@ -243,11 +243,24 @@ public class SimulatedAlignment extends Alignment {
         
         int nTaxa = alignment.length;
         
-        for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
-            System.arraycopy(regionAlignment[leafIdx], 0,
+        //circular genome mode edit
+        if (!(region.leftBoundary > region.rightBoundary)) {
+            for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
+                System.arraycopy(regionAlignment[leafIdx], 0,
+                        alignment[leafIdx], region.leftBoundary,
+                        region.getRegionLength());
+            }
+        } else {
+            for (int leafIdx=0; leafIdx<nTaxa; leafIdx++) {
+                System.arraycopy(regionAlignment[leafIdx], 0,
                     alignment[leafIdx], region.leftBoundary,
-                    region.getRegionLength());
+                    alignment[leafIdx].length - region.leftBoundary);
+                System.arraycopy(regionAlignment[leafIdx], 0,
+                    alignment[leafIdx], 0,
+                    region.rightBoundary);
+            }
         }
+
     }
     
     /**

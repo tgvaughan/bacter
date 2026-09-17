@@ -59,8 +59,9 @@ public class ConversionGraphStatsLogger extends CalculationNode implements Logga
             return Double.NaN;
         
         double mean = 0;
+        //circular genome mode edit
         for (Conversion conv : acg.getConversions(locus))
-            mean += conv.getEndSite()-conv.getStartSite()+1;
+            mean += conv.getStartSite() < conv.getEndSite() ? conv.getEndSite()-conv.getStartSite()+1 : acg.getTotalConvertibleSequenceLength()-conv.getStartSite()+conv.getEndSite()+1;
 
         mean /= acg.getConvCount(locus);
         

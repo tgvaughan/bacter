@@ -134,7 +134,8 @@ public class IntRanges {
                 i += 1;
         }
 
-        while (i<as.size() && as.get(i)<y)
+        //circular genome mode edit
+        while (i<as.size() && (as.get(i)<y))
             inside.add(as.get(i++));
 
         if (i%2==1) {
@@ -176,7 +177,7 @@ public class IntRanges {
             res += as.get(i+1)-as.get(i);
         }
 
-        return res;
+        return res; //Math.abs() needed?
     }
 
     /**

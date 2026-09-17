@@ -79,13 +79,31 @@ public class AffectedSiteList {
                 case CONV_DEPART:
                     List<Integer> inside = new ArrayList<>();
                     List<Integer> outside = new ArrayList<>();
-                    IntRanges.partitionRanges(activeCFNodes.get(event.node).get(event.conversion.getLocus()),
-                            event.conversion.getStartSite(),
-                            event.conversion.getEndSite() + 1,
-                            inside, outside);
+
+                    //circular genome mode edit
+                    if (event.conversion.getEndSite() >= event.conversion.getStartSite()) {
+                        IntRanges.partitionRanges(activeCFNodes.get(event.node).get(event.conversion.getLocus()),
+                                event.conversion.getStartSite(),
+                                event.conversion.getEndSite() + 1,
+                                inside, outside);
+                    } else {
+                        List<Integer> helpInside = new ArrayList<>();
+                        List<Integer> helpOutside = new ArrayList<>();
+                        IntRanges.partitionRanges(activeCFNodes.get(event.node).get(event.conversion.getLocus()),
+                                event.conversion.getStartSite(),
+                                event.conversion.getLocus().getSiteCount(),
+                                inside, outside);
+                        IntRanges.partitionRanges(activeCFNodes.get(event.node).get(event.conversion.getLocus()),
+                                0,
+                                event.conversion.getEndSite() + 1,
+                                helpInside, helpOutside);
+                        inside.addAll(helpInside);
+                        outside = IntRanges.getIntersection(helpOutside, outside);
+                    }
 
                     affectedSites.put(event.conversion, inside);
                     affectedSiteCount.put(event.conversion, IntRanges.getTotalSites(inside));
+
                     affectedSiteFraction.put(event.conversion,
                             IntRanges.getTotalSites(inside) / (double) event.conversion.getSiteCount());
                     activeCFNodes.get(event.node).put(
@@ -119,7 +137,8 @@ public class AffectedSiteList {
         for (Locus locus : acg.getConvertibleLoci()) {
             List<Integer> siteRange = new ArrayList<>();
             siteRange.add(0);
-            siteRange.add(locus.getSiteCount() - 1);
+            siteRange.add(locus.getSiteCount());
+            //siteRange.add(locus.getSiteCount() - 1);
             res.put(locus, siteRange);
         }
 

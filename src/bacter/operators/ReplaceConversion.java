@@ -19,7 +19,6 @@ package bacter.operators;
 
 import bacter.Conversion;
 import beast.base.core.Description;
-import beast.base.util.Randomizer;
 
 /**
  *
@@ -46,7 +45,7 @@ public class ReplaceConversion extends ConversionCreationOperator {
         // Remove conversion
         acg.deleteConversion(conv);
 
-        // Draw replacement conversion from prior, incoroporating
+        // Draw replacement conversion from prior, incorporating
         // probability into HGF
         conv = new Conversion();
         logHGF -= attachEdge(conv) + drawAffectedRegion(conv);

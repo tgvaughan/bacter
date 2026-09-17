@@ -17,11 +17,9 @@
 
 package bacter;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * This class is used to maintain a list of marginal tree regions
@@ -103,6 +101,7 @@ public class RegionList {
         objects in the likelihood code.
         */
         List<Conversion> convOrderedByStart = new ArrayList<>();
+
         acg.getConversions(locus).forEach(conversion -> {
             if (affectedSiteList.affectedSiteCount.get(conversion)>0)
                 convOrderedByStart.add(conversion.getCopy());
@@ -115,7 +114,23 @@ public class RegionList {
 
         Set<Conversion> activeConversions = Sets.newHashSet();
 
+        //circular genome mode edit
+        int numOverlap = 0;
+        for (Conversion conv : convOrderedByEnd) {
+            if (conv.getEndSite() < conv.getStartSite()) {
+                activeConversions.add(conv);
+                numOverlap += 1;
+            }
+        }
+
+		//circular genome mode edit
         int lastBoundary = 0;
+        boolean firstStep = false, noConv = true;
+        if (acg.circularGenomeModeOn() && !convOrderedByStart.isEmpty()) {
+            lastBoundary = Math.max(convOrderedByEnd.get(convOrderedByEnd.size() - 1).getEndSite() + 1, convOrderedByStart.get(convOrderedByStart.size() - 1).getStartSite());
+            noConv = false;
+            firstStep = true;
+        }
 
         while (!convOrderedByStart.isEmpty() || !convOrderedByEnd.isEmpty()) {
 
@@ -132,9 +147,14 @@ public class RegionList {
                 nextEnd = Integer.MAX_VALUE;
 
             int nextBoundary = Math.min(nextStart, nextEnd);
-            if (nextBoundary > lastBoundary) {
-                Region region = new Region(lastBoundary, nextBoundary, activeConversions);
+
+            if (nextBoundary > lastBoundary || firstStep) {
+                if (nextBoundary == 0) {
+                    nextBoundary = locus.getSiteCount();
+                }
+                Region region = new Region(lastBoundary, nextBoundary, activeConversions, acg.getTotalConvertibleSequenceLength());
                 regions.add(region);
+                firstStep = false;
             }
 
             if (nextStart < nextEnd) {
@@ -148,8 +168,8 @@ public class RegionList {
             }
         }
 
-        if (lastBoundary < locus.getSiteCount()) {
-            Region region = new Region(lastBoundary, locus.getSiteCount(), new HashSet<>());
+        if ((lastBoundary < locus.getSiteCount()) && noConv) {
+            Region region = new Region(lastBoundary, locus.getSiteCount(), new HashSet<>(), acg.getTotalConvertibleSequenceLength());
             regions.add(region);
         }
 

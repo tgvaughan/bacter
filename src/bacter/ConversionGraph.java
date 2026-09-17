@@ -31,8 +31,6 @@ import beast.base.inference.StateNode;
 
 import java.io.PrintStream;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -72,6 +70,14 @@ public class ConversionGraph extends Tree {
     public Input<Boolean> wholeLocusConversionsInput = new Input<>(
             "wholeLocusConversionsOnly",
             "Force region boundaries to coincide with locus boundaries.", false);
+    //circular genome mode edit
+    public Input<Boolean> circularGenomeInput = new Input<>(
+            "circularGenome",
+            "The alignment is a circular genome.", false);
+
+    public Input<Boolean> betaBinomialEndSiteInput = new Input<>(
+            "endSiteBetaBinom",
+            "The prior for the end site of a conversion is a beta-binomial distribution.", false);
 
     /**
      * List of recombinations on graph.
@@ -163,6 +169,32 @@ public class ConversionGraph extends Tree {
         return convertibleLoci;
     }
 
+    //TODO: check adjustment for circular genome
+    /**
+     * Set/Get circularGenomeMode value
+     */
+    public boolean circularGenomeModeOn() {
+        return circularGenomeInput.get();
+    }
+
+    public void setCircularGenomeMode(boolean newVal) {
+        circularGenomeInput.setValue(newVal, this);
+    }
+
+    /**
+     * Set/Get endSiteBetaBinom value
+     */
+    public boolean endSiteBetaBinomOn() {
+        return betaBinomialEndSiteInput.get();
+    }
+
+    public void setEndSiteBetaBinomOn(boolean newVal) {
+        betaBinomialEndSiteInput.setValue(newVal, this);
+    }
+
+    /**
+     * Set/Get wholeLocusMode value
+     */
     public boolean wholeLocusModeOn() {
         return wholeLocusConversionsInput.get();
     }
@@ -426,7 +458,7 @@ public class ConversionGraph extends Tree {
 
             Locus locus = getLocusByID(elements[0]);
             if (locus == null)
-                throw new RuntimeException("Uknown locus id "
+                throw new RuntimeException("Unknown locus id "
                         + elements[0] + ".  Aborting.");
 
             Node node1 = getNode(Integer.parseInt(elements[1]));
