@@ -40,8 +40,7 @@ public class SimulatedAlignmentTest extends TestBase {
     @Test
     public void test() throws Exception {
 
-//        Randomizer.setSeed(26);
-        Randomizer.setSeed(7);
+       Randomizer.setSeed(42);
 
         Locus locus = new Locus("locus", 100000);
 
